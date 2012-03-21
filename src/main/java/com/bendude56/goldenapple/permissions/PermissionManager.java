@@ -1,4 +1,4 @@
-package com.deaboy.goldenapple.permissions;
+package com.bendude56.goldenapple.permissions;
 
 import java.util.ArrayList;
 import java.util.List;
