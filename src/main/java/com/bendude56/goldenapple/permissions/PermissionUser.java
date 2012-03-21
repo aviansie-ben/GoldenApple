@@ -2,26 +2,19 @@ package com.bendude56.goldenapple.permissions;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 
-public class User {
-	
+public class PermissionUser {
 	private String name;
-	private Player handle;
 	
-	
-	
-	// -- SIMPLE, ROUTINE METHODS AND FUNCTIONS -- //
+	protected PermissionUser(String name) {
+		this.name = name;
+	}
 	
 	public String getName() {
 		return name;
 	}
 	
-	public Player getHandle() {
-		return handle;
-	}
-	
-	public OfflinePlayer getOfflineHandle() {
+	public OfflinePlayer getOfflinePlayer() {
 		return Bukkit.getOfflinePlayer(this.name);
 	}
 }

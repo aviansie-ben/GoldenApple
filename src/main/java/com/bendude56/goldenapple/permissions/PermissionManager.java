@@ -3,24 +3,31 @@ package com.bendude56.goldenapple.permissions;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Manages the inner workings of the GoldenApple permissions system
+ * @author ben_dude56
+ *
+ */
 public class PermissionManager {
 	
-	//DECLARATIONS
-	private List<User> users = new ArrayList<User>();
-	private List<Group> groups = new ArrayList<Group>();
+	private List<PermissionUser> users = new ArrayList<PermissionUser>();
+	private List<PermissionGroup> groups = new ArrayList<PermissionGroup>();
 	private List<Permission> permissions = new ArrayList<Permission>();
 	private List<PermissionNode> nodes = new ArrayList<PermissionNode>();
 	
 	private PermissionNode rootNode;
-	//END DECLARATIONS
 	
-	//CONSTRUCTORS
 	public PermissionManager() {
-		rootNode = new PermissionNode("root");
+		rootNode = new PermissionNode("");
 		nodes.add(rootNode);
 	}
-	//END CONSTRUCTORS
 	
+	/**
+	 * Registers a new permission for use with the GoldenApple permissions system
+	 * @param name The short name of the permission to add
+	 * @param node The node in which to add the permission
+	 * @return The permission that has been registered
+	 */
 	public Permission registerPermission(String name, PermissionNode node) {
 		if (nodes.contains(node)) {
 			for (Permission p : this.permissions) {
@@ -36,6 +43,11 @@ public class PermissionManager {
 		}
 	}
 	
+	/**
+	 * Registers a new permission for use with the GoldenApple permissions system
+	 * @param fullName The full name (including node) of the permission to add
+	 * @return The permission that has been registered
+	 */
 	public Permission registerPermission(String fullName) {
 		String[] name = fullName.split(".");
 		PermissionNode node = rootNode;
@@ -50,6 +62,12 @@ public class PermissionManager {
 		return null;
 	}
 	
+	/**
+	 * Registers a new permission node for use with the GoldenApple permissions system
+	 * @param name The short name of the node to add
+	 * @param node The node in which to add the node
+	 * @return The node that has been registered
+	 */
 	public PermissionNode registerNode(String name, PermissionNode node) {
 		if (nodes.contains(node)) {
 			for (PermissionNode n : nodes) {
@@ -65,76 +83,187 @@ public class PermissionManager {
 		}
 	}
 	
-	
-	
-	// -- SIMPLE AND ROUTINE METHODS AND FUNCTIONS -- //
-	
-	public List<User> getUsers() {
+	/**
+	 * Gets a list of all users in the database
+	 */
+	public List<PermissionUser> getUsers() {
 		return users;
 	}
 	
-	public List<Group> getGroups() {
+	/**
+	 * Gets a list of all groups in the database
+	 */
+	public List<PermissionGroup> getGroups() {
 		return groups;
 	}
 	
+	/**
+	 * Gets a list of all currently registered permissions
+	 */
 	public List<Permission> getPermissions() {
 		return permissions;
 	}
 	
+	/**
+	 * Gets detailed information about a permission based on its name
+	 * @param name The name of the permission to get information on
+	 * @return Information about the requested permission
+	 */
 	public Permission getPermission(String name) {
 		String[] path = name.split(".");
 		PermissionNode node = rootNode;
-		Permission permission = null;
-		boolean found = false;
 		
+		pathSearch:
 		for (int i = 0; i < path.length; i++) {
 			if (i == path.length-1) {
 				for (Permission p : permissions) {
 					if (p.getName().equalsIgnoreCase(path[i]) && p.getNode()==node) {
-						permission = p;
+						return p;
 					}
 				}
 			} else {
-				found = false;
 				for (PermissionNode n : nodes) {
 					if (n.getName().equalsIgnoreCase(path[i]) && n.getNode()==node) {
 						node = n;
-						found = true;
+						continue pathSearch;
 					}
 				}
-				if (found == false) {
-					return null;
-				}
+				return null;
 			}
 		}
-		return permission;
+		return null;
 	}
 	
+	/**
+	 * Gets a list of all currently registered permission nodes
+	 */
 	public List<PermissionNode> getNodes() {
 		return nodes;
 	}
 	
+	/**
+	 * Gets detailed information about a permission node based on its name
+	 * @param name The name of the permission node to get information on
+	 * @return Information about the requested permission node
+	 */
 	public PermissionNode getNode(String name) {
 		String[] path = name.split(".");
 		PermissionNode node = rootNode;
-		boolean found = false;
 		
+		pathSearch:
 		for (int i = 0; i < path.length; i++) {
-			found = false;
 			for (PermissionNode n : nodes) {
 				if (n.getName().equalsIgnoreCase(path[i]) && n.getNode()==node) {
 					node = n;
-					found = true;
+					continue pathSearch;
 				}
 			}
-			if (found == false) {
-				return null;
-			}
+			return null;
 		}
 		return node;
 	}
 	
+	/**
+	 * Gets the root node of the permissions system
+	 */
 	public PermissionNode getRootNode() {
 		return rootNode;
+	}
+	
+	/**
+	 * Represents a specific permission in the GoldenApple permissions system
+	 * @author Deaboy
+	 */
+	public class Permission {
+		private String name;
+		private PermissionNode node;
+		
+		private Permission(String name, PermissionNode node) {
+			this.name = name;
+			this.node = node;
+		}
+		
+		/**
+		 * Gets the full name (including node name) of the permission represented by this object
+		 */
+		public String getFullName() {
+			return node.getFullName() + "." + name;
+		}
+		
+		/**
+		 * Gets the short name (excluding node name) of the permission represented by this object
+		 */
+		public String getName() {
+			return name;
+		}
+		
+		/**
+		 * Gets the parent node of this permission
+		 */
+		public PermissionNode getNode() {
+			return node;
+		}
+	}
+	
+	/**
+	 * Represents a specific permission node in the GoldenApple permissions system
+	 * @author Deaboy
+	 */
+	public class PermissionNode {
+		private String					name;
+		private PermissionNode			node;
+		
+		private PermissionNode(String name) {
+			this.name = name;
+			this.node = this;
+		}
+		
+		private PermissionNode(String name, PermissionNode parentNode) {
+			this.name = name;
+			this.node = parentNode;
+		}
+		
+		/**
+		 * Gets the full name (including parent node) of the node represented by this object
+		 */
+		public String getFullName() {
+			List<PermissionNode> previousNodes = new ArrayList<PermissionNode>();
+			String path = name;
+			PermissionNode currentNode = this;
+			
+			while (!previousNodes.contains(currentNode)) {
+				previousNodes.add(currentNode);
+				path = currentNode.getName() + "." + path;
+				currentNode = currentNode.getNode();
+			}
+			
+			return path;
+		}
+		
+		/**
+		 * Gets the short name (excluding parent node) of the node represented by this object
+		 */
+		public String getName() {
+			return name;
+		}
+		
+		/**
+		 * Gets the parent node above this node (Returns this node if root node)
+		 */
+		public PermissionNode getNode() {
+			return node;
+		}
+		
+		/**
+		 * Gets a list of all permissions that are directly under this node (does not search child nodes)
+		 */
+		public List<Permission> getPermissions() {
+			List<Permission> currentPermissions = new ArrayList<Permission>();
+			for (Permission p : permissions) {
+				if (p.node == this)
+					currentPermissions.add(p);
+			}
+			return currentPermissions;
+		}
 	}
 }
