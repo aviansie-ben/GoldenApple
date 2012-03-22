@@ -45,8 +45,8 @@ public class PermissionManager {
 	
 	/**
 	 * Registers a new permission for use with the GoldenApple permissions system
-	 * @param fullName The full name (including node) of the permission to add
-	 * @return The permission that has been registered
+	 * @param fullName The full name (including nodes) of the permission to add
+	 * @return The permission that has been registered. If permission already exists, returns existing one instead
 	 */
 	public Permission registerPermission(String fullName) {
 		String[] name = fullName.split(".");
