@@ -5,46 +5,85 @@ import java.util.List;
 
 import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
 
+/**
+ * Represents a group in the GoldenApple permissions database.
+ * <p>
+ * <em><strong>Note:</strong> Do not store direct references to this class. Store the
+ * ID of the instance instead!</em>
+ * 
+ * @author Deaboy
+ * @author ben_dude56
+ */
 public class PermissionGroup {
-	
-	private String name;
-	private List<PermissionUser> members = new ArrayList<PermissionUser>();
-	private List<PermissionGroup> subGroups = new ArrayList<PermissionGroup>();
-	private List<Permission> permissions = new ArrayList<Permission>();
-	
+	private Long				id;
+	private String				name;
+	private List<Long>			members		= new ArrayList<Long>();
+	private List<Long>			subGroups	= new ArrayList<Long>();
+	private List<Permission>	permissions	= new ArrayList<Permission>();
+
+	/**
+	 * Creates a new group with the provided ID and name.
+	 * <p>
+	 * <em><strong>Note:</strong> Before a group created in this way will save properly, you must alert
+	 * the {@link PermissionManager} using the {@link PermissionManager#saveGroup(PermissionGroup group)}
+	 * function.</em>
+	 * 
+	 * @param id The ID of the group to create. (To get the next available group
+	 *            ID use {@link PermissionManager#nextGroupId()} function)
+	 * @param name The name of the group to create.
+	 */
+	public PermissionGroup(Long id, String name) {
+		this.id = id;
+		this.name = name;
+		this.members = new ArrayList<Long>();
+		this.subGroups = new ArrayList<Long>();
+		this.permissions = new ArrayList<Permission>();
+	}
+
+	/**
+	 * Gets the ID associated with this group.
+	 */
+	public Long getId() {
+		return id;
+	}
+
+	/**
+	 * Gets the name associated with this group.
+	 */
 	public String getName() {
 		return name;
 	}
-	
-	public List<PermissionUser> getMembers() {
+
+	/**
+	 * Gets a list of user IDs for users that inherit this group's permissions.
+	 */
+	public List<Long> getMembers() {
 		return members;
 	}
-	
+
 	/**
-	 * Returns a list of groups that inherit this group's permissions.
+	 * Gets a list of group IDs for groups that inherit this group's
+	 * permissions.
 	 */
-	public List<PermissionGroup> getSubGroups() {
+	public List<Long> getSubGroups() {
 		return subGroups;
 	}
-	
+
 	/**
-	 * Returns an ArrayList of permissions this group has.
-	 * @param inherited Set to true if you want to include inherited permissions 
-	 * @return The permissions this group has
+	 * Gets a list of permissions that this group has been given.
+	 * 
+	 * @param inherited True to include inherited permissions. False to fetch
+	 *            explicit permissions only.
 	 */
 	public List<Permission> getPermissions(boolean inherited) {
 		List<Permission> returnPermissions = permissions;
-				
-		/*if (inherited) {
-			List<PermissionGroup> previousGroups = new ArrayList<PermissionGroup>();
-			int checkedGroups = 1;
-			
-			while (checkedGroups > 0) {
-				checkedGroups = 0;
-				for (PermissionGroup group)
-			}
-		}*/
-		
+		/*
+		 * if (inherited) { List<PermissionGroup> previousGroups = new
+		 * ArrayList<PermissionGroup>(); int checkedGroups = 1;
+		 * 
+		 * while (checkedGroups > 0) { checkedGroups = 0; for (PermissionGroup
+		 * group) } }
+		 */
 		return returnPermissions;
 	}
 }
