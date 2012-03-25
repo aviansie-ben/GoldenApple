@@ -3,6 +3,8 @@ package com.bendude56.goldenapple.permissions;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.bendude56.goldenapple.GoldenApple;
+
 /**
  * Manages the inner workings of the GoldenApple permissions system
  * 
@@ -19,6 +21,7 @@ public class PermissionManager {
 	public PermissionManager() {
 		rootNode = new PermissionNode("");
 		nodes.add(rootNode);
+		GoldenApple.getInstance().database.execute("CREATE TABLE IF NOT EXISTS Users (ID BIGINT, Name VARCHAR(128), Permissions TEXT)");
 	}
 
 	/**

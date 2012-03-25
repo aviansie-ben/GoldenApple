@@ -1,0 +1,26 @@
+# Database options
+database:
+    
+    # Whether or not to connect to MySQL. If false, GoldenApple will
+    # use SQLite instead
+    useMySQL: false
+    
+    # The host to connect to when connecting to a MySQL database
+    # (Only applicable if using MySQL)
+    host: 'localhost'
+    
+    # The database to store GoldenApple data into (Only applicable
+    # if using MySQL)
+    database: 'ga'
+    
+    # The username to be given when authenticating for access to the
+    # database (Only applicable if using MySQL)
+    user: ''
+    
+    # The password to be given when authenticating for access to the
+    # database (Only applicable if using MySQL)
+    password: ''
+    
+    # The path (relative to the craftbukkit JAR) at which the SQLite
+    # database is located (Only applicable if using SQLite)
+    path: 'plugins/GoldenApple/database.db'
