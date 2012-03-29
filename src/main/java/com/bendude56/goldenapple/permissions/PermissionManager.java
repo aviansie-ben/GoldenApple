@@ -259,6 +259,14 @@ public class PermissionManager {
 		}
 	}
 
+	public PermissionGroup getGroup(long id) {
+		if (getGroups().containsKey(id)) {
+			return getGroups().get(id);
+		} else {
+			return null;
+		}
+	}
+
 	/**
 	 * Allows a user to be set in the cache to be sticky. A sticky user will
 	 * never be removed from the cache. This is normally only used to make

@@ -3,6 +3,7 @@ package com.bendude56.goldenapple.permissions;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
 
 /**
@@ -77,6 +78,38 @@ public class PermissionGroup {
 	 */
 	public List<Permission> getPermissions(boolean inherited) {
 		List<Permission> returnPermissions = permissions;
+		if (inherited) {
+			List<Long> previousGroups = new ArrayList<Long>();
+			for (Long groupID : GoldenApple.getInstance().getPermissions().getGroups().keySet()) {
+				if (!previousGroups.contains(groupID)) {
+					for (Long checkedGroupID : previousGroups) {
+						if (GoldenApple.getInstance().getPermissions().getGroup(groupID).getSubGroups().contains(checkedGroupID)) {
+							for (Permission perm : GoldenApple.getInstance().getPermissions().getGroup(groupID).getPermissions(false)) {
+								if (!returnPermissions.contains(perm)) {
+									returnPermissions.add(perm);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 		return returnPermissions;
+	}
+	
+	public boolean hasPermission(Permission permission) {
+		return hasPermission(permission, false);
+	}
+	
+	public boolean hasPermission(String permission) {
+		return hasPermission(permission, false);
+	}
+	
+	public boolean hasPermission(Permission permission, boolean specific) {
+		return getPermissions(specific).contains(permission);
+	}
+	
+	public boolean hasPermission(String permission, boolean specific) {
+		return hasPermission(GoldenApple.getInstance().permissions.registerPermission(permission), specific);
 	}
 }
