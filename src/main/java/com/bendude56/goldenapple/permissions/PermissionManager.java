@@ -1,7 +1,14 @@
 package com.bendude56.goldenapple.permissions;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
 
 import com.bendude56.goldenapple.GoldenApple;
 
@@ -12,16 +19,22 @@ import com.bendude56.goldenapple.GoldenApple;
  * @author ben_dude56
  */
 public class PermissionManager {
-	private List<PermissionUser>	users		= new ArrayList<PermissionUser>();
-	private List<PermissionGroup>	groups		= new ArrayList<PermissionGroup>();
-	private List<Permission>		permissions	= new ArrayList<Permission>();
-	private List<PermissionNode>	nodes		= new ArrayList<PermissionNode>();
-	private PermissionNode			rootNode;
+	private HashMap<Long, PermissionUser>	userCache	= new HashMap<Long, PermissionUser>();
+	private Deque<Long>						cacheOut	= new ArrayDeque<Long>();
+	private HashMap<Long, PermissionGroup>	groups		= new HashMap<Long, PermissionGroup>();
+	private List<Permission>				permissions	= new ArrayList<Permission>();
+	private List<PermissionNode>			nodes		= new ArrayList<PermissionNode>();
+	private PermissionNode					rootNode;
 
 	public PermissionManager() {
 		rootNode = new PermissionNode("");
 		nodes.add(rootNode);
-		GoldenApple.getInstance().database.execute("CREATE TABLE IF NOT EXISTS Users (ID BIGINT, Name VARCHAR(128), Permissions TEXT)");
+		try {
+			GoldenApple.getInstance().database.execute("CREATE TABLE IF NOT EXISTS Users (ID BIGINT, Name VARCHAR(128), Locale VARCHAR(128), Permissions TEXT)");
+		} catch (SQLException e) {
+			GoldenApple.log(Level.SEVERE, "Failed to create table 'Users':");
+			GoldenApple.log(Level.SEVERE, e);
+		}
 	}
 
 	/**
@@ -101,14 +114,14 @@ public class PermissionManager {
 	 * user cache. In order to find a specific user, use {@link PermissionManager#getUser(long id)}
 	 * or {@link PermissionManager#getUser(String name)}</em>
 	 */
-	public List<PermissionUser> getUsers() {
-		return users;
+	public HashMap<Long, PermissionUser> getUserCache() {
+		return userCache;
 	}
 
 	/**
 	 * Gets a list of all groups in the database.
 	 */
-	public List<PermissionGroup> getGroups() {
+	public HashMap<Long, PermissionGroup> getGroups() {
 		return groups;
 	}
 
@@ -181,6 +194,101 @@ public class PermissionManager {
 	 */
 	public PermissionNode getRootNode() {
 		return rootNode;
+	}
+
+	public long getUserId(String name) {
+		try {
+			ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT ID FROM Users WHERE Name=?", new Object[] { name });
+			if (r.first()) {
+				r.close();
+				return r.getLong("ID");
+			} else {
+				r.close();
+				return -1;
+			}
+		} catch (SQLException e) {
+			GoldenApple.log(Level.WARNING, "Failed to retrieve ID for user '" + name + "':");
+			GoldenApple.log(Level.WARNING, e);
+			return -1;
+		}
+	}
+
+	public PermissionUser getUser(long id) {
+		if (userCache.containsKey(id)) {
+			return userCache.get(id);
+		} else {
+			try {
+				ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT ID, Name, Locale, Permissions FROM Users WHERE ID=?", new Object[] { id });
+				if (r.first()) {
+					r.close();
+					return new PermissionUser(r.getLong("ID"), r.getString("Name"), r.getString("Locale"), r.getString("Permissions"));
+				} else {
+					r.close();
+					return null;
+				}
+			} catch (SQLException e) {
+				GoldenApple.log(Level.WARNING, "Failed to retrieve user with ID " + id + ":");
+				GoldenApple.log(Level.WARNING, e);
+				return null;
+			}
+		}
+	}
+	
+	public PermissionUser getUser(String name) {
+		for (Map.Entry<Long, PermissionUser> entry : userCache.entrySet()) {
+			if (entry.getValue().getName().equalsIgnoreCase(name)) {
+				return entry.getValue();
+			}
+		}
+		try {
+			ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT ID, Name, Locale, Permissions FROM Users WHERE Name=?", new Object[] { name });
+			if (r.first()) {
+				r.close();
+				PermissionUser p = new PermissionUser(r.getLong("ID"), r.getString("Name"), r.getString("Locale"), r.getString("Permissions"));
+				userCache.put(p.getId(), p);
+				cacheOut.addLast(p.getId());
+				return p;
+			} else {
+				r.close();
+				return null;
+			}
+		} catch (SQLException e) {
+			GoldenApple.log(Level.WARNING, "Failed to retrieve user with name '" + name + "':");
+			GoldenApple.log(Level.WARNING, e);
+			return null;
+		}
+	}
+
+	/**
+	 * Allows a user to be set in the cache to be sticky. A sticky user will
+	 * never be removed from the cache. This is normally only used to make
+	 * online users never unload.
+	 * 
+	 * @param id The ID of the user to change the stickiness of
+	 * @param sticky True to never unload this user from the cache, false to
+	 *            unload them when space is needed in the cache
+	 */
+	public void setSticky(long id, boolean sticky) {
+		if (userCache.containsKey(id)) {
+			if (sticky && cacheOut.contains(id)) {
+				cacheOut.remove(id);
+			} else if (!sticky && !cacheOut.contains(id)) {
+				cacheOut.addLast(id);
+			}
+		} else {
+			throw new NullPointerException("Cannot make a user sticky before they are loaded into the cache!");
+		}
+	}
+
+	/**
+	 * Closes the database connection and flushes the cache
+	 */
+	public void close() {
+		userCache = null;
+		groups = null;
+		permissions = null;
+		nodes = null;
+		rootNode = null;
 	}
 
 	/**

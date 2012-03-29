@@ -24,3 +24,20 @@ database:
     # The path (relative to the craftbukkit JAR) at which the SQLite
     # database is located (Only applicable if using SQLite)
     path: 'plugins/GoldenApple/database.db'
+    
+# Player message options
+message:
+
+    # The default locale that should be used for new players (Note
+    # that each user can change their locale)
+    defaultLocale: 'en-US'
+    
+    # A list of available locales. These should be located within the
+    # 'lang' directory of the GoldenApple JAR
+    availableLocales:
+        - 'en-US'
+    
+    # Whether or not to display debug messages (This should be kept
+    # disabled, as it can lead to users gaining information that
+    # they shouldn't have)
+    verbose: false

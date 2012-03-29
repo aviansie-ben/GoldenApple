@@ -5,4 +5,7 @@ website: https://www.github.com/bendude56/GoldenApple
 authors: ['ben_dude56', 'Deaboy']
 softdepend: [Spout, WorldEdit]
 commands:
-    
+    permissions:
+        usage: Use /permissions help for help
+        description: Edits group and user permissions
+        aliases: ['p', 'gapermissions' ]

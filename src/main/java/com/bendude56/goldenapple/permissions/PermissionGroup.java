@@ -15,7 +15,7 @@ import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
  * @author ben_dude56
  */
 public class PermissionGroup {
-	private Long				id;
+	private long				id;
 	private String				name;
 	private List<Long>			members		= new ArrayList<Long>();
 	private List<Long>			subGroups	= new ArrayList<Long>();
@@ -32,7 +32,7 @@ public class PermissionGroup {
 	 *            ID use {@link PermissionManager#nextGroupId()} function)
 	 * @param name The name of the group to create.
 	 */
-	public PermissionGroup(Long id, String name) {
+	public PermissionGroup(long id, String name) {
 		this.id = id;
 		this.name = name;
 		this.members = new ArrayList<Long>();
@@ -77,13 +77,6 @@ public class PermissionGroup {
 	 */
 	public List<Permission> getPermissions(boolean inherited) {
 		List<Permission> returnPermissions = permissions;
-		/*
-		 * if (inherited) { List<PermissionGroup> previousGroups = new
-		 * ArrayList<PermissionGroup>(); int checkedGroups = 1;
-		 * 
-		 * while (checkedGroups > 0) { checkedGroups = 0; for (PermissionGroup
-		 * group) } }
-		 */
 		return returnPermissions;
 	}
 }

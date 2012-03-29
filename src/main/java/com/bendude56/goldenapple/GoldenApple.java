@@ -12,6 +12,7 @@ import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.bendude56.goldenapple.commands.PermissionsCommand;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 
 public class GoldenApple extends JavaPlugin {
@@ -40,6 +41,7 @@ public class GoldenApple extends JavaPlugin {
 	public Database database;
 	public Configuration mainConfig;
 	public PermissionManager permissions;
+	public LocalizationHandler locale;
 
 	@Override
 	public void onEnable() {
@@ -64,8 +66,20 @@ public class GoldenApple extends JavaPlugin {
 		mainConfig = YamlConfiguration.loadConfiguration(new File(this.getDataFolder() + "/config.yml"));
 		database = new Database();
 		permissions = new PermissionManager();
+		locale = new LocalizationHandler(getClassLoader());
+		registerCommands();
+	}
+	
+	private void registerCommands() {
+		getCommand("permissions").setExecutor(new PermissionsCommand());
 	}
 
 	@Override
-	public void onDisable() {}
+	public void onDisable() {
+		permissions.close();
+		permissions = null;
+		database.close();
+		database = null;
+		mainConfig = null;
+	}
 }

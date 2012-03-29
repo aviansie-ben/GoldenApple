@@ -2,6 +2,7 @@ package com.bendude56.goldenapple;
 
 import java.sql.Connection;
 import java.sql.Driver;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
@@ -25,23 +26,28 @@ public final class Database {
 		}
 	}
 	
-	public void execute(String command) {
-		try {
-			connection.prepareStatement(command).execute();
-		} catch (SQLException e) {
-			GoldenApple.log(Level.SEVERE, "Failed to perform SQL command: " + command + "!");
-			GoldenApple.log(e);
-		}
+	public void execute(String command) throws SQLException {
+		execute(command, new Object[0]);
 	}
 	
-	public ResultSet executeQuery(String command) {
-		try {
-			return connection.prepareStatement(command).executeQuery();
-		} catch (SQLException e) {
-			GoldenApple.log(Level.SEVERE, "Failed to perform SQL command: " + command + "!");
-			GoldenApple.log(e);
-			return null;
+	public void execute(String command, Object[] parameters) throws SQLException {
+		PreparedStatement s = connection.prepareStatement(command);
+		for (int i = 0; i < parameters.length; i++) {
+			s.setObject(i, parameters[i]);
 		}
+		s.execute();
+	}
+	
+	public ResultSet executeQuery(String command) throws SQLException {
+		return executeQuery(command, new Object[0]);
+	}
+	
+	public ResultSet executeQuery(String command, Object[] parameters) throws SQLException {
+		PreparedStatement s = connection.prepareStatement(command);
+		for (int i = 0; i < parameters.length; i++) {
+			s.setObject(i, parameters[i]);
+		}
+		return s.executeQuery();
 	}
 	
 	public void close() {

@@ -3,42 +3,76 @@ package com.bendude56.goldenapple.permissions;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-
+import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
 
-public class PermissionUser {
+/**
+ * Represents a user in the GoldenApple permissions database.
+ * <p>
+ * <em><strong>Note 1:</strong> Do not store direct references to this class. Store the
+ * ID of the instance instead! This instance is simply a cached image, and thus may not
+ * update correctly if the cache is cleared.</em>
+ * <p>
+ * <em><strong>Note 2:</strong> It is recommended that you refrain from accepting this
+ * class as an argument to a function. Use {@link IPermissionUser} instead in order to
+ * support the use of {@link com.bendude56.goldenapple.User} objects.</em>
+ * 
+ * @author Deaboy
+ * @author ben_dude56
+ */
+public class PermissionUser implements IPermissionUser {
+	private long				id;
 	private String				name;
+	private String				preferredLocale;
 	private List<Permission>	permissions	= new ArrayList<Permission>();
 
-	protected PermissionUser(String name) {
+	protected PermissionUser(long id, String name, String preferredLocale, String permissions) {
+		this.id = id;
 		this.name = name;
+		this.preferredLocale = preferredLocale;
+		for (String s : permissions.split("/")) {
+			this.permissions.add(GoldenApple.getInstance().permissions.registerPermission(s));
+		}
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
-
-	public OfflinePlayer getOfflinePlayer() {
-		return Bukkit.getOfflinePlayer(this.name);
+	
+	@Override
+	public long getId() {
+		return id;
 	}
-
-	/**
-	 * Returns an ArrayList of permissions this group has.
-	 * 
-	 * @param inherited Set to true if you want to include inherited permissions
-	 * @return The permissions this group has
-	 */
+	
+	@Override
 	public List<Permission> getPermissions(boolean inherited) {
 		List<Permission> returnPermissions = permissions;
-		/*
-		 * if (inherited) { List<PermissionGroup> previousGroups = new
-		 * ArrayList<PermissionGroup>(); int checkedGroups = 1;
-		 * 
-		 * while (checkedGroups > 0) { checkedGroups = 0; for (PermissionGroup
-		 * group) } }
-		 */
 		return returnPermissions;
+	}
+	
+	@Override
+	public boolean hasPermission(Permission permission) {
+		return hasPermission(permission, false);
+	}
+	
+	@Override
+	public boolean hasPermission(String permission) {
+		return hasPermission(permission, false);
+	}
+	
+	@Override
+	public boolean hasPermission(Permission permission, boolean specific) {
+		return getPermissions(!specific).contains(permission);
+	}
+	
+	@Override
+	public boolean hasPermission(String permission, boolean specific) {
+		return hasPermission(GoldenApple.getInstance().permissions.registerPermission(permission), specific);
+	}
+
+	@Override
+	public String getPreferredLocale() {
+		return preferredLocale;
 	}
 }
