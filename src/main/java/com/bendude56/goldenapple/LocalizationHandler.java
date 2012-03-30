@@ -47,6 +47,23 @@ public class LocalizationHandler {
 	}
 	
 	public void sendMessage(User user, String message, boolean multiline, String... args) {
-		
+		String lang = user.getPreferredLocale();
+		if (!secondaryMessages.containsKey(lang))
+			lang = defaultLocale;
+		if (multiline) {
+			for (int i = 1; secondaryMessages.get(lang).containsKey(message + "." + i); i++) {
+				sendMessage(user, lang, message + "." + i, args);
+			}
+		} else {
+			sendMessage(user, lang, message, args);
+		}
+	}
+	
+	private void sendMessage(User user, String lang, String message, String... args) {
+		String msg = secondaryMessages.get(lang).get(message);
+		for (int i = 0; i < args.length; i++) {
+			msg.replace("%" + i, message);
+		}
+		user.getHandle().sendMessage(msg);
 	}
 }

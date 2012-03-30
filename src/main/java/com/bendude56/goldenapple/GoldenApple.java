@@ -13,6 +13,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.bendude56.goldenapple.commands.PermissionsCommand;
+import com.bendude56.goldenapple.listener.PermissionListener;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 
 public class GoldenApple extends JavaPlugin {
@@ -67,6 +68,7 @@ public class GoldenApple extends JavaPlugin {
 		database = new Database();
 		permissions = new PermissionManager();
 		locale = new LocalizationHandler(getClassLoader());
+		PermissionListener.startListening();
 		registerCommands();
 	}
 	

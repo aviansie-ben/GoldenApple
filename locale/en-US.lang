@@ -1,2 +1,4 @@
-shared.userNotFound=&4Failed to find user '%1'&f
-shared.userOffline=&4'%1' is currently offline!&f
+help.permissions.1=
+shared.header.help=&7~~~~~&6 GoldenApple Help &7~~~~~
+shared.userNotFound=&4Failed to find user '%1'
+shared.userOffline=&4'%1' is currently offline!

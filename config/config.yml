@@ -41,3 +41,29 @@ message:
     # disabled, as it can lead to users gaining information that
     # they shouldn't have)
     verbose: false
+
+# Options for GoldenApple modules
+modules:
+    
+    # Permissions system options
+    permissions:
+        
+        # A group that players must be in to be able to connect to
+        # the server (Leave blank to allow all users to join)
+        reqGroup: ''
+        
+        # A list of groups that players will be put in by default
+        # either when they first connect or are added to the
+        # database manually
+        defaultGroups:
+            - 'default'
+        
+        # A list of groups that players who are ops will be added to
+        # when they log in, if they are not already in them
+        opGroups:
+            - 'admin'
+        
+        # A list of groups that GoldenApple developers will be added
+        # to when they log in, if they are not already in them
+        devGroups:
+            - 'dev'

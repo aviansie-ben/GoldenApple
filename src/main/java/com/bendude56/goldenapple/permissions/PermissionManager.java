@@ -1,5 +1,6 @@
 package com.bendude56.goldenapple.permissions;
 
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayDeque;
@@ -11,6 +12,7 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import com.bendude56.goldenapple.GoldenApple;
+import com.bendude56.goldenapple.util.Serializer;
 
 /**
  * Manages the inner workings of the GoldenApple permissions system
@@ -30,9 +32,76 @@ public class PermissionManager {
 		rootNode = new PermissionNode("");
 		nodes.add(rootNode);
 		try {
-			GoldenApple.getInstance().database.execute("CREATE TABLE IF NOT EXISTS Users (ID BIGINT, Name VARCHAR(128), Locale VARCHAR(128), Permissions TEXT)");
+			GoldenApple.getInstance().database.execute("CREATE TABLE IF NOT EXISTS Users (ID BIGINT PRIMARY KEY, Name VARCHAR(128), Locale VARCHAR(128), Permissions TEXT)");
 		} catch (SQLException e) {
 			GoldenApple.log(Level.SEVERE, "Failed to create table 'Users':");
+			GoldenApple.log(Level.SEVERE, e);
+		}
+		try {
+			GoldenApple.getInstance().database.execute("CREATE TABLE IF NOT EXISTS Groups (ID BIGINT PRIMARY KEY, Name VARCHAR(128), Permissions TEXT, Users TEXT, Groups TEXT)");
+		} catch (SQLException e) {
+			GoldenApple.log(Level.SEVERE, "Failed to create table 'Groups':");
+			GoldenApple.log(Level.SEVERE, e);
+		}
+		checkUserColumns();
+		checkGroupColumns();
+		try {
+			ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT ID, Name, Permissions, Users, Groups FROM Groups");
+			while (r.next()) {
+				groups.put(r.getLong("ID"), new PermissionGroup(r.getLong("ID"), r.getString("Name"), r.getString("Users"), r.getString("Groups"), r.getString("Permissions")));
+			}
+			r.close();
+		} catch (SQLException e) {
+			GoldenApple.log(Level.SEVERE, "Failed to load groups:");
+			GoldenApple.log(Level.SEVERE, e);
+		}
+	}
+
+	private void checkUserColumns() {
+		try {
+			ArrayList<String> columns = new ArrayList<String>();
+			ResultSet r = GoldenApple.getInstance().database.executeQuery("PRAGMA TABLE_INFO(Users)");
+			while (r.next()) {
+				columns.add(r.getString(2));
+			}
+			r.close();
+			if (!columns.contains("Name")) {
+				GoldenApple.getInstance().database.execute("ALTER TABLE Users ADD COLUMN Name VARCHAR(128)");
+			}
+			if (!columns.contains("Locale")) {
+				GoldenApple.getInstance().database.execute("ALTER TABLE Users ADD COLUMN Locale VARCHAR(128)");
+			}
+			if (!columns.contains("Permissions")) {
+				GoldenApple.getInstance().database.execute("ALTER TABLE Users ADD COLUMN Permissions TEXT");
+			}
+		} catch (SQLException e) {
+			GoldenApple.log(Level.SEVERE, "Failed to verify structure of table 'Users':");
+			GoldenApple.log(Level.SEVERE, e);
+		}
+	}
+
+	private void checkGroupColumns() {
+		try {
+			ArrayList<String> columns = new ArrayList<String>();
+			ResultSet r = GoldenApple.getInstance().database.executeQuery("PRAGMA TABLE_INFO(Groups)");
+			while (r.next()) {
+				columns.add(r.getString(2));
+			}
+			r.close();
+			if (!columns.contains("Name")) {
+				GoldenApple.getInstance().database.execute("ALTER TABLE Groups ADD COLUMN Name VARCHAR(128)");
+			}
+			if (!columns.contains("Permissions")) {
+				GoldenApple.getInstance().database.execute("ALTER TABLE Groups ADD COLUMN Permissions TEXT");
+			}
+			if (!columns.contains("Users")) {
+				GoldenApple.getInstance().database.execute("ALTER TABLE Groups ADD COLUMN Users TEXT");
+			}
+			if (!columns.contains("Groups")) {
+				GoldenApple.getInstance().database.execute("ALTER TABLE Groups ADD COLUMN Groups TEXT");
+			}
+		} catch (SQLException e) {
+			GoldenApple.log(Level.SEVERE, "Failed to verify structure of table 'Groups':");
 			GoldenApple.log(Level.SEVERE, e);
 		}
 	}
@@ -196,12 +265,22 @@ public class PermissionManager {
 		return rootNode;
 	}
 
+	/**
+	 * Retrieves the user ID of a specific user based on their username. Note
+	 * that this method does <strong>not</strong> load the actual user data into
+	 * memory, nor will it add the user to the user cache.
+	 * 
+	 * @param name The name of the user to search for
+	 * @return If the user was found, their ID will be returned. If the user was
+	 *         not found or an error occurred, -1 will be returned.
+	 */
 	public long getUserId(String name) {
 		try {
 			ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT ID FROM Users WHERE Name=?", new Object[] { name });
-			if (r.first()) {
+			if (r.next()) {
+				long id = r.getLong("ID");
 				r.close();
-				return r.getLong("ID");
+				return id;
 			} else {
 				r.close();
 				return -1;
@@ -213,15 +292,26 @@ public class PermissionManager {
 		}
 	}
 
+	/**
+	 * Retrieves a user instance based off of their user ID. Without the use of
+	 * {@link PermissionManager#setSticky(long id, boolean sticky)}, the return
+	 * value of this function should only be used for short-term use.
+	 * 
+	 * @param id The ID of the user instance that should be retrieved from the
+	 *            database.
+	 * @return If the user was found successfully, their instance will be
+	 *         cached, then returned. Otherwise, null will be returned.
+	 */
 	public PermissionUser getUser(long id) {
 		if (userCache.containsKey(id)) {
 			return userCache.get(id);
 		} else {
 			try {
 				ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT ID, Name, Locale, Permissions FROM Users WHERE ID=?", new Object[] { id });
-				if (r.first()) {
+				if (r.next()) {
+					PermissionUser u = new PermissionUser(r.getLong("ID"), r.getString("Name"), r.getString("Locale"), r.getString("Permissions"));
 					r.close();
-					return new PermissionUser(r.getLong("ID"), r.getString("Name"), r.getString("Locale"), r.getString("Permissions"));
+					return u;
 				} else {
 					r.close();
 					return null;
@@ -233,7 +323,17 @@ public class PermissionManager {
 			}
 		}
 	}
-	
+
+	/**
+	 * Retrieves a user instance based off of their username. Without the use of
+	 * {@link PermissionManager#setSticky(long id, boolean sticky)}, the return
+	 * value of this function should only be used for short-term use.
+	 * 
+	 * @param name The username of the user instance that should be retrieved
+	 *            from the database.
+	 * @return If the user was found successfully, their instance will be
+	 *         cached, then returned. Otherwise, null will be returned.
+	 */
 	public PermissionUser getUser(String name) {
 		for (Map.Entry<Long, PermissionUser> entry : userCache.entrySet()) {
 			if (entry.getValue().getName().equalsIgnoreCase(name)) {
@@ -242,11 +342,15 @@ public class PermissionManager {
 		}
 		try {
 			ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT ID, Name, Locale, Permissions FROM Users WHERE Name=?", new Object[] { name });
-			if (r.first()) {
-				r.close();
+			if (r.next()) {
 				PermissionUser p = new PermissionUser(r.getLong("ID"), r.getString("Name"), r.getString("Locale"), r.getString("Permissions"));
+				r.close();
 				userCache.put(p.getId(), p);
 				cacheOut.addLast(p.getId());
+				if (cacheOut.size() > 10) {
+					long id = cacheOut.pop();
+					userCache.remove(id);
+				}
 				return p;
 			} else {
 				r.close();
@@ -274,9 +378,96 @@ public class PermissionManager {
 				cacheOut.remove(id);
 			} else if (!sticky && !cacheOut.contains(id)) {
 				cacheOut.addLast(id);
+				if (cacheOut.size() > 10) {
+					long id2 = cacheOut.pop();
+					userCache.remove(id2);
+				}
 			}
 		} else {
-			throw new NullPointerException("Cannot make a user sticky before they are loaded into the cache!");
+			throw new NullPointerException("Cannot change a user's stickyness before they are loaded into the cache!");
+		}
+	}
+
+	/**
+	 * Retrieves a group instance based off of the provided group ID.
+	 * 
+	 * @param id The ID of the group instance that should be retrieved from the
+	 *            database.
+	 * @return If the group was found successfully, their instance will be
+	 *         cached, then returned. Otherwise, null will be returned.
+	 */
+	public PermissionGroup getGroup(long id) {
+		if (groups.containsKey(id)) {
+			return groups.get(id);
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * Retrieves a user instance based off of the provided group name.
+	 * 
+	 * @param name The name of the group instance that should be retrieved from
+	 *            the database.
+	 * @return If the group was found successfully, their instance will be
+	 *         cached, then returned. Otherwise, null will be returned.
+	 */
+	public PermissionGroup getGroup(String name) {
+		for (Map.Entry<Long, PermissionGroup> group : groups.entrySet()) {
+			if (group.getValue().getName().equalsIgnoreCase(name)) {
+				return group.getValue();
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Checks whether or not a user exists in the database
+	 * 
+	 * @param name The name to check the database against
+	 */
+	public boolean userExists(String name) throws SQLException {
+		ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT NULL FROM Users WHERE Name=?", new Object[] { name });
+		if (r.next()) {
+			r.close();
+			return true;
+		} else {
+			r.close();
+			return false;
+		}
+	}
+
+	/**
+	 * Attempts to add a new user entry into the database in order to store user
+	 * data. The user will be added into the default groups as defined in
+	 * config.yml
+	 * 
+	 * @param name The name of the user to create and add to the database
+	 * @return If the user already exists, the existing user is returned. If the
+	 *         user was created successfully, the new user is returned. If an
+	 *         error occurred, null is returned.
+	 */
+	public PermissionUser createUser(String name) {
+		try {
+			if (userExists(name)) {
+				return getUser(name);
+			} else {
+				ResultSet r = null;
+				long id = -1;
+				do {
+					id++;
+					if (r != null)
+						r.close();
+					r = GoldenApple.getInstance().database.executeQuery("SELECT NULL FROM Users WHERE ID=?", new Object[] { id });
+				} while (r.next());
+				r.close();
+				GoldenApple.getInstance().database.execute("INSERT INTO Users (ID, Name, Locale, Permissions) VALUES (?, ?, '', ?)", new Object[] { id, name, Serializer.serialize(new ArrayList<String>()) });
+				return getUser(id);
+			}
+		} catch (SQLException | IOException e) {
+			GoldenApple.log(Level.WARNING, "Failed to create new user:");
+			GoldenApple.log(Level.WARNING, e);
+			return null;
 		}
 	}
 

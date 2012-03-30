@@ -2,9 +2,11 @@ package com.bendude56.goldenapple.permissions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
+import com.bendude56.goldenapple.util.Serializer;
 
 /**
  * Represents a user in the GoldenApple permissions database.
@@ -30,8 +32,29 @@ public class PermissionUser implements IPermissionUser {
 		this.id = id;
 		this.name = name;
 		this.preferredLocale = preferredLocale;
-		for (String s : permissions.split("/")) {
-			this.permissions.add(GoldenApple.getInstance().permissions.registerPermission(s));
+		try {
+			@SuppressWarnings("unchecked")
+			List<String> p = (List<String>) Serializer.deserialize(permissions);
+			for (String permission : p) {
+				this.permissions.add(GoldenApple.getInstance().permissions.registerPermission(permission));
+			}
+		} catch (Exception e) {
+			GoldenApple.log(Level.SEVERE, "Failed to deserialize permissions for user " + name + ":");
+			GoldenApple.log(Level.SEVERE, e);
+		}
+	}
+	
+	protected String serializePermissions() {
+		try {
+			ArrayList<String> p = new ArrayList<String>();
+			for (Permission permission : permissions) {
+				p.add(permission.getFullName());
+			}
+			return Serializer.serialize(p);
+		} catch (Exception e) {
+			GoldenApple.log(Level.SEVERE, "Failed to serialize permissions for " + name + ":");
+			GoldenApple.log(Level.SEVERE, e);
+			return "";
 		}
 	}
 

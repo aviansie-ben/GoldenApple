@@ -2,8 +2,11 @@ package com.bendude56.goldenapple.permissions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
+import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
+import com.bendude56.goldenapple.util.Serializer;
 
 /**
  * Represents a group in the GoldenApple permissions database.
@@ -21,34 +24,41 @@ public class PermissionGroup {
 	private List<Long>			subGroups	= new ArrayList<Long>();
 	private List<Permission>	permissions	= new ArrayList<Permission>();
 
-	/**
-	 * Creates a new group with the provided ID and name.
-	 * <p>
-	 * <em><strong>Note:</strong> Before a group created in this way will save properly, you must alert
-	 * the {@link PermissionManager} using the {@link PermissionManager#saveGroup(PermissionGroup group)}
-	 * function.</em>
-	 * 
-	 * @param id The ID of the group to create. (To get the next available group
-	 *            ID use {@link PermissionManager#nextGroupId()} function)
-	 * @param name The name of the group to create.
-	 */
-	public PermissionGroup(long id, String name) {
+	protected PermissionGroup(long id, String name) {
 		this.id = id;
 		this.name = name;
 		this.members = new ArrayList<Long>();
 		this.subGroups = new ArrayList<Long>();
 		this.permissions = new ArrayList<Permission>();
 	}
+	
+	@SuppressWarnings("unchecked")
+	protected PermissionGroup(long id, String name, String users, String groups, String permissions) {
+		this.id = id;
+		this.name = name;
+		try {
+			this.members = (ArrayList<Long>)Serializer.deserialize(users);
+			this.subGroups = (ArrayList<Long>)Serializer.deserialize(groups);
+			List<String> p = (List<String>) Serializer.deserialize(permissions);
+			for (String permission : p) {
+				this.permissions.add(GoldenApple.getInstance().permissions.registerPermission(permission));
+			}
+		} catch (Exception e) {
+			GoldenApple.log(Level.SEVERE, "Failed to deserialize info for group " + name + ":");
+			GoldenApple.log(Level.SEVERE, e);
+		}
+	}
 
 	/**
-	 * Gets the ID associated with this group.
+	 * Gets the ID associated with this instance.
+	 * <em>Where applicable, this value should be stored in place of the group's name.</em>
 	 */
-	public Long getId() {
+	public long getId() {
 		return id;
 	}
 
 	/**
-	 * Gets the name associated with this group.
+	 * Gets the name of the group represented by this instance.
 	 */
 	public String getName() {
 		return name;
@@ -70,13 +80,67 @@ public class PermissionGroup {
 	}
 
 	/**
-	 * Gets a list of permissions that this group has been given.
+	 * Gets a list of permissions that have been granted to this group.
+	 * <p>
+	 * <em><strong>Note:</strong> This list should <strong>not</strong> be used
+	 * to check for permissions!</em>
 	 * 
-	 * @param inherited True to include inherited permissions. False to fetch
-	 *            explicit permissions only.
+	 * @param inherited Determines whether or not this group's supergroup
+	 *            permissions will be included in this list. If true, all
+	 *            applicable permissions (including indirect permissions) will
+	 *            be returned. If false, only permissions specifically given to
+	 *            this group will be returned.
 	 */
 	public List<Permission> getPermissions(boolean inherited) {
 		List<Permission> returnPermissions = permissions;
 		return returnPermissions;
+	}
+	
+	/**
+	 * Checks whether this group has a given permission.
+	 * 
+	 * @param permission The permission to check for.
+	 * @return True if the group has the specified permission, false otherwise.
+	 */
+	public boolean hasPermission(String permission) {
+		return hasPermission(permission, false);
+	}
+
+	/**
+	 * Checks whether this group has a given permission.
+	 * 
+	 * @param permission The permission to check for.
+	 * @return True if the group has the specified permission, false otherwise.
+	 */
+	public boolean hasPermission(Permission permission) {
+		return hasPermission(permission, false);
+	}
+
+	/**
+	 * Checks whether this group has a given permission.
+	 * 
+	 * @param permission The permission to check for.
+	 * @param specific Determines whether or not indirect permissions should be
+	 *            considered. If true, only permissions given specifically to
+	 *            this group will be checked. If false, all permissions
+	 *            (including indirect permissions) will be considered.
+	 * @return True if the group has the specified permission, false otherwise.
+	 */
+	public boolean hasPermission(String permission, boolean specific) {
+		return hasPermission(GoldenApple.getInstance().permissions.registerPermission(permission), specific);
+	}
+
+	/**
+	 * Checks whether this group has a given permission.
+	 * 
+	 * @param permission The permission to check for.
+	 * @param specific Determines whether or not indirect permissions should be
+	 *            considered. If true, only permissions given specifically to
+	 *            this group will be checked. If false, all permissions
+	 *            (including indirect permissions) will be considered.
+	 * @return True if the group has the specified permission, false otherwise.
+	 */
+	public boolean hasPermission(Permission permission, boolean specific) {
+		return getPermissions(!specific).contains(permission);
 	}
 }
