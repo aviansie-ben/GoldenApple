@@ -1,5 +1,7 @@
 package com.bendude56.goldenapple.permissions;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -18,11 +20,11 @@ import com.bendude56.goldenapple.util.Serializer;
  * @author ben_dude56
  */
 public class PermissionGroup {
-	private long				id;
-	private String				name;
-	private List<Long>			members		= new ArrayList<Long>();
-	private List<Long>			subGroups	= new ArrayList<Long>();
-	private List<Permission>	permissions	= new ArrayList<Permission>();
+	private long					id;
+	private String					name;
+	private ArrayList<Long>			members		= new ArrayList<Long>();
+	private ArrayList<Long>			subGroups	= new ArrayList<Long>();
+	private ArrayList<Permission>	permissions	= new ArrayList<Permission>();
 
 	protected PermissionGroup(long id, String name) {
 		this.id = id;
@@ -31,7 +33,7 @@ public class PermissionGroup {
 		this.subGroups = new ArrayList<Long>();
 		this.permissions = new ArrayList<Permission>();
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	protected PermissionGroup(long id, String name, String users, String groups, String permissions) {
 		this.id = id;
@@ -39,12 +41,38 @@ public class PermissionGroup {
 		try {
 			this.members = (ArrayList<Long>)Serializer.deserialize(users);
 			this.subGroups = (ArrayList<Long>)Serializer.deserialize(groups);
-			List<String> p = (List<String>) Serializer.deserialize(permissions);
+			List<String> p = (List<String>)Serializer.deserialize(permissions);
 			for (String permission : p) {
 				this.permissions.add(GoldenApple.getInstance().permissions.registerPermission(permission));
 			}
 		} catch (Exception e) {
 			GoldenApple.log(Level.SEVERE, "Failed to deserialize info for group " + name + ":");
+			GoldenApple.log(Level.SEVERE, e);
+		}
+	}
+
+	private String serializePermissions() {
+		try {
+			ArrayList<String> p = new ArrayList<String>();
+			for (Permission permission : permissions) {
+				p.add(permission.getFullName());
+			}
+			return Serializer.serialize(p);
+		} catch (Exception e) {
+			GoldenApple.log(Level.SEVERE, "Failed to serialize permissions for " + name + ":");
+			GoldenApple.log(Level.SEVERE, e);
+			return "";
+		}
+	}
+
+	/**
+	 * Pushes any changes made to this group to the SQL database
+	 */
+	public void save() {
+		try {
+			GoldenApple.getInstance().database.execute("UPDATE Groups SET Permissions=?, Users=?, Groups=? WHERE ID=?", new Object[] { serializePermissions(), Serializer.serialize(members), Serializer.serialize(subGroups), id });
+		} catch (SQLException | IOException e) {
+			GoldenApple.log(Level.SEVERE, "Failed to save changes to group '" + name + "':");
 			GoldenApple.log(Level.SEVERE, e);
 		}
 	}
@@ -95,7 +123,7 @@ public class PermissionGroup {
 		List<Permission> returnPermissions = permissions;
 		return returnPermissions;
 	}
-	
+
 	/**
 	 * Checks whether this group has a given permission.
 	 * 

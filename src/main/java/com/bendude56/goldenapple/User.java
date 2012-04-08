@@ -152,4 +152,24 @@ public class User implements IPermissionUser {
 			throw new UnsupportedOperationException();
 		}
 	}
+
+	@Override
+	public void addPermission(Permission permission) {
+		permissions.addPermission(permission);
+	}
+
+	@Override
+	public void addPermission(String permission) {
+		permissions.addPermission(permission);
+	}
+
+	@Override
+	public void remPermission(Permission permission) {
+		permissions.remPermission(permission);
+	}
+
+	@Override
+	public void remPermission(String permission) {
+		permissions.remPermission(permission);
+	}
 }

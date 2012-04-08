@@ -13,6 +13,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.bendude56.goldenapple.commands.PermissionsCommand;
+import com.bendude56.goldenapple.commands.VerifyCommand;
 import com.bendude56.goldenapple.listener.PermissionListener;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 
@@ -73,7 +74,8 @@ public class GoldenApple extends JavaPlugin {
 	}
 	
 	private void registerCommands() {
-		getCommand("permissions").setExecutor(new PermissionsCommand());
+		getCommand("gapermissions").setExecutor(new PermissionsCommand());
+		getCommand("gaverify").setExecutor(new VerifyCommand());
 	}
 
 	@Override

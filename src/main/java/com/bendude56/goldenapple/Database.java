@@ -51,7 +51,7 @@ public final class Database {
 	 * @param parameters The arguments that should be added in place of ?s in
 	 *            the statement before it is executed
 	 */
-	public void execute(String command, Object[] parameters) throws SQLException {
+	public void execute(String command, Object... parameters) throws SQLException {
 		PreparedStatement s = connection.prepareStatement(command);
 		for (int i = 0; i < parameters.length; i++) {
 			s.setObject(i + 1, parameters[i]);
@@ -79,7 +79,7 @@ public final class Database {
 	 * @param parameters The arguments that should be added in place of ?s in
 	 *            the statement before it is executed
 	 */
-	public ResultSet executeQuery(String command, Object[] parameters) throws SQLException {
+	public ResultSet executeQuery(String command, Object... parameters) throws SQLException {
 		PreparedStatement s = connection.prepareStatement(command);
 		for (int i = 0; i < parameters.length; i++) {
 			s.setObject(i + 1, parameters[i]);

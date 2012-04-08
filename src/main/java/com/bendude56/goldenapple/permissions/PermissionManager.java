@@ -55,6 +55,7 @@ public class PermissionManager {
 			GoldenApple.log(Level.SEVERE, "Failed to load groups:");
 			GoldenApple.log(Level.SEVERE, e);
 		}
+		checkDefaultGroups();
 	}
 
 	private void checkUserColumns() {
@@ -103,6 +104,19 @@ public class PermissionManager {
 		} catch (SQLException e) {
 			GoldenApple.log(Level.SEVERE, "Failed to verify structure of table 'Groups':");
 			GoldenApple.log(Level.SEVERE, e);
+		}
+	}
+
+	private void checkDefaultGroups() {
+		createGroup(GoldenApple.getInstance().mainConfig.getString("modules.permissions.reqGroup"));
+		for (String g : GoldenApple.getInstance().mainConfig.getStringList("modules.permissions.defaultGroups")) {
+			createGroup(g);
+		}
+		for (String g : GoldenApple.getInstance().mainConfig.getStringList("modules.permissions.opGroups")) {
+			createGroup(g);
+		}
+		for (String g : GoldenApple.getInstance().mainConfig.getStringList("modules.permissions.devGroups")) {
+			createGroup(g);
 		}
 	}
 
@@ -389,6 +403,17 @@ public class PermissionManager {
 	}
 
 	/**
+	 * Checks whether or not a user with a given ID is currently marked as
+	 * sticky. (See {@link PermissionManager#setSticky(long id, boolean sticky)}
+	 * for info on stickyness)
+	 * 
+	 * @param id The ID of the user to check
+	 */
+	public boolean isSticky(long id) {
+		return userCache.containsKey(id) && !cacheOut.contains(id);
+	}
+
+	/**
 	 * Retrieves a group instance based off of the provided group ID.
 	 * 
 	 * @param id The ID of the group instance that should be retrieved from the
@@ -469,6 +494,92 @@ public class PermissionManager {
 			GoldenApple.log(Level.WARNING, e);
 			return null;
 		}
+	}
+
+	/**
+	 * Checks whether or not a group exists in the database
+	 * 
+	 * @param name The name to check the database against
+	 */
+	public boolean groupExists(String name) throws SQLException {
+		ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT NULL FROM Groups WHERE Name=?", new Object[] { name });
+		if (r.next()) {
+			r.close();
+			return true;
+		} else {
+			r.close();
+			return false;
+		}
+	}
+
+	/**
+	 * Attempts to add a new group entry into the database in order to store
+	 * group data.
+	 * 
+	 * @param name The name of the group to create and add to the database
+	 * @return If the group already exists, the existing group is returned. If
+	 *         the group was created successfully, the new group is returned. If
+	 *         an error occurred, null is returned.
+	 */
+	public PermissionGroup createGroup(String name) {
+		try {
+			if (groupExists(name)) {
+				return getGroup(name);
+			} else {
+				ResultSet r = null;
+				long id = -1;
+				do {
+					id++;
+					if (r != null)
+						r.close();
+					r = GoldenApple.getInstance().database.executeQuery("SELECT NULL FROM Groups WHERE ID=?", new Object[] { id });
+				} while (r.next());
+				r.close();
+				GoldenApple.getInstance().database.execute("INSERT INTO Groups (ID, Name, Permissions, Users, Groups) VALUES (?, ?, ?, ?, ?)", new Object[] { id, name, Serializer.serialize(new ArrayList<String>()), Serializer.serialize(new ArrayList<Long>()), Serializer.serialize(new ArrayList<Long>()) });
+				PermissionGroup g;
+				groups.put(id, g = new PermissionGroup(id, name));
+				return g;
+			}
+		} catch (SQLException | IOException e) {
+			GoldenApple.log(Level.WARNING, "Failed to create new group:");
+			GoldenApple.log(Level.WARNING, e);
+			return null;
+		}
+	}
+
+	/**
+	 * Deletes a user from the database, and from the cache if applicable.
+	 * 
+	 * @param id The ID of the user that should be deleted
+	 */
+	public void deleteUser(long id) throws SQLException {
+		if (id < 0) {
+			throw new IllegalArgumentException("id cannot be < 0");
+		} else if (isSticky(id)) {
+			throw new UnsupportedOperationException("Cannot delete a sticky user");
+		}
+		if (userCache.containsKey(id)) {
+			userCache.remove(id);
+		}
+		if (cacheOut.contains(id)) {
+			cacheOut.remove(id);
+		}
+		GoldenApple.getInstance().database.execute("DELETE FROM Users WHERE ID=?", id);
+	}
+
+	/**
+	 * Deletes a user from the database, and from the cache if applicable.
+	 * 
+	 * @param id The ID of the user that should be deleted
+	 */
+	public void deleteGroup(long id) throws SQLException {
+		if (id < 0) {
+			throw new IllegalArgumentException("id cannot be < 0");
+		}
+		if (groups.containsKey(id)) {
+			groups.remove(id);
+		}
+		GoldenApple.getInstance().database.execute("DELETE FROM Groups WHERE ID=?", id);
 	}
 
 	/**

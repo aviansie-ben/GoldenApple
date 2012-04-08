@@ -1,5 +1,6 @@
 package com.bendude56.goldenapple.permissions;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -34,7 +35,7 @@ public class PermissionUser implements IPermissionUser {
 		this.preferredLocale = preferredLocale;
 		try {
 			@SuppressWarnings("unchecked")
-			List<String> p = (List<String>) Serializer.deserialize(permissions);
+			List<String> p = (List<String>)Serializer.deserialize(permissions);
 			for (String permission : p) {
 				this.permissions.add(GoldenApple.getInstance().permissions.registerPermission(permission));
 			}
@@ -43,8 +44,8 @@ public class PermissionUser implements IPermissionUser {
 			GoldenApple.log(Level.SEVERE, e);
 		}
 	}
-	
-	protected String serializePermissions() {
+
+	private String serializePermissions() {
 		try {
 			ArrayList<String> p = new ArrayList<String>();
 			for (Permission permission : permissions) {
@@ -58,37 +59,49 @@ public class PermissionUser implements IPermissionUser {
 		}
 	}
 
+	/**
+	 * Pushes any changes made to this user to the SQL database
+	 */
+	public void save() {
+		try {
+			GoldenApple.getInstance().database.execute("UPDATE Users SET Locale=?, Permissions=? WHERE ID=?", new Object[] { preferredLocale, serializePermissions(), id });
+		} catch (SQLException e) {
+			GoldenApple.log(Level.SEVERE, "Failed to save changes to user '" + name + "':");
+			GoldenApple.log(Level.SEVERE, e);
+		}
+	}
+
 	@Override
 	public String getName() {
 		return name;
 	}
-	
+
 	@Override
 	public long getId() {
 		return id;
 	}
-	
+
 	@Override
 	public List<Permission> getPermissions(boolean inherited) {
 		List<Permission> returnPermissions = permissions;
 		return returnPermissions;
 	}
-	
+
 	@Override
 	public boolean hasPermission(Permission permission) {
 		return hasPermission(permission, false);
 	}
-	
+
 	@Override
 	public boolean hasPermission(String permission) {
 		return hasPermission(permission, false);
 	}
-	
+
 	@Override
 	public boolean hasPermission(Permission permission, boolean specific) {
 		return getPermissions(!specific).contains(permission);
 	}
-	
+
 	@Override
 	public boolean hasPermission(String permission, boolean specific) {
 		return hasPermission(GoldenApple.getInstance().permissions.registerPermission(permission), specific);
@@ -97,5 +110,31 @@ public class PermissionUser implements IPermissionUser {
 	@Override
 	public String getPreferredLocale() {
 		return preferredLocale;
+	}
+
+	@Override
+	public void addPermission(Permission permission) {
+		if (!permissions.contains(permission)) {
+			permissions.add(permission);
+			save();
+		}
+	}
+
+	@Override
+	public void addPermission(String permission) {
+		addPermission(GoldenApple.getInstance().permissions.registerPermission(permission));
+	}
+
+	@Override
+	public void remPermission(Permission permission) {
+		if (permissions.contains(permission)) {
+			permissions.remove(permission);
+			save();
+		}
+	}
+
+	@Override
+	public void remPermission(String permission) {
+		remPermission(GoldenApple.getInstance().permissions.registerPermission(permission));
 	}
 }

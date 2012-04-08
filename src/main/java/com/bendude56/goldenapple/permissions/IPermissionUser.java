@@ -77,4 +77,40 @@ public interface IPermissionUser {
 	 *         will return an empty string.
 	 */
 	String getPreferredLocale();
+
+	/**
+	 * Grants this user a given permission and saves the user's data
+	 * automatically. If the user already has this permission, nothing will
+	 * occur.
+	 * 
+	 * @param permission The permission that the user should be granted
+	 */
+	void addPermission(Permission permission);
+
+	/**
+	 * Grants this user a given permission and saves the user's data
+	 * automatically. If the user already has this permission, nothing will
+	 * occur.
+	 * 
+	 * @param permission The permission that the user should be granted
+	 */
+	void addPermission(String permission);
+
+	/**
+	 * Revokes a given permission from this user and save's the user's data
+	 * automatically. If the user doesn't have the specified permission, nothing
+	 * will occur.
+	 * 
+	 * @param permission The permissions that should be revoked from this user
+	 */
+	void remPermission(Permission permission);
+	
+	/**
+	 * Revokes a given permission from this user and save's the user's data
+	 * automatically. If the user doesn't have the specified permission, nothing
+	 * will occur.
+	 * 
+	 * @param permission The permissions that should be revoked from this user
+	 */
+	void remPermission(String permission);
 }
