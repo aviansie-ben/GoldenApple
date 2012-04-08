@@ -84,6 +84,22 @@ public class PermissionUser implements IPermissionUser {
 	@Override
 	public List<Permission> getPermissions(boolean inherited) {
 		List<Permission> returnPermissions = permissions;
+		if (inherited) {
+			List<Long> previousGroups = new ArrayList<Long>();
+			for (Long groupID : GoldenApple.getInstance().getPermissions().getGroups().keySet()) {
+				if (!previousGroups.contains(groupID)) {
+					for (Long checkedGroupID : previousGroups) {
+						if (GoldenApple.getInstance().getPermissions().getGroup(groupID).getSubGroups().contains(checkedGroupID)) {
+							for (Permission perm : GoldenApple.getInstance().getPermissions().getGroup(groupID).getPermissions(false)) {
+								if (!returnPermissions.contains(perm)) {
+									returnPermissions.add(perm);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 		return returnPermissions;
 	}
 
@@ -99,7 +115,7 @@ public class PermissionUser implements IPermissionUser {
 
 	@Override
 	public boolean hasPermission(Permission permission, boolean specific) {
-		return getPermissions(!specific).contains(permission);
+		return getPermissions(specific).contains(permission);
 	}
 
 	@Override

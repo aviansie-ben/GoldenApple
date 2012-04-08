@@ -73,6 +73,10 @@ public class GoldenApple extends JavaPlugin {
 		registerCommands();
 	}
 	
+	public PermissionManager getPermissions() {
+		return permissions;
+	}
+	
 	private void registerCommands() {
 		getCommand("gapermissions").setExecutor(new PermissionsCommand());
 		getCommand("gaverify").setExecutor(new VerifyCommand());
