@@ -16,6 +16,7 @@ import com.bendude56.goldenapple.commands.PermissionsCommand;
 import com.bendude56.goldenapple.commands.VerifyCommand;
 import com.bendude56.goldenapple.listener.PermissionListener;
 import com.bendude56.goldenapple.permissions.PermissionManager;
+import com.bendude56.goldenapple.util.Calculations;
 
 public class GoldenApple extends JavaPlugin {
 	private static Logger	log	= Logger.getLogger("Minecraft");
@@ -43,6 +44,7 @@ public class GoldenApple extends JavaPlugin {
 	public Database database;
 	public Configuration mainConfig;
 	public PermissionManager permissions;
+	public Calculations calculator;
 	public LocalizationHandler locale;
 
 	@Override
@@ -75,6 +77,10 @@ public class GoldenApple extends JavaPlugin {
 	
 	public PermissionManager getPermissions() {
 		return permissions;
+	}
+	
+	public Calculations calculator() {
+		return calculator;
 	}
 	
 	private void registerCommands() {

@@ -52,5 +52,16 @@ public class Calculations {
 			double y2, double z2) {
 		return Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow((z2 - z1), 2));
 	}
-
+	
+	public boolean isBetween(int top, int middle, int bottom) {
+		return isBetween((double) top, (double) middle, (double) bottom);
+	}
+	
+	public boolean isBetween(double top, double middle, double bottom) {
+		if (top >= bottom && middle <= top && middle >= bottom)
+			return true;
+		if (top <= bottom && middle >= top && middle <= bottom)
+			return true;
+		return false;
+	}
 }
