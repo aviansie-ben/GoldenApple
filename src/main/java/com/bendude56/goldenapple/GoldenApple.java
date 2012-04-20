@@ -8,8 +8,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.bendude56.goldenapple.commands.PermissionsCommand;
@@ -19,6 +21,20 @@ import com.bendude56.goldenapple.permissions.PermissionManager;
 
 public class GoldenApple extends JavaPlugin {
 	private static Logger	log	= Logger.getLogger("Minecraft");
+	
+	public static void logPermissionFail(User u, String command, String[] args, boolean sendMessage) {
+		for (String arg : args) {
+			command += " " + arg;
+		}
+		log(Level.WARNING, u.getName() + " attempted to perform a command (/" + command + ") but doesn't have permission!");
+		if (u.getHandle() instanceof Player) {
+			Location l = u.getPlayerHandle().getLocation();
+			log(Level.WARNING, "Command performed at: (" + l.getX() + ", " + l.getY() + ", " + l.getZ() + ", " + l.getWorld().getName() + ")");
+		}
+		if (sendMessage) {
+			getInstance().locale.sendMessage(u, "basic.noPermission", false);
+		}
+	}
 
 	public static void log(Exception e) {
 		log(Level.SEVERE, e.toString());

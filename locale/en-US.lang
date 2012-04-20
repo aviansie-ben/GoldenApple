@@ -16,6 +16,7 @@ header.permissions=&7-----&6 GoldenApple Permissions &7-----
 
 help.permissions.1=
 
+shared.groupNotFound=&4ERROR: Failed to find group '%1'
+shared.noPermission=&4ERROR: You do not have permission to execute this command! This request has been logged.
 shared.parameterMissing=&eWARNING: Parameter missing from option: %1
-shared.userNotFound=&4Failed to find user '%1'
-shared.userOffline=&4'%1' is currently offline!
+shared.userNotFound=&4ERROR: Failed to find user '%1'
