@@ -3,7 +3,7 @@ package com.bendude56.goldenapple.area;
 import org.bukkit.Location;
 import org.bukkit.World;
 
-import com.bendude56.goldenapple.GoldenApple;
+import com.bendude56.goldenapple.util.Calculations;
 
 /**
  * The basic area object that manages land from which other area-based classes inherit properties from.
@@ -44,9 +44,9 @@ public class Area {
 		if (this.getWorld() != location.getWorld()) {
 			return false;
 		}
-		if (GoldenApple.getInstance().calculator().isBetween(corner1.getX(), location.getX(), corner2.getX())
-				&& GoldenApple.getInstance().calculator().isBetween(corner1.getZ(), location.getZ(), corner2.getZ())
-				&& (!ignoreY || GoldenApple.getInstance().calculator().isBetween(corner1.getY(), location.getY(), corner2.getY()))) {
+		if (Calculations.isBetween(corner1.getX(), location.getX(), corner2.getX())
+				&& Calculations.isBetween(corner1.getZ(), location.getZ(), corner2.getZ())
+				&& (!ignoreY || Calculations.isBetween(corner1.getY(), location.getY(), corner2.getY()))) {
 			return true;
 		} else
 			return false;

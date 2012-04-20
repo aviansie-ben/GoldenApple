@@ -123,11 +123,11 @@ public class PermissionGroup {
 		List<Permission> returnPermissions = permissions;
 		if (inherited) {
 			List<Long> previousGroups = new ArrayList<Long>();
-			for (Long groupID : GoldenApple.getInstance().getPermissions().getGroups().keySet()) {
+			for (Long groupID : GoldenApple.getInstance().permissions.getGroups().keySet()) {
 				if (!previousGroups.contains(groupID)) {
 					for (Long checkedGroupID : previousGroups) {
-						if (GoldenApple.getInstance().getPermissions().getGroup(groupID).getSubGroups().contains(checkedGroupID)) {
-							for (Permission perm : GoldenApple.getInstance().getPermissions().getGroup(groupID).getPermissions(false)) {
+						if (GoldenApple.getInstance().permissions.getGroup(groupID).getSubGroups().contains(checkedGroupID)) {
+							for (Permission perm : GoldenApple.getInstance().permissions.getGroup(groupID).getPermissions(false)) {
 								if (!returnPermissions.contains(perm)) {
 									returnPermissions.add(perm);
 								}
