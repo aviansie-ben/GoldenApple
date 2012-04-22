@@ -7,6 +7,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
+
 public class Serializer {
 	private Serializer() {}
 
@@ -34,6 +38,18 @@ public class Serializer {
 	public static Serializable deserialize(String s) throws IOException, ClassNotFoundException {
 		ByteArrayInputStream bis = new ByteArrayInputStream(Base64.decode(s));
 		ObjectInputStream i = new ObjectInputStream(bis);
-		return (Serializable) i.readObject();
+		return (Serializable)i.readObject();
+	}
+
+	public static String serializeLocation(Location l) {
+		return l.getX() + "|" + l.getY() + "|" + l.getZ() + "|" + l.getWorld().getName();
+	}
+
+	public static Location deserializeLocation(String s) {
+		double x = Double.parseDouble(s.split("|")[0]);
+		double y = Double.parseDouble(s.split("|")[1]);
+		double z = Double.parseDouble(s.split("|")[2]);
+		World w = Bukkit.getWorld(s.split("|", 4)[3]);
+		return new Location(w, x, y, z);
 	}
 }

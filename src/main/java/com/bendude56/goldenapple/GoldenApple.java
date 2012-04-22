@@ -21,7 +21,7 @@ import com.bendude56.goldenapple.permissions.PermissionManager;
 
 public class GoldenApple extends JavaPlugin {
 	private static Logger	log	= Logger.getLogger("Minecraft");
-	
+
 	public static void logPermissionFail(User u, String command, String[] args, boolean sendMessage) {
 		for (String arg : args) {
 			command += " " + arg;
@@ -39,7 +39,7 @@ public class GoldenApple extends JavaPlugin {
 	public static void log(Exception e) {
 		log(Level.SEVERE, e.toString());
 	}
-	
+
 	public static void log(Level level, Exception e) {
 		log(level, e.toString());
 	}
@@ -51,15 +51,15 @@ public class GoldenApple extends JavaPlugin {
 	public static void log(Level level, String message) {
 		log.log(level, "[" + getInstance().getDescription().getName() + "] " + message);
 	}
-	
+
 	public static GoldenApple getInstance() {
-		return (GoldenApple) Bukkit.getServer().getPluginManager().getPlugin("GoldenApple");
+		return (GoldenApple)Bukkit.getServer().getPluginManager().getPlugin("GoldenApple");
 	}
-	
-	public Database database;
-	public Configuration mainConfig;
-	public PermissionManager permissions;
-	public LocalizationHandler locale;
+
+	public Database				database;
+	public Configuration		mainConfig;
+	public PermissionManager	permissions;
+	public LocalizationHandler	locale;
 
 	@Override
 	public void onEnable() {
@@ -88,7 +88,7 @@ public class GoldenApple extends JavaPlugin {
 		PermissionListener.startListening();
 		registerCommands();
 	}
-	
+
 	private void registerCommands() {
 		getCommand("gapermissions").setExecutor(new PermissionsCommand());
 		getCommand("gaverify").setExecutor(new VerifyCommand());

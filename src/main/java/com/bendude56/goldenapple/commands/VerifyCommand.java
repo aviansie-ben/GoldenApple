@@ -11,8 +11,8 @@ import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
 
 public class VerifyCommand implements CommandExecutor {
-	public static final HashMap<User, String> commands = new HashMap<User, String>();
-	
+	public static final HashMap<User, String>	commands	= new HashMap<User, String>();
+
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
 		User user = User.getUser(sender);

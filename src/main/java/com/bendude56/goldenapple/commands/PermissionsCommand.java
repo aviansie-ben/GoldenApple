@@ -13,35 +13,35 @@ import com.bendude56.goldenapple.permissions.PermissionGroup;
 public class PermissionsCommand implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
 		GoldenApple instance = GoldenApple.getInstance();
-		
+
 		User user = User.getUser(sender);
-		
+
 		if (!user.hasPermission("goldenapple.permissions")) {
 			GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			return true;
 		}
-		
+
 		if (args.length == 0 || args[0] == "help") {
 			sendHelp(user, commandLabel);
 			return true;
 		}
-		
+
 		instance.locale.sendMessage(user, "header.permissions", false);
-		
+
 		ArrayList<String> changeUsers = new ArrayList<String>();
 		ArrayList<String> changeGroups = new ArrayList<String>();
-		
+
 		ArrayList<String> addPermissions = new ArrayList<String>();
 		ArrayList<String> remPermissions = new ArrayList<String>();
 		ArrayList<String> addUsers = new ArrayList<String>();
 		ArrayList<String> remUsers = new ArrayList<String>();
 		ArrayList<String> addGroups = new ArrayList<String>();
 		ArrayList<String> remGroups = new ArrayList<String>();
-		
+
 		boolean add = false;
 		boolean remove = false;
 		boolean verified = false;
-		
+
 		for (int i = 0; i < args.length; i++) {
 			if (args[i].equalsIgnoreCase("-u")) {
 				if (i == args.length - 1 || args[i + 1].startsWith("-")) {
@@ -164,17 +164,17 @@ public class PermissionsCommand implements CommandExecutor {
 			if (verified) {
 				for (long id : users) {
 					if (instance.permissions.isSticky(id)) {
-						
+
 					}
 				}
 			} else {
-				
+
 			}
 			return true;
 		}
 		return true;
 	}
-	
+
 	public void sendHelp(User user, String commandLabel) {
 		GoldenApple.getInstance().locale.sendMessage(user, "header.help", false);
 		GoldenApple.getInstance().locale.sendMessage(user, "help.permissions", true, commandLabel);

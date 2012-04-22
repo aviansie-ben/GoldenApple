@@ -8,7 +8,7 @@ import org.bukkit.entity.Entity;
  * Minecraft plugins. A repository of miscellaneous calculations that are less
  * specialized and more generalized.
  * 
- * @author Danny
+ * @author Deaboy
  * 
  */
 public class Calculations {

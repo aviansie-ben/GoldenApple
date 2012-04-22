@@ -6,15 +6,14 @@ import java.util.Properties;
 import java.util.logging.Level;
 
 public class LocalizationHandler {
-	public String defaultLocale;
-	public HashMap<String, String> messages;
-	public HashMap<String, HashMap<String, String>> secondaryMessages;
-	
+	public String									defaultLocale;
+	public HashMap<String, String>					messages;
+	public HashMap<String, HashMap<String, String>>	secondaryMessages;
+
 	public LocalizationHandler(ClassLoader loader) {
 		defaultLocale = GoldenApple.getInstance().mainConfig.getString("message.defaultLocale");
 		secondaryMessages = new HashMap<String, HashMap<String, String>>();
-		for (String locale : GoldenApple.getInstance().mainConfig.getStringList("message.availableLocales"))
-		{
+		for (String locale : GoldenApple.getInstance().mainConfig.getStringList("message.availableLocales")) {
 			Properties p = new Properties();
 			try {
 				p.load(loader.getResourceAsStream("locale/" + locale + ".lang"));
@@ -34,18 +33,18 @@ public class LocalizationHandler {
 			messages = secondaryMessages.get("en-US");
 			GoldenApple.log(Level.WARNING, "Default locale not found. Reverting to en-US...");
 		} else if (secondaryMessages.size() > 0) {
-			defaultLocale = (String) secondaryMessages.keySet().toArray()[0];
+			defaultLocale = (String)secondaryMessages.keySet().toArray()[0];
 			messages = secondaryMessages.get(defaultLocale);
 			GoldenApple.log(Level.WARNING, "Default locale and en-US locale not found. Reverting to next available locale...");
 		} else {
 			throw new RuntimeException("Unable to find valid locale file to load from!");
 		}
 	}
-	
+
 	public void sendMessage(User user, String message, boolean multiline) {
 		sendMessage(user, message, multiline, new String[0]);
 	}
-	
+
 	public void sendMessage(User user, String message, boolean multiline, String... args) {
 		String lang = user.getPreferredLocale();
 		if (!secondaryMessages.containsKey(lang))
@@ -58,7 +57,7 @@ public class LocalizationHandler {
 			sendMessage(user, lang, message, args);
 		}
 	}
-	
+
 	private void sendMessage(User user, String lang, String message, String... args) {
 		String msg = secondaryMessages.get(lang).get(message);
 		for (int i = 0; i < args.length; i++) {
