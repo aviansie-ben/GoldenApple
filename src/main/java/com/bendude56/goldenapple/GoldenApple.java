@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -49,7 +50,7 @@ public class GoldenApple extends JavaPlugin {
 	}
 
 	public static void log(Level level, String message) {
-		log.log(level, "[" + getInstance().getDescription().getName() + "] " + message);
+		log.log(level, ChatColor.stripColor("[" + getInstance().getDescription().getName() + "] " + message));
 	}
 
 	public static GoldenApple getInstance() {
