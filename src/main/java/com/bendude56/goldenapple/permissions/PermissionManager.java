@@ -243,6 +243,20 @@ public class PermissionManager {
 		}
 		return null;
 	}
+	
+	public Permission getPermissionByName(String name) {
+		String[] path = name.split(".");
+		String PermName = path[path.length-1];
+		String PermNode = "";
+		if (path.length > 1) {
+			PermNode = path[path.length-2];
+		}
+		for (Permission perm : permissions) {
+			if (perm.getName() == PermName && (PermNode != "" || perm.getNode().getName() == PermNode))
+				return perm;
+		}
+		return null;
+	}
 
 	/**
 	 * Gets a list of all currently registered permission nodes

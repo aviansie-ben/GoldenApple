@@ -107,19 +107,19 @@ public class User implements IPermissionUser {
 	}
 
 	@Override
-	public boolean hasPermission(String permission, boolean specific) {
+	public boolean hasPermission(String permission, boolean inherited) {
 		if (id == -1)
-			return !specific;
+			return !inherited;
 		else
-			return permissions.hasPermission(permission, specific);
+			return permissions.hasPermission(permission, inherited);
 	}
 
 	@Override
-	public boolean hasPermission(Permission permission, boolean specific) {
+	public boolean hasPermission(Permission permission, boolean inherited) {
 		if (id == -1)
-			return !specific;
+			return !inherited;
 		else
-			return permissions.hasPermission(permission, specific);
+			return permissions.hasPermission(permission, inherited);
 	}
 
 	@Override

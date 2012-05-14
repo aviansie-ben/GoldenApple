@@ -104,23 +104,25 @@ public class PermissionUser implements IPermissionUser {
 	}
 
 	@Override
-	public boolean hasPermission(Permission permission) {
-		return hasPermission(permission, false);
-	}
-
-	@Override
 	public boolean hasPermission(String permission) {
-		return hasPermission(permission, false);
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 	@Override
-	public boolean hasPermission(Permission permission, boolean specific) {
-		return getPermissions(specific).contains(permission);
+	public boolean hasPermission(Permission permission) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
+	@Override
+	public boolean hasPermission(Permission permission, boolean inherited) {
+		return getPermissions(inherited).contains(permission);
 	}
 
 	@Override
-	public boolean hasPermission(String permission, boolean specific) {
-		return hasPermission(GoldenApple.getInstance().permissions.registerPermission(permission), specific);
+	public boolean hasPermission(String permission, boolean inherited) {
+		return hasPermission(GoldenApple.getInstance().permissions.getPermissionByName(permission), inherited);
 	}
 
 	@Override
@@ -138,7 +140,7 @@ public class PermissionUser implements IPermissionUser {
 
 	@Override
 	public void addPermission(String permission) {
-		addPermission(GoldenApple.getInstance().permissions.registerPermission(permission));
+		addPermission(GoldenApple.getInstance().permissions.getPermissionByName(permission));
 	}
 
 	@Override

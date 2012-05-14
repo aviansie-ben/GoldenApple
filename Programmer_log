@@ -1,0 +1,7 @@
+PROJECT COLLABORATION FILE
+	This text file is to be used for communication between authors of the Golden Apple project about problems, questions, and notes about how to use certain functions and objects.
+
+
+[DEABOY] I'd like the "hasPermission(string/permission)" functions removed from permission classes; it's unnecessary, since we already have "hasPermisison(string/permission, inherited)" functions. It will make the code cleaner.
+
+[DEABOY] When checking permissions for users or groups, the functions used no longer automatically create the permission, but rather check to see if it already exists. It is the responsibility of the class checking for the permission to register the permission ahead of time and to retain at least a pointer to said permission.
