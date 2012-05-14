@@ -19,6 +19,7 @@ public class Area {
 	private boolean		disabled;
 	private boolean		ignoreY;
 	private boolean		isWorldwide;
+	private AreaType		type;
 
 	public Location getCorner1() {
 		return corner1;
@@ -51,5 +52,13 @@ public class Area {
 		} else {
 			return false;
 		}
+	}
+	
+	public AreaType getType() {
+		return type;
+	}
+	
+	public enum AreaType {
+		PRIVATE,PUBLIC,TOWN,PVP,REGEN,SAFETY
 	}
 }
