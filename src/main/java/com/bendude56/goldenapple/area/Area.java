@@ -15,11 +15,9 @@ import com.bendude56.goldenapple.util.Calculations;
 public class Area {
 	private Location	corner1;
 	private Location	corner2;
+	private boolean		ignoreY;
 	private World		world;
 	private boolean		disabled;
-	private boolean		ignoreY;
-	private boolean		isWorldwide;
-	private AreaType		type;
 
 	public Location getCorner1() {
 		return corner1;
@@ -41,9 +39,6 @@ public class Area {
 		if (this.disabled) {
 			return false;
 		}
-		if (this.isWorldwide && location.getWorld() == world) {
-			return true;
-		}
 		if (this.getWorld() != location.getWorld()) {
 			return false;
 		}
@@ -52,13 +47,5 @@ public class Area {
 		} else {
 			return false;
 		}
-	}
-	
-	public AreaType getType() {
-		return type;
-	}
-	
-	public enum AreaType {
-		PRIVATE,PUBLIC,TOWN,PVP,REGEN,SAFETY
 	}
 }
