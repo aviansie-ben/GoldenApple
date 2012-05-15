@@ -13,11 +13,15 @@ import com.bendude56.goldenapple.util.Calculations;
  * 
  */
 public class Area {
+	private Long		ID;
 	private Location	corner1;
 	private Location	corner2;
 	private boolean		ignoreY;
-	private World		world;
 	private boolean		disabled;
+	
+	public Long getID() {
+	return ID;
+	}
 
 	public Location getCorner1() {
 		return corner1;
@@ -32,7 +36,31 @@ public class Area {
 	}
 
 	public World getWorld() {
-		return world;
+		return corner1.getWorld();
+	}
+
+	public boolean getDisabled() {
+		return disabled;
+	}
+
+	public void setCorner1(Location c) {
+		corner1 = c;
+	}
+	
+	public void setCorner2(Location c) {
+		corner2 = c;
+	}
+	
+	public void ignoreY(boolean ignore) {
+		ignoreY = ignore;
+	}
+	
+	public void disable() {
+		disabled = true;
+	}
+	
+	public void enable() {
+		disabled = false;
 	}
 
 	public boolean insideArea(Location location) {
