@@ -11,12 +11,20 @@ public class DoubleChestLocationCorrector implements ILocationCorrector {
 			if (l.getWorld().getBlockAt(l).getType() == Material.CHEST) {
 				return;
 			}
-			l.setX(l.getX() - 1);
+			l.setX(l.getX() - 2);
+			if (l.getWorld().getBlockAt(l).getType() == Material.CHEST) {
+				return;
+			}
+			l.setX(l.getX() + 1);
 			l.setZ(l.getZ() + 1);
 			if (l.getWorld().getBlockAt(l).getType() == Material.CHEST) {
 				return;
 			}
-			l.setZ(l.getZ() - 1);
+			l.setZ(l.getZ() - 2);
+			if (l.getWorld().getBlockAt(l).getType() == Material.CHEST) {
+				return;
+			}
+			l.setZ(l.getZ() + 1);
 		}
 	}
 }
