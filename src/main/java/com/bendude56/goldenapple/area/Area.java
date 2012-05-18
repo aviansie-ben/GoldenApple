@@ -62,7 +62,7 @@ public class Area {
 	public void enable() {
 		disabled = false;
 	}
-
+	
 	public boolean insideArea(Location location) {
 		if (this.disabled) {
 			return false;

@@ -3,6 +3,11 @@ package com.bendude56.goldenapple.area;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class is the parent of all classes who support child classes.
+ * 
+ * @author Deaboy
+ */
 public class ParentArea extends Area {
 	private List<ChildArea> children = new ArrayList<ChildArea>();
 	

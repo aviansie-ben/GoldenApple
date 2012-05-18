@@ -13,7 +13,7 @@ import com.bendude56.goldenapple.permissions.PermissionUser;
  * 
  * @author Deaboy
  */
-public class PrivateArea extends Area {
+public class PrivateArea extends ParentArea {
 	private PermissionUser owner;
 	private List<PermissionUser> guests = new ArrayList<PermissionUser>();
 	private PermissionGroup group;
