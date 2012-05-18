@@ -2,44 +2,44 @@
 database:
     
     # Whether or not to connect to MySQL. If false, GoldenApple will
-    # use SQLite instead
+    # use SQLite instead.
     useMySQL: false
     
-    # The host to connect to when connecting to a MySQL database
+    # The host to connect to when connecting to a MySQL database.
     # (Only applicable if using MySQL)
     host: 'localhost'
     
-    # The database to store GoldenApple data into (Only applicable
+    # The database to store GoldenApple data into. (Only applicable
     # if using MySQL)
     database: 'ga'
     
     # The username to be given when authenticating for access to the
-    # database (Only applicable if using MySQL)
+    # database. (Only applicable if using MySQL)
     user: ''
     
     # The password to be given when authenticating for access to the
-    # database (Only applicable if using MySQL)
+    # database. (Only applicable if using MySQL)
     password: ''
     
     # The path (relative to the craftbukkit JAR) at which the SQLite
-    # database is located (Only applicable if using SQLite)
+    # database is located. (Only applicable if using SQLite)
     path: 'plugins/GoldenApple/database.db'
     
 # Player message options
 message:
 
-    # The default locale that should be used for new players (Note
+    # The default locale that should be used for new players. (Note
     # that each user can change their locale)
     defaultLocale: 'en-US'
     
     # A list of available locales. These should be located within the
-    # 'lang' directory of the GoldenApple JAR
+    # 'lang' directory of the GoldenApple JAR.
     availableLocales:
         - 'en-US'
     
-    # Whether or not to display debug messages (This should be kept
-    # disabled, as it can lead to users gaining information that
-    # they shouldn't have)
+    # Whether or not to display debugging messages to users. (It is
+    # recommended that this setting is kept disabled, as enabling it
+    # on a public server may compromise security)
     verbose: false
 
 # Options for GoldenApple modules
@@ -49,21 +49,41 @@ modules:
     permissions:
         
         # A group that players must be in to be able to connect to
-        # the server (Leave blank to allow all users to join)
+        # the server. (Leave blank to allow all users to join)
         reqGroup: ''
         
         # A list of groups that players will be put in by default
         # either when they first connect or are added to the
-        # database manually
+        # database manually.
         defaultGroups:
             - 'default'
         
         # A list of groups that players who are ops will be added to
-        # when they log in, if they are not already in them
+        # when they log in, if they are not already in them.
         opGroups:
             - 'admin'
         
         # A list of groups that GoldenApple developers will be added
-        # to when they log in, if they are not already in them
+        # to when they log in, if they are not already in them.
         devGroups:
             - 'dev'
+    
+    # Lock system options
+    lock:
+        
+        # Determines whether or not the GoldenApple locking system will
+        # be loaded or used.
+        enabled: true
+        
+        # The size of the GoldenApple lock cache. It is recommended to
+        # keep this above at least 20 in order to minimize database
+        # loading time. A size of 3 or higher is mandatory in order to
+        # prevent locks from being double-loaded into memory.
+        cacheSize: 100
+        
+        # Whether or not to display details about the protection when
+        # somebody attempts to use it. (It is recommended that this
+        # setting is kept disabled, as enabling it on a public server
+        # may compromise security)
+        verboseError: false
+        

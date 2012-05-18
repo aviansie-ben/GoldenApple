@@ -26,6 +26,21 @@ public abstract class LockedBlock {
 	private static List<RegisteredBlock>	registeredBlocks	= new ArrayList<RegisteredBlock>();
 	private static List<ILocationCorrector>	locationCorrectors	= new ArrayList<ILocationCorrector>();
 
+	/**
+	 * Registers a lockable block in the GoldenApple lock system. Two or more
+	 * classes can exist for one block type (in order to preserve
+	 * compatibility). In this case, the first one registered (except the
+	 * default GoldenApple locks) will be used by default when locking a block
+	 * of that type.
+	 * 
+	 * @param identifier The identifier that should be used to identify the type
+	 *            of lock when saving it to the database.
+	 * @param plugin The plugin instance that is requesting the lock. This is
+	 *            used to unregister locks when a plugin is unloaded.
+	 * @param blockType The type of block that this lock should be used on.
+	 * @param blockClass The class that should be used to represent this lock
+	 *            when it is loaded into memory.
+	 */
 	public static void registerBlock(String identifier, Plugin plugin, Material blockType, Class<? extends LockedBlock> blockClass) {
 		for (RegisteredBlock b : registeredBlocks) {
 			if (b.identifier == identifier) {
@@ -35,14 +50,68 @@ public abstract class LockedBlock {
 		registeredBlocks.add(new RegisteredBlock(identifier, plugin, blockType, blockClass));
 	}
 
+	/**
+	 * Unregisters a lockable block from the GoldenApple lock list.
+	 * <p>
+	 * <em><strong>Warning:</strong> This method does not check if any locks are
+	 * loaded using the specified class. This method should only be used after you
+	 * have made sure that no more instances of the specified lock are present in
+	 * the GoldenApple lock cache.</em>
+	 * 
+	 * @param identifier The identifier used when the lock was first registered.
+	 */
 	public static void unregisterBlock(String identifier) {
 		for (int i = 0; i < registeredBlocks.size(); i++) {
 			if (registeredBlocks.get(i).identifier == identifier) {
 				registeredBlocks.remove(i);
+				return;
 			}
 		}
 	}
 
+	/**
+	 * Unregisters all lockable blocks that were registered by a specific
+	 * plugin.
+	 * <p>
+	 * <em><strong>Warning:</strong> This method does not check if any locks are
+	 * loaded using the specified plugin. This method should only be used after you
+	 * have made sure that no more instances of the specified plugin's registered
+	 * locks are present in the GoldenApple lock cache.</em>
+	 * 
+	 * @param plugin The plugin that should have all locks unregistered.
+	 */
+	public static void unregisterBlocks(Plugin plugin) {
+		for (int i = 0; i < registeredBlocks.size(); i++) {
+			if (registeredBlocks.get(i).plugin == plugin) {
+				registeredBlocks.remove(i);
+			}
+		}
+	}
+	
+	public static RegisteredBlock getBlock(Material m) {
+		for (int i = 0; i < registeredBlocks.size(); i++) {
+			if (registeredBlocks.get(i).plugin == GoldenApple.getInstance()) {
+				continue;
+			}
+			if (registeredBlocks.get(i).blockType == m) {
+				return registeredBlocks.get(i);
+			}
+		}
+		for (int i = 0; i < registeredBlocks.size(); i++) {
+			if (registeredBlocks.get(i).blockType == m) {
+				return registeredBlocks.get(i);
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Registers a location corrector that can adjust locations before
+	 * adding/checking for locks. For example, this could be useful in order to
+	 * lock a double-chest with a single lock by correcting the location.
+	 * 
+	 * @param corrector The class of the {@link ILocationCorrector} to register.
+	 */
 	public static void registerCorrector(Class<? extends ILocationCorrector> corrector) {
 		for (ILocationCorrector c : locationCorrectors) {
 			if (corrector.isInstance(c)) {
@@ -56,15 +125,36 @@ public abstract class LockedBlock {
 		}
 	}
 
+	/**
+	 * Unregisters a location corrector.
+	 * 
+	 * @param corrector The class of the {@link ILocationCorrector} to register.
+	 */
 	public static void unregisterCorrector(Class<? extends ILocationCorrector> corrector) {
 		for (int i = 0; i < locationCorrectors.size(); i++) {
+			if (corrector.isInstance(locationCorrectors.get(i))) {
+				locationCorrectors.remove(i);
+				return;
+			}
+		}
+	}
 
+	/**
+	 * Takes a location and corrects it such that it points to the location that
+	 * would be used as the lock location.
+	 * 
+	 * @param l The location that should be corrected
+	 */
+	public static void correctLocation(Location l) {
+		for (ILocationCorrector corrector : locationCorrectors) {
+			corrector.correctLocation(l);
 		}
 	}
 
 	static {
 		registerBlock("GA_CHEST", GoldenApple.getInstance(), Material.CHEST, LockedChest.class);
 		registerBlock("GA_FURNACE", GoldenApple.getInstance(), Material.FURNACE, null);
+		registerCorrector(DoubleChestLocationCorrector.class);
 	}
 
 	private final Location	l;
@@ -88,7 +178,7 @@ public abstract class LockedBlock {
 	}
 
 	/**
-	 * Gets the location of this locked block
+	 * Gets the location of this locked block.
 	 */
 	public final Location getLocation() {
 		return l;
@@ -193,15 +283,34 @@ public abstract class LockedBlock {
 		return (user.getId() == ownerId);
 	}
 
+	/**
+	 * An enum representing the various access levels that can be applied to a
+	 * lock.
+	 * 
+	 * @author ben_dude56
+	 * 
+	 */
 	public static enum LockLevel {
 		UNKNOWN(-1), PRIVATE(0), PUBLIC(1);
 
+		/**
+		 * The level ID that this access level should be represented by in the
+		 * SQL database.
+		 */
 		public int	levelId;
 
 		LockLevel(int levelId) {
 			this.levelId = levelId;
 		}
 
+		/**
+		 * Gets the access level corresponding to a specific level ID from the
+		 * SQL database.
+		 * 
+		 * @param levelId The level ID of the access level to find.
+		 * @return If the level was found, it is returned, otherwise
+		 *         LockLevel.UNKNOWN is returned.
+		 */
 		public static LockLevel getLevel(int levelId) {
 			for (LockLevel l : LockLevel.values()) {
 				if (l.levelId == levelId)

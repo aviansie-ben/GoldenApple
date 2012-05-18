@@ -31,7 +31,7 @@ public class Calculations {
 	 * Returns a double of the exact distance between two locations
 	 * 
 	 * @param location1 The first location
-	 * @param lcoation2 The second location
+	 * @param location2 The second location
 	 * @param height Set to true if you want to take the y-coordinate into
 	 *            account. Set to false to ignore the Y-coordinate.
 	 * @return The distance between the two locations.
