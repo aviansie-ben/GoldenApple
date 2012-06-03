@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.bukkit.Location;
+
 public class AreaManager {
 	private HashMap<Long, Area> areas;
 	
@@ -66,6 +68,33 @@ public class AreaManager {
 		}
 		return safetyAreas;
 	}
+	
+	public List<Area> getAreasAtLocation(Location location) {
+		List<Area> areas = new ArrayList<Area>();
+		for (Area area : this.areas.values()) {
+			if (area.contains(location)) {
+				if (area instanceof ChildArea) {
+					area = ((ChildArea) area).getParent();
+				}
+				
+				if (!areas.contains(area)) {
+					areas.add(area);
+				}
+			}
+		}
+		return areas;
+	}
+	
+	/*
+	public boolean canBuildAtLocation(Location location, User user) {
+		for (Area area : this.getAreasAtLocation(location)) {
+			if (area instanceof PrivateArea) {
+				if (area.canBuildHere(user))
+			}
+		}
+		return false;
+	}
+	*/
 	
 	public enum LotType {
 		PARENT,CHILD,PRIVATE,PVP,SAFETY;
