@@ -39,7 +39,7 @@ public class Area {
 		return corner1.getWorld();
 	}
 
-	public boolean getDisabled() {
+	public boolean isDisabled() {
 		return disabled;
 	}
 
@@ -63,14 +63,12 @@ public class Area {
 		disabled = false;
 	}
 	
-	public boolean insideArea(Location location) {
+	public boolean contains(Location location) {
 		if (this.disabled) {
 			return false;
-		}
-		if (this.getWorld() != location.getWorld()) {
+		} else if (this.getWorld() != location.getWorld()) {
 			return false;
-		}
-		if (Calculations.isBetween(corner1.getX(), location.getX(), corner2.getX()) && Calculations.isBetween(corner1.getZ(), location.getZ(), corner2.getZ()) && (!ignoreY || Calculations.isBetween(corner1.getY(), location.getY(), corner2.getY()))) {
+		} else if (Calculations.isBetween(corner1.getX(), location.getX(), corner2.getX()) && Calculations.isBetween(corner1.getZ(), location.getZ(), corner2.getZ()) && (!ignoreY || Calculations.isBetween(corner1.getY(), location.getY(), corner2.getY()))) {
 			return true;
 		} else {
 			return false;
