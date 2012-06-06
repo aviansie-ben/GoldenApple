@@ -21,6 +21,15 @@ import com.bendude56.goldenapple.util.Serializer;
  * @author ben_dude56
  */
 public class PermissionManager {
+	public static PermissionNode goldenAppleNode;
+	public static PermissionNode permissionNode;
+	public static Permission userAddPermission;
+	public static Permission userRemovePermission;
+	public static Permission userEditPermission;
+	public static Permission groupAddPermission;
+	public static Permission groupRemovePermission;
+	public static Permission groupEditPermission;
+	
 	private HashMap<Long, PermissionUser>	userCache	= new HashMap<Long, PermissionUser>();
 	private Deque<Long>						cacheOut	= new ArrayDeque<Long>();
 	private HashMap<Long, PermissionGroup>	groups		= new HashMap<Long, PermissionGroup>();

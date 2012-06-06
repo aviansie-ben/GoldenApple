@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,10 +19,19 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.bendude56.goldenapple.commands.PermissionsCommand;
 import com.bendude56.goldenapple.commands.VerifyCommand;
 import com.bendude56.goldenapple.listener.PermissionListener;
+import com.bendude56.goldenapple.lock.LockManager;
 import com.bendude56.goldenapple.permissions.PermissionManager;
+import com.bendude56.goldenapple.permissions.PermissionsModuleLoader;
 
 public class GoldenApple extends JavaPlugin {
 	private static Logger	log	= Logger.getLogger("Minecraft");
+	
+	public static final HashMap<String, IModuleLoader> modules = new HashMap<String, IModuleLoader>();
+	
+	static {
+		modules.put("Base", new BaseModuleLoader());
+		modules.put("Permissions", new PermissionsModuleLoader());
+	}
 
 	public static void logPermissionFail(User u, String command, String[] args, boolean sendMessage) {
 		for (String arg : args) {
@@ -88,11 +98,12 @@ public class GoldenApple extends JavaPlugin {
 		locale = new LocalizationHandler(getClassLoader());
 		PermissionListener.startListening();
 		registerCommands();
+		new LockManager().getLock(null);
 	}
 
 	private void registerCommands() {
-		getCommand("gapermissions").setExecutor(new PermissionsCommand());
-		getCommand("gaverify").setExecutor(new VerifyCommand());
+		
+		
 	}
 
 	@Override
