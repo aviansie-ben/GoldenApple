@@ -11,6 +11,43 @@ import com.bendude56.goldenapple.permissions.IPermissionUser;
 public class AreaManager {
 	private HashMap<Long, Area> areas;
 	
+	public PrivateArea newPrivateArea(Location corner1, Location corner2, boolean ignoreY, IPermissionUser owner) {
+		Long ID = generateID();
+		PrivateArea privateArea = new PrivateArea(ID, corner1, corner2, ignoreY, owner);
+		areas.put(ID, privateArea);
+		return privateArea;
+	}
+	
+	public ChildArea newChildArea(Location corner1, Location corner2, boolean ignoreY, Long ParentID) {
+		if (getArea(ParentID) == null || !(getArea(ParentID) instanceof ParentArea)) return null;
+		Long ID = generateID();
+		ChildArea childArea = new ChildArea(ID, corner1, corner2, ignoreY, ParentID);
+		((ParentArea) getArea(ParentID)).addChild(childArea);
+		areas.put(ID, childArea);
+		return childArea;
+	}
+	
+	public PvpArea newPvpArea(Location corner1, Location corner2, boolean ignoreY) {
+		Long ID = generateID();
+		PvpArea pvpArea = new PvpArea(ID, corner1, corner2, ignoreY);
+		areas.put(ID, pvpArea);
+		return pvpArea;
+	}
+
+	public SafetyArea newSafetyArea(Location corner1, Location corner2, boolean ignoreY) {
+		Long ID = generateID();
+		SafetyArea safetyArea = new SafetyArea(ID, corner1, corner2, ignoreY);
+		areas.put(ID, safetyArea);
+		return safetyArea;
+	}
+	
+	public Long generateID() {
+		Long i;
+		for (i = (long) 0; true; i++) {
+			if (!areas.containsKey(i)) return i;
+		}
+	}
+
 	public void deleteArea(Long AreaID) {
 		if (this.areas.containsKey(AreaID)) {
 			areas.remove(AreaID);

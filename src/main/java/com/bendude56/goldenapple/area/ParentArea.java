@@ -16,7 +16,6 @@ public class ParentArea extends Area {
 	public void addChild(ChildArea child) {
 		if (!childrenIDs.contains(child.getID())) {
 			childrenIDs.add(child.getID());
-			child.setParent(this);
 		}
 	}
 	

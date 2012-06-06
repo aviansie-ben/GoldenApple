@@ -1,5 +1,7 @@
 package com.bendude56.goldenapple.area;
 
+import org.bukkit.Location;
+
 import com.bendude56.goldenapple.GoldenApple;
 
 /**
@@ -10,6 +12,14 @@ import com.bendude56.goldenapple.GoldenApple;
 public class ChildArea extends Area {
 	private Long parentID;
 	private Long subID;
+	
+	public ChildArea(Long ID, Location corner1, Location corner2, boolean ignoreY, Long parentID) {
+		this.setID(ID);
+		this.setCorner1(corner1);
+		this.setCorner2(corner2);
+		this.ignoreY(ignoreY);
+		this.parentID = parentID;
+	}
 	
 	public Long getSubID() {
 		return subID;

@@ -13,7 +13,7 @@ import com.bendude56.goldenapple.util.Calculations;
  * 
  */
 public class Area {
-	private Long		ID;
+	private Long		ID = (long) -1;
 	private Location	corner1;
 	private Location	corner2;
 	private boolean		ignoreY;
@@ -21,6 +21,12 @@ public class Area {
 	
 	public Long getID() {
 	return ID;
+	}
+	
+	protected void setID(Long ID) {
+		if (this.ID == -1) {
+			this.ID = ID; 
+		}
 	}
 
 	public Location getCorner1() {

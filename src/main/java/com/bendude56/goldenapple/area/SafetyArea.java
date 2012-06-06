@@ -1,9 +1,18 @@
 package com.bendude56.goldenapple.area;
 
+import org.bukkit.Location;
+
 public class SafetyArea extends ParentArea {
 	boolean allowPvp;
 	boolean hostileMobs;
 	boolean regenHealth;
+	
+	public SafetyArea(Long ID, Location corner1, Location corner2, boolean ignoreY) {
+		this.setID(ID);
+		this.setCorner1(corner1);
+		this.setCorner2(corner2);
+		this.ignoreY(ignoreY);
+	}
 	
 	public boolean allowPvp() {
 		return allowPvp; 
