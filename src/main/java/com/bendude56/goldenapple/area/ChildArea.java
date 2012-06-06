@@ -1,5 +1,7 @@
 package com.bendude56.goldenapple.area;
 
+import com.bendude56.goldenapple.GoldenApple;
+
 /**
  * This class inherits the traits of it's parent area.
  * 
@@ -7,7 +9,6 @@ package com.bendude56.goldenapple.area;
  */
 public class ChildArea extends Area {
 	private Long parentID;
-	private ParentArea parent;
 	private Long subID;
 	
 	public Long getSubID() {
@@ -23,12 +24,16 @@ public class ChildArea extends Area {
 	}
 	
 	public ParentArea getParent() {
-		return parent;
+		if (GoldenApple.getInstance().areas.getArea(parentID) != null) {
+			return (ParentArea) GoldenApple.getInstance().areas.getArea(parentID);
+		} else {
+			return null;
+		}
 	}
 	
 	public void setParent(ParentArea parent) {
-		if (this.parent != parent) {
-			this.parent = parent;
+		if (this.parentID != parent.getID()) {
+			this.parentID = parent.getID();
 		}
 	}
 }
