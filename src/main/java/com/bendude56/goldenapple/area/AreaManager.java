@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.bukkit.Location;
 
+import com.bendude56.goldenapple.permissions.IPermissionUser;
+
 public class AreaManager {
 	private HashMap<Long, Area> areas;
 	
@@ -36,6 +38,14 @@ public class AreaManager {
 			ChildArea area = (ChildArea) this.areas.get(AreaID);
 			area.getParent().removeChild(area);
 			this.deleteArea(AreaID);
+		}
+	}
+	
+	public Area getArea(Long areaID) {
+		if (areas.containsKey(areaID)) {
+			return areas.get(areaID);
+		} else {
+			return null;
 		}
 	}
 	
@@ -85,16 +95,16 @@ public class AreaManager {
 		return areas;
 	}
 	
-	/*
-	public boolean canBuildAtLocation(Location location, User user) {
+	public boolean canEditLocation(Location location, IPermissionUser user) {
 		for (Area area : this.getAreasAtLocation(location)) {
 			if (area instanceof PrivateArea) {
-				if (area.canBuildHere(user))
+				if (((PrivateArea) area).canEdit(user)) {
+					return true;
+				}
 			}
 		}
 		return false;
 	}
-	*/
 	
 	public enum LotType {
 		PARENT,CHILD,PRIVATE,PVP,SAFETY;
