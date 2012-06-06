@@ -25,7 +25,7 @@ import com.bendude56.goldenapple.util.Serializer;
 public abstract class LockedBlock {
 	private static List<RegisteredBlock>	registeredBlocks	= new ArrayList<RegisteredBlock>();
 	private static List<ILocationCorrector>	locationCorrectors	= new ArrayList<ILocationCorrector>();
-
+	
 	/**
 	 * Registers a lockable block in the GoldenApple lock system. Two or more
 	 * classes can exist for one block type (in order to preserve
@@ -104,6 +104,15 @@ public abstract class LockedBlock {
 		}
 		return null;
 	}
+	
+	public static RegisteredBlock getBlock(String identifier) {
+		for (int i = 0; i < registeredBlocks.size(); i++) {
+			if (registeredBlocks.get(i).identifier == identifier) {
+				return registeredBlocks.get(i);
+			}
+		}
+		return null;
+	}
 
 	/**
 	 * Registers a location corrector that can adjust locations before
@@ -157,6 +166,7 @@ public abstract class LockedBlock {
 		registerCorrector(DoubleChestLocationCorrector.class);
 	}
 
+	private final long 		lockId;
 	private final Location	l;
 	private long			ownerId;
 	private ArrayList<Long>	guests;
@@ -164,17 +174,26 @@ public abstract class LockedBlock {
 
 	@SuppressWarnings("unchecked")
 	protected LockedBlock(ResultSet r) throws SQLException, ClassNotFoundException, IOException {
+		this.lockId = r.getLong("ID");
 		this.l = Serializer.deserializeLocation(r.getString("Location"));
 		this.ownerId = r.getLong("Owner");
 		this.guests = (ArrayList<Long>)Serializer.deserialize(r.getString("Guests"));
 		this.level = LockLevel.getLevel(r.getInt("Level"));
 	}
 
-	protected LockedBlock(Location l, long ownerId, LockLevel level) {
+	protected LockedBlock(long id, Location l, long ownerId, LockLevel level) {
+		this.lockId = id;
 		this.l = l;
 		this.ownerId = ownerId;
 		this.guests = new ArrayList<Long>();
 		this.level = level;
+	}
+	
+	/**
+	 * Gets the unique identifier for this locked block.
+	 */
+	public final long getLockId() {
+		return lockId;
 	}
 
 	/**
