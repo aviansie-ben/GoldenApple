@@ -16,8 +16,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.bendude56.goldenapple.commands.PermissionsCommand;
-import com.bendude56.goldenapple.commands.VerifyCommand;
+import com.bendude56.goldenapple.area.AreaManager;
 import com.bendude56.goldenapple.listener.PermissionListener;
 import com.bendude56.goldenapple.lock.LockManager;
 import com.bendude56.goldenapple.permissions.PermissionManager;
@@ -70,6 +69,7 @@ public class GoldenApple extends JavaPlugin {
 	public Database				database;
 	public Configuration		mainConfig;
 	public PermissionManager	permissions;
+	public AreaManager 			areas;
 	public LocalizationHandler	locale;
 
 	@Override
@@ -95,6 +95,7 @@ public class GoldenApple extends JavaPlugin {
 		mainConfig = YamlConfiguration.loadConfiguration(new File(this.getDataFolder() + "/config.yml"));
 		database = new Database();
 		permissions = new PermissionManager();
+		areas = new AreaManager();
 		locale = new LocalizationHandler(getClassLoader());
 		PermissionListener.startListening();
 		registerCommands();
