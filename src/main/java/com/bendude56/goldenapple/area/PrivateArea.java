@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.bukkit.Location;
 
+import com.bendude56.goldenapple.GoldenApple;
+import com.bendude56.goldenapple.permissions.IPermissionUser;
 import com.bendude56.goldenapple.permissions.PermissionGroup;
 import com.bendude56.goldenapple.permissions.PermissionUser;
 
@@ -14,66 +16,77 @@ import com.bendude56.goldenapple.permissions.PermissionUser;
  * @author Deaboy
  */
 public class PrivateArea extends ParentArea {
-	private PermissionUser owner;
-	private List<PermissionUser> guests = new ArrayList<PermissionUser>();
-	private PermissionGroup group;
+	private Long ownerID;
+	private List<Long> guestIDs = new ArrayList<Long>();
+	private Long groupID;
 	
-	public PrivateArea(Location corner1, Location corner2, boolean ignoreY, PermissionUser owner) {
+	public PrivateArea(Location corner1, Location corner2, boolean ignoreY, IPermissionUser owner) {
 		this.setOwner(owner);
 		this.setCorner1(corner1);
 		this.setCorner2(corner2);
 		this.ignoreY(ignoreY);
 	}
 	
-	public void setOwner(PermissionUser newOwner) {
+	public void setOwner(IPermissionUser newOwner) {
 		if (newOwner != null)
-			owner = newOwner;
+			ownerID = newOwner.getId();
 	}
 	
 	public PermissionUser getOwner() {
-		return owner;
+		return GoldenApple.getInstance().permissions.getUser(ownerID);
 	}
 
-	public boolean isOwner(PermissionUser user) {
-		return (user == owner);
+	public boolean isOwner(IPermissionUser user) {
+		return (user.getId() == ownerID);
 	}
 	
 	public void setGroup(PermissionGroup newGroup) {
 		if (newGroup != null)
-			group = newGroup;
+			groupID = newGroup.getId();
 	}
 	
 	public PermissionGroup getGroup() {
-		return group;
+		return GoldenApple.getInstance().permissions.getGroup(groupID);
 	}
 
-	public boolean memberOfGroup(PermissionUser user) {
-		return (getGroup().getMembers().contains(user));
+	public boolean memberOfGroup(IPermissionUser user) {
+		return (getGroup().getMembers().contains(user.getId()));
 	}
 	
-	public void addGuest(PermissionUser guest) {
-		if (guest != null && !guests.contains(guest))
-			guests.add(guest);
+	public void addGuest(IPermissionUser guest) {
+		if (guest != null && !guestIDs.contains(guest.getId()))
+			guestIDs.add(guest.getId());
 	}
 	
-	public void remGuest(PermissionUser guest) {
-		if (guest != null && guests.contains(guest))
-			guests.remove(guest);
+	public void remGuest(IPermissionUser guest) {
+		if (guest != null && guestIDs.contains(guest))
+			guestIDs.remove(guest);
+	}
+	
+	public void remGuest(Long guestID) {
+		if (guestID != null && guestIDs.contains(guestID))
+			guestIDs.remove(guestID);
 	}
 	
 	public List<PermissionUser> getGuests() {
+		List<PermissionUser> guests = new ArrayList<PermissionUser>();
+		for (Long guestID : guestIDs) {
+			if (GoldenApple.getInstance().permissions.getUser(guestID) != null) {
+				guests.add(GoldenApple.getInstance().permissions.getUser(guestID));
+			}
+		}
 		return guests;
 	}
 
-	public boolean isGuest(PermissionUser user) {
-		return guests.contains(user);
+	public boolean isGuest(IPermissionUser user) {
+		return guestIDs.contains(user.getId());
 	}
 	
 	public void clearGuests() {
-		guests.clear();
+		guestIDs.clear();
 	}
 	
-	public boolean canBuildHere(PermissionUser user) {
+	public boolean canEdit(IPermissionUser user) {
 		return (isOwner(user) || isGuest(user) || memberOfGroup(user));
 	}
 }
