@@ -25,21 +25,30 @@ public class PrivateArea extends ParentArea {
 		this.ignoreY(ignoreY);
 	}
 	
+	public void setOwner(PermissionUser newOwner) {
+		if (newOwner != null)
+			owner = newOwner;
+	}
+	
 	public PermissionUser getOwner() {
 		return owner;
 	}
+
+	public boolean isOwner(PermissionUser user) {
+		return (user == owner);
+	}
 	
-	public List<PermissionUser> getGuests() {
-		return guests;
+	public void setGroup(PermissionGroup newGroup) {
+		if (newGroup != null)
+			group = newGroup;
 	}
 	
 	public PermissionGroup getGroup() {
 		return group;
 	}
-	
-	public void setOwner(PermissionUser newOwner) {
-		if (newOwner != null)
-			owner = newOwner;
+
+	public boolean memberOfGroup(PermissionUser user) {
+		return (getGroup().getMembers().contains(user));
 	}
 	
 	public void addGuest(PermissionUser guest) {
@@ -52,12 +61,19 @@ public class PrivateArea extends ParentArea {
 			guests.remove(guest);
 	}
 	
+	public List<PermissionUser> getGuests() {
+		return guests;
+	}
+
+	public boolean isGuest(PermissionUser user) {
+		return guests.contains(user);
+	}
+	
 	public void clearGuests() {
 		guests.clear();
 	}
 	
-	public void setGroup(PermissionGroup newGroup) {
-		if (newGroup != null)
-			group = newGroup;
+	public boolean canBuildHere(PermissionUser user) {
+		return (isOwner(user) || isGuest(user) || memberOfGroup(user));
 	}
 }
