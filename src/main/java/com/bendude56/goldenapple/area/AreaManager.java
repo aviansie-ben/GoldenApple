@@ -11,11 +11,36 @@ import com.bendude56.goldenapple.permissions.IPermissionUser;
 public class AreaManager {
 	private HashMap<Long, Area> areas;
 	
+	public void AddArea(Area area) {
+		if (!areas.containsValue(area) && area.noID()) {
+			Long ID = generateID();
+			area.setID(ID);
+			areas.put(ID, area);
+		}
+	}
+	
 	public PrivateArea newPrivateArea(Location corner1, Location corner2, boolean ignoreY, IPermissionUser owner) {
 		Long ID = generateID();
-		PrivateArea privateArea = new PrivateArea(ID, corner1, corner2, ignoreY, owner);
+		PrivateArea privateArea = new PrivateArea(corner1, corner2, ignoreY, owner);
+		privateArea.setID(ID);
 		areas.put(ID, privateArea);
 		return privateArea;
+	}
+	
+	public PvpArea newPvpArea(Location corner1, Location corner2, boolean ignoreY) {
+		Long ID = generateID();
+		PvpArea pvpArea = new PvpArea(corner1, corner2, ignoreY);
+		pvpArea.setID(ID);
+		areas.put(ID, pvpArea);
+		return pvpArea;
+	}
+
+	public SafetyArea newSafetyArea(Location corner1, Location corner2, boolean ignoreY) {
+		Long ID = generateID();
+		SafetyArea safetyArea = new SafetyArea(corner1, corner2, ignoreY);
+		safetyArea.setID(ID);
+		areas.put(ID, safetyArea);
+		return safetyArea;
 	}
 	
 	public ChildArea newChildArea(Location corner1, Location corner2, boolean ignoreY, Long ParentID) {
@@ -27,20 +52,6 @@ public class AreaManager {
 		return childArea;
 	}
 	
-	public PvpArea newPvpArea(Location corner1, Location corner2, boolean ignoreY) {
-		Long ID = generateID();
-		PvpArea pvpArea = new PvpArea(ID, corner1, corner2, ignoreY);
-		areas.put(ID, pvpArea);
-		return pvpArea;
-	}
-
-	public SafetyArea newSafetyArea(Location corner1, Location corner2, boolean ignoreY) {
-		Long ID = generateID();
-		SafetyArea safetyArea = new SafetyArea(ID, corner1, corner2, ignoreY);
-		areas.put(ID, safetyArea);
-		return safetyArea;
-	}
-	
 	public Long generateID() {
 		Long i;
 		for (i = (long) 0; true; i++) {
@@ -48,13 +59,21 @@ public class AreaManager {
 		}
 	}
 
+	/**
+	 * This method deletes an Area of any type.
+	 * @param AreaID
+	 */
 	public void deleteArea(Long AreaID) {
 		if (this.areas.containsKey(AreaID)) {
 			areas.remove(AreaID);
 		}
 	}
 	
-	public void deleteParentArea(Long AreaID) {
+	/**
+	 * This method deletes the ParentArea, plus ALL children.
+	 * @param AreaID
+	 */
+	public void deleteParentAreaDeleteChildren(Long AreaID) {
 		if (!this.areas.containsKey(AreaID)) {
 			return;
 		}
@@ -67,6 +86,31 @@ public class AreaManager {
 		}
 	}
 	
+	/**
+	 * This method "deletes" a parent area, and transfers all data to it's first child.
+	 * @param AreaID
+	 */
+	public void deleteParentPreserveChildren(Long AreaID) {
+		if (!this.areas.containsKey(AreaID)) return;
+		if (this.getArea(AreaID) instanceof ParentArea) {
+			ParentArea area = (ParentArea) this.getArea(AreaID);
+			if (area.getChildren().isEmpty()) {
+				this.deleteArea(area.getID());
+			} else {
+				ChildArea child = area.getChildren().get(0);
+				this.deleteChildArea(child.getID());
+				area.setID(child.getID());
+				area.setCorner1(child.getCorner1());
+				area.setCorner2(child.getCorner2());
+				area.ignoreY(child.ignoreY());
+			}
+		}
+	}
+	
+	/**
+	 * Deletes a ChildArea and removes it from it's parent's list of children
+	 * @param AreaID
+	 */
 	public void deleteChildArea(Long AreaID) {
 		if (!this.areas.containsKey(AreaID)) {
 			return;

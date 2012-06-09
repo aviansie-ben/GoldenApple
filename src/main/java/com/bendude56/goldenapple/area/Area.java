@@ -20,13 +20,18 @@ public class Area {
 	private boolean		disabled;
 	
 	public Long getID() {
-	return ID;
+		return ID;
+	}
+	
+	public boolean noID() {
+		if (this.ID == (long) -1)
+			return true;
+		else
+			return false;
 	}
 	
 	protected void setID(Long ID) {
-		if (this.ID == -1) {
-			this.ID = ID; 
-		}
+		this.ID = ID; 
 	}
 
 	public Location getCorner1() {

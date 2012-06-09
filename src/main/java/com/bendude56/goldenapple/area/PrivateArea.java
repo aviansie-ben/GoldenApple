@@ -20,12 +20,11 @@ public class PrivateArea extends ParentArea {
 	private List<Long> guestIDs = new ArrayList<Long>();
 	private Long groupID;
 	
-	public PrivateArea(Long LotID, Location corner1, Location corner2, boolean ignoreY, IPermissionUser owner) {
+	public PrivateArea(Location corner1, Location corner2, boolean ignoreY, IPermissionUser owner) {
 		this.setOwner(owner);
 		this.setCorner1(corner1);
 		this.setCorner2(corner2);
 		this.ignoreY(ignoreY);
-		this.setID(LotID);
 	}
 	
 	public void setOwner(IPermissionUser newOwner) {

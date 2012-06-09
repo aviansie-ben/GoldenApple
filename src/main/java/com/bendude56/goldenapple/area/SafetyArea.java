@@ -7,8 +7,7 @@ public class SafetyArea extends ParentArea {
 	boolean hostileMobs;
 	boolean regenHealth;
 	
-	public SafetyArea(Long ID, Location corner1, Location corner2, boolean ignoreY) {
-		this.setID(ID);
+	public SafetyArea(Location corner1, Location corner2, boolean ignoreY) {
 		this.setCorner1(corner1);
 		this.setCorner2(corner2);
 		this.ignoreY(ignoreY);
