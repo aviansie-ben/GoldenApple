@@ -43,6 +43,14 @@ public class AreaManager {
 		return safetyArea;
 	}
 	
+	public TownArea newTownArea(Location corner1, Location corner2, boolean ignoreY, IPermissionUser owner) {
+		Long ID = generateID();
+		TownArea townArea = new TownArea(corner1, corner2, ignoreY, owner);
+		townArea.setID(ID);
+		areas.put(ID, townArea);
+		return townArea;
+	}
+	
 	public ChildArea newChildArea(Location corner1, Location corner2, boolean ignoreY, Long ParentID) {
 		if (getArea(ParentID) == null || !(getArea(ParentID) instanceof ParentArea)) return null;
 		Long ID = generateID();
