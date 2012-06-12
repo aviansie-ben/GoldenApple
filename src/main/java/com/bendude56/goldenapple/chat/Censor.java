@@ -16,6 +16,28 @@ public class Censor {
 			censored.remove(word);
 	}
 
+	public String removeAllCaps(String string) {
+		String value = "";
+		for (String word : string.split(" ")) {
+			int caps = 0;
+			for (int c=0; c < word.length(); c++) {
+				Character character = word.charAt(c);
+				if (Character.isUpperCase(character)) {
+					caps++;
+				}
+			}
+			if (value.equalsIgnoreCase("")) {
+				value += "";
+			}
+			if (caps > 2) {
+				value += word.toLowerCase();
+			} else {
+				value += word;
+			}
+		}
+		return value;
+	}
+
 	public String censorString(String string) {
 		String[] original = formatForCensorship(string).split(" ");
 		String word;
@@ -55,16 +77,16 @@ public class Censor {
 
 	public boolean mustBeCensored(String string) {
 		String[] original = formatForCensorship(string).split(" ");
-		String word;
+		String word = "";
 		int i = 0, ii = 0;
 
 		for (i = 0; i < original.length; i++) {
-			word = original[i];
+			word.equalsIgnoreCase(original[i]);
 			for (String censored : this.censored) {
 				censored = formatForCensorship(censored).replaceAll(" ", "");
 				ii = 0;
 				while (compareWords(original[i], censored)) {
-					if (word == censored) {
+					if (word.equalsIgnoreCase(censored)) {
 						return true;
 					} else {
 						ii++;
