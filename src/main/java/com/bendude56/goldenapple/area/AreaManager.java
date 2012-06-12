@@ -160,11 +160,11 @@ public class AreaManager {
 		return safetyAreas;
 	}
 	
-	public List<Area> getAreasAtLocation(Location location) {
+	public List<Area> getAreasAtLocation(Location location, boolean includeChildren) {
 		List<Area> areas = new ArrayList<Area>();
 		for (Area area : this.areas.values()) {
 			if (area.contains(location)) {
-				if (area instanceof ChildArea) {
+				if (area instanceof ChildArea && !includeChildren) {
 					area = ((ChildArea) area).getParent();
 				}
 				
@@ -177,7 +177,7 @@ public class AreaManager {
 	}
 	
 	public boolean canEditLocation(Location location, IPermissionUser user) {
-		for (Area area : this.getAreasAtLocation(location)) {
+		for (Area area : this.getAreasAtLocation(location, false)) {
 			if (area instanceof PrivateArea) {
 				if (((PrivateArea) area).canEdit(user)) {
 					return true;
