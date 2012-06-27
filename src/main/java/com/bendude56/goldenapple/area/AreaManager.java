@@ -168,6 +168,12 @@ public class AreaManager {
 		return safetyAreas;
 	}
 	
+	/**
+	 * Gets an ArrayList of areas at the given location.
+	 * @param location The location to check.
+	 * @param includeChildren If set to true, will allow ChildAreas in the list. If set to false, will only include the ChildArea's parent.
+	 * @return List of areas at the given location.
+	 */
 	public List<Area> getAreasAtLocation(Location location, boolean includeChildren) {
 		List<Area> areas = new ArrayList<Area>();
 		for (Area area : this.areas.values()) {
