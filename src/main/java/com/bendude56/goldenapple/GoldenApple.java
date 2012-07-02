@@ -5,12 +5,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -71,6 +73,43 @@ public class GoldenApple extends JavaPlugin {
 	public PermissionManager	permissions;
 	public AreaManager 			areas;
 	public LocalizationHandler	locale;
+
+	public HashSet<Byte> getTransparentBlocks() {
+		HashSet<Byte> blockList = new HashSet<Byte>(32);
+				blockList.add(((Integer) Material.AIR.getId()).byteValue());
+				blockList.add(((Integer) Material.BREWING_STAND.getId()).byteValue());
+				blockList.add(((Integer) Material.BROWN_MUSHROOM.getId()).byteValue());
+				blockList.add(((Integer) Material.CAKE.getId()).byteValue());
+				blockList.add(((Integer) Material.CROPS.getId()).byteValue());
+				blockList.add(((Integer) Material.DETECTOR_RAIL.getId()).byteValue());
+				blockList.add(((Integer) Material.DIODE_BLOCK_ON.getId()).byteValue());
+				blockList.add(((Integer) Material.DIODE_BLOCK_OFF.getId()).byteValue());
+				blockList.add(((Integer) Material.LADDER.getId()).byteValue());
+				blockList.add(((Integer) Material.LAVA.getId()).byteValue());
+				blockList.add(((Integer) Material.LEVER.getId()).byteValue());
+				blockList.add(((Integer) Material.LONG_GRASS.getId()).byteValue());
+				blockList.add(((Integer) Material.MELON_STEM.getId()).byteValue());
+				blockList.add(((Integer) Material.NETHER_STALK.getId()).byteValue());
+				blockList.add(((Integer) Material.PAINTING.getId()).byteValue());
+				blockList.add(((Integer) Material.PORTAL.getId()).byteValue());
+				blockList.add(((Integer) Material.POWERED_RAIL.getId()).byteValue());
+				blockList.add(((Integer) Material.PUMPKIN_STEM.getId()).byteValue());
+				blockList.add(((Integer) Material.RAILS.getId()).byteValue());
+				blockList.add(((Integer) Material.RED_MUSHROOM.getId()).byteValue());
+				blockList.add(((Integer) Material.RED_ROSE.getId()).byteValue());
+				blockList.add(((Integer) Material.REDSTONE_TORCH_ON.getId()).byteValue());
+				blockList.add(((Integer) Material.REDSTONE_TORCH_OFF.getId()).byteValue());
+				blockList.add(((Integer) Material.REDSTONE_WIRE.getId()).byteValue());
+				blockList.add(((Integer) Material.SAPLING.getId()).byteValue());
+				blockList.add(((Integer) Material.SIGN_POST.getId()).byteValue());
+				blockList.add(((Integer) Material.SNOW.getId()).byteValue());
+				blockList.add(((Integer) Material.TORCH.getId()).byteValue());
+				blockList.add(((Integer) Material.VINE.getId()).byteValue());
+				blockList.add(((Integer) Material.WALL_SIGN.getId()).byteValue());
+				blockList.add(((Integer) Material.WATER.getId()).byteValue());
+				blockList.add(((Integer) Material.YELLOW_FLOWER.getId()).byteValue());
+		return blockList;
+	}
 
 	@Override
 	public void onEnable() {
