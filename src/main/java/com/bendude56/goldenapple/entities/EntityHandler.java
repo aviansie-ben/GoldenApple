@@ -11,6 +11,7 @@ import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.Sheep;
 
 /**
@@ -195,7 +196,14 @@ public class EntityHandler {
 			return null;
 	}
 
-	public int SpawnMobs(Location loc, String[] args, int amount) {
+	/**
+	 * This method spawns mobs stacked on top of each other repeatedly. Designed to work with the /spawnmob command. 
+	 * @param location to spawn them
+	 * @param the mobs to spawn
+	 * @param how many times to spawn them
+	 * @return returns an int of the number of mobs successfully spawned
+	 */
+	public int spawnMobs(Location loc, String[] args, int amount) {
 		int counter = 0;
 		while (amount > 0) {
 			amount--;
@@ -223,5 +231,47 @@ public class EntityHandler {
 			}
 		}
 		return counter;
+	}
+
+	/**
+	 * This method kills mobs within a certain range of the specified location while causing mobs to drop loot and experience
+	 * @param loc The epicenter
+	 * @param args The mobs to kill
+	 * @param range The range from the epicenter
+	 * @param ignoreY Ignore the y-coordinate while searching
+	 * @param killer The player that was the killer
+	 * @return Returns an int of the mobs killed
+	 */
+	public int killMobs(Location loc, String[] args, int range, boolean ignoreY, Player killer) {
+		int counter = 0;
+		List<EntityType> types = new ArrayList<EntityType>();
+		for (String name : args) {
+			if (getMobByName(name) != null)
+				types.add(getMobByName(name));
+		}
+		List<Entity> mobs = getAllMobsInArea(loc, range, ignoreY);
+		
+		for (Entity mob : mobs) {
+			if (types.contains(mob.getType())) {
+				if (mob instanceof LivingEntity && killer != null)
+					((LivingEntity) mob).damage(((LivingEntity) mob).getHealth(), killer);
+				else
+					mob.remove();
+				counter++;
+			}
+		}
+		return counter;
+	}
+	
+	/**
+	 * This method kills mobs within a certain range of the specified location
+	 * @param loc The epicenter
+	 * @param args The mobs to kill
+	 * @param range The range from the epicenter
+	 * @param ignoreY Ignore the y-coordinate while searching
+	 * @return Returns an int of the mobs killed
+	 */
+	public int killMobs(Location loc, String[] args, int range, boolean ignoreY) {
+		return killMobs(loc, args, range, ignoreY, null);
 	}
 }
