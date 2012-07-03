@@ -5,9 +5,13 @@ import java.util.List;
 
 import com.bendude56.goldenapple.util.Calculations;
 
+import org.bukkit.DyeColor;
 import org.bukkit.Location;
+import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Sheep;
 
 /**
  * This class is meant to handle basic mob and entity functions. This includes spawning mobs, killing mobs, and handling targeting events.
@@ -41,8 +45,7 @@ public class EntityHandler {
 			EntityType.SQUID,
 			EntityType.IRON_GOLEM,
 			EntityType.SNOWMAN,
-			EntityType.MUSHROOM_COW,
-			EntityType.VILLAGER
+			EntityType.MUSHROOM_COW
 			};
 	public final static EntityType[] Vehicles = {
 			EntityType.BOAT,
@@ -122,6 +125,7 @@ public class EntityHandler {
 	 */
 	public EntityType getMobByName(String name) {
 		name.toLowerCase();
+		name.replaceAll("_", "");
 		if (	   name.equals("zombie"))
 			return EntityType.ZOMBIE;
 		else if (  name.equals("creeper")
@@ -189,5 +193,35 @@ public class EntityHandler {
 			return EntityType.MUSHROOM_COW;
 		else
 			return null;
+	}
+
+	public int SpawnMobs(Location loc, String[] args, int amount) {
+		int counter = 0;
+		while (amount > 0) {
+			amount--;
+			LivingEntity lastMob = null;
+			
+			for (int i=0; i < args.length; i++) {
+				EntityType type = getMobByName(args[i].split(":")[0]);
+				if (type != null) {
+					LivingEntity mob = loc.getWorld().spawnCreature(loc, type);
+					counter++;
+					if (mob.getType() == EntityType.CREEPER
+						&& (args[i].equalsIgnoreCase("supercreeper")
+						|| args[i].equalsIgnoreCase("chargedcreeper"))) {
+						((Creeper) mob).setPowered(true);
+					}
+					else if (mob.getType() == EntityType.SHEEP
+							&& (args[i].split(":").length > 1)) {
+						((Sheep) mob).setColor(DyeColor.valueOf(args[i].split(";")[1]));
+					}
+					if (lastMob != null) {
+						lastMob.setPassenger(mob);
+					}
+					lastMob = mob;
+				}
+			}
+		}
+		return counter;
 	}
 }
