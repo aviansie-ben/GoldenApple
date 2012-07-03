@@ -7,8 +7,16 @@ import java.util.List;
 import org.bukkit.Location;
 
 import com.bendude56.goldenapple.permissions.IPermissionUser;
+import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
+import com.bendude56.goldenapple.permissions.PermissionManager.PermissionNode;
 
 public class AreaManager {
+	public static PermissionNode areaNode;
+	public static Permission areaCreate;
+	public static Permission areaDelete;
+	public static Permission areaEditAll;
+	public static Permission areaEditOwn;
+	
 	private HashMap<Long, Area> areas;
 	
 	public void AddArea(Area area) {
