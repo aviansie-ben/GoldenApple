@@ -1,7 +1,5 @@
 package com.bendude56.goldenapple;
 
-import com.bendude56.goldenapple.permissions.PermissionManager;
-
 public interface IModuleLoader {
 	/**
 	 * Loads the GoldenApple module into memory and prepares it for use. Should
@@ -12,7 +10,7 @@ public interface IModuleLoader {
 	 *            the module loader relies on this value being non-null, the
 	 *            permissions module should be included in the dependency list.
 	 */
-	public void loadModule(PermissionManager permissions) throws ModuleLoadException;
+	public void loadModule(GoldenApple instance) throws ModuleLoadException;
 
 	/**
 	 * Unloads the GoldenApple module from memory and dumps any unsaved

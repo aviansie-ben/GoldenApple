@@ -12,13 +12,14 @@ public class PermissionsModuleLoader implements IModuleLoader {
 	private static ModuleState state = ModuleState.UNLOADED_USER;
 
 	@Override
-	public void loadModule(PermissionManager permissions) {
+	public void loadModule(GoldenApple instance) {
 		state = ModuleState.LOADING;
 		try {
-			permissions = GoldenApple.getInstance().permissions = new PermissionManager();
-			registerPermissions(permissions);
+			instance.permissions = new PermissionManager();
+			registerPermissions(instance.permissions);
 			registerEvents();
 			registerCommands();
+			state = ModuleState.LOADED;
 		} catch (Throwable e) {
 			state = ModuleState.UNLOADED_ERROR;
 			GoldenApple.getInstance().permissions = null;

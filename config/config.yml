@@ -65,6 +65,7 @@ securityPolicy:
     blockModules:
         lock: false
         area: false
+        warp: false
 
 # Options for GoldenApple modules
 modules:
