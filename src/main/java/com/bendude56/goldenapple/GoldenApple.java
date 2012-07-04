@@ -20,6 +20,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.bendude56.goldenapple.area.AreaManager;
+import com.bendude56.goldenapple.lock.LockManager;
+import com.bendude56.goldenapple.lock.LockModuleLoader;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 import com.bendude56.goldenapple.permissions.PermissionsModuleLoader;
 import com.bendude56.goldenapple.warps.WarpManager;
@@ -32,6 +34,7 @@ public class GoldenApple extends JavaPlugin {
 	static {
 		modules.put("Base", new BaseModuleLoader());
 		modules.put("Permissions", new PermissionsModuleLoader());
+		modules.put("Lock", new LockModuleLoader());
 	}
 
 	public static void logPermissionFail(User u, String command, String[] args, boolean sendMessage) {
@@ -71,6 +74,7 @@ public class GoldenApple extends JavaPlugin {
 	public Database				database;
 	public Configuration		mainConfig;
 	public PermissionManager	permissions;
+	public LockManager			locks;
 	public AreaManager 			areas;
 	public WarpManager			warps;
 	public LocalizationHandler	locale;
@@ -134,11 +138,9 @@ public class GoldenApple extends JavaPlugin {
 		}
 		mainConfig = YamlConfiguration.loadConfiguration(new File(this.getDataFolder() + "/config.yml"));
 		database = new Database();
-		areas = new AreaManager();
-		warps = new WarpManager();
 		locale = new LocalizationHandler(getClassLoader());
 		for (Entry<String, IModuleLoader> module : modules.entrySet()) {
-			
+			enableModule(module.getValue());
 		}
 	}
 	

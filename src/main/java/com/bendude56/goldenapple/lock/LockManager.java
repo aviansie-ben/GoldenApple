@@ -13,7 +13,6 @@ import org.bukkit.Location;
 
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.lock.LockedBlock.RegisteredBlock;
-import com.bendude56.goldenapple.permissions.PermissionManager;
 import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
 import com.bendude56.goldenapple.permissions.PermissionManager.PermissionNode;
 

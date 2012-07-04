@@ -3,22 +3,21 @@ package com.bendude56.goldenapple;
 import org.bukkit.Bukkit;
 
 import com.bendude56.goldenapple.commands.VerifyCommand;
-import com.bendude56.goldenapple.permissions.PermissionManager;
 
 public class BaseModuleLoader implements IModuleLoader {
 	
 	private static ModuleState state = ModuleState.UNLOADED_USER;
 
 	@Override
-	public void loadModule(PermissionManager permissions) {
+	public void loadModule(GoldenApple instance) {
 		state = ModuleState.LOADING;
 		try {
 			registerCommands();
+			state = ModuleState.LOADED;
 		} catch (Throwable e) {
 			state = ModuleState.UNLOADED_ERROR;
 			// TODO Add cleanup code to clean up after failed module start
 		}
-		state = ModuleState.LOADED;
 	}
 	
 	private void registerCommands() {
@@ -27,7 +26,7 @@ public class BaseModuleLoader implements IModuleLoader {
 
 	@Override
 	public void unloadModule() {
-		// TODO Add unloading code
+		// This module should never be unloaded during normal operation
 	}
 
 	@Override
