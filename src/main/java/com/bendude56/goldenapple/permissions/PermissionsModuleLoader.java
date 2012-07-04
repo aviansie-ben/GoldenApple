@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.IModuleLoader;
 import com.bendude56.goldenapple.commands.PermissionsCommand;
+import com.bendude56.goldenapple.listener.PermissionListener;
 
 public class PermissionsModuleLoader implements IModuleLoader {
 	
@@ -31,7 +32,7 @@ public class PermissionsModuleLoader implements IModuleLoader {
 	}
 	
 	private void registerEvents() {
-		// TODO Register events
+		PermissionListener.startListening();
 	}
 	
 	private void registerCommands() {
@@ -40,7 +41,7 @@ public class PermissionsModuleLoader implements IModuleLoader {
 
 	@Override
 	public void unloadModule() {
-		// TODO Add unloading code
+		PermissionListener.stopListening();
 	}
 
 	@Override
@@ -56,6 +57,16 @@ public class PermissionsModuleLoader implements IModuleLoader {
 	@Override
 	public String[] getModuleDependencies() {
 		return new String[] { "Base" };
+	}
+
+	@Override
+	public boolean canLoadAuto() {
+		return true;
+	}
+
+	@Override
+	public boolean canPolicyLoad() {
+		return true;
 	}
 
 }

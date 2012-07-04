@@ -42,6 +42,30 @@ message:
     # on a public server may compromise security)
     verbose: false
 
+# Policy settings for ensuring that security is not breached
+securityPolicy:
+    
+    # Determines whether or not the server should be shut down if a
+    # module fails to load on server startup. It is recommended to
+    # keep this enabled in order to prevent griefing should an anti-
+    # griefing module unexpectedly fail to load.
+    shutdownOnFailedModuleLoad: true
+    
+    # Determines whether or not to include extended information in
+    # crash dumps. When enabled, additional information, such as SQL
+    # row values will be logged for debugging purposes. Unless
+    # absolutely necessary, this should be kept enabled in order to
+    # be able to diagnose bugs quickly and more efficiently.
+    dumpExtendedInfo: true
+    
+    # Determines whether or not a module is allowed to be loaded
+    # into memory on this server. This should ONLY be used if there
+    # are security/stability concerns with loading a specific module.
+    # True means that the module should be BLOCKED FROM LOADING.
+    blockModules:
+        lock: false
+        area: false
+
 # Options for GoldenApple modules
 modules:
     
@@ -72,7 +96,7 @@ modules:
     lock:
         
         # Determines whether or not the GoldenApple locking system will
-        # be loaded or used.
+        # be loaded or used by default when the server is started.
         enabled: true
         
         # The size of the GoldenApple lock cache. It is recommended to

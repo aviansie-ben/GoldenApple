@@ -45,4 +45,14 @@ public class BaseModuleLoader implements IModuleLoader {
 		return new String[0];
 	}
 
+	@Override
+	public boolean canLoadAuto() {
+		return true;
+	}
+
+	@Override
+	public boolean canPolicyLoad() {
+		return true;
+	}
+
 }

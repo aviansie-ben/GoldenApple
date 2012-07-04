@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -46,11 +47,11 @@ public class GoldenApple extends JavaPlugin {
 		}
 	}
 
-	public static void log(Exception e) {
+	public static void log(Throwable e) {
 		log(Level.SEVERE, e.toString());
 	}
 
-	public static void log(Level level, Exception e) {
+	public static void log(Level level, Throwable e) {
 		log(level, e.toString());
 	}
 
@@ -94,17 +95,53 @@ public class GoldenApple extends JavaPlugin {
 		}
 		mainConfig = YamlConfiguration.loadConfiguration(new File(this.getDataFolder() + "/config.yml"));
 		database = new Database();
-		permissions = new PermissionManager();
 		areas = new AreaManager();
 		locale = new LocalizationHandler(getClassLoader());
-		PermissionListener.startListening();
-		registerCommands();
-		new LockManager().getLock(null);
+		for (Entry<String, IModuleLoader> module : modules.entrySet()) {
+			
+		}
+	}
+	
+	private void verifyModuleLoad(IModuleLoader module) {
+		if (module.getCurrentState() == IModuleLoader.ModuleState.LOADED || module.getCurrentState() == IModuleLoader.ModuleState.LOADING)
+			throw new IllegalStateException("Module '" + module.getModuleName() + "' is already loading/loaded!");
+		if (!module.canPolicyLoad())
+			throw new IllegalStateException("Module '" + module.getModuleName() + "' is not allowed to load due to the security policy!");
 	}
 
-	private void registerCommands() {
-		
-		
+	private void enableModule(IModuleLoader module) {
+		verifyModuleLoad(module);
+		try {
+			
+		} catch (Throwable e) {
+			log(Level.SEVERE, "Encountered an unrecoverable error while enabling module '" + module.getModuleName() + "'");
+			log(Level.SEVERE, e);
+			ModuleLoadException eDump = (e instanceof ModuleLoadException) ? (ModuleLoadException) e : new ModuleLoadException(module.getModuleName(), e);
+			if (mainConfig.getBoolean("securityPolicy.dumpExtendedInfo", true)) {
+				try {
+					File dumpFile = nextDumpFile(module.getModuleName());
+					log(Level.SEVERE, "In order to prevent security breaches, the server will now shut down. Technical information is stored in dump file at '" + dumpFile.getCanonicalPath() + "'");
+				} catch (Throwable e2) {
+					log(Level.SEVERE, "In order to prevent security breaches, the server will now shut down. Technical information dump failed...");
+					log(Level.SEVERE, e2);
+				}
+			} else {
+				
+			}
+		}
+	}
+	
+	private File nextDumpFile(String module) throws IOException {
+		if (!new File(this.getDataFolder() + "/dumps").exists()) {
+			new File(this.getDataFolder() + "/dumps").mkdirs();
+		}
+		for (int i = 1; ; i++) {
+			File f = new File(this.getDataFolder() + "/dumps/mcrash-" + module + "-" + i + ".dmp");
+			if (!f.exists()) {
+				f.createNewFile();
+				return f;
+			}
+		}
 	}
 
 	@Override

@@ -12,7 +12,7 @@ public interface IModuleLoader {
 	 *            the module loader relies on this value being non-null, the
 	 *            permissions module should be included in the dependency list.
 	 */
-	public void loadModule(PermissionManager permissions);
+	public void loadModule(PermissionManager permissions) throws ModuleLoadException;
 
 	/**
 	 * Unloads the GoldenApple module from memory and dumps any unsaved
@@ -34,9 +34,21 @@ public interface IModuleLoader {
 
 	/**
 	 * Gets a list of modules that this module depends on. The module will not
-	 * be started if one or more of these
+	 * be started if one or more of these modules has not been enabled.
 	 */
 	public String[] getModuleDependencies();
+
+	/**
+	 * Gets a value indicating whether this module is set to be loaded
+	 * automatically.
+	 */
+	public boolean canLoadAuto();
+
+	/**
+	 * Gets a value indicating whether the security policy allows this module to
+	 * be loaded.
+	 */
+	public boolean canPolicyLoad();
 
 	/**
 	 * Represents the state of a module at a given moment in time.
