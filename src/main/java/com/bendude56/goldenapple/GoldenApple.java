@@ -23,6 +23,7 @@ import com.bendude56.goldenapple.listener.PermissionListener;
 import com.bendude56.goldenapple.lock.LockManager;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 import com.bendude56.goldenapple.permissions.PermissionsModuleLoader;
+import com.bendude56.goldenapple.warps.WarpManager;
 
 public class GoldenApple extends JavaPlugin {
 	private static Logger	log	= Logger.getLogger("Minecraft");
@@ -72,6 +73,7 @@ public class GoldenApple extends JavaPlugin {
 	public Configuration		mainConfig;
 	public PermissionManager	permissions;
 	public AreaManager 			areas;
+	public WarpManager			warps;
 	public LocalizationHandler	locale;
 
 	public HashSet<Byte> getTransparentBlocks() {
@@ -135,6 +137,7 @@ public class GoldenApple extends JavaPlugin {
 		database = new Database();
 		permissions = new PermissionManager();
 		areas = new AreaManager();
+		warps = new WarpManager();
 		locale = new LocalizationHandler(getClassLoader());
 		PermissionListener.startListening();
 		registerCommands();
