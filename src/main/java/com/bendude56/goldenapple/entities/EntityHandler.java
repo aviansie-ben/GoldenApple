@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.bendude56.goldenapple.util.Calculations;
+import com.bendude56.goldenapple.util.Constants;
 
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
@@ -21,46 +22,16 @@ import org.bukkit.entity.Sheep;
  */
 public class EntityHandler {
 	
-	public final static EntityType[] HostileMobs = {
-			EntityType.ZOMBIE, //Normal Mobs
-			EntityType.CREEPER,
-			EntityType.SKELETON,
-			EntityType.SPIDER,
-			EntityType.SLIME,
-			EntityType.CAVE_SPIDER,
-			EntityType.SILVERFISH,
-			EntityType.PIG_ZOMBIE, //Nether Mobs
-			EntityType.GHAST,
-			EntityType.MAGMA_CUBE,
-			EntityType.BLAZE,
-			EntityType.ENDERMAN, //End Mobs
-			EntityType.ENDER_DRAGON
-			};
-	public final static EntityType[] PassiveMobs = {
-			EntityType.PIG,
-			EntityType.SHEEP,
-			EntityType.COW,
-			EntityType.CHICKEN,
-			EntityType.WOLF,
-			EntityType.OCELOT,
-			EntityType.SQUID,
-			EntityType.IRON_GOLEM,
-			EntityType.SNOWMAN,
-			EntityType.MUSHROOM_COW
-			};
-	public final static EntityType[] Vehicles = {
-			EntityType.BOAT,
-			EntityType.MINECART
-			};
+	
 	
 	public boolean isHostile(Entity entity) {
-		for (EntityType type : HostileMobs)
+		for (EntityType type : Constants.hostileMobs())
 			if (entity.getType() == type)
 				return true;
 		return false;
 	}
 	public boolean isPassive(Entity entity) {
-		for (EntityType type : PassiveMobs)
+		for (EntityType type : Constants.passiveMobs())
 			if (entity.getType() == type)
 				return true;
 		return false;
