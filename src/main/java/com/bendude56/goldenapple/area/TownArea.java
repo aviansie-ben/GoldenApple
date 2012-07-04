@@ -1,32 +1,41 @@
 package com.bendude56.goldenapple.area;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.Location;
 
-import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
-import com.bendude56.goldenapple.permissions.PermissionUser;
 
 public class TownArea extends ParentArea {
-	private Long ownerID;
+	private Long owner;
+	
+	private List<PrivateArea> subdivisions = new ArrayList<PrivateArea>();
 	
 	public TownArea(Long ID, Location corner1, Location corner2, boolean ignoreY, IPermissionUser owner) {
 		super(ID, corner1, corner2, ignoreY);
-		this.setOwner(owner);
+		this.owner = owner.getId();
 	}
 	
-	public void setOwner(IPermissionUser newOwner) {
-		if (newOwner != null)
-			ownerID = newOwner.getId();
+	public void addSubdivision(PrivateArea area){
+		if(!subdivisions.contains(area))
+			subdivisions.add(area);
+	}
+	public void deleteSubdivision(PrivateArea area){
+		if(subdivisions.contains(area))
+			subdivisions.remove(area);
 	}
 	
-	public PermissionUser getOwner() {
-		return GoldenApple.getInstance().permissions.getUser(ownerID);
+	public void setOwner(IPermissionUser owner) {
+		if (owner != null)
+			this.owner = owner.getId();
 	}
-
+	public Long getOwner() {
+		return owner;
+	}
 	public boolean isOwner(IPermissionUser user) {
-		return (user.getId() == ownerID);
+		return (user.getId() == owner);
 	}
-	
 	public boolean canEdit(IPermissionUser user) {
 		return (isOwner(user));
 	}
