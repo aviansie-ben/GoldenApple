@@ -10,40 +10,31 @@ import com.bendude56.goldenapple.GoldenApple;
  * @author Deaboy
  */
 public class ChildArea extends Area {
-	private Long parentID;
-	private Long subID;
+	private final Long parent;
 	
-	public ChildArea(Long ID, Location corner1, Location corner2, boolean ignoreY, Long parentID) {
-		this.setID(ID);
-		this.setCorner1(corner1);
-		this.setCorner2(corner2);
-		this.ignoreY(ignoreY);
-		this.parentID = parentID;
+	private int index;
+	
+	public ChildArea(Long ID, Location corner1, Location corner2, boolean ignoreY, ParentArea parent, int index) {
+		super(ID, corner1, corner2, ignoreY);
+		this.parent = parent.getID();
+		this.index = index;
 	}
 	
-	public Long getSubID() {
-		return subID;
+	public void setIndex(int index){
+		this.index = index;
 	}
-	
-	public void setSubID(Long subID) {
-		this.subID = subID;
+	public int getIndex() {
+		return index;
 	}
 	
 	public Long getParentID() {
-		return parentID;
+		return parent;
 	}
-	
 	public ParentArea getParent() {
-		if (GoldenApple.getInstance().areas.getArea(parentID) != null) {
-			return (ParentArea) GoldenApple.getInstance().areas.getArea(parentID);
+		if (GoldenApple.getInstance().areas.getArea(parent) != null) {
+			return (ParentArea) GoldenApple.getInstance().areas.getArea(parent);
 		} else {
 			return null;
-		}
-	}
-	
-	public void setParent(ParentArea parent) {
-		if (this.parentID != parent.getID()) {
-			this.parentID = parent.getID();
 		}
 	}
 }

@@ -23,8 +23,8 @@ public class Calculations {
 	 *            account. Set to false to ignore the Y-coordinate.
 	 * @return The distance between the two entities.
 	 */
-	public static double getDistance(Entity entity1, Entity entity2, boolean height) {
-		return getDistance(entity1.getLocation(), entity2.getLocation(), height);
+	public static double getDistance(Entity entity1, Entity entity2, boolean ignoreY) {
+		return getDistance(entity1.getLocation(), entity2.getLocation(), ignoreY);
 	}
 
 	/**
@@ -36,8 +36,8 @@ public class Calculations {
 	 *            account. Set to false to ignore the Y-coordinate.
 	 * @return The distance between the two locations.
 	 */
-	public static double getDistance(Location location1, Location location2, boolean height) {
-		if (height) {
+	public static double getDistance(Location location1, Location location2, boolean ignoreY) {
+		if (!ignoreY) {
 			return getDistance(location1.getX(), location1.getY(), location1.getZ(), location2.getX(), location2.getY(), location2.getZ());
 		} else {
 			return getDistance(location1.getX(), 0, location1.getZ(), location2.getX(), 0, location2.getZ());
