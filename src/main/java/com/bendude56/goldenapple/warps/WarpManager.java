@@ -42,6 +42,12 @@ public class WarpManager {
 	public static Permission checkpointsCreateAll;
 	public static Permission checkpointsDeleteAll;
 	public static Permission checkpointsWarpAll;
+	public static Permission areaWarpCreate;
+	public static Permission areaWarpEdit;
+	public static Permission areaWarpDelete;
+	public static Permission areaWarpCreateAll;
+	public static Permission areaWarpEditAll;
+	public static Permission areaWarpDeleteAll;
 	
 	private static HashMap<Long, PublicWarp> publicWarps;
 	private static HashMap<Long, PrivateWarp> privateWarps;
