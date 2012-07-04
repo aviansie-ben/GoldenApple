@@ -3,7 +3,9 @@ package com.bendude56.goldenapple.area;
 import org.bukkit.Location;
 import org.bukkit.World;
 
+import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.util.Calculations;
+import com.bendude56.goldenapple.warps.AreaWarp;
 
 /**
  * The basic area object that manages land from which other area-based classes
@@ -13,27 +15,25 @@ import com.bendude56.goldenapple.util.Calculations;
  * 
  */
 public class Area {
-	private Long		ID = (long) -1;
+	final Long			ID;
+	
 	private Location	corner1;
 	private Location	corner2;
+	
 	private boolean		ignoreY;
 	private boolean		disabled;
+	
+	public Area(Long ID, Location corner1, Location corner2, boolean ignoreY){
+		this.ID = ID;
+		this.corner1 = corner1;
+		this.corner2 = corner2;
+		this.ignoreY = ignoreY;
+	}
 	
 	public Long getID() {
 		return ID;
 	}
 	
-	public boolean noID() {
-		if (this.ID == (long) -1)
-			return true;
-		else
-			return false;
-	}
-	
-	protected void setID(Long ID) {
-		this.ID = ID; 
-	}
-
 	public Location getCorner1() {
 		return corner1;
 	}
@@ -60,6 +60,10 @@ public class Area {
 	
 	public void setCorner2(Location c) {
 		corner2 = c;
+	}
+	
+	public AreaWarp getWarp(){
+		return GoldenApple.getInstance().warps.getAreaWarp(this);
 	}
 	
 	public void ignoreY(boolean ignore) {

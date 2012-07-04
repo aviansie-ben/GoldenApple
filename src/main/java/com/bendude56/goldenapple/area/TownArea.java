@@ -9,11 +9,9 @@ import com.bendude56.goldenapple.permissions.PermissionUser;
 public class TownArea extends ParentArea {
 	private Long ownerID;
 	
-	public TownArea(Location corner1, Location corner2, boolean ignoreY, IPermissionUser owner) {
+	public TownArea(Long ID, Location corner1, Location corner2, boolean ignoreY, IPermissionUser owner) {
+		super(ID, corner1, corner2, ignoreY);
 		this.setOwner(owner);
-		this.setCorner1(corner1);
-		this.setCorner2(corner2);
-		this.ignoreY(ignoreY);
 	}
 	
 	public void setOwner(IPermissionUser newOwner) {

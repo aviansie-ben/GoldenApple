@@ -20,41 +20,35 @@ public class AreaManager {
 	private HashMap<Long, Area> areas;
 	
 	public void AddArea(Area area) {
-		if (!areas.containsValue(area) && area.noID()) {
-			Long ID = generateID();
-			area.setID(ID);
-			areas.put(ID, area);
+		if (!areas.containsValue(area)) {
+			areas.put(area.getID(), area);
 		}
 	}
 	
 	public PrivateArea newPrivateArea(Location corner1, Location corner2, boolean ignoreY, IPermissionUser owner) {
 		Long ID = generateID();
-		PrivateArea privateArea = new PrivateArea(corner1, corner2, ignoreY, owner);
-		privateArea.setID(ID);
+		PrivateArea privateArea = new PrivateArea(ID, corner1, corner2, ignoreY, owner);
 		areas.put(ID, privateArea);
 		return privateArea;
 	}
 	
 	public PvpArea newPvpArea(Location corner1, Location corner2, boolean ignoreY) {
 		Long ID = generateID();
-		PvpArea pvpArea = new PvpArea(corner1, corner2, ignoreY);
-		pvpArea.setID(ID);
+		PvpArea pvpArea = new PvpArea(ID, corner1, corner2, ignoreY);
 		areas.put(ID, pvpArea);
 		return pvpArea;
 	}
 
 	public SafetyArea newSafetyArea(Location corner1, Location corner2, boolean ignoreY) {
 		Long ID = generateID();
-		SafetyArea safetyArea = new SafetyArea(corner1, corner2, ignoreY);
-		safetyArea.setID(ID);
+		SafetyArea safetyArea = new SafetyArea(ID, corner1, corner2, ignoreY);
 		areas.put(ID, safetyArea);
 		return safetyArea;
 	}
 	
 	public TownArea newTownArea(Location corner1, Location corner2, boolean ignoreY, IPermissionUser owner) {
 		Long ID = generateID();
-		TownArea townArea = new TownArea(corner1, corner2, ignoreY, owner);
-		townArea.setID(ID);
+		TownArea townArea = new TownArea(ID, corner1, corner2, ignoreY, owner);
 		areas.put(ID, townArea);
 		return townArea;
 	}
@@ -62,7 +56,7 @@ public class AreaManager {
 	public ChildArea newChildArea(Location corner1, Location corner2, boolean ignoreY, Long ParentID) {
 		if (getArea(ParentID) == null || !(getArea(ParentID) instanceof ParentArea)) return null;
 		Long ID = generateID();
-		ChildArea childArea = new ChildArea(ID, corner1, corner2, ignoreY, ParentID);
+		ChildArea childArea = new ChildArea(ID, corner1, corner2, ignoreY, getArea(ParentID));
 		((ParentArea) getArea(ParentID)).addChild(childArea);
 		areas.put(ID, childArea);
 		return childArea;
@@ -114,11 +108,10 @@ public class AreaManager {
 				this.deleteArea(area.getID());
 			} else {
 				ChildArea child = area.getChildren().get(0);
-				this.deleteChildArea(child.getID());
-				area.setID(child.getID());
 				area.setCorner1(child.getCorner1());
 				area.setCorner2(child.getCorner2());
 				area.ignoreY(child.ignoreY());
+				this.deleteChildArea(child.getID());
 			}
 		}
 	}

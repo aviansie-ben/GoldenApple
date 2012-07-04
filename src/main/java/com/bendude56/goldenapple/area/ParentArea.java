@@ -3,6 +3,8 @@ package com.bendude56.goldenapple.area;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Location;
+
 import com.bendude56.goldenapple.GoldenApple;
 
 /**
@@ -12,6 +14,10 @@ import com.bendude56.goldenapple.GoldenApple;
  */
 public class ParentArea extends Area {
 	private List<Long> childrenIDs = new ArrayList<Long>();
+	
+	public ParentArea(Long ID, Location corner1, Location corner2, boolean ignoreY){
+		super(ID, corner1, corner2, ignoreY);
+	}
 	
 	public void addChild(ChildArea child) {
 		if (!childrenIDs.contains(child.getID())) {
