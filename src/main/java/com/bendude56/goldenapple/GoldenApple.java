@@ -25,10 +25,10 @@ import com.bendude56.goldenapple.permissions.PermissionsModuleLoader;
 import com.bendude56.goldenapple.warps.WarpManager;
 
 public class GoldenApple extends JavaPlugin {
-	private static Logger	log	= Logger.getLogger("Minecraft");
-	
-	public static final HashMap<String, IModuleLoader> modules = new HashMap<String, IModuleLoader>();
-	
+	private static Logger								log		= Logger.getLogger("Minecraft");
+
+	public static final HashMap<String, IModuleLoader>	modules	= new HashMap<String, IModuleLoader>();
+
 	static {
 		modules.put("Base", new BaseModuleLoader());
 		modules.put("Permissions", new PermissionsModuleLoader());
@@ -73,7 +73,7 @@ public class GoldenApple extends JavaPlugin {
 	public Configuration		mainConfig;
 	public PermissionManager	permissions;
 	public LockManager			locks;
-	public AreaManager 			areas;
+	public AreaManager			areas;
 	public WarpManager			warps;
 	public LocalizationHandler	locale;
 
@@ -104,7 +104,7 @@ public class GoldenApple extends JavaPlugin {
 			enableModule(module.getValue());
 		}
 	}
-	
+
 	private void verifyModuleLoad(IModuleLoader module) {
 		if (module.getCurrentState() == IModuleLoader.ModuleState.LOADED || module.getCurrentState() == IModuleLoader.ModuleState.LOADING)
 			throw new IllegalStateException("Module '" + module.getModuleName() + "' is already loading/loaded!");
@@ -115,11 +115,11 @@ public class GoldenApple extends JavaPlugin {
 	private void enableModule(IModuleLoader module) {
 		verifyModuleLoad(module);
 		try {
-			
+
 		} catch (Throwable e) {
 			log(Level.SEVERE, "Encountered an unrecoverable error while enabling module '" + module.getModuleName() + "'");
 			log(Level.SEVERE, e);
-			ModuleLoadException eDump = (e instanceof ModuleLoadException) ? (ModuleLoadException) e : new ModuleLoadException(module.getModuleName(), e);
+			ModuleLoadException eDump = (e instanceof ModuleLoadException) ? (ModuleLoadException)e : new ModuleLoadException(module.getModuleName(), e);
 			if (mainConfig.getBoolean("securityPolicy.dumpExtendedInfo", true)) {
 				try {
 					File dumpFile = nextDumpFile(module.getModuleName());
@@ -129,16 +129,16 @@ public class GoldenApple extends JavaPlugin {
 					log(Level.SEVERE, e2);
 				}
 			} else {
-				
+
 			}
 		}
 	}
-	
+
 	private File nextDumpFile(String module) throws IOException {
 		if (!new File(this.getDataFolder() + "/dumps").exists()) {
 			new File(this.getDataFolder() + "/dumps").mkdirs();
 		}
-		for (int i = 1; ; i++) {
+		for (int i = 1;; i++) {
 			File f = new File(this.getDataFolder() + "/dumps/mcrash-" + module + "-" + i + ".dmp");
 			if (!f.exists()) {
 				f.createNewFile();

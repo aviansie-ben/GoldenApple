@@ -5,8 +5,8 @@ import org.bukkit.Bukkit;
 import com.bendude56.goldenapple.commands.VerifyCommand;
 
 public class BaseModuleLoader implements IModuleLoader {
-	
-	private static ModuleState state = ModuleState.UNLOADED_USER;
+
+	private static ModuleState	state	= ModuleState.UNLOADED_USER;
 
 	@Override
 	public void loadModule(GoldenApple instance) {
@@ -19,7 +19,7 @@ public class BaseModuleLoader implements IModuleLoader {
 			// TODO Add cleanup code to clean up after failed module start
 		}
 	}
-	
+
 	private void registerCommands() {
 		Bukkit.getPluginCommand("gaverify").setExecutor(new VerifyCommand());
 	}

@@ -17,7 +17,7 @@ import com.bendude56.goldenapple.permissions.PermissionManager.PermissionNode;
 /**
  * this class' responsibility is to manage ALL warps,
  * public, private, or otherwise.
- * @author Danny
+ * @author Deaboy
  *
  */
 public class WarpManager {
