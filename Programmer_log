@@ -1,6 +1,13 @@
 PROJECT COLLABORATION FILE
 	This text file is to be used for communication between authors of the Golden Apple project about problems, questions, and notes about how to use certain functions and objects.
 
+[DEABOY] I made two lists in the Censor.java class. One is for blocked words, the other is
+			for strictly blocked words. The difference is this: words on the blocked list
+			must fully match the words on the message. In other words, if "pickles" is blocked,
+			then "pickleman" won't be blocked, but "pick le" will. Or even "P1ckl3". But if
+			pickle was on the blockedStrict list, then it would be blocked ANYWHERE it is
+			found. It would be blocked in each of these cases: "somepic kle", "Piiiiiickkkkleeee",
+			"picklesandwhich", "ilikepickles" and even "p11i1i1ickkkklll111ll__ee33e33".
 
 [DEABOY] I'd like the "hasPermission(string/permission)" functions removed from permission classes; it's unnecessary, since we already have "hasPermisison(string/permission, inherited)" functions. It will make the code cleaner.
 
