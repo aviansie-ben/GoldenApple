@@ -4,116 +4,174 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Censor {
-	private List<String> censored = new ArrayList<String>();
+	private static List<String> blocked = new ArrayList<String>();
+	private static List<String> blockedStrict = new ArrayList<String>();
 
-	public void censorWord(String word) {
-		if (!censored.contains(word))
-			censored.add(word);
+	private static final String CENSOR_STRING = "***";
+
+	public static void blockWord(String string, boolean strict) {
+		if (strict) {
+			if (!blockedStrict.contains(string.toLowerCase()))
+				blockedStrict.add(string.toLowerCase());
+			if (blocked.contains(string.toLowerCase()))
+				blocked.remove(string.toLowerCase());
+		} else {
+			if (!blocked.contains(string.toLowerCase()))
+				blocked.add(string.toLowerCase());
+			if (blockedStrict.contains(string.toLowerCase()))
+				blockedStrict.remove(string.toLowerCase());
+		}
+	}
+	public static boolean isBlocked(String string) {
+		return (blocked.contains(string.toLowerCase())
+				|| blockedStrict.contains(string.toLowerCase()));
+	}
+	public static void unblockWord(String string) {
+		if (blocked.contains(string.toLowerCase()))
+			blocked.remove(string.toLowerCase());
+		if (blockedStrict.contains(string.toLowerCase()))
+			blockedStrict.remove(string.toLowerCase());
 	}
 
-	public void uncensorWord(String word) {
-		if (censored.contains(word))
-			censored.remove(word);
-	}
-
-	public String removeAllCaps(String string) {
-		String value = "";
-		for (String word : string.split(" ")) {
-			int caps = 0;
-			for (int c=0; c < word.length(); c++) {
-				Character character = word.charAt(c);
-				if (Character.isUpperCase(character)) {
-					caps++;
+	public static String censorString(String string) {
+		List<String> wordsToBlock = new ArrayList<String>();
+		for (String blockedWord : blockedStrict) {
+			String word = "";
+			int char1 = 0;
+			int char2 = 0;
+			for (char1 = 0; char1 < string.length(); char1++) {
+				if (char2 < blockedWord.length()
+						&& format(string.substring(char1, char1)).equals(
+								format(blockedWord.substring(char2, char2)))) {
+					char2++;
+					word += string.substring(char1, char1);
+					if (char2 == blockedWord.length()) {
+						if (char1 + 1 >= string.length()
+								|| (char1 + 1 < string.length() && !format(
+										string.substring(char1, char1)).equals(
+										format(string.substring(char1 + 1,
+												char1 + 1))))) {
+							wordsToBlock.add(word);
+							char2 = 0;
+							word = "";
+						}
+					}
+				} else if (char1 > 0
+						&& format(string.substring(char1, char1)).equals(
+								format(string.substring(char1 - 1, char1 - 1)))) {
+					word += string.substring(char1, char1);
+				} else if (char2 == blockedWord.length()) {
+					wordsToBlock.add(word);
+					char2 = 0;
+					word = "";
+				} else if (char2 < blockedWord.length()
+						&& format(string.substring(char1, char1)).equals(" ")) {
+					word += string.substring(char1, char1);
+				} else {
+					char2 = 0;
+					word = "";
 				}
-			}
-			if (value.equalsIgnoreCase("")) {
-				value += "";
-			}
-			if (caps > 2) {
-				value += word.toLowerCase();
-			} else {
-				value += word;
 			}
 		}
-		return value;
-	}
+		for (String blockedWord : blocked) {
+			int char1 = 0;
+			int char2 = 0;
+			String word = "";
+			for (char1 = 0; char1 < string.length(); char1++) {
 
-	public String censorString(String string) {
-		String[] original = formatForCensorship(string).split(" ");
-		String word;
-		boolean wordIsBlocked = false;
-		int i = 0, ii = 0;
-
-		for (i = 0; i < original.length; i++) {
-			word = original[i];
-			wordIsBlocked = false;
-			for (String censored : this.censored) {
-				censored = formatForCensorship(censored).replaceAll(" ", "");
-				if (!wordIsBlocked)
-					ii = 0;
-				while (compareWords(original[i], censored) && !wordIsBlocked) {
-					if (word == censored) {
-						int pos = 0;
-						for (int c = 0; c < i; c++) {
-							pos += 1;
-							pos += original[c].length();
+				if (char2 < blockedWord.length()
+						&& format(string.substring(char1, char1)).equals(
+								format(blockedWord.substring(char2, char2)))) {
+					char2++;
+					word += string.substring(char1, char1);
+					if (char2 == blockedWord.length()) {
+						if (char1 + 1 >= string.length()
+								|| (char1 + 1 < string.length() && !format(
+										string.substring(char1, char1)).equals(
+										format(string.substring(char1 + 1,
+												char1 + 1))))) {
+							wordsToBlock.add(word);
+							char2 = 0;
+							word = "";
 						}
-						string = string.substring(0, pos + 1)
-								+ generateBlockedWord(word.length() + ii)
-								+ string.substring(
-										pos + word.length() + ii + 1,
-										string.length());
-						i += ii;
-						wordIsBlocked = true;
-					} else {
-						ii++;
-						word = word + original[i + ii];
 					}
+				} else if (char1 > 0
+						&& format(string.substring(char1, char1)).equals(
+								format(string.substring(char1 - 1, char1 - 1)))) {
+					word += string.substring(char1, char1);
+				} else if (char2 == blockedWord.length()
+						&& (char1 + 1 == string.length() || format(
+								string.substring(char1 + 1, char1 + 1)).equals(
+								" "))) {
+					wordsToBlock.add(word);
+					char2 = 0;
+					word = "";
+				} else if (char2 < blockedWord.length()
+						&& format(string.substring(char1, char1)).equals(" ")) {
+					word += string.substring(char1, char1);
+				} else {
+					char2 = 0;
+					word = "";
 				}
 			}
+		}
+		for (String word : wordsToBlock) {
+			string.replaceAll(word, CENSOR_STRING);
 		}
 		return string;
 	}
 
-	public boolean mustBeCensored(String string) {
-		String[] original = formatForCensorship(string).split(" ");
-		String word = "";
-		int i = 0, ii = 0;
-
-		for (i = 0; i < original.length; i++) {
-			word.equalsIgnoreCase(original[i]);
-			for (String censored : this.censored) {
-				censored = formatForCensorship(censored).replaceAll(" ", "");
-				ii = 0;
-				while (compareWords(original[i], censored)) {
-					if (word.equalsIgnoreCase(censored)) {
+	public static boolean containsBlockedWord(String string) {
+		for (String blockedWord : blockedStrict) {
+			int char1 = 0;
+			int char2 = 0;
+			for (char1 = 0; char1 < string.length(); char1++) {
+				if (format(string.substring(char1, char1)).equals(
+						format(blockedWord.substring(char2, char2)))) {
+					char2++;
+					if (char2 >= blockedWord.length()) {
 						return true;
-					} else {
-						ii++;
-						word = word + original[i + ii];
 					}
+				} else if (char1 > 0
+						&& format(string.substring(char1, char1)).equals(
+								format(string.substring(char1 - 1, char1 - 1)))) {
+				} else if (char2 < blockedWord.length()
+						&& format(string.substring(char1, char1)).equals(" ")) {
+				} else {
+					char2 = 0;
+				}
+			}
+		}
+		for (String blockedWord : blocked) {
+			int char1 = 0;
+			int char2 = 0;
+			for (char1 = 0; char1 < string.length(); char1++) {
+				if (format(string.substring(char1, char1)).equals(
+						format(blockedWord.substring(char2, char2)))
+						&& (char2 > 0 || (char1 > 0 && format(
+								string.substring(char1 - 1, char1 - 1)).equals(
+								" ")))) {
+					char2++;
+					if (char2 >= blockedWord.length()) {
+						if (char1 + 1 >= string.length()
+								|| string.substring(char1 + 1, char1 + 1)
+										.equals(" "))
+							return true;
+					}
+				} else if (char1 > 0
+						&& format(string.substring(char1, char1)).equals(
+								format(string.substring(char1 - 1, char1 - 1)))) {
+				} else if (char2 < blockedWord.length()
+						&& format(string.substring(char1, char1)).equals(" ")) {
+				} else {
+					char2 = 0;
 				}
 			}
 		}
 		return false;
 	}
 
-	public boolean compareWords(String word, String censored) {
-		int c = 0;
-		for (int w = 0; w < word.length(); w++) {
-			if (c < censored.length() && word.charAt(w) == censored.charAt(c)) {
-				c++;
-			} else if (w > 0 && word.charAt(w) == word.charAt(w - 1)) {
-				// Do nothing, just to take repeating characters into account.
-				// Example: "FFFFUUUUUUUUUUU"
-			} else {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	public String formatForCensorship(String string) {
+	public static String format(String string) {
 		string = string.toLowerCase();
 		// Letters
 		string.replaceAll("@", "a");
@@ -150,13 +208,6 @@ public class Censor {
 		string.replaceAll("+", " ");
 		string.replaceAll("=", " ");
 
-		return string;
-	}
-
-	public String generateBlockedWord(int i) {
-		String string = "";
-		while (i > 0)
-			string += "*";
 		return string;
 	}
 }
