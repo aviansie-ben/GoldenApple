@@ -105,14 +105,16 @@ public class PermissionUser implements IPermissionUser {
 
 	@Override
 	public boolean hasPermission(String permission) {
-		// TODO Auto-generated method stub
+		for (Permission perm : permissions){
+			if (permission.equalsIgnoreCase(perm.getFullName()))
+				return true;
+		}
 		return false;
 	}
 
 	@Override
 	public boolean hasPermission(Permission permission) {
-		// TODO Auto-generated method stub
-		return false;
+		return permissions.contains(permission);
 	}
 	
 	@Override
