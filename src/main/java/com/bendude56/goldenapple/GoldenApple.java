@@ -18,6 +18,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.bendude56.goldenapple.area.AreaManager;
+import com.bendude56.goldenapple.chat.ChatManager;
 import com.bendude56.goldenapple.lock.LockManager;
 import com.bendude56.goldenapple.lock.LockModuleLoader;
 import com.bendude56.goldenapple.permissions.PermissionManager;
@@ -75,6 +76,7 @@ public class GoldenApple extends JavaPlugin {
 	public LockManager			locks;
 	public AreaManager			areas;
 	public WarpManager			warps;
+	public ChatManager			chat;
 	public LocalizationHandler	locale;
 
 	@Override

@@ -1,7 +1,12 @@
 package com.bendude56.goldenapple.chat;
 
-import org.bukkit.ChatColor;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+
+import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.permissions.PermissionGroup;
 
 public class ChatChannel {
@@ -11,6 +16,8 @@ public class ChatChannel {
 	private String label;
 
 	private ChatColor color;
+	
+	private List<Player> spies = new ArrayList<Player>();
 
 	public ChatChannel(long ID, String label) {
 		this.ID = ID;
@@ -37,12 +44,31 @@ public class ChatChannel {
 	public long getId() {
 		return this.ID;
 	}
-	
+
+	public void sendMessage(String message){
+		for (Player player : GoldenApple.getInstance().chat.getPlayers(this))
+			player.sendMessage(message);
+		for (Player spy : getSpies())
+			spy.sendMessage(color + "[" + label + "] " + ChatColor.WHITE + message);
+	}
+
 	public void setGroup(PermissionGroup group){
 		this.group = group.getId();
 	}
 	public long getGroupId(){
 		return group;
+	}
+
+	public void addSpy(Player player){
+		if (!spies.contains(player))
+			spies.add(player);
+	}
+	public List<Player> getSpies(){
+		return spies;
+	}
+	public void removeSpy(Player player){
+		if (spies.contains(player))
+			spies.remove(player);
 	}
 
 	public void setLabel(String label) {
