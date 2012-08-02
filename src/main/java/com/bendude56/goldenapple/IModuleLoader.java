@@ -1,5 +1,7 @@
 package com.bendude56.goldenapple;
 
+import com.bendude56.goldenapple.permissions.PermissionManager;
+
 public interface IModuleLoader {
 	/**
 	 * Loads the GoldenApple module into memory and prepares it for use. Should
@@ -13,10 +15,20 @@ public interface IModuleLoader {
 	public void loadModule(GoldenApple instance) throws ModuleLoadException;
 
 	/**
+	 * Registers module permissions. This will get called without a call to
+	 * {@link loadModule(GoldenApple)} if the permissions system recovers from
+	 * an error.
+	 * 
+	 * @param permissions The {@link PermissionManager} that is currently
+	 *            controlling permissions.
+	 */
+	public void registerPermissions(PermissionManager permissions);
+
+	/**
 	 * Unloads the GoldenApple module from memory and dumps any unsaved
 	 * information into the database.
 	 */
-	public void unloadModule();
+	public void unloadModule(GoldenApple instance);
 
 	/**
 	 * Gets the name of the module that this loader is designed to load into
@@ -29,6 +41,12 @@ public interface IModuleLoader {
 	 * loaded by this loader.
 	 */
 	public ModuleState getCurrentState();
+
+	/**
+	 * Sets the module's current state. Used when loading a module to report
+	 * errors to administrators using /gamodule.
+	 */
+	public void setState(ModuleState state);
 
 	/**
 	 * Gets a list of modules that this module depends on. The module will not

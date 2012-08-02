@@ -21,14 +21,30 @@ import com.bendude56.goldenapple.util.Serializer;
  * @author ben_dude56
  */
 public class PermissionManager {
+	
+	// goldenapple
 	public static PermissionNode goldenAppleNode;
+	
+	// goldenapple.permissions
 	public static PermissionNode permissionNode;
+	
+	// goldenapple.permissions.user
+	public static PermissionNode userNode;
 	public static Permission userAddPermission;
 	public static Permission userRemovePermission;
 	public static Permission userEditPermission;
+	
+	// goldenapple.permissions.group
+	public static PermissionNode groupNode;
 	public static Permission groupAddPermission;
 	public static Permission groupRemovePermission;
 	public static Permission groupEditPermission;
+	
+	// goldenapple.module
+	public static PermissionNode moduleNode;
+	public static Permission moduleLoadPermission;
+	public static Permission moduleUnloadPermission;
+	public static Permission moduleQueryPermission;
 	
 	private HashMap<Long, PermissionUser>	userCache	= new HashMap<Long, PermissionUser>();
 	private Deque<Long>						cacheOut	= new ArrayDeque<Long>();
@@ -421,7 +437,9 @@ public class PermissionManager {
 				}
 			}
 		} else {
-			throw new NullPointerException("Cannot change a user's stickyness before they are loaded into the cache!");
+			if (getUser(id) == null) {
+				throw new NullPointerException("Attempting to change the stickyness of a user that does not exist!");
+			}
 		}
 	}
 

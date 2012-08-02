@@ -40,6 +40,13 @@ public class LocalizationHandler {
 			throw new RuntimeException("Unable to find valid locale file to load from!");
 		}
 	}
+	
+	public String getMessage(User user, String message) {
+		String lang = user.getPreferredLocale();
+		if (!secondaryMessages.containsKey(lang))
+			lang = defaultLocale;
+		return secondaryMessages.get(lang).get(message);
+	}
 
 	public void sendMessage(User user, String message, boolean multiline) {
 		sendMessage(user, message, multiline, new String[0]);
@@ -63,6 +70,7 @@ public class LocalizationHandler {
 		for (int i = 0; i < args.length; i++) {
 			msg = msg.replace("%" + (i + 1), args[i]);
 		}
-		user.getHandle().sendMessage(msg);
+		if (msg != null && msg.length() > 0)
+			user.getHandle().sendMessage(msg);
 	}
 }

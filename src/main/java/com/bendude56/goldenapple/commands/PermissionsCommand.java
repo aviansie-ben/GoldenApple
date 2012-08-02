@@ -1,5 +1,6 @@
 package com.bendude56.goldenapple.commands;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import org.bukkit.command.Command;
@@ -13,15 +14,14 @@ import com.bendude56.goldenapple.permissions.PermissionGroup;
 public class PermissionsCommand implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
 		GoldenApple instance = GoldenApple.getInstance();
-
 		User user = User.getUser(sender);
 
-		if (!user.hasPermission("goldenapple.permissions")) {
+		/*if (!user.hasPermission("goldenapple.permissions")) {
 			GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			return true;
-		}
+		}*/
 
-		if (args.length == 0 || args[0] == "help") {
+		if (args.length == 0 || args[0].equalsIgnoreCase("help")) {
 			sendHelp(user, commandLabel);
 			return true;
 		}
@@ -57,29 +57,13 @@ public class PermissionsCommand implements CommandExecutor {
 					changeGroups.add(args[i + 1]);
 					i++;
 				}
-			} else if (args[i].equalsIgnoreCase("-d")) {
-				if (add) {
-					instance.locale.sendMessage(user, "error.permissions.conflict", false);
-					return true;
-				} else if (!addPermissions.isEmpty() || !remPermissions.isEmpty()) {
-					instance.locale.sendMessage(user, "error.permissions.conflict", false);
-					return true;
-				} else {
-					remove = true;
-				}
+			} else if (args[i].equalsIgnoreCase("-r")) {
+				remove = true;
 			} else if (args[i].equalsIgnoreCase("-a")) {
-				if (remove) {
-					instance.locale.sendMessage(user, "error.permissions.conflict", false);
-					return true;
-				} else {
-					add = true;
-				}
+				add = true;
 			} else if (args[i].equalsIgnoreCase("-pa")) {
 				if (i == args.length - 1 || args[i + 1].startsWith("-")) {
 					instance.locale.sendMessage(user, "shared.parameterMissing", false, args[i]);
-				} else if (remove) {
-					instance.locale.sendMessage(user, "error.permissions.conflict", false);
-					return true;
 				} else {
 					addPermissions.add(args[i + 1]);
 					i++;
@@ -87,9 +71,6 @@ public class PermissionsCommand implements CommandExecutor {
 			} else if (args[i].equalsIgnoreCase("-pr")) {
 				if (i == args.length - 1 || args[i + 1].startsWith("-")) {
 					instance.locale.sendMessage(user, "shared.parameterMissing", false, args[i]);
-				} else if (remove) {
-					instance.locale.sendMessage(user, "error.permissions.conflict", false);
-					return true;
 				} else {
 					remPermissions.add(args[i + 1]);
 					i++;
@@ -97,9 +78,6 @@ public class PermissionsCommand implements CommandExecutor {
 			} else if (args[i].equalsIgnoreCase("-ua")) {
 				if (i == args.length - 1 || args[i + 1].startsWith("-")) {
 					instance.locale.sendMessage(user, "shared.parameterMissing", false, args[i]);
-				} else if (remove) {
-					instance.locale.sendMessage(user, "error.permissions.conflict", false);
-					return true;
 				} else {
 					addUsers.add(args[i + 1]);
 					i++;
@@ -107,9 +85,6 @@ public class PermissionsCommand implements CommandExecutor {
 			} else if (args[i].equalsIgnoreCase("-ur")) {
 				if (i == args.length - 1 || args[i + 1].startsWith("-")) {
 					instance.locale.sendMessage(user, "shared.parameterMissing", false, args[i]);
-				} else if (remove) {
-					instance.locale.sendMessage(user, "error.permissions.conflict", false);
-					return true;
 				} else {
 					remUsers.add(args[i + 1]);
 					i++;
@@ -117,9 +92,6 @@ public class PermissionsCommand implements CommandExecutor {
 			} else if (args[i].equalsIgnoreCase("-ga")) {
 				if (i == args.length - 1 || args[i + 1].startsWith("-")) {
 					instance.locale.sendMessage(user, "shared.parameterMissing", false, args[i]);
-				} else if (remove) {
-					instance.locale.sendMessage(user, "error.permissions.conflict", false);
-					return true;
 				} else {
 					addGroups.add(args[i + 1]);
 					i++;
@@ -127,9 +99,6 @@ public class PermissionsCommand implements CommandExecutor {
 			} else if (args[i].equalsIgnoreCase("-gr")) {
 				if (i == args.length - 1 || args[i + 1].startsWith("-")) {
 					instance.locale.sendMessage(user, "shared.parameterMissing", false, args[i]);
-				} else if (remove) {
-					instance.locale.sendMessage(user, "error.permissions.conflict", false);
-					return true;
 				} else {
 					remGroups.add(args[i + 1]);
 					i++;
@@ -143,34 +112,98 @@ public class PermissionsCommand implements CommandExecutor {
 			return true;
 		}
 		if (remove) {
-			ArrayList<Long> users = new ArrayList<Long>();
-			ArrayList<Long> groups = new ArrayList<Long>();
-			for (String u : changeUsers) {
-				long id = instance.permissions.getUserId(u);
-				if (id != -1) {
-					users.add(id);
-				}
+			if (add || !remPermissions.isEmpty() || !addPermissions.isEmpty() || !addUsers.isEmpty() || !remUsers.isEmpty() || !addGroups.isEmpty() || !remGroups.isEmpty()) {
+				instance.locale.sendMessage(user, "error.permissions.conflict", false);
+				return true;
 			}
-			for (String g : changeGroups) {
-				PermissionGroup group = instance.permissions.getGroup(g);
-				if (group != null) {
-					groups.add(group.getId());
-				}
-			}
-			if (users.isEmpty() && groups.isEmpty()) {
-				instance.locale.sendMessage(user, "error.permissions.noTarget", false, "-d");
+			if (changeUsers.isEmpty() && changeGroups.isEmpty()) {
+				instance.locale.sendMessage(user, "error.permissions.noTarget", false, "-r");
 				return true;
 			}
 			if (verified) {
+				ArrayList<Long> users = new ArrayList<Long>();
+				ArrayList<Long> groups = new ArrayList<Long>();
+				for (String u : changeUsers) {
+					long id = instance.permissions.getUserId(u);
+					if (id != -1) {
+						users.add(id);
+					} else if (verified) {
+						instance.locale.sendMessage(user, "error.permissions.remove.userNotFound", false, u);
+					}
+				}
+				for (String g : changeGroups) {
+					PermissionGroup group = instance.permissions.getGroup(g);
+					if (group != null) {
+						groups.add(group.getId());
+					} else if (verified) {
+						instance.locale.sendMessage(user, "error.permissions.remove.groupNotFound", false, g);
+					}
+				}
 				for (long id : users) {
 					if (instance.permissions.isSticky(id)) {
-
+						instance.locale.sendMessage(user, "error.permissions.remove.userOnline", false, instance.permissions.getUser(id).getName());
+					} else {
+						String name = instance.permissions.getUser(id).getName();
+						try {
+							instance.permissions.deleteUser(id);
+							instance.locale.sendMessage(user, "general.permissions.remove.user", false, name);
+						} catch (SQLException e) {
+							instance.locale.sendMessage(user, "error.permissions.remove.userUnknown", false, name);
+						}
+					}
+				}
+				for (long id : groups) {
+					String name = instance.permissions.getGroup(id).getName();
+					try {
+						instance.permissions.deleteGroup(id);
+						instance.locale.sendMessage(user, "general.permissions.remove.group", false, name);
+					} catch (SQLException e) {
+						instance.locale.sendMessage(user, "error.permissions.remove.groupUnknown", false, name);
 					}
 				}
 			} else {
-
+				instance.locale.sendMessage(user, "general.permissions.remove.warnStart", false);
+				for (String u : changeUsers) {
+					instance.locale.sendMessage(user, "general.permissions.remove.warnUser", false, u);
+				}
+				for (String g : changeGroups) {
+					instance.locale.sendMessage(user, "general.permissions.remove.warnGroup", false, g);
+				}
+				instance.locale.sendMessage(user, "general.permissions.remove.warnEnd", false);
 			}
 			return true;
+		} else if (add) {
+			if (!remPermissions.isEmpty() || !addUsers.isEmpty() || !remUsers.isEmpty() || !addGroups.isEmpty() || !remGroups.isEmpty()) {
+				instance.locale.sendMessage(user, "error.permissions.conflict", false);
+				return true;
+			} else if (changeUsers.isEmpty() && changeGroups.isEmpty()) {
+				instance.locale.sendMessage(user, "error.permissions.noTarget", false, "-a");
+				return true;
+			}
+			for (String u : changeUsers) {
+				try {
+					if (instance.permissions.userExists(u)) {
+						instance.locale.sendMessage(user, "error.permissions.add.userExists", false, u);
+					} else {
+						instance.permissions.createUser(u);
+						instance.locale.sendMessage(user, "general.permissions.add.user", false, u);
+					}
+				} catch (SQLException e) {
+					instance.locale.sendMessage(user, "error.permissions.add.userUnknown", false, u);
+				}
+			}
+			for (String g : changeGroups) {
+				try {
+					if (instance.permissions.groupExists(g)) {
+						instance.locale.sendMessage(user, "error.permissions.add.groupExists", false, g);
+					} else {
+						instance.permissions.createGroup(g);
+						instance.locale.sendMessage(user, "general.permissions.add.group", false, g);
+					}
+				} catch (SQLException e) {
+					instance.locale.sendMessage(user, "error.permissions.add.groupUnknown", false, g);
+				}
+			}
 		}
 		return true;
 	}

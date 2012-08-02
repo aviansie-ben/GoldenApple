@@ -17,6 +17,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.bendude56.goldenapple.IModuleLoader.ModuleState;
 import com.bendude56.goldenapple.area.AreaManager;
 import com.bendude56.goldenapple.chat.ChatManager;
 import com.bendude56.goldenapple.lock.LockManager;
@@ -46,7 +47,7 @@ public class GoldenApple extends JavaPlugin {
 			log(Level.WARNING, "Command performed at: (" + l.getX() + ", " + l.getY() + ", " + l.getZ() + ", " + l.getWorld().getName() + ")");
 		}
 		if (sendMessage) {
-			getInstance().locale.sendMessage(u, "basic.noPermission", false);
+			getInstance().locale.sendMessage(u, "shared.noPermission", false);
 		}
 	}
 
@@ -103,21 +104,44 @@ public class GoldenApple extends JavaPlugin {
 		database = new Database();
 		locale = new LocalizationHandler(getClassLoader());
 		for (Entry<String, IModuleLoader> module : modules.entrySet()) {
-			enableModule(module.getValue());
+			if (module.getValue().canLoadAuto() && module.getValue().canPolicyLoad() && module.getValue().getCurrentState() == ModuleState.UNLOADED_USER) {
+				enableModule(module.getValue(), true);
+			}
 		}
 	}
 
-	private void verifyModuleLoad(IModuleLoader module) {
-		if (module.getCurrentState() == IModuleLoader.ModuleState.LOADED || module.getCurrentState() == IModuleLoader.ModuleState.LOADING)
-			throw new IllegalStateException("Module '" + module.getModuleName() + "' is already loading/loaded!");
-		if (!module.canPolicyLoad())
-			throw new IllegalStateException("Module '" + module.getModuleName() + "' is not allowed to load due to the security policy!");
+	private void verifyModuleLoad(IModuleLoader module, boolean loadDependancies) {
+		if (module.getCurrentState() == IModuleLoader.ModuleState.LOADED || module.getCurrentState() == IModuleLoader.ModuleState.LOADING) {
+			throw new IllegalStateException("0: Module '" + module.getModuleName() + "' already loaded");
+		} else if (!module.canPolicyLoad()) {
+			throw new IllegalStateException("1: Module '" + module.getModuleName() + "' blocked by policy");
+		} else {
+			for (String dependancy : module.getModuleDependencies()) {
+				if (!modules.containsKey(dependancy)) {
+					throw new IllegalStateException("2: Dependancy error in module '" + module.getModuleName() + "': Dependancy '" + dependancy + "' not found");
+				} else if (modules.get(dependancy).getCurrentState() == ModuleState.LOADING) {
+					throw new IllegalStateException("2: Dependancy error in module '" + module.getModuleName() + "': Dependancy '" + dependancy + "' is currently loading");
+				} else if (modules.get(dependancy).getCurrentState() != ModuleState.LOADED) {
+					if (loadDependancies) {
+						try {
+							if (!enableModule(modules.get(dependancy), true))
+								throw new IllegalStateException("2: Dependancy error in module '" + module.getModuleName() + "': Dependancy '" + dependancy + "' failed to load");
+						} catch (Throwable e) {
+							throw new IllegalStateException("2: Dependancy error in module '" + module.getModuleName() + "': Dependancy '" + dependancy + "' failed to load");
+						}
+					} else {
+						throw new IllegalStateException("2: Dependancy error in module '" + module.getModuleName() + "': Dependancy '" + dependancy + "'not loaded");
+					}
+				}
+			}
+		}
 	}
 
-	private void enableModule(IModuleLoader module) {
-		verifyModuleLoad(module);
+	public boolean enableModule(IModuleLoader module, boolean loadDependancies) {
+		verifyModuleLoad(module, loadDependancies);
 		try {
-
+			module.loadModule(this);
+			return true;
 		} catch (Throwable e) {
 			log(Level.SEVERE, "Encountered an unrecoverable error while enabling module '" + module.getModuleName() + "'");
 			log(Level.SEVERE, e);
@@ -125,15 +149,44 @@ public class GoldenApple extends JavaPlugin {
 			if (mainConfig.getBoolean("securityPolicy.dumpExtendedInfo", true)) {
 				try {
 					File dumpFile = nextDumpFile(module.getModuleName());
-					log(Level.SEVERE, "In order to prevent security breaches, the server will now shut down. Technical information is stored in dump file at '" + dumpFile.getCanonicalPath() + "'");
+					log(Level.SEVERE, "Technical information dumped to " + dumpFile.getCanonicalPath());
 				} catch (Throwable e2) {
-					log(Level.SEVERE, "In order to prevent security breaches, the server will now shut down. Technical information dump failed...");
+					log(Level.SEVERE, "An error occured while dumping technical information:");
 					log(Level.SEVERE, e2);
 				}
-			} else {
-
+			}
+			return false;
+		}
+	}
+	
+	public boolean disableModule(IModuleLoader module, boolean force) {
+		if (!force && module.getCurrentState() != ModuleState.LOADED)
+			throw new IllegalStateException("Module '" + module.getModuleName() + "' was not in an expected state to be disabled");
+		for (Entry<String, IModuleLoader> checkDepend : modules.entrySet()) {
+			if (checkDepend.getValue().getCurrentState() != ModuleState.LOADED)
+				continue;
+			for (String depend : checkDepend.getValue().getModuleDependencies()) {
+				if (depend.equals(module.getModuleName())) {
+					disableModule(checkDepend.getValue(), force);
+				}
 			}
 		}
+		try {
+			module.unloadModule(this);
+		} catch (Throwable e) {
+			log(Level.WARNING, "Module '" + module.getModuleName() + "' threw an exception while unloading:");
+			log(Level.WARNING, e);
+		}
+		if (module.getCurrentState() != ModuleState.UNLOADED_USER) {
+			if (force) {
+				log(Level.SEVERE, "Module '" + module.getModuleName() + "' is not in an expected state after unloading. Forcing shutdown...");
+				module.setState(ModuleState.UNLOADED_USER);
+			} else {
+				log(Level.SEVERE, "Module '" + module.getModuleName() + "' is not in an expected state after unloading.");
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private File nextDumpFile(String module) throws IOException {

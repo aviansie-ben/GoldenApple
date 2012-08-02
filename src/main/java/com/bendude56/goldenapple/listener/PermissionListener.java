@@ -48,5 +48,6 @@ public class PermissionListener implements Listener, EventExecutor {
 
 	private void playerLogin(PlayerLoginEvent event) {
 		PermissionUser u = GoldenApple.getInstance().permissions.createUser(event.getPlayer().getName());
+		
 	}
 }

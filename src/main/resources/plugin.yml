@@ -6,10 +6,14 @@ authors: ['ben_dude56', 'Deaboy']
 softdepend: [Spout, WorldEdit]
 commands:
     gapermissions:
-        usage: Use /permissions help for help
+        usage: Use /<command> help for help
         description: Edits group and user permissions
         aliases: ['p', 'permissions']
     gaverify:
-        usage: /verify
+        usage: /<command>
         description: Confirms the use of a potentially dangerous command
         aliases: ['verify']
+    gamodule:
+        usage: /<command> {-ls|<Module> {-q|-e|-d}}
+        description: Controls GoldenApple modules
+        aliases: ['m', 'module']

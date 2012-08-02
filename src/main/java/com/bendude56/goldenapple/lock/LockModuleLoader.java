@@ -24,7 +24,7 @@ public class LockModuleLoader implements IModuleLoader {
 		state = ModuleState.LOADED;
 	}
 	
-	private void registerPermissions(PermissionManager permissions) {
+	public void registerPermissions(PermissionManager permissions) {
 		LockManager.lockNode = permissions.registerNode("lock", PermissionManager.goldenAppleNode);
 		LockManager.createPermission = permissions.registerPermission("create", LockManager.lockNode);
 		
@@ -46,8 +46,9 @@ public class LockModuleLoader implements IModuleLoader {
 	}
 
 	@Override
-	public void unloadModule() {
+	public void unloadModule(GoldenApple instance) {
 		LockListener.stopListening();
+		state = ModuleState.UNLOADED_USER;
 	}
 
 	@Override
@@ -58,6 +59,11 @@ public class LockModuleLoader implements IModuleLoader {
 	@Override
 	public ModuleState getCurrentState() {
 		return state;
+	}
+	
+	@Override
+	public void setState(ModuleState state) {
+		LockModuleLoader.state = state;
 	}
 
 	@Override

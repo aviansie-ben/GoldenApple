@@ -2,7 +2,9 @@ package com.bendude56.goldenapple;
 
 import org.bukkit.Bukkit;
 
+import com.bendude56.goldenapple.commands.ModuleCommand;
 import com.bendude56.goldenapple.commands.VerifyCommand;
+import com.bendude56.goldenapple.permissions.PermissionManager;
 
 public class BaseModuleLoader implements IModuleLoader {
 
@@ -22,10 +24,15 @@ public class BaseModuleLoader implements IModuleLoader {
 
 	private void registerCommands() {
 		Bukkit.getPluginCommand("gaverify").setExecutor(new VerifyCommand());
+		Bukkit.getPluginCommand("gamodule").setExecutor(new ModuleCommand());
+	}
+	
+	public void registerPermissions(PermissionManager permissions) {
+		// Do nothing
 	}
 
 	@Override
-	public void unloadModule() {
+	public void unloadModule(GoldenApple instance) {
 		// This module should never be unloaded during normal operation
 	}
 
@@ -37,6 +44,11 @@ public class BaseModuleLoader implements IModuleLoader {
 	@Override
 	public ModuleState getCurrentState() {
 		return state;
+	}
+	
+	@Override
+	public void setState(ModuleState state) {
+		BaseModuleLoader.state = state;
 	}
 
 	@Override
