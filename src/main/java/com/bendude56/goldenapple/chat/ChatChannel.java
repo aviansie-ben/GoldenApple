@@ -85,6 +85,7 @@ public class ChatChannel {
 		return this.color;
 	}
 	
+	@Override
 	public String toString(){
 		return (ID + ":" + label + ":" + color.toString() + ":" + group);
 	}

@@ -24,6 +24,7 @@ public class LockModuleLoader implements IModuleLoader {
 		state = ModuleState.LOADED;
 	}
 	
+	@Override
 	public void registerPermissions(PermissionManager permissions) {
 		LockManager.lockNode = permissions.registerNode("lock", PermissionManager.goldenAppleNode);
 		LockManager.createPermission = permissions.registerPermission("create", LockManager.lockNode);

@@ -55,11 +55,6 @@ public class ChatManager {
 		return LOBBY;
 	}
 	
-	/**
-	 * Creates a new chat channel;
-	 * @param label
-	 * @return
-	 */
 	public ChatChannel createChannel(String label){
 		ChatChannel channel = new ChatChannel(generateId(), label, ChatColor.WHITE);
 		chatChannels.put(channel.getId(), channel);

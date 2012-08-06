@@ -12,6 +12,7 @@ import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.permissions.PermissionGroup;
 
 public class PermissionsCommand implements CommandExecutor {
+	@Override
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
 		GoldenApple instance = GoldenApple.getInstance();
 		User user = User.getUser(sender);
@@ -128,7 +129,7 @@ public class PermissionsCommand implements CommandExecutor {
 					if (id != -1) {
 						users.add(id);
 					} else if (verified) {
-						instance.locale.sendMessage(user, "error.permissions.remove.userNotFound", false, u);
+						instance.locale.sendMessage(user, "error.permissions.remove.userNotFoundWarn", false, u);
 					}
 				}
 				for (String g : changeGroups) {
@@ -136,7 +137,7 @@ public class PermissionsCommand implements CommandExecutor {
 					if (group != null) {
 						groups.add(group.getId());
 					} else if (verified) {
-						instance.locale.sendMessage(user, "error.permissions.remove.groupNotFound", false, g);
+						instance.locale.sendMessage(user, "error.permissions.remove.groupNotFoundWarn", false, g);
 					}
 				}
 				for (long id : users) {
@@ -203,6 +204,14 @@ public class PermissionsCommand implements CommandExecutor {
 				} catch (SQLException e) {
 					instance.locale.sendMessage(user, "error.permissions.add.groupUnknown", false, g);
 				}
+			}
+		} else {
+			if (!addUsers.isEmpty()) {
+				if (changeGroups.isEmpty()) {
+					instance.locale.sendMessage(user, "error.permissions.noTarget", false, "-ua");
+					return true;
+				}
+				
 			}
 		}
 		return true;

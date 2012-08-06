@@ -19,8 +19,10 @@ public class Calculations {
 	 * 
 	 * @param entity1 The first entity
 	 * @param entity2 The second entity
-	 * @param height Set to true if you want to take the y-coordinate into
-	 *            account. Set to false to ignore the Y-coordinate.
+	 * @param ignoreY Whether or not the Y coordinate should be taken into
+	 *            account when calculating the distance. If true, the Y
+	 *            coordinate will be ignored. If false, the Y coordinate will be
+	 *            used in calculations.
 	 * @return The distance between the two entities.
 	 */
 	public static double getDistance(Entity entity1, Entity entity2, boolean ignoreY) {
@@ -32,8 +34,10 @@ public class Calculations {
 	 * 
 	 * @param location1 The first location
 	 * @param location2 The second location
-	 * @param height Set to true if you want to take the y-coordinate into
-	 *            account. Set to false to ignore the Y-coordinate.
+	 * @param ignoreY Whether or not the Y coordinate should be taken into
+	 *            account when calculating the distance. If true, the Y
+	 *            coordinate will be ignored. If false, the Y coordinate will be
+	 *            used in calculations.
 	 * @return The distance between the two locations.
 	 */
 	public static double getDistance(Location location1, Location location2, boolean ignoreY) {

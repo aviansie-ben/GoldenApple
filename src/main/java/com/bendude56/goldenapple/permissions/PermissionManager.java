@@ -133,7 +133,8 @@ public class PermissionManager {
 	}
 
 	private void checkDefaultGroups() {
-		createGroup(GoldenApple.getInstance().mainConfig.getString("modules.permissions.reqGroup"));
+		if (GoldenApple.getInstance().mainConfig.getString("modules.permissions.reqGroup") != "")
+			createGroup(GoldenApple.getInstance().mainConfig.getString("modules.permissions.reqGroup"));
 		for (String g : GoldenApple.getInstance().mainConfig.getStringList("modules.permissions.defaultGroups")) {
 			createGroup(g);
 		}

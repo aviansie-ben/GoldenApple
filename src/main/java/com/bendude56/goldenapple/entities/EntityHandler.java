@@ -154,10 +154,10 @@ public class EntityHandler {
 	 * This method spawns mobs stacked on top of each other repeatedly. Designed
 	 * to work with the /spawnmob command.
 	 * 
-	 * @param location to spawn them
-	 * @param the mobs to spawn
-	 * @param how many times to spawn them
-	 * @return returns an int of the number of mobs successfully spawned
+	 * @param loc The location at which to spawn the mobs
+	 * @param args Arguments representing the mobs to spawn
+	 * @param amount The number of mobs to spawn at the specified location
+	 * @return returns The number of mobs that were successfully spawned
 	 */
 	public int spawnMobs(Location loc, String[] args, int amount) {
 		int counter = 0;

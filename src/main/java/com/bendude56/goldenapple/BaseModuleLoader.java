@@ -27,6 +27,7 @@ public class BaseModuleLoader implements IModuleLoader {
 		Bukkit.getPluginCommand("gamodule").setExecutor(new ModuleCommand());
 	}
 	
+	@Override
 	public void registerPermissions(PermissionManager permissions) {
 		// Do nothing
 	}

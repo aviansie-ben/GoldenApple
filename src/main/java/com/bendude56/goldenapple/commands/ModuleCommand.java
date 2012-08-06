@@ -16,6 +16,7 @@ import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 
 public class ModuleCommand implements CommandExecutor {
+	@Override
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
 		GoldenApple instance = GoldenApple.getInstance();
 		User user = User.getUser(sender);

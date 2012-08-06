@@ -7,17 +7,15 @@ public interface IModuleLoader {
 	 * Loads the GoldenApple module into memory and prepares it for use. Should
 	 * register any and all necessary events, permissions, etc.
 	 * 
-	 * @param permissions The currently loaded permissions module manager. May
-	 *            be null if the permissions module has not yet been loaded. If
-	 *            the module loader relies on this value being non-null, the
-	 *            permissions module should be included in the dependency list.
+	 * @param instance The GoldenApple instance that is currently loading this
+	 *            module.
 	 */
 	public void loadModule(GoldenApple instance) throws ModuleLoadException;
 
 	/**
 	 * Registers module permissions. This will get called without a call to
-	 * {@link loadModule(GoldenApple)} if the permissions system recovers from
-	 * an error.
+	 * {@link IModuleLoader#loadModule(GoldenApple)} if the permissions system
+	 * recovers from an error.
 	 * 
 	 * @param permissions The {@link PermissionManager} that is currently
 	 *            controlling permissions.
