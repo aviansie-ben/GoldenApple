@@ -2,6 +2,7 @@ package com.bendude56.goldenapple;
 
 import java.sql.Connection;
 import java.sql.Driver;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -19,15 +20,35 @@ public final class Database {
 	private Connection	connection;
 
 	protected Database() {
-		try {
-			Driver d = new JDBC();
-			GoldenApple.log("Loading database using SQLite v" + d.getMajorVersion() + "." + d.getMinorVersion());
-			connection = d.connect("jdbc:sqlite:" + GoldenApple.getInstance().mainConfig.getString("database.path"), new Properties());
-			GoldenApple.log("Successfully connected to database at \'" + GoldenApple.getInstance().mainConfig.getString("database.path") + "\'");
-		} catch (Exception e) {
-			GoldenApple.log(Level.SEVERE, "Failed to connect to SQLite database!");
-			GoldenApple.log(e);
-			return;
+		if (GoldenApple.getInstance().mainConfig.getBoolean("database.useMySQL", false)) {
+			try {
+				Class.forName("com.mysql.jdbc.Driver");
+				String db = GoldenApple.getInstance().mainConfig.getString("database.database", "ga");
+				Connection c = DriverManager.getConnection("jdbc:mysql://" + GoldenApple.getInstance().mainConfig.getString("database.host", "localhost") + "/mysql", GoldenApple.getInstance().mainConfig.getString("database.user", ""), GoldenApple.getInstance().mainConfig.getString("database.password", ""));
+				if (!c.isValid(0)) {
+					GoldenApple.log(Level.SEVERE, "Failed to connect to MySQL database!");
+					return;
+				}
+				connection = c;
+				execute("CREATE DATABASE IF NOT EXISTS " + GoldenApple.getInstance().mainConfig.getString("database.database", "ga"));
+				execute("USE " + GoldenApple.getInstance().mainConfig.getString("database.database", "ga"));
+				GoldenApple.log("Successfully connected to MySQL database at \'" + GoldenApple.getInstance().mainConfig.getString("database.host") + "\'");
+			} catch (Exception e) {
+				GoldenApple.log(Level.SEVERE, "Failed to connect to MySQL database!");
+				GoldenApple.log(e);
+				return;
+			}
+		} else {
+			try {
+				Driver d = new JDBC();
+				GoldenApple.log("Loading database using SQLite v" + d.getMajorVersion() + "." + d.getMinorVersion());
+				connection = d.connect("jdbc:sqlite:" + GoldenApple.getInstance().mainConfig.getString("database.path"), new Properties());
+				GoldenApple.log("Successfully connected to SQLite database at \'" + GoldenApple.getInstance().mainConfig.getString("database.path") + "\'");
+			} catch (Exception e) {
+				GoldenApple.log(Level.SEVERE, "Failed to connect to SQLite database!");
+				GoldenApple.log(e);
+				return;
+			}
 		}
 	}
 
