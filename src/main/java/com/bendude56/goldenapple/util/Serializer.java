@@ -6,10 +6,15 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemStack;
 
 public class Serializer {
 	private Serializer() {}
@@ -52,4 +57,65 @@ public class Serializer {
 		World w = Bukkit.getWorld(s.split("|", 4)[3]);
 		return new Location(w, x, y, z);
 	}
+	
+	public static String serializeItemStack(ItemStack[] stack)
+	{
+		String s = "";
+		
+		for (int slot = 0; slot < stack.length; slot++)
+		{
+			s += slot + "=";
+			s += stack[slot].getAmount();
+			s += ";";
+			s += stack[slot].getTypeId();
+			s += ";";
+			s += stack[slot].getDurability();
+			s += ";";
+			for (Enchantment enchantment : stack[slot].getEnchantments().keySet())
+			{
+				s += enchantment.getId();
+				s += ",";
+				s += stack[slot].getEnchantments().get(enchantment);
+				s += ":";
+			}
+			s += "/";
+		}
+		
+		return s;
+	}
+	
+	public static ItemStack[] deserializeItemStack(String s) //TODO Finish deserializeItemStack
+	{
+		ItemStack[] stack = new ItemStack[s.split("/").length];
+
+		String[] slots = s.split("/");
+		
+		/*	String property = getProperty(slot);
+			
+			String[] parts = property.split(";");
+			
+			int amount = Integer.parseInt(parts[0]);
+			int type = Integer.parseInt(parts[1]);
+			short durability = Short.parseShort(parts[2]);
+			
+			Map<Enchantment, Integer> enchantments = new HashMap<Enchantment, Integer>();
+			
+			if (parts.length > 3)
+			{
+				for (String enchantment : parts[3].split(":"))
+				{
+					enchantments.put(Enchantment.getById(Integer.parseInt(enchantment.split(",")[0])), Integer.parseInt(enchantment.split(",")[1]));
+				}
+			}
+			
+			ItemStack item = new ItemStack(Material.getMaterial(type));
+			item.setAmount(amount);
+			item.setDurability(durability);
+			item.addEnchantments(enchantments);
+			*/
+		
+		
+		return stack;
+	}
+	
 }
