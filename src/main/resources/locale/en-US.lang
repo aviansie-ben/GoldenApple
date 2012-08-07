@@ -12,12 +12,11 @@ error.permissions.add.groupUnknown=&4ERROR: Failed to add group '%1': Unknown er
 error.permissions.add.userExists=&4ERROR: Failed to add user '%1': User already exists!
 error.permissions.add.userUnknown=&4ERROR: Failed to add user '%1': Unknown error!
 error.permissions.conflict=&4ERROR: There is an option conflict. Make sure you're not trying to modify a group/user as you remove them.
+error.permissions.member.unknown=&4ERROR: Unknown error occured while changing group membership!
 error.permissions.noAction=&4ERROR: No valid actions were specified
 error.permissions.noTarget=&4ERROR: No valid targets were specified for option: %1
-error.permissions.remove.groupNotFound=&4ERROR: Failed to remove group '%1': Group not found!
 error.permissions.remove.groupUnknown=&4ERROR: Failed to remove group '%1': Unknown error!
-error.permissions.remove.userNotFound=&4ERROR: Failed to remove user '%1': User not found!
-error.permissions.remove.userOnline=&4ERROR: Failed to remove user '%1': Cannot remove user while online!
+error.permissions.remove.userOnline=&eWARNING: Failed to remove user '%1': Cannot remove user while online!
 error.permissions.remove.userUnknown=&4ERROR: Failed to remove user '%1': Unknown error!
 
 error.verify.noCommand=&4ERROR: No command to verify!

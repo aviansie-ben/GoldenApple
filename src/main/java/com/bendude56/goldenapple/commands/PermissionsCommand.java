@@ -129,7 +129,7 @@ public class PermissionsCommand implements CommandExecutor {
 					if (id != -1) {
 						users.add(id);
 					} else if (verified) {
-						instance.locale.sendMessage(user, "error.permissions.remove.userNotFoundWarn", false, u);
+						instance.locale.sendMessage(user, "shared.userNotFoundWarn", false, u);
 					}
 				}
 				for (String g : changeGroups) {
@@ -137,7 +137,7 @@ public class PermissionsCommand implements CommandExecutor {
 					if (group != null) {
 						groups.add(group.getId());
 					} else if (verified) {
-						instance.locale.sendMessage(user, "error.permissions.remove.groupNotFoundWarn", false, g);
+						instance.locale.sendMessage(user, "shared.groupNotFoundWarn", false, g);
 					}
 				}
 				for (long id : users) {
@@ -211,7 +211,96 @@ public class PermissionsCommand implements CommandExecutor {
 					instance.locale.sendMessage(user, "error.permissions.noTarget", false, "-ua");
 					return true;
 				}
-				
+				try {
+					for (String u : addUsers) {
+						if (!instance.permissions.userExists(u)) {
+							instance.locale.sendMessage(user, "shared.userNotFoundWarn", false, u);
+						} else {
+							for (String ch : changeGroups) {
+								if (!instance.permissions.groupExists(ch)) {
+									instance.locale.sendMessage(user, "shared.groupNotFoundError", false, ch);
+								} else {
+									instance.permissions.getGroup(ch).addMember(instance.permissions.getUser(u));
+									instance.locale.sendMessage(user, "general.permissions.member.addUser", false, u, ch);
+								}
+							}
+						}
+					}
+				} catch (SQLException e) {
+					instance.locale.sendMessage(user, "error.permissions.member.unknown", false);
+				}
+			}
+			if (!addGroups.isEmpty()) {
+				if (changeGroups.isEmpty()) {
+					instance.locale.sendMessage(user, "error.permissions.noTarget", false, "-ga");
+					return true;
+				}
+				try {
+					for (String g : addGroups) {
+						if (!instance.permissions.groupExists(g)) {
+							instance.locale.sendMessage(user, "shared.groupNotFoundWarn", false, g);
+						} else {
+							for (String ch : changeGroups) {
+								if (!instance.permissions.groupExists(ch)) {
+									instance.locale.sendMessage(user, "shared.groupNotFoundError", false, ch);
+								} else {
+									instance.permissions.getGroup(ch).addSubGroup(instance.permissions.getGroup(g));
+									instance.locale.sendMessage(user, "general.permissions.member.addGroup", false, g, ch);
+								}
+							}
+						}
+					}
+				} catch (SQLException e) {
+					instance.locale.sendMessage(user, "error.permissions.member.unknown", false);
+				}
+			}
+			if (!remUsers.isEmpty()) {
+				if (changeGroups.isEmpty()) {
+					instance.locale.sendMessage(user, "error.permissions.noTarget", false, "-ur");
+					return true;
+				}
+				try {
+					for (String u : remUsers) {
+						if (!instance.permissions.userExists(u)) {
+							instance.locale.sendMessage(user, "shared.userNotFoundWarn", false, u);
+						} else {
+							for (String ch : changeGroups) {
+								if (!instance.permissions.groupExists(ch)) {
+									instance.locale.sendMessage(user, "shared.groupNotFoundError", false, ch);
+								} else {
+									instance.permissions.getGroup(ch).removeMember(instance.permissions.getUser(u));
+									instance.locale.sendMessage(user, "general.permissions.member.remUser", false, u, ch);
+								}
+							}
+						}
+					}
+				} catch (SQLException e) {
+					instance.locale.sendMessage(user, "error.permissions.member.unknown", false);
+				}
+			}
+			if (!remGroups.isEmpty()) {
+				if (changeGroups.isEmpty()) {
+					instance.locale.sendMessage(user, "error.permissions.noTarget", false, "-gr");
+					return true;
+				}
+				try {
+					for (String g : remGroups) {
+						if (!instance.permissions.groupExists(g)) {
+							instance.locale.sendMessage(user, "shared.groupNotFoundWarn", false, g);
+						} else {
+							for (String ch : changeGroups) {
+								if (!instance.permissions.groupExists(ch)) {
+									instance.locale.sendMessage(user, "shared.groupNotFoundError", false, ch);
+								} else {
+									instance.permissions.getGroup(ch).removeSubGroup(instance.permissions.getGroup(g));
+									instance.locale.sendMessage(user, "general.permissions.member.remGroup", false, g, ch);
+								}
+							}
+						}
+					}
+				} catch (SQLException e) {
+					instance.locale.sendMessage(user, "error.permissions.member.unknown", false);
+				}
 			}
 		}
 		return true;

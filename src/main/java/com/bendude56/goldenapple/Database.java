@@ -18,9 +18,11 @@ import org.sqlite.JDBC;
  */
 public final class Database {
 	private Connection	connection;
+	private boolean		mySql;
 
 	protected Database() {
 		if (GoldenApple.getInstance().mainConfig.getBoolean("database.useMySQL", false)) {
+			mySql = true;
 			try {
 				Class.forName("com.mysql.jdbc.Driver");
 				String db = GoldenApple.getInstance().mainConfig.getString("database.database", "ga");
@@ -39,6 +41,7 @@ public final class Database {
 				return;
 			}
 		} else {
+			mySql = false;
 			try {
 				Driver d = new JDBC();
 				GoldenApple.log("Loading database using SQLite v" + d.getMajorVersion() + "." + d.getMinorVersion());
@@ -50,6 +53,10 @@ public final class Database {
 				return;
 			}
 		}
+	}
+	
+	public boolean usingMySql() {
+		return mySql;
 	}
 
 	/**

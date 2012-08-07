@@ -51,7 +51,7 @@ public class PermissionListener implements Listener, EventExecutor {
 
 	private void playerLogin(PlayerLoginEvent event) {
 		PermissionUser u = GoldenApple.getInstance().permissions.createUser(event.getPlayer().getName());
-		if (GoldenApple.getInstance().mainConfig.getString("modules.permissions.reqGroup") != "") {
+		if (!GoldenApple.getInstance().mainConfig.getString("modules.permissions.reqGroup").equals("")) {
 			PermissionGroup reqGroup = GoldenApple.getInstance().permissions.getGroup(GoldenApple.getInstance().mainConfig.getString("modules.permissions.reqGroup"));
 			if (reqGroup == null) {
 				GoldenApple.log(Level.WARNING, "Failed to find required group '" + GoldenApple.getInstance().mainConfig.getString("modules.permissions.reqGroup") + "'. Only allowing ops to join...");

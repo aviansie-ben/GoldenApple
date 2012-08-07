@@ -98,6 +98,20 @@ public class PermissionGroup {
 	public List<Long> getMembers() {
 		return members;
 	}
+	
+	public void addMember(PermissionUser user) {
+		if (!members.contains(user.getId())) {
+			members.add(user.getId());
+			save();
+		}
+	}
+	
+	public void removeMember(PermissionUser user) {
+		if (members.contains(user.getId())) {
+			members.remove((Object) user.getId());
+			save();
+		}
+	}
 
 	/**
 	 * Gets a list of group IDs for groups that inherit this group's
@@ -105,6 +119,20 @@ public class PermissionGroup {
 	 */
 	public List<Long> getSubGroups() {
 		return subGroups;
+	}
+	
+	public void addSubGroup(PermissionGroup group) {
+		if (!subGroups.contains(group.getId())) {
+			subGroups.add(group.getId());
+			save();
+		}
+	}
+	
+	public void removeSubGroup(PermissionGroup group) {
+		if (subGroups.contains(group.getId())) {
+			subGroups.remove((Object) group.getId());
+			save();
+		}
 	}
 
 	/**
