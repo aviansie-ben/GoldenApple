@@ -47,15 +47,17 @@ public class Serializer {
 	}
 
 	public static String serializeLocation(Location l) {
-		return l.getX() + "|" + l.getY() + "|" + l.getZ() + "|" + l.getWorld().getName();
+		return l.getWorld().getName() + "|" + l.getX() + "|" + l.getY() + "|" + l.getZ() + "|" + l.getPitch() + "|" + l.getYaw();
 	}
 
 	public static Location deserializeLocation(String s) {
-		double x = Double.parseDouble(s.split("|")[0]);
-		double y = Double.parseDouble(s.split("|")[1]);
-		double z = Double.parseDouble(s.split("|")[2]);
-		World w = Bukkit.getWorld(s.split("|", 4)[3]);
-		return new Location(w, x, y, z);
+		World w = Bukkit.getWorld(s.split("|")[0]);
+		double x = Double.parseDouble(s.split("|")[1]);
+		double y = Double.parseDouble(s.split("|")[2]);
+		double z = Double.parseDouble(s.split("|")[3]);
+		float pitch = Float.parseFloat(s.split("|")[4]);
+		float yaw = Float.parseFloat(s.split("|")[5]);
+		return new Location(w, x, y, z, pitch, yaw);
 	}
 	
 	public static String serializeItemStack(ItemStack[] stack)
@@ -84,15 +86,15 @@ public class Serializer {
 		return s;
 	}
 	
-	public static ItemStack[] deserializeItemStack(String s) //TODO Finish deserializeItemStack
+	public static ItemStack[] deserializeItemStack(String s)
 	{
 		ItemStack[] stack = new ItemStack[s.split("/").length];
 
 		String[] slots = s.split("/");
 		
-		/*	String property = getProperty(slot);
-			
-			String[] parts = property.split(";");
+		for (int slot = 0; slot < slots.length; slot++)
+		{
+			String[] parts = slots[slot].split(";");
 			
 			int amount = Integer.parseInt(parts[0]);
 			int type = Integer.parseInt(parts[1]);
@@ -112,8 +114,9 @@ public class Serializer {
 			item.setAmount(amount);
 			item.setDurability(durability);
 			item.addEnchantments(enchantments);
-			*/
-		
+			
+			stack[slot] = item;
+		}
 		
 		return stack;
 	}
