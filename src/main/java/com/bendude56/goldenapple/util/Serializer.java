@@ -47,7 +47,7 @@ public class Serializer {
 	}
 
 	public static String serializeLocation(Location l) {
-		return l.getWorld().getName() + "|" + l.getX() + "|" + l.getY() + "|" + l.getZ() + "|" + l.getPitch() + "|" + l.getYaw();
+		return l.getWorld().getName() + "|" + l.getX() + "|" + l.getY() + "|" + l.getZ() + "|" + l.getYaw() + "|" + l.getPitch();
 	}
 
 	public static Location deserializeLocation(String s) {
@@ -55,9 +55,9 @@ public class Serializer {
 		double x = Double.parseDouble(s.split("|")[1]);
 		double y = Double.parseDouble(s.split("|")[2]);
 		double z = Double.parseDouble(s.split("|")[3]);
-		float pitch = Float.parseFloat(s.split("|")[4]);
-		float yaw = Float.parseFloat(s.split("|")[5]);
-		return new Location(w, x, y, z, pitch, yaw);
+		float yaw = Float.parseFloat(s.split("|")[4]);
+		float pitch = Float.parseFloat(s.split("|")[5]);
+		return new Location(w, x, y, z, yaw, pitch);
 	}
 	
 	public static String serializeItemStack(ItemStack[] stack)
