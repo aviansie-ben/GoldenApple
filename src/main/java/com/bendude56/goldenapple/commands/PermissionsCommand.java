@@ -10,17 +10,15 @@ import org.bukkit.command.CommandSender;
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.permissions.PermissionGroup;
+import com.bendude56.goldenapple.permissions.PermissionManager;
+import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
+import com.bendude56.goldenapple.permissions.PermissionUser;
 
 public class PermissionsCommand implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
 		GoldenApple instance = GoldenApple.getInstance();
 		User user = User.getUser(sender);
-
-		/*if (!user.hasPermission("goldenapple.permissions")) {
-			GoldenApple.logPermissionFail(user, commandLabel, args, true);
-			return true;
-		}*/
 
 		if (args.length == 0 || args[0].equalsIgnoreCase("help")) {
 			sendHelp(user, commandLabel);
@@ -117,7 +115,13 @@ public class PermissionsCommand implements CommandExecutor {
 				instance.locale.sendMessage(user, "error.permissions.conflict", false);
 				return true;
 			}
-			if (changeUsers.isEmpty() && changeGroups.isEmpty()) {
+			if (!changeUsers.isEmpty() && !user.hasPermission(PermissionManager.userRemovePermission)) {
+				GoldenApple.logPermissionFail(user, commandLabel, args, true);
+				return true;
+			} else if (!changeGroups.isEmpty() && !user.hasPermission(PermissionManager.groupRemovePermission)) {
+				GoldenApple.logPermissionFail(user, commandLabel, args, true);
+				return true;
+			} else if (changeUsers.isEmpty() && changeGroups.isEmpty()) {
 				instance.locale.sendMessage(user, "error.permissions.noTarget", false, "-r");
 				return true;
 			}
@@ -177,6 +181,12 @@ public class PermissionsCommand implements CommandExecutor {
 			if (!remPermissions.isEmpty() || !addUsers.isEmpty() || !remUsers.isEmpty() || !addGroups.isEmpty() || !remGroups.isEmpty()) {
 				instance.locale.sendMessage(user, "error.permissions.conflict", false);
 				return true;
+			} else if (!changeUsers.isEmpty() && !user.hasPermission(PermissionManager.userAddPermission)) {
+				GoldenApple.logPermissionFail(user, commandLabel, args, true);
+				return true;
+			} else if (!changeGroups.isEmpty() && !user.hasPermission(PermissionManager.groupAddPermission)) {
+				GoldenApple.logPermissionFail(user, commandLabel, args, true);
+				return true;
 			} else if (changeUsers.isEmpty() && changeGroups.isEmpty()) {
 				instance.locale.sendMessage(user, "error.permissions.noTarget", false, "-a");
 				return true;
@@ -207,7 +217,10 @@ public class PermissionsCommand implements CommandExecutor {
 			}
 		} else {
 			if (!addUsers.isEmpty()) {
-				if (changeGroups.isEmpty()) {
+				if (!user.hasPermission(PermissionManager.groupEditPermission)) {
+					GoldenApple.logPermissionFail(user, commandLabel, args, true);
+					return true;
+				} else if (changeGroups.isEmpty()) {
 					instance.locale.sendMessage(user, "error.permissions.noTarget", false, "-ua");
 					return true;
 				}
@@ -231,7 +244,10 @@ public class PermissionsCommand implements CommandExecutor {
 				}
 			}
 			if (!addGroups.isEmpty()) {
-				if (changeGroups.isEmpty()) {
+				if (!user.hasPermission(PermissionManager.groupEditPermission)) {
+					GoldenApple.logPermissionFail(user, commandLabel, args, true);
+					return true;
+				} else if (changeGroups.isEmpty()) {
 					instance.locale.sendMessage(user, "error.permissions.noTarget", false, "-ga");
 					return true;
 				}
@@ -255,7 +271,10 @@ public class PermissionsCommand implements CommandExecutor {
 				}
 			}
 			if (!remUsers.isEmpty()) {
-				if (changeGroups.isEmpty()) {
+				if (!user.hasPermission(PermissionManager.groupEditPermission)) {
+					GoldenApple.logPermissionFail(user, commandLabel, args, true);
+					return true;
+				} else if (changeGroups.isEmpty()) {
 					instance.locale.sendMessage(user, "error.permissions.noTarget", false, "-ur");
 					return true;
 				}
@@ -279,7 +298,10 @@ public class PermissionsCommand implements CommandExecutor {
 				}
 			}
 			if (!remGroups.isEmpty()) {
-				if (changeGroups.isEmpty()) {
+				if (!user.hasPermission(PermissionManager.groupEditPermission)) {
+					GoldenApple.logPermissionFail(user, commandLabel, args, true);
+					return true;
+				} else if (changeGroups.isEmpty()) {
 					instance.locale.sendMessage(user, "error.permissions.noTarget", false, "-gr");
 					return true;
 				}
@@ -300,6 +322,82 @@ public class PermissionsCommand implements CommandExecutor {
 					}
 				} catch (SQLException e) {
 					instance.locale.sendMessage(user, "error.permissions.member.unknown", false);
+				}
+			}
+			if (!addPermissions.isEmpty() || !remPermissions.isEmpty()) {
+				ArrayList<PermissionGroup> gl = new ArrayList<PermissionGroup>();
+				ArrayList<PermissionUser> ul = new ArrayList<PermissionUser>();
+				for (String g : changeGroups) {
+					try {
+						if (instance.permissions.groupExists(g)) {
+							gl.add(instance.permissions.getGroup(g));
+						} else {
+							instance.locale.sendMessage(user, "shared.groupNotFoundWarning", false, g);
+						}
+					} catch (Exception e) {
+						instance.locale.sendMessage(user, "error.permissions.member.perm", false);
+						return true;
+					}
+				}
+				for (String u : changeUsers) {
+					try {
+						if (instance.permissions.userExists(u)) {
+							ul.add(instance.permissions.getUser(u));
+						} else {
+							instance.locale.sendMessage(user, "shared.userNotFoundWarning", false, u);
+						}
+					} catch (Exception e) {
+						instance.locale.sendMessage(user, "error.permissions.member.perm", false);
+						return true;
+					}
+				}
+				if (!ul.isEmpty() && !user.hasPermission(PermissionManager.userEditPermission)) {
+					GoldenApple.logPermissionFail(user, commandLabel, args, true);
+					return true;
+				} else if (!gl.isEmpty() && !user.hasPermission(PermissionManager.groupEditPermission)) {
+					GoldenApple.logPermissionFail(user, commandLabel, args, true);
+					return true;
+				} else if (gl.isEmpty() && ul.isEmpty()) {
+					instance.locale.sendMessage(user, "error.permissions.noTarget", false, "-pa");
+					return true;
+				}
+				ArrayList<Permission> addPerm = new ArrayList<Permission>();
+				ArrayList<Permission> remPerm = new ArrayList<Permission>();
+				for (String ps : addPermissions) {
+					Permission p = instance.permissions.getPermission(ps);
+					if (p == null)
+						instance.locale.sendMessage(user, "error.permissions.perm.notFound", false, ps);
+					else
+						addPerm.add(p);
+				}
+				for (String ps : remPermissions) {
+					Permission p = instance.permissions.getPermission(ps);
+					if (p == null)
+						instance.locale.sendMessage(user, "error.permissions.perm.notFound", false, ps);
+					else if (addPerm.contains(p))
+						addPerm.remove(p);
+					else
+						remPerm.add(p);
+				}
+				
+				for (Permission p : addPerm) {
+					for (PermissionGroup g : gl) {
+						g.addPermission(p);
+					}
+					for (PermissionUser u : ul) {
+						u.addPermission(p);
+					}
+					instance.locale.sendMessage(user, "general.permissions.perm.add", false, p.getFullName());
+				}
+				
+				for (Permission p : remPerm) {
+					for (PermissionGroup g : gl) {
+						g.removePermission(p);
+					}
+					for (PermissionUser u : ul) {
+						u.removePermission(p);
+					}
+					instance.locale.sendMessage(user, "general.permissions.perm.rem", false, p.getFullName());
 				}
 			}
 		}
