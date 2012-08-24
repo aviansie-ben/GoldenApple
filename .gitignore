@@ -3,4 +3,6 @@
 /build.jardesc
 /doc
 /SQLite.jar
-/src
+/.settings
+/.classpath
+/.project
