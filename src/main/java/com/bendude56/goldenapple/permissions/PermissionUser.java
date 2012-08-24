@@ -36,7 +36,7 @@ public class PermissionUser implements IPermissionUser {
 		this.preferredLocale = preferredLocale;
 		try {
 			@SuppressWarnings("unchecked")
-			List<String> p = (List<String>)Serializer.deserialize(permissions);
+			ArrayList<String> p = (ArrayList<String>)Serializer.deserialize(permissions);
 			for (String permission : p) {
 				this.permissions.add(GoldenApple.getInstance().permissions.registerPermission(permission));
 			}

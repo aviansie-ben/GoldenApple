@@ -236,7 +236,7 @@ public class PermissionManager {
 	 *         already exists, the existing one will be returned.
 	 */
 	public Permission registerPermission(String fullName) {
-		String[] name = fullName.split(".");
+		String[] name = fullName.split("\\.");
 		PermissionNode node = rootNode;
 		for (int i = 0; i < name.length; i++) {
 			if (i == name.length - 1) {
