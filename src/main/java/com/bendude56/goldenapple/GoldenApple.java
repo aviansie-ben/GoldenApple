@@ -77,7 +77,7 @@ public class GoldenApple extends JavaPlugin {
 	public PermissionManager	permissions;
 	public LockManager			locks;
 	public AreaManager			areas;
-	public WarpManager			warps;
+	public WarpManager			warp;
 	public ChatManager			chat;
 	public LocalizationHandler	locale;
 
