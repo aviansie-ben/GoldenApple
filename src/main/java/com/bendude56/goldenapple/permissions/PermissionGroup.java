@@ -167,6 +167,20 @@ public class PermissionGroup {
 		}
 		return returnPermissions;
 	}
+	
+	public void addPermission(Permission permission) {
+		if (!permissions.contains(permission)) {
+			permissions.add(permission);
+			save();
+		}
+	}
+	
+	public void removePermission(Permission permission) {
+		if (permissions.contains(permission)) {
+			permissions.remove(permission);
+			save();
+		}
+	}
 
 	/**
 	 * Checks whether this group has a given permission.
