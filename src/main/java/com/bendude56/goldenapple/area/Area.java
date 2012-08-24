@@ -3,9 +3,7 @@ package com.bendude56.goldenapple.area;
 import org.bukkit.Location;
 import org.bukkit.World;
 
-import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.util.Calculations;
-import com.bendude56.goldenapple.warps.AreaWarp;
 
 /**
  * The basic area object that manages land from which other area-based classes
@@ -149,9 +147,6 @@ public class Area {
 	}
 	public boolean 		isDisabled() {
 		return disabled;
-	}
-	public AreaWarp 	getWarp(){
-		return GoldenApple.getInstance().warps.getAreaWarp(this);
 	}
 	
 	private void fixCorners(Location corner1, Location corner2){

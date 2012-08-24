@@ -11,19 +11,20 @@ import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
 import com.bendude56.goldenapple.permissions.PermissionManager.PermissionNode;
 
 public class ChatManager {
-	public static PermissionNode channels;
-	public static PermissionNode mute;
-	public static PermissionNode censor;
-	public static Permission channelCreate;
-	public static Permission channelEdit;
-	public static Permission channelDelete;
-	public static Permission muteTimed;
-	public static Permission mutePermanent;
-	public static Permission muteUnmute;
-	public static Permission muteImmune;
-	public static Permission censorAddWord;
-	public static Permission censorRemoveWord;
-	public static Permission censorIgnore;
+	public static PermissionNode chatNode;
+	public static PermissionNode channelsNode;
+	public static PermissionNode muteNode;
+	public static PermissionNode censorNode;
+	public static Permission channelCreatePermission;
+	public static Permission channelEditPermission;
+	public static Permission channelDeletePermission;
+	public static Permission muteTimedPermission;
+	public static Permission mutePermanentPermission;
+	public static Permission muteUnmutePermission;
+	public static Permission muteImmunePermission;
+	public static Permission censorAddWordPermission;
+	public static Permission censorRemoveWordPermission;
+	public static Permission censorImmunePermission;
 
 	private HashMap<Long, ChatChannel> chatChannels = new HashMap<Long, ChatChannel>();
 	private HashMap<Player, Long> chatPlayers = new HashMap<Player, Long>();
