@@ -168,7 +168,7 @@ public class EntityHandler {
 			for (int i = 0; i < args.length; i++) {
 				EntityType type = getMobByName(args[i].split(":")[0]);
 				if (type != null) {
-					LivingEntity mob = loc.getWorld().spawnCreature(loc, type);
+					LivingEntity mob = (LivingEntity) loc.getWorld().spawnEntity(loc, type);
 					counter++;
 					if (mob.getType() == EntityType.CREEPER && (args[i].equalsIgnoreCase("supercreeper") || args[i].equalsIgnoreCase("chargedcreeper"))) {
 						((Creeper)mob).setPowered(true);
