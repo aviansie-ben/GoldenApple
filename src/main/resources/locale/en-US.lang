@@ -1,3 +1,6 @@
+error.lock.noEdit=&4ERROR: You do not have permission to edit the protection on this block.
+error.lock.noUse=&4ERROR: You do not have permission to use this block. Please contact %1 for permission.
+
 error.module.load.alreadyLoaded=&4ERROR: Module '%1' is already enabled!
 error.module.load.dependFail=&4ERROR: Module '%1' cannot be enabled because dependancy '%2' failed to load!
 error.module.load.policy=&4ERROR: The security policy is blocking you from loading module '%1'!
