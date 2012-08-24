@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.logging.Level;
@@ -149,6 +150,12 @@ public class GoldenApple extends JavaPlugin {
 			if (mainConfig.getBoolean("securityPolicy.dumpExtendedInfo", true)) {
 				try {
 					File dumpFile = nextDumpFile(module.getModuleName());
+					ObjectOutputStream o = new ObjectOutputStream(new FileOutputStream(dumpFile));
+					try {
+						o.writeObject(eDump);
+					} finally {
+						o.close();
+					}
 					log(Level.SEVERE, "Technical information dumped to " + dumpFile.getCanonicalPath());
 				} catch (Throwable e2) {
 					log(Level.SEVERE, "An error occured while dumping technical information:");
