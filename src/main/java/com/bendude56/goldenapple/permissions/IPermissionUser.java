@@ -103,7 +103,7 @@ public interface IPermissionUser {
 	 * 
 	 * @param permission The permissions that should be revoked from this user
 	 */
-	void remPermission(Permission permission);
+	void removePermission(Permission permission);
 
 	/**
 	 * Revokes a given permission from this user and save's the user's data
@@ -112,5 +112,5 @@ public interface IPermissionUser {
 	 * 
 	 * @param permission The permissions that should be revoked from this user
 	 */
-	void remPermission(String permission);
+	void removePermission(String permission);
 }

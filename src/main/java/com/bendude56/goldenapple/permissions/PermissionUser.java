@@ -146,7 +146,7 @@ public class PermissionUser implements IPermissionUser {
 	}
 
 	@Override
-	public void remPermission(Permission permission) {
+	public void removePermission(Permission permission) {
 		if (permissions.contains(permission)) {
 			permissions.remove(permission);
 			save();
@@ -154,7 +154,7 @@ public class PermissionUser implements IPermissionUser {
 	}
 
 	@Override
-	public void remPermission(String permission) {
-		remPermission(GoldenApple.getInstance().permissions.registerPermission(permission));
+	public void removePermission(String permission) {
+		removePermission(GoldenApple.getInstance().permissions.registerPermission(permission));
 	}
 }

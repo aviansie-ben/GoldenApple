@@ -27,11 +27,11 @@ public class LockModuleLoader implements IModuleLoader {
 	@Override
 	public void registerPermissions(PermissionManager permissions) {
 		LockManager.lockNode = permissions.registerNode("lock", PermissionManager.goldenAppleNode);
-		LockManager.createPermission = permissions.registerPermission("create", LockManager.lockNode);
+		LockManager.addPermission = permissions.registerPermission("add", LockManager.lockNode);
 		
-		LockManager.deleteNode = permissions.registerNode("delete", LockManager.lockNode);
-		LockManager.deleteAllPermission = permissions.registerPermission("all", LockManager.deleteNode);
-		LockManager.deleteOwnPermission = permissions.registerPermission("own", LockManager.deleteNode);
+		LockManager.removeNode = permissions.registerNode("remove", LockManager.lockNode);
+		LockManager.removeAllPermission = permissions.registerPermission("all", LockManager.removeNode);
+		LockManager.removeOwnPermission = permissions.registerPermission("own", LockManager.removeNode);
 		
 		LockManager.guestNode = permissions.registerNode("guest", LockManager.lockNode);
 		LockManager.guestAllPermission = permissions.registerPermission("all", LockManager.guestNode);

@@ -20,12 +20,12 @@ public class LockManager {
 	
 	// goldenapple.lock
 	public static PermissionNode lockNode;
-	public static Permission createPermission;
+	public static Permission addPermission;
 	
 	// goldenapple.lock.delete
-	public static PermissionNode deleteNode;
-	public static Permission deleteOwnPermission;
-	public static Permission deleteAllPermission;
+	public static PermissionNode removeNode;
+	public static Permission removeOwnPermission;
+	public static Permission removeAllPermission;
 	
 	// goldenapple.lock.guest
 	public static PermissionNode guestNode;

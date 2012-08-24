@@ -201,16 +201,16 @@ public class User implements IPermissionUser {
 	}
 
 	@Override
-	public void remPermission(Permission permission) {
+	public void removePermission(Permission permission) {
 		if (permissions == null)
 			throw new UnsupportedOperationException();
-		permissions.remPermission(permission);
+		permissions.removePermission(permission);
 	}
 
 	@Override
-	public void remPermission(String permission) {
+	public void removePermission(String permission) {
 		if (permissions == null)
 			throw new UnsupportedOperationException();
-		permissions.remPermission(permission);
+		permissions.removePermission(permission);
 	}
 }
