@@ -52,10 +52,13 @@ public class PermissionManager {
 	private List<Permission>				permissions	= new ArrayList<Permission>();
 	private List<PermissionNode>			nodes		= new ArrayList<PermissionNode>();
 	private PermissionNode					rootNode;
+	public 	Permission						rootStar;
 
 	public PermissionManager() {
-		rootNode = new PermissionNode("");
+		rootNode = new PermissionNode("", null);
 		nodes.add(rootNode);
+		rootStar = new Permission("*", rootNode);
+		permissions.add(rootStar);
 		try {
 			GoldenApple.getInstance().database.execute("CREATE TABLE IF NOT EXISTS Users (ID BIGINT PRIMARY KEY, Name VARCHAR(128), Locale VARCHAR(128), Permissions TEXT)");
 		} catch (SQLException e) {
@@ -263,6 +266,7 @@ public class PermissionManager {
 			}
 			PermissionNode newNode = new PermissionNode(name, node);
 			nodes.add(newNode);
+			registerPermission("*", node);
 			return newNode;
 		} else {
 			return null;
@@ -300,32 +304,15 @@ public class PermissionManager {
 	 * 
 	 * @param name The name of the permission to get information on
 	 * @return Information about the requested permission
-	 */
-	public Permission getPermission(String name) {
-		String[] path = name.split(".");
-		PermissionNode node = rootNode;
-		pathSearch: for (int i = 0; i < path.length; i++) {
-			if (i == path.length - 1) {
-				for (Permission p : permissions) {
-					if (p.getName().equalsIgnoreCase(path[i]) && p.getNode() == node) {
-						return p;
-					}
-				}
-			} else {
-				for (PermissionNode n : nodes) {
-					if (n.getName().equalsIgnoreCase(path[i]) && n.getNode() == node) {
-						node = n;
-						continue pathSearch;
-					}
-				}
-				return null;
+	 */	
+	public Permission getPermissionByName(String name) {
+		for (Permission perm : permissions) {
+			if (perm.getFullName().equalsIgnoreCase(name)) {
+				return perm;
 			}
 		}
 		return null;
-	}
-	
-	public Permission getPermissionByName(String name) {
-		String[] path = name.split(".");
+		/*String[] path = name.split(".");
 		String PermName = path[path.length-1];
 		String PermNode = "";
 		if (path.length > 1) {
@@ -335,7 +322,7 @@ public class PermissionManager {
 			if (perm.getName() == PermName && (PermNode != "" || perm.getNode().getName() == PermNode))
 				return perm;
 		}
-		return null;
+		return null;*/
 	}
 
 	/**
@@ -708,7 +695,10 @@ public class PermissionManager {
 		 * represented by this object
 		 */
 		public String getFullName() {
-			return node.getFullName() + "." + name;
+			if (node == GoldenApple.getInstance().permissions.rootNode)
+				return name;
+			else
+				return node.getFullName() + "." + name;
 		}
 
 		/**
@@ -752,11 +742,9 @@ public class PermissionManager {
 		 * this object
 		 */
 		public String getFullName() {
-			List<PermissionNode> previousNodes = new ArrayList<PermissionNode>();
 			String path = name;
 			PermissionNode currentNode = this;
-			while (!previousNodes.contains(currentNode)) {
-				previousNodes.add(currentNode);
+			while (currentNode != GoldenApple.getInstance().permissions.rootNode) {
 				path = currentNode.getName() + "." + path;
 				currentNode = currentNode.getNode();
 			}

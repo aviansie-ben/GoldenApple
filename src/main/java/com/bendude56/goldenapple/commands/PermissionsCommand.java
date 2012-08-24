@@ -175,6 +175,12 @@ public class PermissionsCommand implements CommandExecutor {
 					instance.locale.sendMessage(user, "general.permissions.remove.warnGroup", false, g);
 				}
 				instance.locale.sendMessage(user, "general.permissions.remove.warnEnd", false);
+				String cmd = commandLabel;
+				for (String a : args) {
+					cmd += " " + a;
+				}
+				cmd += " -v";
+				VerifyCommand.commands.put(user, cmd);
 			}
 			return true;
 		} else if (add) {
@@ -364,14 +370,14 @@ public class PermissionsCommand implements CommandExecutor {
 				ArrayList<Permission> addPerm = new ArrayList<Permission>();
 				ArrayList<Permission> remPerm = new ArrayList<Permission>();
 				for (String ps : addPermissions) {
-					Permission p = instance.permissions.getPermission(ps);
+					Permission p = instance.permissions.getPermissionByName(ps);
 					if (p == null)
 						instance.locale.sendMessage(user, "error.permissions.perm.notFound", false, ps);
 					else
 						addPerm.add(p);
 				}
 				for (String ps : remPermissions) {
-					Permission p = instance.permissions.getPermission(ps);
+					Permission p = instance.permissions.getPermissionByName(ps);
 					if (p == null)
 						instance.locale.sendMessage(user, "error.permissions.perm.notFound", false, ps);
 					else if (addPerm.contains(p))

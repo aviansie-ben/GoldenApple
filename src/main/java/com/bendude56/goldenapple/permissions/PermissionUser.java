@@ -7,6 +7,7 @@ import java.util.logging.Level;
 
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
+import com.bendude56.goldenapple.permissions.PermissionManager.PermissionNode;
 import com.bendude56.goldenapple.util.Serializer;
 
 /**
@@ -105,21 +106,32 @@ public class PermissionUser implements IPermissionUser {
 
 	@Override
 	public boolean hasPermission(String permission) {
-		for (Permission perm : permissions){
-			if (permission.equalsIgnoreCase(perm.getFullName()))
-				return true;
-		}
-		return false;
+		return hasPermission(permission, true);
 	}
 
 	@Override
 	public boolean hasPermission(Permission permission) {
-		return permissions.contains(permission);
+		return hasPermission(permission, true);
 	}
 	
 	@Override
 	public boolean hasPermission(Permission permission, boolean inherited) {
-		return getPermissions(inherited).contains(permission);
+		List<Permission> pl = getPermissions(inherited);
+		if (pl.contains(permission))
+			return true;
+		PermissionNode node = permission.getNode();
+		while (node != null) {
+			for (Permission p : node.getPermissions()) {
+				if (p.getName().equals("*")) {
+					if (pl.contains(p))
+						return true;
+					else
+						break;
+				}
+			}
+			node = node.getNode();
+		}
+		return false;
 	}
 
 	@Override

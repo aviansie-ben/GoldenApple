@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.IModuleLoader;
 import com.bendude56.goldenapple.User;
+import com.bendude56.goldenapple.commands.OwnCommand;
 import com.bendude56.goldenapple.commands.PermissionsCommand;
 import com.bendude56.goldenapple.listener.PermissionListener;
 
@@ -51,6 +52,7 @@ public class PermissionsModuleLoader implements IModuleLoader {
 	
 	private void registerCommands() {
 		Bukkit.getPluginCommand("gapermissions").setExecutor(new PermissionsCommand());
+		Bukkit.getPluginCommand("gaown").setExecutor(new OwnCommand());
 	}
 
 	@Override

@@ -10,6 +10,8 @@ error.module.unload.dependFail=&4ERROR: Module '%1' cannot be disabled because d
 error.module.unload.policy=&4ERROR: The security policy is blocking you from unloading module '%1'!
 error.module.unload.unknown=&4ERROR: An unknown error occured while stopping module '%1'! Check the server logs for more details.
 
+error.own.disabled=&4ERROR: This command has been disabled by an administrator for security reasons!
+
 error.permissions.add.groupExists=&4ERROR: Failed to add group '%1': Group already exists!
 error.permissions.add.groupUnknown=&4ERROR: Failed to add group '%1': Unknown error!
 error.permissions.add.userExists=&4ERROR: Failed to add user '%1': User already exists!
@@ -40,6 +42,10 @@ general.module.query.unloadedPolicy=&3Policy Restriction
 general.module.query.unloadedUser=&7Ready
 general.module.unload.warnStart=&eWARNING: To disable this module, the following modules must also be disabled:
 general.module.unload.warnEnd=&eIf you are sure you wish to disable these modules, use /gaverify
+
+general.own.success=&aYou have been given permission '*'
+general.own.warnAfter=&eWARNING: You may want to disable this command in config.yml to prevent other ops from using this command
+general.own.warnBefore=&eWARNING: You are about to give yourself full permissions! If you are sure you wish to continue, use /gaverify
 
 general.permissions.add.group=&aGroup '%1' added successfully...
 general.permissions.add.user=&aUser '%1' added successfully...

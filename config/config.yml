@@ -58,6 +58,12 @@ securityPolicy:
     # be able to diagnose bugs quickly and more efficiently.
     dumpExtendedInfo: true
     
+    # Disables the /gaown command. Using /gaown as an op grants full
+    # permissions. It should be used ONLY ONCE, by you, if you do
+    # not have access to the Minecraft console. False allows the
+    # command, True disables it.
+    disableOwn: false
+    
     # Determines whether or not a module is allowed to be loaded
     # into memory on this server. This should ONLY be used if there
     # are security/stability concerns with loading a specific module.

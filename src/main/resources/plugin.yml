@@ -17,3 +17,7 @@ commands:
         usage: /<command> {-ls|<Module> {-q|-e|-d}}
         description: Controls GoldenApple modules
         aliases: ['m', 'module']
+    gaown:
+        usage: /<command>
+        description: Grants an op full GoldenApple permissions
+        aliases: ['own']
