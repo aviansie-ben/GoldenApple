@@ -2,11 +2,13 @@ error.lock.noEdit=&4ERROR: You do not have permission to edit the protection on 
 error.lock.noUse=&4ERROR: You do not have permission to use this block. Please contact %1 for permission.
 
 error.module.load.alreadyLoaded=&4ERROR: Module '%1' is already enabled!
-error.module.load.dependFail=&4ERROR: Module '%1' cannot be enabled because dependancy '%2' failed to load!
+error.module.load.dependFail=&4ERROR: Module '%1' cannot be enabled because dependency '%2' failed to load!
 error.module.load.policy=&4ERROR: The security policy is blocking you from loading module '%1'!
 error.module.load.unknown=&4ERROR: An unknown error occured while starting module '%1'! Check the server logs for more details.
 error.module.notFound=&4ERROR: No module was found with the name '%1'
 error.module.unload.dependFail=&4ERROR: Module '%1' cannot be disabled because dependant module '%2' failed to unload!
+error.module.unload.locked=&4ERROR: This module is essential to GoldenApple running properly! It cannot be disabled!
+error.module.unload.notLoaded=&4ERROR: Module '%1' cannot be disabled because it is already disabled!
 error.module.unload.policy=&4ERROR: The security policy is blocking you from unloading module '%1'!
 error.module.unload.unknown=&4ERROR: An unknown error occured while stopping module '%1'! Check the server logs for more details.
 
@@ -35,10 +37,11 @@ general.module.load.warnEnd=&eIf you are sure you wish to enable these modules, 
 general.module.query.1=&7Module Name: %1
 general.module.query.2=&7Current Status: %2
 general.module.query.loaded=&aRunning
+general.module.query.loadedLocked=&aRunning &8(Locked)
 general.module.query.loading=&eLoading...
 general.module.query.unloadedDependancy=&4Dependency Failure
 general.module.query.unloadedError=&4Failed
-general.module.query.unloadedPolicy=&3Policy Restriction
+general.module.query.unloadedPolicy=&5Policy Restriction
 general.module.query.unloadedUser=&7Ready
 general.module.unload.warnStart=&eWARNING: To disable this module, the following modules must also be disabled:
 general.module.unload.warnEnd=&eIf you are sure you wish to disable these modules, use /gaverify
@@ -68,6 +71,8 @@ header.permissions=&7-----&6 GoldenApple Permissions &7-----
 
 help.permissions.1=
 
+shared.cmdUnload.generic=&4ERROR: This command has been disabled
+shared.cmdUnload.specific=&4ERROR: This command relies on unloaded module '%1'
 shared.groupNotFoundError=&4ERROR: Failed to find group '%1'
 shared.groupNotFoundWarn=&eWARNING: Failed to find group '%1'
 shared.noPermission=&4ERROR: You do not have permission to execute this command! This request has been logged.

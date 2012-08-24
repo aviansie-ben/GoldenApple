@@ -84,7 +84,7 @@ public class PermissionsModuleLoader implements IModuleLoader {
 
 	@Override
 	public boolean canLoadAuto() {
-		return false;
+		return true;
 	}
 
 	@Override

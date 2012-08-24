@@ -29,7 +29,10 @@ public class ModuleCommand implements CommandExecutor {
 					if (module.getValue().canPolicyLoad()) {
 						switch (module.getValue().getCurrentState()) {
 							case LOADED:
-								user.getHandle().sendMessage(ChatColor.GREEN + module.getValue().getModuleName());
+								if (module.getKey().equals("Base"))
+									user.getHandle().sendMessage(ChatColor.GREEN + module.getValue().getModuleName() + ChatColor.DARK_GRAY + " [!]");
+								else
+									user.getHandle().sendMessage(ChatColor.GREEN + module.getValue().getModuleName());
 								break;
 							case LOADING:
 								user.getHandle().sendMessage(ChatColor.YELLOW + module.getValue().getModuleName());
@@ -56,7 +59,10 @@ public class ModuleCommand implements CommandExecutor {
 					if (module.canPolicyLoad()) {
 						switch (module.getCurrentState()) {
 							case LOADED:
-								status = instance.locale.getMessage(user, "general.module.query.loaded");
+								if (module.getModuleName().equals("Base"))
+									status = instance.locale.getMessage(user, "general.module.query.loadedLocked");
+								else
+									status = instance.locale.getMessage(user, "general.module.query.loaded");
 								break;
 							case LOADING:
 								status = instance.locale.getMessage(user, "general.module.query.loading");
@@ -149,67 +155,75 @@ public class ModuleCommand implements CommandExecutor {
 						}
 					}
 				} else if (args[1].equalsIgnoreCase("-d") || args[1].equalsIgnoreCase("--disable")) {
-					ArrayDeque<IModuleLoader> depend = new ArrayDeque<IModuleLoader>();
-					ArrayList<IModuleLoader> oldDepend = new ArrayList<IModuleLoader>();
-					oldDepend.add(module);
-					while (!oldDepend.isEmpty()) {
-						ArrayList<IModuleLoader> newDepend = new ArrayList<IModuleLoader>();
-						for (Entry<String, IModuleLoader> m : GoldenApple.modules.entrySet()) {
-							if (m.getValue().getCurrentState() != ModuleState.LOADED)
-								continue;
-							for (IModuleLoader dis : oldDepend) {
-								for (String d : m.getValue().getModuleDependencies()) {
-									if (d.equals(dis.getModuleName())) {
-										newDepend.add(m.getValue());
-										depend.addFirst(m.getValue());
+					if (!user.hasPermission(PermissionManager.moduleUnloadPermission)) {
+						GoldenApple.logPermissionFail(user, commandLabel, args, true);
+					} else if (module.getCurrentState() != ModuleState.LOADED) {
+						instance.locale.sendMessage(user, "error.module.unload.notLoaded", false, module.getModuleName());
+					} else if (module.getModuleName().equals("Base")) {
+						instance.locale.sendMessage(user, "error.module.unload.locked", false, module.getModuleName());
+					} else {
+						ArrayDeque<IModuleLoader> depend = new ArrayDeque<IModuleLoader>();
+						ArrayList<IModuleLoader> oldDepend = new ArrayList<IModuleLoader>();
+						oldDepend.add(module);
+						while (!oldDepend.isEmpty()) {
+							ArrayList<IModuleLoader> newDepend = new ArrayList<IModuleLoader>();
+							for (Entry<String, IModuleLoader> m : GoldenApple.modules.entrySet()) {
+								if (m.getValue().getCurrentState() != ModuleState.LOADED)
+									continue;
+								for (IModuleLoader dis : oldDepend) {
+									for (String d : m.getValue().getModuleDependencies()) {
+										if (d.equals(dis.getModuleName())) {
+											newDepend.add(m.getValue());
+											depend.addFirst(m.getValue());
+										}
 									}
 								}
 							}
+							oldDepend.clear();
+							oldDepend.addAll(newDepend);
 						}
-						oldDepend.clear();
-						oldDepend.addAll(newDepend);
-					}
-					if (!depend.isEmpty()) {
-						if (args.length != 2 && args[2].equalsIgnoreCase("-v")) {
-							for (IModuleLoader mUnload = depend.pollLast(); mUnload != null; mUnload = depend.pollLast()) {
-								try {
-									if (!instance.disableModule(mUnload, false)) {
+						if (!depend.isEmpty()) {
+							if (args.length != 2 && args[2].equalsIgnoreCase("-v")) {
+								for (IModuleLoader mUnload = depend.pollLast(); mUnload != null; mUnload = depend.pollLast()) {
+									try {
+										if (!instance.disableModule(mUnload, false)) {
+											instance.locale.sendMessage(user, "error.module.unload.dependFail", false, module.getModuleName(), mUnload.getModuleName());
+											return true;
+										} else {
+											instance.locale.sendMessage(user, "general.module.unload.success", false, mUnload.getModuleName());
+										}
+									} catch (Throwable t) {
 										instance.locale.sendMessage(user, "error.module.unload.dependFail", false, module.getModuleName(), mUnload.getModuleName());
 										return true;
-									} else {
-										instance.locale.sendMessage(user, "general.module.unload.success", false, mUnload.getModuleName());
 									}
-								} catch (Throwable t) {
-									instance.locale.sendMessage(user, "error.module.unload.dependFail", false, module.getModuleName(), mUnload.getModuleName());
-									return true;
 								}
+							} else {
+								instance.locale.sendMessage(user, "general.module.unload.warnStart", false);
+								String dependStr = depend.pollLast().getModuleName();
+								for (IModuleLoader mUnload = depend.pollLast(); mUnload != null; mUnload = depend.pollLast()) {
+									dependStr += ", " + mUnload.getModuleName();
+								}
+								user.getHandle().sendMessage(dependStr);
+								instance.locale.sendMessage(user, "general.module.unload.warnEnd", false);
+								String cmd = commandLabel;
+								for (String arg : args)
+									cmd += " " + arg;
+								cmd += " -v";
+								VerifyCommand.commands.put(user, cmd);
+								return true;
 							}
-						} else {
-							instance.locale.sendMessage(user, "general.module.unload.warnStart", false);
-							String dependStr = depend.pollLast().getModuleName();
-							for (IModuleLoader mUnload = depend.pollLast(); mUnload != null; mUnload = depend.pollLast()) {
-								dependStr += ", " + mUnload.getModuleName();
-							}
-							user.getHandle().sendMessage(dependStr);
-							instance.locale.sendMessage(user, "general.module.unload.warnEnd", false);
-							String cmd = commandLabel;
-							for (String arg : args)
-								cmd += " " + arg;
-							cmd += " -v";
-							VerifyCommand.commands.put(user, cmd);
-							return true;
 						}
-					}
-					try {
-						if (!instance.disableModule(module, false)) {
+						try {
+							if (!instance.disableModule(module, false)) {
+								instance.locale.sendMessage(user, "error.module.unload.unknown", false, module.getModuleName());
+								return true;
+							} else {
+								instance.locale.sendMessage(user, "general.module.unload.success", false, module.getModuleName());
+							}
+						} catch (Throwable t) {
 							instance.locale.sendMessage(user, "error.module.unload.unknown", false, module.getModuleName());
 							return true;
-						} else {
-							instance.locale.sendMessage(user, "general.module.unload.success", false, module.getModuleName());
 						}
-					} catch (Throwable t) {
-						instance.locale.sendMessage(user, "error.module.unload.unknown", false, module.getModuleName());
-						return true;
 					}
 				} else {
 					instance.locale.sendMessage(user, "shared.unknownOption", false, args[1]);

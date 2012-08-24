@@ -5,6 +5,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.logging.Level;
@@ -21,6 +23,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.bendude56.goldenapple.IModuleLoader.ModuleState;
 import com.bendude56.goldenapple.area.AreaManager;
 import com.bendude56.goldenapple.chat.ChatManager;
+import com.bendude56.goldenapple.commands.UnloadedCommand;
 import com.bendude56.goldenapple.lock.LockManager;
 import com.bendude56.goldenapple.lock.LockModuleLoader;
 import com.bendude56.goldenapple.permissions.PermissionManager;
@@ -28,9 +31,12 @@ import com.bendude56.goldenapple.permissions.PermissionsModuleLoader;
 import com.bendude56.goldenapple.warps.WarpManager;
 
 public class GoldenApple extends JavaPlugin {
-	private static Logger								log		= Logger.getLogger("Minecraft");
+	private static Logger								log			= Logger.getLogger("Minecraft");
 
-	public static final HashMap<String, IModuleLoader>	modules	= new HashMap<String, IModuleLoader>();
+	public static final HashMap<String, IModuleLoader>	modules		= new HashMap<String, IModuleLoader>();
+	public static final String[]						loadOrder 	= new String[] { "Base", "Permissions", "Lock" };
+	public static final String[]						commands	= new String[] { "gamodule", "gaverify", "gaown", "gapermissions" };
+	public static final UnloadedCommand					defCmd		= new UnloadedCommand();
 
 	static {
 		modules.put("Base", new BaseModuleLoader());
@@ -104,9 +110,29 @@ public class GoldenApple extends JavaPlugin {
 		mainConfig = YamlConfiguration.loadConfiguration(new File(this.getDataFolder() + "/config.yml"));
 		database = new Database();
 		locale = new LocalizationHandler(getClassLoader());
-		for (Entry<String, IModuleLoader> module : modules.entrySet()) {
-			if (module.getValue().canLoadAuto() && module.getValue().canPolicyLoad() && module.getValue().getCurrentState() == ModuleState.UNLOADED_USER) {
-				enableModule(module.getValue(), true);
+		for (String cmd : commands) {
+			getCommand(cmd).setExecutor(defCmd);
+		}
+		for (String m : loadOrder) {
+			IModuleLoader module = modules.get(m);
+			if (module != null && module.canLoadAuto() && module.canPolicyLoad() && module.getCurrentState() == ModuleState.UNLOADED_USER) {
+				try {
+					if (!enableModule(module, true)) {
+						if (mainConfig.getBoolean("securityPolicy.shutdownOnFailedModuleLoad", true)) {
+							GoldenApple.log(Level.SEVERE, "Server shutting down due to failed module load...");
+							Bukkit.getServer().shutdown();
+							return;
+						}
+					}
+				} catch (Exception e) {
+					GoldenApple.log(Level.SEVERE, "An error occured while loading module " + m + ":");
+					GoldenApple.log(Level.SEVERE, e);
+					if (mainConfig.getBoolean("securityPolicy.shutdownOnFailedModuleLoad", true)) {
+						GoldenApple.log(Level.SEVERE, "Server shutting down due to failed module load...");
+						Bukkit.getServer().shutdown();
+						return;
+					}
+				}
 			}
 		}
 	}
@@ -119,19 +145,19 @@ public class GoldenApple extends JavaPlugin {
 		} else {
 			for (String dependancy : module.getModuleDependencies()) {
 				if (!modules.containsKey(dependancy)) {
-					throw new IllegalStateException("2: Dependancy error in module '" + module.getModuleName() + "': Dependancy '" + dependancy + "' not found");
+					throw new IllegalStateException("2: Dependency error in module '" + module.getModuleName() + "': Dependency '" + dependancy + "' not found");
 				} else if (modules.get(dependancy).getCurrentState() == ModuleState.LOADING) {
-					throw new IllegalStateException("2: Dependancy error in module '" + module.getModuleName() + "': Dependancy '" + dependancy + "' is currently loading");
+					throw new IllegalStateException("2: Dependency error in module '" + module.getModuleName() + "': Dependancy '" + dependancy + "' is currently loading");
 				} else if (modules.get(dependancy).getCurrentState() != ModuleState.LOADED) {
 					if (loadDependancies) {
 						try {
 							if (!enableModule(modules.get(dependancy), true))
-								throw new IllegalStateException("2: Dependancy error in module '" + module.getModuleName() + "': Dependancy '" + dependancy + "' failed to load");
+								throw new IllegalStateException("2: Dependency error in module '" + module.getModuleName() + "': Dependency '" + dependancy + "' failed to load");
 						} catch (Throwable e) {
-							throw new IllegalStateException("2: Dependancy error in module '" + module.getModuleName() + "': Dependancy '" + dependancy + "' failed to load");
+							throw new IllegalStateException("2: Dependency error in module '" + module.getModuleName() + "': Dependency '" + dependancy + "' failed to load");
 						}
 					} else {
-						throw new IllegalStateException("2: Dependancy error in module '" + module.getModuleName() + "': Dependancy '" + dependancy + "'not loaded");
+						throw new IllegalStateException("2: Dependency error in module '" + module.getModuleName() + "': Dependency '" + dependancy + "'not loaded");
 					}
 				}
 			}
