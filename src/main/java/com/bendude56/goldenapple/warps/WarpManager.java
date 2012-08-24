@@ -6,9 +6,6 @@ import java.util.List;
 
 import org.bukkit.Location;
 
-import com.bendude56.goldenapple.GoldenApple;
-import com.bendude56.goldenapple.area.Area;
-import com.bendude56.goldenapple.area.ChildArea;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
 import com.bendude56.goldenapple.permissions.PermissionGroup;
 import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
@@ -21,38 +18,41 @@ import com.bendude56.goldenapple.permissions.PermissionManager.PermissionNode;
  *
  */
 public class WarpManager {
-	public static PermissionNode warpsNode;
-	public static PermissionNode homesNode;
-	public static PermissionNode checkpointsNode;
-	public static Permission warpCreate;
-	public static Permission warpDelete;
+	public static PermissionNode warpNode;
+	public static Permission warpAdd;
+	public static Permission warpRemove;
 	public static Permission warpEdit;
-	public static Permission homeCreate;
-	public static Permission homeDelete;
-	public static Permission homeEdit;
-	public static Permission homeWarp;
-	public static Permission homeCreateAll;
-	public static Permission homeDeleteAll;
+	public static Permission warpWarpAll;
+	
+	public static PermissionNode homeNode;
+	public static PermissionNode homeNodeOwn;
+	public static PermissionNode homeNodeAll;
+	
+	public static Permission homeAddOwn;
+	public static Permission homeRemoveOwn;
+	public static Permission homeEditOwn;
+	public static Permission homeWarpOwn;
+	
+	public static Permission homeAddAll;
+	public static Permission homeRemoveAll;
 	public static Permission homeEditAll;
 	public static Permission homeWarpAll;
-	public static Permission checkpointsCreate;
-	public static Permission checkpointsDelete;
-	public static Permission checkpointsWarp;
-	public static Permission checkpointsWarpOwnAll;
-	public static Permission checkpointsCreateAll;
-	public static Permission checkpointsDeleteAll;
-	public static Permission checkpointsWarpAll;
-	public static Permission areaWarpCreate;
-	public static Permission areaWarpEdit;
-	public static Permission areaWarpDelete;
-	public static Permission areaWarpCreateAll;
-	public static Permission areaWarpEditAll;
-	public static Permission areaWarpDeleteAll;
+	
+	public static PermissionNode checkpointNode;
+	public static PermissionNode checkpointNodeOwn;
+	public static PermissionNode checkpointNodeAll;
+	
+	public static Permission checkpointAddOwn;
+	public static Permission checkpointRemoveOwn;
+	public static Permission checkpointWarpOwn;
+	
+	public static Permission checkpointAddAll;
+	public static Permission checkpointRemoveAll;
+	public static Permission checkpointWarpAll;
 	
 	private static HashMap<Long, PublicWarp> publicWarps;
 	private static HashMap<Long, PrivateWarp> privateWarps;
 	private static HashMap<Long, CheckpointWarp> checkpointWarps;
-	private static HashMap<Long, AreaWarp> areaWarps;
 	
 	
 	//---------------GENERIC METHODS------------------
@@ -66,7 +66,6 @@ public class WarpManager {
 		warps.addAll(publicWarps.values());
 		warps.addAll(privateWarps.values());
 		warps.addAll(checkpointWarps.values());
-		warps.addAll(areaWarps.values());
 		return warps;
 	}
 	
@@ -362,146 +361,5 @@ public class WarpManager {
 				warp.setIndex(warp.getIndex()+1);
 		}
 	}
-	
-	
-	//----------------AREA WARPS--------------------
-	
-	/**
-	 * Creates a new AreaWarp and stores it in the areaWarps HashMap.
-	 * The AreaWarp stores an area so that you can give areas warp
-	 * points to teleport to, seperate from public warps.
-	 * @param location The location of the warp
-	 * @param area The area assigned to the warp
-	 * @return The new AreaWarp
-	 */
-	public AreaWarp newAreaWarp(Location location, Area area){
-		for (AreaWarp warp : areaWarps.values())
-			if (warp.getArea() == area){
-				warp.setLocation(location);
-				return warp;
-			}
-		AreaWarp warp = new AreaWarp(generateAreaId(), location, area);
-		areaWarps.put(warp.getId(), warp);
-		return warp;
-	}
-	
-	/**
-	 * Deletes a stored AreaWarp by ID.
-	 * @param ID The ID to search for.
-	 * @return Returns the deleted AreaWarp, null it never existed.
-	 */
-	public AreaWarp deleteAreaWarp(Long ID){
-		AreaWarp warp = getAreaWarp(ID);
-		if (warp!=null)
-			areaWarps.remove(ID);
-		return warp;
-	}
-	
-	/**
-	 * Deletes a stored AreaWarp by ID.
-	 * @param area The AreaWarp in question's assigned Area
-	 * @return Returns the deleted AreaWarp, null it never existed.
-	 */
-	public AreaWarp deleteAreaWarp(Area area){
-		if (area.getWarp()!=null)
-			return deleteAreaWarp(area.getWarp().getId());
-		else
-			return null;
-	}
-
-	/**
-	 * @return Returns an ArrayList<AreaWarps> of all stored AreaWarps.
-	 */
-	public List<AreaWarp> getAllAreaWarps(){
-		List<AreaWarp> warps = new ArrayList<AreaWarp>();
-		warps.addAll(areaWarps.values());
-		return warps;
-	}
-	
-	/**
-	 * Gets a stored AreaWarp by the warp's unique ID.
-	 * @param ID The ID to search for.
-	 * @return The AreaWarp if found. If not, returns null.
-	 */
-	public AreaWarp getAreaWarp(Long ID){
-		if(areaWarps.containsKey(ID))
-			return areaWarps.get(ID);
-		else
-			return null;
-	}
-	
-	/**
-	 * Gets a stored AreaWarp by the warp's Area. This lets you
-	 * get an area's unique warp easily.
-	 * @param area The Area to search for.
-	 * @return The AreaWarp if found. If not, returns null.
-	 */
-	public AreaWarp getAreaWarp(Area area){
-		for(AreaWarp warp : areaWarps.values())
-			if (warp.getArea() == area)
-				return warp;
-		return null;
-	}
-	
-	/**
-	 * This method cleans up the areaWarps HashMap, removing
-	 * multiple AreaWarps that point to the same Area, or removing
-	 * AreaWarps that point to ChildAreas. Exception: if the ChildArea's
-	 * ParentArea does not have a warp pointing to it, then
-	 * it will point the WarpArea in question to the ChildArea's
-	 * ParentArea. It also deletes any AreaWarps who point to non-
-	 * existent or unstored areas.
-	 */
-	public void cleanUpAreaWarps(){
-		List<Area> areas = new ArrayList<Area>();
-		List<AreaWarp> warps = new ArrayList<AreaWarp>();
-		
-		//Remove all AreaWarps pointing to non-existing Areas
-		for(AreaWarp warp : areaWarps.values()){
-			if(warp.getArea() == null)
-				warps.add(warp);
-			else if (GoldenApple.getInstance().areas.getArea(warp.getArea().getID()) == null)
-				warps.add(warp);
-			else if (GoldenApple.getInstance().areas.getArea(warp.getArea().getID()) != warp.getArea())
-				warps.add(warp);
-		}
-		for(AreaWarp warp : warps){
-			deleteAreaWarp(warp.getId());
-		}
-		warps.clear();
-		
-		// Remove all areaWarps pointing to ChildAreas, unless
-		// the ChildArea's parent has no assigned warps.
-		for (AreaWarp warp : areaWarps.values()){
-			if(warp.getArea() instanceof ChildArea)
-				warps.add(warp);
-		}
-		for (AreaWarp warp : warps){
-			if(((ChildArea) warp.getArea()).getParent().getWarp() == null)
-				warp.setArea(((ChildArea)warp.getArea()).getParent());
-			else
-				deleteAreaWarp(warp.getId());
-		}
-		warps.clear();
-		
-		// Remove remove any AreaWarps pointint to the same Area.
-		for (AreaWarp warp : areaWarps.values()){
-			if(!areas.contains(warp.getArea()))
-				areas.add(warp.getArea());
-			else
-				warps.add(warp);
-		}
-		for (AreaWarp warp : warps)
-			deleteAreaWarp(warp.getId());
-	}
-	
-	private Long generateAreaId(){
-		Long index = (long) 0;
-		while (areaWarps.containsKey(index))
-			index++;
-		return index;
-	}
-	
-	
 	
 }
