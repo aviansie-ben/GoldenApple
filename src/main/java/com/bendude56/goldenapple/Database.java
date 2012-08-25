@@ -26,7 +26,7 @@ public final class Database {
 			try {
 				Class.forName("com.mysql.jdbc.Driver");
 				Connection c = DriverManager.getConnection("jdbc:mysql://" + GoldenApple.getInstance().mainConfig.getString("database.host", "localhost") + "/mysql", GoldenApple.getInstance().mainConfig.getString("database.user", ""), GoldenApple.getInstance().mainConfig.getString("database.password", ""));
-				if (!c.isValid(0)) {
+				if (!c.isValid(1000)) {
 					GoldenApple.log(Level.SEVERE, "Failed to connect to MySQL database!");
 					return;
 				}
