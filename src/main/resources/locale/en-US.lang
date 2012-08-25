@@ -66,10 +66,16 @@ general.permissions.remove.warnGroup=&e   Group: %1
 general.permissions.remove.warnEnd=&eIf you are sure you wish to permanently remove these groups and users, use /gaverify.
 
 header.help=&7-----&6 GoldenApple Help &7-----
+header.lock=&7-----&6 GoldenApple Locks &7-----
 header.module=&7-----&6 GoldenApple Module Controller &7-----
 header.permissions=&7-----&6 GoldenApple Permissions &7-----
 
-help.permissions.1=
+help.permissions.1=Select users and groups using &7-u <user>&f and &7-g <group>
+help.permissions.2=Add new users and groups based on selection using &7-a
+help.permissions.3=Delete selected users and groups using &7-r
+help.permissions.4=Add permissions using &7-pa <permission>&f and remove using &7-pr <permission>
+help.permissions.5=Add users/groups to a group using &7-ua <user>&f and &7-ga <group>
+help.permissions.6=Remove users/groups from a group using &7-ur <user>&f and &7-gr <group>
 
 shared.cmdUnload.generic=&4ERROR: This command has been disabled
 shared.cmdUnload.specific=&4ERROR: This command relies on unloaded module '%1'
