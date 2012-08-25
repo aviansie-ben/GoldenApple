@@ -28,7 +28,7 @@ import com.bendude56.goldenapple.lock.LockManager;
 import com.bendude56.goldenapple.lock.LockModuleLoader;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 import com.bendude56.goldenapple.permissions.PermissionsModuleLoader;
-import com.bendude56.goldenapple.warps.WarpManager;
+import com.bendude56.goldenapple.warp.WarpManager;
 
 public class GoldenApple extends JavaPlugin {
 	private static Logger								log			= Logger.getLogger("Minecraft");

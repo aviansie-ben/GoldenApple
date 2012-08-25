@@ -1,8 +1,9 @@
-package com.bendude56.goldenapple.warps;
+package com.bendude56.goldenapple.warp;
 
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.IModuleLoader;
 import com.bendude56.goldenapple.ModuleLoadException;
+import com.bendude56.goldenapple.listener.WarpListener;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 
 public class WarpModuleLoader implements IModuleLoader {
@@ -20,9 +21,7 @@ public class WarpModuleLoader implements IModuleLoader {
 		try
 		{
 			instance.warp = new WarpManager();
-			loadWarps = instance.mainConfig.getBoolean("modules.warp.warps.enabled", true);
-			loadHomes = instance.mainConfig.getBoolean("modules.warp.homes.enabled", true);
-			loadCheckpoints = instance.mainConfig.getBoolean("modules.warp.checkpoints.enabled", true);
+			
 			registerPermissions(instance.permissions);
 			registerEvents();
 			registerCommands();
@@ -30,7 +29,10 @@ public class WarpModuleLoader implements IModuleLoader {
 		catch (Throwable e)
 		{
 			state = ModuleState.UNLOADED_ERROR;
-			// TODO Add cleanup code to clean up after failed module start
+			
+			instance.warp = null;
+			unregisterEvents();
+			unregisterCommands();
 		}
 	}
 
@@ -80,8 +82,7 @@ public class WarpModuleLoader implements IModuleLoader {
 
 	public void registerEvents()
 	{
-		// TODO Make warpListener
-		// TODO Register Events
+		WarpListener.registerEvents();
 	}
 
 	public void registerCommands()
@@ -89,11 +90,21 @@ public class WarpModuleLoader implements IModuleLoader {
 		// TODO Register Commands
 	}
 
+	public void unregisterEvents()
+	{
+		WarpListener.unregisterEvents();
+	}
+
+	public void unregisterCommands()
+	{
+		// TODO Unregister Commands
+	}
+
 	@Override
 	public void unloadModule(GoldenApple instance)
 	{
-		// TODO Stop events listening
-		// TODO Unregister commands
+		unregisterEvents();
+		unregisterCommands();
 		instance.warp = null;
 
 		state = ModuleState.UNLOADED_USER;

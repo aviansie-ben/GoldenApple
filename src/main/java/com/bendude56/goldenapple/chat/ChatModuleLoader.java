@@ -3,6 +3,7 @@ package com.bendude56.goldenapple.chat;
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.IModuleLoader;
 import com.bendude56.goldenapple.ModuleLoadException;
+import com.bendude56.goldenapple.listener.ChatListener;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 
 public class ChatModuleLoader implements IModuleLoader {
@@ -23,7 +24,10 @@ public class ChatModuleLoader implements IModuleLoader {
 		catch (Throwable e)
 		{
 			state = ModuleState.UNLOADED_ERROR;
-			// TODO Add cleanup code to clean up after failed module start
+			
+			instance.chat = null;
+			unregisterEvents();
+			unregisterCommands();
 		}
 		state = ModuleState.LOADED;
 	}
@@ -52,8 +56,7 @@ public class ChatModuleLoader implements IModuleLoader {
 
 	public void registerEvents()
 	{
-		// TODO Make ChatListener
-		// TODO Register Events
+		ChatListener.registerEvents();
 	}
 
 	public void registerCommands()
@@ -61,10 +64,21 @@ public class ChatModuleLoader implements IModuleLoader {
 		// TODO Register Commands
 	}
 
+	public void unregisterEvents()
+	{
+		ChatListener.unregisterEvents();
+	}
+
+	public void unregisterCommands()
+	{
+		// TODO Unregister Commands
+	}
+
 	@Override
-	public void unloadModule(GoldenApple instance) {
-		// TODO Stop events listening
-		// TODO Unregister commands
+	public void unloadModule(GoldenApple instance)
+	{
+		unregisterEvents();
+		unregisterCommands();
 		instance.chat = null;
 		
 		state = ModuleState.UNLOADED_USER;
@@ -83,22 +97,26 @@ public class ChatModuleLoader implements IModuleLoader {
 	}
 
 	@Override
-	public void setState(ModuleState state) {
+	public void setState(ModuleState state)
+	{
 		ChatModuleLoader.state = state;
 	}
 
 	@Override
-	public String[] getModuleDependencies() {
+	public String[] getModuleDependencies()
+	{
 		return new String[] { "Permissions" };
 	}
 
 	@Override
-	public boolean canLoadAuto() {
+	public boolean canLoadAuto()
+	{
 		return GoldenApple.getInstance().mainConfig.getBoolean("modules.chat.enabled", true);
 	}
 
 	@Override
-	public boolean canPolicyLoad() {
+	public boolean canPolicyLoad()
+	{
 		return !GoldenApple.getInstance().mainConfig.getBoolean("securityPolicy.blockModules.chat", false);
 	}
 
