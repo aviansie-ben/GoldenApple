@@ -82,7 +82,7 @@ public class LockManager {
 		if (b != null)
 			return b;
 		try {
-			ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT ID, X, Y, Z, World, Type, AccessLevel, Owner, Guests FROM Locks WHERE X=?, Y=?, Z=?, World=?", l.getBlockX(), l.getBlockY(), l.getBlockZ(), l.getWorld().getName());
+			ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT ID, X, Y, Z, World, Type, AccessLevel, Owner, Guests FROM Locks WHERE X=? AND Y=? AND Z=? AND World=?", l.getBlockX(), l.getBlockY(), l.getBlockZ(), l.getWorld().getName());
 			if (r.next()) {
 				return loadIntoCache(r);
 			} else {
