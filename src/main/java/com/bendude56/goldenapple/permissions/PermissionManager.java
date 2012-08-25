@@ -743,7 +743,7 @@ public class PermissionManager {
 		 */
 		public String getFullName() {
 			String path = name;
-			PermissionNode currentNode = this;
+			PermissionNode currentNode = node;
 			while (currentNode != GoldenApple.getInstance().permissions.rootNode) {
 				path = currentNode.getName() + "." + path;
 				currentNode = currentNode.getNode();
