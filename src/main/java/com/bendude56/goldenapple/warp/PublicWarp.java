@@ -1,11 +1,11 @@
-package com.bendude56.goldenapple.warps;
+package com.bendude56.goldenapple.warp;
 
 import org.bukkit.Location;
 
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
 import com.bendude56.goldenapple.permissions.PermissionGroup;
-import com.bendude56.goldenapple.warps.Warp;
+import com.bendude56.goldenapple.warp.Warp;
 
 /**
  * Child of the Warp class. Also holds a label and a group.

@@ -1,4 +1,4 @@
-package com.bendude56.goldenapple.warps;
+package com.bendude56.goldenapple.warp;
 
 import java.util.ArrayList;
 import java.util.HashMap;
