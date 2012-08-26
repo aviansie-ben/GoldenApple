@@ -1,7 +1,10 @@
+error.lock.access.unknown=&4ERROR: There is no access level with name &f%1&4!
 error.lock.create.alreadyExists=&4ERROR: A protection already exists on that block!
 error.lock.create.invalidRegistered=&4ERROR: Plugin '%1' has an invalid &1RegisteredBlock&4! Contact an administrator!
 error.lock.create.ioError=&4ERROR: Failed to write new lock to the database!
 error.lock.delete.ioError=&4ERROR: Failed to remove lock from the database!
+error.lock.guest.alreadyGuest=&4ERROR: This lock is already shared with '%1'!
+error.lock.guest.notGuest=&4ERROR: This lock is not shared with '%1'!
 error.lock.invalidBlock=&4ERROR: You are not pointing at a valid block!
 error.lock.noEdit=&4ERROR: You do not have permission to edit the protection on this block.
 error.lock.notFound=&4ERROR: The block you are pointing at is not locked!
@@ -44,6 +47,10 @@ general.complex.successOn=&aNow using complex command syntax
 general.complex.warnOff=&eWARNING: You are about to disable complex commands! Some commands will be simplified. If you are sure you want to proceed, use /gaverify!
 general.complex.warnOn=&eWARNING: You are about to enable complex commands! Some commands will be given complex syntax. If you are sure you want to proceed, use /gaverify!
 
+general.lock.access.success=&aLock access changed to %1&a successfully.
+general.lock.delete.success=&aThe lock on that block has been deleted successfully!
+general.lock.guest.add.success=&aLock shared with '%1' successfully.
+general.lock.guest.remove.success=&aLock unshared from '%1' successfully.
 general.lock.info.1=&7Lock ID: &f%1
 general.lock.info.2=&7Owner: &f%2
 general.lock.info.3=&7Lock Access: %3
@@ -91,12 +98,22 @@ header.lock=&7-----&6 GoldenApple Locks &7-----
 header.module=&7-----&6 GoldenApple Module Controller &7-----
 header.permissions=&7-----&6 GoldenApple Permissions &7-----
 
-help.lock.1=Select a block by pointing at it or use &7-s <id>
-help.lock.1=Get lock info using &7-i
-help.lock.2=Create a new lock using &7-c
-help.lock.3=  -Add &7-p&f for public lock
-help.lock.3=Delete an existing lock using &7-d
-help.lock.4=Add guests using &7-ga <guest>&f, remove using &7-gr <guest>
+help.lock.complex.1=Select a block by pointing at it or use &7-s <id>
+help.lock.complex.2=Get lock info using &7-i
+help.lock.complex.3=Create a new lock using &7-c
+help.lock.complex.4=  -Add &7-p&f for public lock
+help.lock.complex.5=Delete an existing lock using &7-d
+help.lock.complex.6=Add guests using &7-ga <guest>&f, remove using &7-gr <guest>
+help.lock.complex.7=Change lock access using &7-a {public|private}
+
+help.lock.simple.1=Select a block by pointing at it
+help.lock.simple.2=Get lock info using &7/%1 info&f
+help.lock.simple.3=Create a new lock using &7/%1 create&f
+help.lock.simple.4=  -Use &7/%1 create public&f for a public lock
+help.lock.simple.5=Delete a lock using &7/%1 delete&f
+help.lock.simple.6=Use &7/%1 share <user>&f to allow another player to use the locked block
+help.lock.simple.7=Use &7/%1 unshare <user>&f to unshare the block from a player
+help.lock.simple.8=Use &7/%1 access {public|private}&f to change access level
 
 help.permissions.1=Select users and groups using &7-u <user>&f and &7-g <group>
 help.permissions.2=Add new users and groups based on selection using &7-a

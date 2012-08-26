@@ -105,6 +105,8 @@ public class PermissionsCommand implements CommandExecutor {
 				}
 			} else if (args[i].equalsIgnoreCase("-v")) {
 				verified = true;
+			} else {
+				instance.locale.sendMessage(user, "shared.unknownOption", false, args[i]);
 			}
 		}
 		if (!remove && !add && addPermissions.isEmpty() && remPermissions.isEmpty() && addUsers.isEmpty() && remUsers.isEmpty() && addGroups.isEmpty() && remGroups.isEmpty()) {
