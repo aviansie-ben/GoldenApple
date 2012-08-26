@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -196,11 +197,20 @@ public abstract class LockedBlock {
 	/**
 	 * Saves the lock into the SQL database
 	 */
-	public void save(boolean newLock) throws SQLException, IOException {
-		if (newLock)
-			GoldenApple.getInstance().database.execute("INSERT INTO Locks (ID, X, Y, Z, World, Type, AccessLevel, Owner, Guests) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", lockId, l.getBlockX(), l.getBlockY(), l.getBlockZ(), l.getWorld().getName(), typeId, level.levelId, ownerId, Serializer.serialize(guests));
-		else
+	public void save() {
+		try {
 			GoldenApple.getInstance().database.execute("UPDATE Locks SET AccessLevel=?, Owner=?, Guests=? WHERE ID=?", level.levelId, ownerId, Serializer.serialize(guests), lockId);
+		} catch (SQLException | IOException e) {
+			GoldenApple.log(Level.SEVERE, "Failed to save changes to lock " + lockId + ":");
+			GoldenApple.log(Level.SEVERE, e);
+		}
+	}
+	
+	/**
+	 * Saves the lock into the SQL database as a new row
+	 */
+	public void saveNew() throws SQLException, IOException {
+		GoldenApple.getInstance().database.execute("INSERT INTO Locks (ID, X, Y, Z, World, Type, AccessLevel, Owner, Guests) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", lockId, l.getBlockX(), l.getBlockY(), l.getBlockZ(), l.getWorld().getName(), typeId, level.levelId, ownerId, Serializer.serialize(guests));
 	}
 
 	/**
@@ -238,6 +248,7 @@ public abstract class LockedBlock {
 	 */
 	public void setOwner(long ownerId) {
 		this.ownerId = ownerId;
+		save();
 	}
 
 	/**
@@ -257,8 +268,10 @@ public abstract class LockedBlock {
 	 *            of this block.
 	 */
 	public void addGuest(long guestId) {
-		if (!guests.contains(guestId))
+		if (!guests.contains(guestId)) {
 			guests.add(guestId);
+			save();
+		}
 	}
 
 	/**
@@ -272,8 +285,10 @@ public abstract class LockedBlock {
 	 *            list of this block.
 	 */
 	public void remGuest(long guestId) {
-		if (guests.contains(guestId))
+		if (guests.contains(guestId)) {
 			guests.remove(guestId);
+			save();
+		}
 	}
 
 	/**
@@ -297,6 +312,7 @@ public abstract class LockedBlock {
 	 */
 	public void setLevel(LockLevel level) {
 		this.level = level;
+		save();
 	}
 
 	/**

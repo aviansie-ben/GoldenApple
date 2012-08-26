@@ -143,7 +143,9 @@ public class LockManager {
 
 		try {
 			LockedBlock b = r.blockClass.getConstructor(Long.class, Location.class, Long.class, LockLevel.class).newInstance(nextId(), loc, owner.getId(), access);
-			b.save(true);
+			lockCache.put(b.getLockId(), b);
+			cacheOut.add(b.getLockId());
+			b.saveNew();
 			return b;
 		} catch (SQLException | IOException e) {
 			throw new IOException(e);
