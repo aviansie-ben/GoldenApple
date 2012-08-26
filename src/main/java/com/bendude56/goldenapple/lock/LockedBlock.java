@@ -169,7 +169,7 @@ public abstract class LockedBlock {
 	}
 
 	private final long		lockId;
-	private final Location	l;
+	private Location		l;
 	private long			ownerId;
 	private ArrayList<Long>	guests;
 	private LockLevel		level;
@@ -205,7 +205,7 @@ public abstract class LockedBlock {
 			GoldenApple.log(Level.SEVERE, e);
 		}
 	}
-	
+
 	/**
 	 * Saves the lock into the SQL database as a new row
 	 */
@@ -337,6 +337,17 @@ public abstract class LockedBlock {
 	 */
 	public boolean canEdit(User user) {
 		return (user.getId() == ownerId);
+	}
+
+	/**
+	 * Moves the lock to a new location. Usually used if a block change has
+	 * caused the corrected location to change.
+	 * 
+	 * @param l The location to which the lock should be moved.
+	 */
+	public void moveLock(Location l) throws SQLException {
+		this.l = l;
+		GoldenApple.getInstance().database.execute("UPDATE Locks SET X=?, Y=?, Z=?, World=? WHERE ID=?", l.getBlockX(), l.getBlockY(), l.getBlockZ(), l.getWorld().getName(), lockId);
 	}
 
 	/**

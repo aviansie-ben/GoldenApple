@@ -116,6 +116,10 @@ public class LockManager {
 
 	public LockedBlock getLock(Location l) {
 		LockedBlock.correctLocation(l);
+		return getLockSpecific(l);
+	}
+	
+	public LockedBlock getLockSpecific(Location l) {
 		LockedBlock b = checkCache(l);
 		if (b != null)
 			return b;
