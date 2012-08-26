@@ -99,17 +99,31 @@ public class PermissionGroup {
 		return members;
 	}
 	
-	public void addMember(PermissionUser user) {
+	public void addMember(IPermissionUser user) {
 		if (!members.contains(user.getId())) {
 			members.add(user.getId());
 			save();
 		}
 	}
 	
-	public void removeMember(PermissionUser user) {
+	public void removeMember(IPermissionUser user) {
 		if (members.contains(user.getId())) {
 			members.remove((Object) user.getId());
 			save();
+		}
+	}
+	
+	public boolean isMember(IPermissionUser user, boolean directOnly) {
+		if (members.contains(user.getId())) {
+			return true;
+		} else if (directOnly) {
+			return false;
+		} else {
+			for (Long g : subGroups) {
+				if (GoldenApple.getInstance().permissions.getGroup(g).isMember(user, false))
+					return true;
+			}
+			return false;
 		}
 	}
 

@@ -50,11 +50,50 @@ public class PermissionListener implements Listener, EventExecutor {
 	}
 
 	private void playerLogin(PlayerLoginEvent event) {
+		GoldenApple instance = GoldenApple.getInstance();
 		PermissionUser u = GoldenApple.getInstance().permissions.createUser(event.getPlayer().getName());
-		if (!GoldenApple.getInstance().mainConfig.getString("modules.permissions.reqGroup").equals("")) {
-			PermissionGroup reqGroup = GoldenApple.getInstance().permissions.getGroup(GoldenApple.getInstance().mainConfig.getString("modules.permissions.reqGroup"));
+		
+		for (String defaultGroup : instance.mainConfig.getStringList("modules.permissions.defaultGroups")) {
+			PermissionGroup g = instance.permissions.getGroup(defaultGroup);
+			if (g == null)
+				continue;
+			
+			if (!g.isMember(u, true)) {
+				g.addMember(u);
+			}
+		}
+		
+		if (event.getPlayer().isOp()) {
+			for (String defaultGroup : instance.mainConfig.getStringList("modules.permissions.opGroups")) {
+				PermissionGroup g = instance.permissions.getGroup(defaultGroup);
+				if (g == null)
+					continue;
+				
+				if (!g.isMember(u, true)) {
+					g.addMember(u);
+				}
+			}
+		}
+		
+		for (String dev : GoldenApple.devs) {
+			if (dev.equals(u.getName())) {
+				for (String defaultGroup : instance.mainConfig.getStringList("modules.permissions.devGroups")) {
+					PermissionGroup g = instance.permissions.getGroup(defaultGroup);
+					if (g == null)
+						continue;
+					
+					if (!g.isMember(u, true)) {
+						g.addMember(u);
+					}
+				}
+				break;
+			}
+		}
+		
+		if (!instance.mainConfig.getString("modules.permissions.reqGroup").equals("")) {
+			PermissionGroup reqGroup = instance.permissions.getGroup(GoldenApple.getInstance().mainConfig.getString("modules.permissions.reqGroup"));
 			if (reqGroup == null) {
-				GoldenApple.log(Level.WARNING, "Failed to find required group '" + GoldenApple.getInstance().mainConfig.getString("modules.permissions.reqGroup") + "'. Only allowing ops to join...");
+				GoldenApple.log(Level.WARNING, "Failed to find required group '" + instance.mainConfig.getString("modules.permissions.reqGroup") + "'. Only allowing ops to join...");
 				if (!Bukkit.getOfflinePlayer(u.getName()).isOp()) {
 					event.disallow(Result.KICK_WHITELIST, "You aren't allowed to connect. Contact an administrator for further details.");
 				}
