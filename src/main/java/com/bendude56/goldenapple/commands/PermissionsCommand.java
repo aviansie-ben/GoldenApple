@@ -2,6 +2,7 @@ package com.bendude56.goldenapple.commands;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.logging.Level;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -20,7 +21,7 @@ public class PermissionsCommand implements CommandExecutor {
 		GoldenApple instance = GoldenApple.getInstance();
 		User user = User.getUser(sender);
 
-		if (args.length == 0 || args[0].equalsIgnoreCase("help")) {
+		if (args.length == 0 || args[0].equalsIgnoreCase("-?")) {
 			sendHelp(user, commandLabel);
 			return true;
 		}
@@ -151,6 +152,7 @@ public class PermissionsCommand implements CommandExecutor {
 						String name = instance.permissions.getUser(id).getName();
 						try {
 							instance.permissions.deleteUser(id);
+							GoldenApple.log(Level.INFO, "User " + name + " (PU" + id + ") has been deleted by " + user.getName());
 							instance.locale.sendMessage(user, "general.permissions.remove.user", false, name);
 						} catch (SQLException e) {
 							instance.locale.sendMessage(user, "error.permissions.remove.userUnknown", false, name);
@@ -161,6 +163,7 @@ public class PermissionsCommand implements CommandExecutor {
 					String name = instance.permissions.getGroup(id).getName();
 					try {
 						instance.permissions.deleteGroup(id);
+						GoldenApple.log(Level.INFO, "Group " + name + " (PG" + id + ") has been deleted by " + user.getName());
 						instance.locale.sendMessage(user, "general.permissions.remove.group", false, name);
 					} catch (SQLException e) {
 						instance.locale.sendMessage(user, "error.permissions.remove.groupUnknown", false, name);
@@ -202,7 +205,8 @@ public class PermissionsCommand implements CommandExecutor {
 					if (instance.permissions.userExists(u)) {
 						instance.locale.sendMessage(user, "error.permissions.add.userExists", false, u);
 					} else {
-						instance.permissions.createUser(u);
+						PermissionUser newUser = instance.permissions.createUser(u);
+						GoldenApple.log(Level.INFO, "User " + newUser.getName() + " (PU" + newUser.getId() + ") has been created by " + user.getName());
 						instance.locale.sendMessage(user, "general.permissions.add.user", false, u);
 					}
 				} catch (SQLException e) {
@@ -214,7 +218,8 @@ public class PermissionsCommand implements CommandExecutor {
 					if (instance.permissions.groupExists(g)) {
 						instance.locale.sendMessage(user, "error.permissions.add.groupExists", false, g);
 					} else {
-						instance.permissions.createGroup(g);
+						PermissionGroup newGroup = instance.permissions.createGroup(g);
+						GoldenApple.log(Level.INFO, "Group " + newGroup.getName() + " (PG" + newGroup.getId() + ") has been created by " + user.getName());
 						instance.locale.sendMessage(user, "general.permissions.add.group", false, g);
 					}
 				} catch (SQLException e) {
@@ -339,12 +344,14 @@ public class PermissionsCommand implements CommandExecutor {
 			for (PermissionUser u : addUsers) {
 				for (PermissionGroup ch : groups) {
 					ch.addMember(u);
+					GoldenApple.log(Level.INFO, "User " + u.getName() + " (PU" + u.getId() + ") has been added to group " + ch.getName() + " (PG" + ch.getId() + ") by " + user.getName());
 					instance.locale.sendMessage(user, "general.permissions.member.addUser", false, u.getName(), ch.getName());
 				}
 			}
 			for (PermissionUser u : remUsers) {
 				for (PermissionGroup ch : groups) {
 					ch.removeMember(u);
+					GoldenApple.log(Level.INFO, "User " + u.getName() + " (PU" + u.getId() + ") has been removed from group " + ch.getName() + " (PG" + ch.getId() + ") by " + user.getName());
 					instance.locale.sendMessage(user, "general.permissions.member.remUser", false, u.getName(), ch.getName());
 				}
 			}
@@ -358,12 +365,14 @@ public class PermissionsCommand implements CommandExecutor {
 			for (PermissionGroup g : addGroups) {
 				for (PermissionGroup ch : groups) {
 					ch.addSubGroup(g);
+					GoldenApple.log(Level.INFO, "Group " + g.getName() + " (PG" + g.getId() + ") has been added to group " + ch.getName() + " (PG" + ch.getId() + ") by " + user.getName());
 					instance.locale.sendMessage(user, "general.permissions.member.addGroup", false, g.getName(), ch.getName());
 				}
 			}
 			for (PermissionGroup g : remGroups) {
 				for (PermissionGroup ch : groups) {
 					ch.removeSubGroup(g);
+					GoldenApple.log(Level.INFO, "Group " + g.getName() + " (PG" + g.getId() + ") has been removed from group " + ch.getName() + " (PG" + ch.getId() + ") by " + user.getName());
 					instance.locale.sendMessage(user, "general.permissions.member.remUser", false, g.getName(), ch.getName());
 				}
 			}
@@ -376,12 +385,14 @@ public class PermissionsCommand implements CommandExecutor {
 		for (Permission p : add) {
 			if (!u.hasPermission(p, false)) {
 				u.addPermission(p);
+				GoldenApple.log(Level.INFO, "User " + u.getName() + " (PU" + u.getId() + ") has been granted permission '" + p.getFullName() + "' by " + user.getName());
 				instance.locale.sendMessage(user, "general.permissions.perm.add", false, p.getFullName(), u.getName());
 			}
 		}
 		for (Permission p : remove) {
 			if (u.hasPermission(p, false)) {
 				u.removePermission(p);
+				GoldenApple.log(Level.INFO, "User " + u.getName() + " (PU" + u.getId() + ") has had permission '" + p.getFullName() + "' revoked by " + user.getName());
 				instance.locale.sendMessage(user, "general.permissions.perm.rem", false, p.getFullName(), u.getName());
 			}
 		}
@@ -391,12 +402,14 @@ public class PermissionsCommand implements CommandExecutor {
 		for (Permission p : add) {
 			if (!g.hasPermission(p, false)) {
 				g.addPermission(p);
+				GoldenApple.log(Level.INFO, "Group " + g.getName() + " (PG" + g.getId() + ") has been granted permission '" + p.getFullName() + "' by " + user.getName());
 				instance.locale.sendMessage(user, "general.permissions.perm.add", false, p.getFullName(), g.getName());
 			}
 		}
 		for (Permission p : remove) {
 			if (g.hasPermission(p, false)) {
 				g.removePermission(p);
+				GoldenApple.log(Level.INFO, "Group " + g.getName() + " (PG" + g.getId() + ") has had permission '" + p.getFullName() + "' revoked by " + user.getName());
 				instance.locale.sendMessage(user, "general.permissions.perm.rem", false, p.getFullName(), g.getName());
 			}
 		}
