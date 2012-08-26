@@ -29,8 +29,9 @@ public class PermissionUser implements IPermissionUser {
 	private String				name;
 	private String				preferredLocale;
 	private List<Permission>	permissions	= new ArrayList<Permission>();
+	private boolean				complexCommands;
 
-	protected PermissionUser(long id, String name, String preferredLocale, String permissions) {
+	protected PermissionUser(long id, String name, String preferredLocale, String permissions, boolean complexCommands) {
 		this.id = id;
 		this.name = name;
 		this.preferredLocale = preferredLocale;
@@ -44,6 +45,7 @@ public class PermissionUser implements IPermissionUser {
 			GoldenApple.log(Level.SEVERE, "Failed to deserialize permissions for user " + name + ":");
 			GoldenApple.log(Level.SEVERE, e);
 		}
+		this.complexCommands = complexCommands;
 	}
 
 	private String serializePermissions() {
@@ -65,7 +67,7 @@ public class PermissionUser implements IPermissionUser {
 	 */
 	public void save() {
 		try {
-			GoldenApple.getInstance().database.execute("UPDATE Users SET Locale=?, Permissions=? WHERE ID=?", new Object[] { preferredLocale, serializePermissions(), id });
+			GoldenApple.getInstance().database.execute("UPDATE Users SET Locale=?, Permissions=?, ComplexCommands=? WHERE ID=?", new Object[] { preferredLocale, serializePermissions(), complexCommands, id });
 		} catch (SQLException e) {
 			GoldenApple.log(Level.SEVERE, "Failed to save changes to user '" + name + "':");
 			GoldenApple.log(Level.SEVERE, e);
@@ -168,5 +170,16 @@ public class PermissionUser implements IPermissionUser {
 	@Override
 	public void removePermission(String permission) {
 		removePermission(GoldenApple.getInstance().permissions.registerPermission(permission));
+	}
+
+	@Override
+	public boolean isUsingComplexCommands() {
+		return complexCommands;
+	}
+
+	@Override
+	public void setUsingComplexCommands(boolean useComplex) {
+		complexCommands = useComplex;
+		save();
 	}
 }

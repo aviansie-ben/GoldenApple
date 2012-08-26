@@ -213,4 +213,18 @@ public class User implements IPermissionUser {
 			throw new UnsupportedOperationException();
 		permissions.removePermission(permission);
 	}
+
+	@Override
+	public boolean isUsingComplexCommands() {
+		if (permissions == null)
+			return true;
+		return permissions.isUsingComplexCommands();
+	}
+
+	@Override
+	public void setUsingComplexCommands(boolean useComplex) {
+		if (permissions == null)
+			throw new UnsupportedOperationException();
+		permissions.setUsingComplexCommands(useComplex);
+	}
 }

@@ -98,6 +98,12 @@ modules:
         # to when they log in, if they are not already in them.
         devGroups:
             - 'dev'
+        
+        # Whether users will default to complex command syntax or
+        # basic command syntax. True for complex syntax, false for
+        # basic syntax. Users can change this themselves using
+        # /gacomplex.
+        defaultComplexCommands: true
     
     # Lock system options
     lock:

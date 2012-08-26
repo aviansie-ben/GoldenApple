@@ -113,4 +113,18 @@ public interface IPermissionUser {
 	 * @param permission The permissions that should be revoked from this user
 	 */
 	void removePermission(String permission);
+
+	/**
+	 * Gets a boolean representing whether or not the user should have complex
+	 * syntax enabled for commands.
+	 */
+	boolean isUsingComplexCommands();
+
+	/**
+	 * Sets whether or not the user will have complex syntax enabled for
+	 * commands.
+	 * 
+	 * @param useComplex True for complex syntax, false for basic syntax
+	 */
+	void setUsingComplexCommands(boolean useComplex);
 }

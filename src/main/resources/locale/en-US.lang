@@ -1,7 +1,10 @@
+error.lock.create.alreadyExists=&4ERROR: A protection already exists on that block!
 error.lock.create.invalidRegistered=&4ERROR: Plugin '%1' has an invalid &1RegisteredBlock&4! Contact an administrator!
 error.lock.create.ioError=&4ERROR: Failed to write new lock to the database!
+error.lock.delete.ioError=&4ERROR: Failed to remove lock from the database!
 error.lock.invalidBlock=&4ERROR: You are not pointing at a valid block!
 error.lock.noEdit=&4ERROR: You do not have permission to edit the protection on this block.
+error.lock.notFound=&4ERROR: The block you are pointing at is not locked!
 error.lock.noUse=&4ERROR: You do not have permission to use this block. Please contact %1 for permission.
 error.lock.selectCreate=&4ERROR: Cannot use -s and -c together!
 error.lock.selectNoAction=&4ERROR: Cannot use -s without another action!
@@ -35,6 +38,11 @@ error.permissions.remove.userOnline=&eWARNING: Failed to remove user '%1': Canno
 error.permissions.remove.userUnknown=&4ERROR: Failed to remove user '%1': Unknown error!
 
 error.verify.noCommand=&4ERROR: No command to verify!
+
+general.complex.successOff=&aNow using simple command syntax
+general.complex.successOn=&aNow using complex command syntax
+general.complex.warnOff=&eWARNING: You are about to disable complex commands! Some commands will be simplified. If you are sure you want to proceed, use /gaverify!
+general.complex.warnOn=&eWARNING: You are about to enable complex commands! Some commands will be given complex syntax. If you are sure you want to proceed, use /gaverify!
 
 general.lock.info.1=&7Lock ID: &f%1
 general.lock.info.2=&7Owner: &f%2
@@ -101,6 +109,7 @@ shared.cmdUnload.generic=&4ERROR: This command has been disabled
 shared.cmdUnload.specific=&4ERROR: This command relies on unloaded module '%1'
 shared.groupNotFoundError=&4ERROR: Failed to find group '%1'
 shared.groupNotFoundWarning=&eWARNING: Failed to find group '%1'
+shared.noConsole=&4ERROR: You cannot execute this command from the console!
 shared.noPermission=&4ERROR: You do not have permission to execute this command! This request has been logged.
 shared.parameterMissing=&eWARNING: Parameter missing from option: %1
 shared.unknownOption=&4ERROR: Unknown option: %1

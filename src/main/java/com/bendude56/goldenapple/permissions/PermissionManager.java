@@ -60,7 +60,7 @@ public class PermissionManager {
 		rootStar = new Permission("*", rootNode);
 		permissions.add(rootStar);
 		try {
-			GoldenApple.getInstance().database.execute("CREATE TABLE IF NOT EXISTS Users (ID BIGINT PRIMARY KEY, Name VARCHAR(128), Locale VARCHAR(128), Permissions TEXT)");
+			GoldenApple.getInstance().database.execute("CREATE TABLE IF NOT EXISTS Users (ID BIGINT PRIMARY KEY, Name VARCHAR(128), Locale VARCHAR(128), Permissions TEXT, ComplexCommands BOOLEAN)");
 		} catch (SQLException e) {
 			GoldenApple.log(Level.SEVERE, "Failed to create table 'Users':");
 			GoldenApple.log(Level.SEVERE, e);
@@ -107,6 +107,9 @@ public class PermissionManager {
 			}
 			if (!columns.contains("Permissions")) {
 				GoldenApple.getInstance().database.execute("ALTER TABLE Users ADD COLUMN Permissions TEXT");
+			}
+			if (!columns.contains("ComplexCommands")) {
+				GoldenApple.getInstance().database.execute("ALTER TABLE Users ADD COLUMN ComplexCommands BOOLEAN");
 			}
 		} catch (SQLException e) {
 			GoldenApple.log(Level.SEVERE, "Failed to verify structure of table 'Users':");
@@ -156,6 +159,9 @@ public class PermissionManager {
 			}
 			if (!columns.contains("Permissions")) {
 				GoldenApple.getInstance().database.execute("ALTER TABLE Users ADD COLUMN Permissions TEXT");
+			}
+			if (!columns.contains("ComplexCommands")) {
+				GoldenApple.getInstance().database.execute("ALTER TABLE Users ADD COLUMN ComplexCommands BOOLEAN");
 			}
 		} catch (SQLException e) {
 			GoldenApple.log(Level.SEVERE, "Failed to verify structure of table 'Users':");
@@ -402,9 +408,9 @@ public class PermissionManager {
 			return userCache.get(id);
 		} else {
 			try {
-				ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT ID, Name, Locale, Permissions FROM Users WHERE ID=?", new Object[] { id });
+				ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT * FROM Users WHERE ID=?", new Object[] { id });
 				if (r.next()) {
-					PermissionUser u = new PermissionUser(r.getLong("ID"), r.getString("Name"), r.getString("Locale"), r.getString("Permissions"));
+					PermissionUser u = new PermissionUser(r.getLong("ID"), r.getString("Name"), r.getString("Locale"), r.getString("Permissions"), r.getBoolean("ComplexCommands"));
 					r.close();
 					return u;
 				} else {
@@ -436,9 +442,9 @@ public class PermissionManager {
 			}
 		}
 		try {
-			ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT ID, Name, Locale, Permissions FROM Users WHERE Name=?", new Object[] { name });
+			ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT * FROM Users WHERE Name=?", new Object[] { name });
 			if (r.next()) {
-				PermissionUser p = new PermissionUser(r.getLong("ID"), r.getString("Name"), r.getString("Locale"), r.getString("Permissions"));
+				PermissionUser p = new PermissionUser(r.getLong("ID"), r.getString("Name"), r.getString("Locale"), r.getString("Permissions"), r.getBoolean("ComplexCommands"));
 				r.close();
 				userCache.put(p.getId(), p);
 				cacheOut.addLast(p.getId());
@@ -569,7 +575,7 @@ public class PermissionManager {
 					r = GoldenApple.getInstance().database.executeQuery("SELECT NULL FROM Users WHERE ID=?", new Object[] { id });
 				} while (r.next());
 				r.close();
-				GoldenApple.getInstance().database.execute("INSERT INTO Users (ID, Name, Locale, Permissions) VALUES (?, ?, '', ?)", new Object[] { id, name, Serializer.serialize(new ArrayList<String>()) });
+				GoldenApple.getInstance().database.execute("INSERT INTO Users (ID, Name, Locale, Permissions, ComplexCommands) VALUES (?, ?, '', ?, ?)", new Object[] { id, name, Serializer.serialize(new ArrayList<String>()), GoldenApple.getInstance().mainConfig.getBoolean("modules.permissions.defaultComplexCommands", false) });
 				return getUser(id);
 			}
 		} catch (SQLException | IOException e) {

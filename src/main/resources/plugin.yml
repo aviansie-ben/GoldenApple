@@ -25,3 +25,7 @@ commands:
         usage: Use /<command> -? for help
         description: Modifies/creates locks
         aliases: ['l', 'lock']
+    gacomplex:
+        usage: /<command>
+        description: Enables or disables complex GoldenApple commands
+        aliases: ['complex']
