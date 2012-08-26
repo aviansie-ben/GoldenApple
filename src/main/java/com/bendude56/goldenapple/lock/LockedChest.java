@@ -8,12 +8,12 @@ import org.bukkit.Location;
 
 public final class LockedChest extends LockedBlock {
 	
-	protected LockedChest(ResultSet r) throws SQLException, ClassNotFoundException, IOException {
-		super(r);
+	public LockedChest(ResultSet r) throws SQLException, ClassNotFoundException, IOException {
+		super(r, "GA_CHEST");
 	}
 
-	protected LockedChest(long id, Location l, long ownerId, LockLevel level) {
-		super(id, l, ownerId, level);
+	public LockedChest(Long id, Location l, Long ownerId, LockLevel level) {
+		super(id, l, ownerId, level, "GA_CHEST");
 	}
 
 }

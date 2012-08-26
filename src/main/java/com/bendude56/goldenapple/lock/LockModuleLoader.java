@@ -1,7 +1,10 @@
 package com.bendude56.goldenapple.lock;
 
+import org.bukkit.Bukkit;
+
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.IModuleLoader;
+import com.bendude56.goldenapple.commands.LockCommand;
 import com.bendude56.goldenapple.listener.LockListener;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 
@@ -43,7 +46,7 @@ public class LockModuleLoader implements IModuleLoader {
 	}
 	
 	private void registerCommands() {
-		// TODO Register commands
+		Bukkit.getPluginCommand("galock").setExecutor(new LockCommand());
 	}
 
 	@Override

@@ -1,5 +1,11 @@
+error.lock.create.invalidRegistered=&4ERROR: Plugin '%1' has an invalid &1RegisteredBlock&4! Contact an administrator!
+error.lock.create.ioError=&4ERROR: Failed to write new lock to the database!
+error.lock.invalidBlock=&4ERROR: You are not pointing at a valid block!
 error.lock.noEdit=&4ERROR: You do not have permission to edit the protection on this block.
 error.lock.noUse=&4ERROR: You do not have permission to use this block. Please contact %1 for permission.
+error.lock.selectCreate=&4ERROR: Cannot use -s and -c together!
+error.lock.selectNoAction=&4ERROR: Cannot use -s without another action!
+error.lock.selectNotFound=&4ERROR: No lock found with ID %1!
 
 error.module.load.alreadyLoaded=&4ERROR: Module '%1' is already enabled!
 error.module.load.dependFail=&4ERROR: Module '%1' cannot be enabled because dependency '%2' failed to load!
@@ -30,11 +36,18 @@ error.permissions.remove.userUnknown=&4ERROR: Failed to remove user '%1': Unknow
 
 error.verify.noCommand=&4ERROR: No command to verify!
 
+general.lock.info.1=&7Lock ID: &f%1
+general.lock.info.2=&7Owner: &f%2
+general.lock.info.3=&7Lock Access: %3
+general.lock.info.4=&7Lock Type: &f%4
+general.lock.info.private=&8Private
+general.lock.info.public=&fPublic
+
 general.module.list=&7The following modules can be queried:
 general.module.load.success=&aModule '%1' loaded successfully...
 general.module.load.warnStart=&eWARNING: To enable this module, the following dependencies must also be enabled:
 general.module.load.warnEnd=&eIf you are sure you wish to enable these modules, use /gaverify.
-general.module.query.1=&7Module Name: %1
+general.module.query.1=&7Module Name: &f%1
 general.module.query.2=&7Current Status: %2
 general.module.query.loaded=&aRunning
 general.module.query.loadedLocked=&aRunning &8(Locked)
@@ -69,6 +82,13 @@ header.help=&7-----&6 GoldenApple Help &7-----
 header.lock=&7-----&6 GoldenApple Locks &7-----
 header.module=&7-----&6 GoldenApple Module Controller &7-----
 header.permissions=&7-----&6 GoldenApple Permissions &7-----
+
+help.lock.1=Select a block by pointing at it or use &7-s <id>
+help.lock.1=Get lock info using &7-i
+help.lock.2=Create a new lock using &7-c
+help.lock.3=  -Add &7-p&f for public lock
+help.lock.3=Delete an existing lock using &7-d
+help.lock.4=Add guests using &7-ga <guest>&f, remove using &7-gr <guest>
 
 help.permissions.1=Select users and groups using &7-u <user>&f and &7-g <group>
 help.permissions.2=Add new users and groups based on selection using &7-a

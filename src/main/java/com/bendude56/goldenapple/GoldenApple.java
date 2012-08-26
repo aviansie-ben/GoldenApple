@@ -5,8 +5,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayDeque;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.logging.Level;
@@ -35,7 +33,7 @@ public class GoldenApple extends JavaPlugin {
 
 	public static final HashMap<String, IModuleLoader>	modules		= new HashMap<String, IModuleLoader>();
 	public static final String[]						loadOrder 	= new String[] { "Base", "Permissions", "Lock" };
-	public static final String[]						commands	= new String[] { "gamodule", "gaverify", "gaown", "gapermissions" };
+	public static final String[]						commands	= new String[] { "gamodule", "gaverify", "gaown", "gapermissions", "galock" };
 	public static final UnloadedCommand					defCmd		= new UnloadedCommand();
 
 	static {

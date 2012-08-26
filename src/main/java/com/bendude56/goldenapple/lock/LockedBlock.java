@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.plugin.Plugin;
@@ -25,7 +26,7 @@ import com.bendude56.goldenapple.util.Serializer;
 public abstract class LockedBlock {
 	private static List<RegisteredBlock>	registeredBlocks	= new ArrayList<RegisteredBlock>();
 	private static List<ILocationCorrector>	locationCorrectors	= new ArrayList<ILocationCorrector>();
-	
+
 	/**
 	 * Registers a lockable block in the GoldenApple lock system. Two or more
 	 * classes can exist for one block type (in order to preserve
@@ -43,7 +44,7 @@ public abstract class LockedBlock {
 	 */
 	public static void registerBlock(String identifier, Plugin plugin, Material blockType, Class<? extends LockedBlock> blockClass) {
 		for (RegisteredBlock b : registeredBlocks) {
-			if (b.identifier == identifier) {
+			if (b.identifier.equals(identifier)) {
 				throw new IllegalArgumentException("Identifier " + identifier + " already registered to another class!");
 			}
 		}
@@ -87,7 +88,7 @@ public abstract class LockedBlock {
 			}
 		}
 	}
-	
+
 	public static RegisteredBlock getBlock(Material m) {
 		for (int i = 0; i < registeredBlocks.size(); i++) {
 			if (registeredBlocks.get(i).plugin == GoldenApple.getInstance()) {
@@ -104,10 +105,10 @@ public abstract class LockedBlock {
 		}
 		return null;
 	}
-	
+
 	public static RegisteredBlock getBlock(String identifier) {
 		for (int i = 0; i < registeredBlocks.size(); i++) {
-			if (registeredBlocks.get(i).identifier == identifier) {
+			if (registeredBlocks.get(i).identifier.equals(identifier)) {
 				return registeredBlocks.get(i);
 			}
 		}
@@ -166,29 +167,42 @@ public abstract class LockedBlock {
 		registerCorrector(DoubleChestLocationCorrector.class);
 	}
 
-	private final long 		lockId;
+	private final long		lockId;
 	private final Location	l;
 	private long			ownerId;
 	private ArrayList<Long>	guests;
 	private LockLevel		level;
+	private String			typeId;
 
 	@SuppressWarnings("unchecked")
-	protected LockedBlock(ResultSet r) throws SQLException, ClassNotFoundException, IOException {
+	protected LockedBlock(ResultSet r, String typeId) throws SQLException, ClassNotFoundException, IOException {
 		this.lockId = r.getLong("ID");
-		this.l = Serializer.deserializeLocation(r.getString("Location"));
+		this.l = new Location(Bukkit.getWorld(r.getString("World")), r.getLong("X"), r.getLong("Y"), r.getLong("Z"));
 		this.ownerId = r.getLong("Owner");
 		this.guests = (ArrayList<Long>)Serializer.deserialize(r.getString("Guests"));
-		this.level = LockLevel.getLevel(r.getInt("Level"));
+		this.level = LockLevel.getLevel(r.getInt("AccessLevel"));
+		this.typeId = typeId;
 	}
 
-	protected LockedBlock(long id, Location l, long ownerId, LockLevel level) {
+	protected LockedBlock(long id, Location l, long ownerId, LockLevel level, String typeId) {
 		this.lockId = id;
 		this.l = l;
 		this.ownerId = ownerId;
 		this.guests = new ArrayList<Long>();
 		this.level = level;
+		this.typeId = typeId;
 	}
-	
+
+	/**
+	 * Saves the lock into the SQL database
+	 */
+	public void save(boolean newLock) throws SQLException, IOException {
+		if (newLock)
+			GoldenApple.getInstance().database.execute("INSERT INTO Locks (ID, X, Y, Z, World, Type, AccessLevel, Owner, Guests) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", lockId, l.getBlockX(), l.getBlockY(), l.getBlockZ(), l.getWorld().getName(), typeId, level.levelId, ownerId, Serializer.serialize(guests));
+		else
+			GoldenApple.getInstance().database.execute("UPDATE Locks SET AccessLevel=?, Owner=?, Guests=? WHERE ID=?", level.levelId, ownerId, Serializer.serialize(guests), lockId);
+	}
+
 	/**
 	 * Gets the unique identifier for this locked block.
 	 */
@@ -267,6 +281,13 @@ public abstract class LockedBlock {
 	 */
 	public final LockLevel getLevel() {
 		return level;
+	}
+
+	/**
+	 * Gets a unique identifier for the lock type associated with this lock.
+	 */
+	public final String getTypeIdentifier() {
+		return typeId;
 	}
 
 	/**

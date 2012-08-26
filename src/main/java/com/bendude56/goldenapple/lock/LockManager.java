@@ -1,5 +1,6 @@
 package com.bendude56.goldenapple.lock;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -12,7 +13,9 @@ import java.util.logging.Level;
 import org.bukkit.Location;
 
 import com.bendude56.goldenapple.GoldenApple;
+import com.bendude56.goldenapple.lock.LockedBlock.LockLevel;
 import com.bendude56.goldenapple.lock.LockedBlock.RegisteredBlock;
+import com.bendude56.goldenapple.permissions.IPermissionUser;
 import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
 import com.bendude56.goldenapple.permissions.PermissionManager.PermissionNode;
 
@@ -66,9 +69,8 @@ public class LockManager {
 			LockedBlock b = lockClass.blockClass.getConstructor(new Class<?>[] { ResultSet.class }).newInstance(r);
 			lockCache.put(b.getLockId(), b);
 			cacheOut.add(b.getLockId());
-			
 			return b;
-		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+		} catch (Exception e) {
 			GoldenApple.log(Level.SEVERE, "There was an error while loading a lock of type '" + lockClass.identifier + "'");
 			GoldenApple.log(Level.SEVERE, "Please report this error to the creator of '" + lockClass.plugin.getName() + "'. Please include the following stack trace:");
 			GoldenApple.log(Level.SEVERE, e);
@@ -82,17 +84,50 @@ public class LockManager {
 		if (b != null)
 			return b;
 		try {
-			ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT ID, X, Y, Z, World, Type, AccessLevel, Owner, Guests FROM Locks WHERE X=? AND Y=? AND Z=? AND World=?", l.getBlockX(), l.getBlockY(), l.getBlockZ(), l.getWorld().getName());
-			if (r.next()) {
-				return loadIntoCache(r);
-			} else {
-				return null;
+			ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT * FROM Locks WHERE X=? AND Y=? AND Z=? AND World=?", l.getBlockX(), l.getBlockY(), l.getBlockZ(), l.getWorld().getName());
+			try {
+				return (r.next()) ? loadIntoCache(r) : null;
+			} finally {
+				r.close();
 			}
 		} catch (SQLException e) {
 			GoldenApple.log(Level.WARNING, "Error while attempting to retrieve a lock from the database:");
 			GoldenApple.log(Level.WARNING, e);
 			return null;
 		}
+	}
+	
+	public LockedBlock createLock(Location loc, LockLevel access, IPermissionUser owner) throws IOException, InvocationTargetException {
+		LockedBlock.correctLocation(loc);
+		
+		RegisteredBlock r = LockedBlock.getBlock(loc.getBlock().getType());
+		if (r == null)
+			throw new UnsupportedOperationException();
+		
+		try {
+			LockedBlock b = r.blockClass.getConstructor(Long.class, Location.class, Long.class, LockLevel.class).newInstance(nextId(), loc, owner.getId(), access);
+			b.save(true);
+			return b;
+		} catch (SQLException | IOException e) {
+			throw new IOException(e);
+		} catch (Exception e) {
+			throw new InvocationTargetException(e);
+		}
+	}
+	
+	public boolean lockExists(long id) throws SQLException {
+		ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT ID FROM Locks WHERE ID=?", String.valueOf(id));
+		try {
+			return r.next();
+		} finally {
+			r.close();
+		}
+	}
+	
+	public long nextId() throws SQLException {
+		long id;
+		for (id = 0; lockExists(id); id++) ;
+		return id;
 	}
 
 }
