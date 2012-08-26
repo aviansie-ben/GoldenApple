@@ -68,6 +68,8 @@ public class LocalizationHandler {
 	private void sendMessage(User user, String lang, String message, String... args) {
 		String msg = secondaryMessages.get(lang).get(message);
 		for (int i = 0; i < args.length; i++) {
+			if (args[i] == null)
+				throw new IllegalArgumentException("args[" + i + "] cannot be null");
 			msg = msg.replace("%" + (i + 1), args[i]);
 		}
 		if (msg != null && msg.length() > 0)
