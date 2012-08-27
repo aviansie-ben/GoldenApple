@@ -32,7 +32,7 @@ public class GoldenApple extends JavaPlugin {
 	private static Logger								log			= Logger.getLogger("Minecraft");
 
 	public static final HashMap<String, IModuleLoader>	modules		= new HashMap<String, IModuleLoader>();
-	public static final String[]						loadOrder 	= new String[] { "Base", "Permissions", "Lock" };
+	public static final String[]						loadOrder	= new String[] { "Base", "Permissions", "Lock" };
 	public static final String[]						commands	= new String[] { "gamodule", "gaverify", "gaown", "gapermissions", "galock", "gacomplex", "gaautolock" };
 	public static final String[]						devs		= new String[] { "ben_dude56", "Deaboy" };
 	public static final UnloadedCommand					defCmd		= new UnloadedCommand();
@@ -190,7 +190,7 @@ public class GoldenApple extends JavaPlugin {
 			return false;
 		}
 	}
-	
+
 	public boolean disableModule(IModuleLoader module, boolean force) {
 		if (!force && module.getCurrentState() != ModuleState.LOADED)
 			throw new IllegalStateException("Module '" + module.getModuleName() + "' was not in an expected state to be disabled");

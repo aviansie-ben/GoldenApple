@@ -28,7 +28,7 @@ public class BaseModuleLoader implements IModuleLoader {
 		Bukkit.getPluginCommand("gamodule").setExecutor(new ModuleCommand());
 		Bukkit.getPluginCommand("gacomplex").setExecutor(new ComplexCommand());
 	}
-	
+
 	@Override
 	public void registerPermissions(PermissionManager permissions) {
 		// Do nothing
@@ -48,7 +48,7 @@ public class BaseModuleLoader implements IModuleLoader {
 	public ModuleState getCurrentState() {
 		return state;
 	}
-	
+
 	@Override
 	public void setState(ModuleState state) {
 		BaseModuleLoader.state = state;

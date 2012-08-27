@@ -53,7 +53,7 @@ public final class Database {
 			}
 		}
 	}
-	
+
 	public boolean usingMySql() {
 		return mySql;
 	}

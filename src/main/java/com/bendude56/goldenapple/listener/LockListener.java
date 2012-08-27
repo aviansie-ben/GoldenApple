@@ -1,7 +1,5 @@
 package com.bendude56.goldenapple.listener;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.logging.Level;
 

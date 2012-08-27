@@ -40,7 +40,7 @@ public class LocalizationHandler {
 			throw new RuntimeException("Unable to find valid locale file to load from!");
 		}
 	}
-	
+
 	public String getMessage(User user, String message) {
 		String lang = user.getPreferredLocale();
 		if (!secondaryMessages.containsKey(lang))
