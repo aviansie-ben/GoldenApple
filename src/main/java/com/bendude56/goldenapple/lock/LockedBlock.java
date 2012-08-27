@@ -326,7 +326,7 @@ public abstract class LockedBlock {
 	 * @return True if the user is allowed to use this block, false otherwise.
 	 */
 	public boolean canUse(User user) {
-		return (user.getId() == ownerId || guests.contains(user.getId()));
+		return (level == LockLevel.PUBLIC || user.getId() == ownerId || guests.contains(user.getId()));
 	}
 
 	/**

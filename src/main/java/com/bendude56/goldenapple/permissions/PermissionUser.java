@@ -30,8 +30,9 @@ public class PermissionUser implements IPermissionUser {
 	private String				preferredLocale;
 	private List<Permission>	permissions	= new ArrayList<Permission>();
 	private boolean				complexCommands;
+	private boolean				autoLock;
 
-	protected PermissionUser(long id, String name, String preferredLocale, String permissions, boolean complexCommands) {
+	protected PermissionUser(long id, String name, String preferredLocale, String permissions, boolean complexCommands, boolean autoLock) {
 		this.id = id;
 		this.name = name;
 		this.preferredLocale = preferredLocale;
@@ -46,6 +47,7 @@ public class PermissionUser implements IPermissionUser {
 			GoldenApple.log(Level.SEVERE, e);
 		}
 		this.complexCommands = complexCommands;
+		this.autoLock = autoLock;
 	}
 
 	private String serializePermissions() {
@@ -67,7 +69,7 @@ public class PermissionUser implements IPermissionUser {
 	 */
 	public void save() {
 		try {
-			GoldenApple.getInstance().database.execute("UPDATE Users SET Locale=?, Permissions=?, ComplexCommands=? WHERE ID=?", new Object[] { preferredLocale, serializePermissions(), complexCommands, id });
+			GoldenApple.getInstance().database.execute("UPDATE Users SET Locale=?, Permissions=?, ComplexCommands=?, AutoLock=? WHERE ID=?", new Object[] { preferredLocale, serializePermissions(), complexCommands, autoLock, id });
 		} catch (SQLException e) {
 			GoldenApple.log(Level.SEVERE, "Failed to save changes to user '" + name + "':");
 			GoldenApple.log(Level.SEVERE, e);
@@ -180,6 +182,17 @@ public class PermissionUser implements IPermissionUser {
 	@Override
 	public void setUsingComplexCommands(boolean useComplex) {
 		complexCommands = useComplex;
+		save();
+	}
+
+	@Override
+	public boolean isAutoLockEnabled() {
+		return autoLock;
+	}
+
+	@Override
+	public void setAutoLockEnabled(boolean autoLock) {
+		this.autoLock = autoLock;
 		save();
 	}
 }

@@ -127,4 +127,20 @@ public interface IPermissionUser {
 	 * @param useComplex True for complex syntax, false for basic syntax
 	 */
 	void setUsingComplexCommands(boolean useComplex);
+
+	/**
+	 * Gets a boolean showing whether the user has auto-lock enabled. When
+	 * auto-lock is enabled, certain blocks, when placed, will be automatically
+	 * locked.
+	 */
+	boolean isAutoLockEnabled();
+
+	/**
+	 * Sets whether certain blocks that the user places will be automatically
+	 * locked.
+	 * 
+	 * @param autoLock Whether or not blocks listed in config.yml should be
+	 *            locked
+	 */
+	void setAutoLockEnabled(boolean autoLock);
 }

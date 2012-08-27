@@ -33,7 +33,7 @@ public class GoldenApple extends JavaPlugin {
 
 	public static final HashMap<String, IModuleLoader>	modules		= new HashMap<String, IModuleLoader>();
 	public static final String[]						loadOrder 	= new String[] { "Base", "Permissions", "Lock" };
-	public static final String[]						commands	= new String[] { "gamodule", "gaverify", "gaown", "gapermissions", "galock", "gacomplex" };
+	public static final String[]						commands	= new String[] { "gamodule", "gaverify", "gaown", "gapermissions", "galock", "gacomplex", "gaautolock" };
 	public static final String[]						devs		= new String[] { "ben_dude56", "Deaboy" };
 	public static final UnloadedCommand					defCmd		= new UnloadedCommand();
 

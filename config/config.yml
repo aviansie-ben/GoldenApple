@@ -124,3 +124,11 @@ modules:
         # may compromise security)
         verboseError: false
         
+        # The Block IDs of blocks that should be automatically locked
+        # when a user has /gaautolock enabled.
+        autoLockBlocks: [54]
+        
+        # Determines whether auto-lock will default to on or off for
+        # new users.
+        autoLockDefault: true
+        

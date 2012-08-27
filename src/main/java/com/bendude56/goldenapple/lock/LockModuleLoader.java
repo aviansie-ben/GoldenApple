@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.IModuleLoader;
+import com.bendude56.goldenapple.commands.AutoLockCommand;
 import com.bendude56.goldenapple.commands.LockCommand;
 import com.bendude56.goldenapple.listener.LockListener;
 import com.bendude56.goldenapple.permissions.PermissionManager;
@@ -47,6 +48,7 @@ public class LockModuleLoader implements IModuleLoader {
 	
 	private void registerCommands() {
 		Bukkit.getPluginCommand("galock").setExecutor(new LockCommand());
+		Bukkit.getPluginCommand("gaautolock").setExecutor(new AutoLockCommand());
 	}
 
 	@Override

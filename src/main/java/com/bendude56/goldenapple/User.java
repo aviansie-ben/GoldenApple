@@ -227,4 +227,18 @@ public class User implements IPermissionUser {
 			throw new UnsupportedOperationException();
 		permissions.setUsingComplexCommands(useComplex);
 	}
+
+	@Override
+	public boolean isAutoLockEnabled() {
+		if (permissions == null)
+			throw new UnsupportedOperationException();
+		return permissions.isAutoLockEnabled();
+	}
+
+	@Override
+	public void setAutoLockEnabled(boolean autoLock) {
+		if (permissions == null)
+			throw new UnsupportedOperationException();
+		permissions.setAutoLockEnabled(autoLock);
+	}
 }

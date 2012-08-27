@@ -29,3 +29,7 @@ commands:
         usage: /<command>
         description: Enables or disables complex GoldenApple commands
         aliases: ['complex']
+    gaautolock:
+        usage: /<command>
+        description: Enables or disables auto-lock
+        aliases: ['autolock']
