@@ -7,6 +7,7 @@ import java.util.logging.Level;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import com.bendude56.goldenapple.GoldenApple;
@@ -15,7 +16,6 @@ import com.bendude56.goldenapple.lock.LockManager;
 import com.bendude56.goldenapple.lock.LockedBlock;
 import com.bendude56.goldenapple.lock.LockedBlock.LockLevel;
 import com.bendude56.goldenapple.permissions.PermissionUser;
-import com.bendude56.goldenapple.util.Constants;
 
 public class LockCommand extends DualSyntaxCommand {
 	@Override
@@ -23,7 +23,7 @@ public class LockCommand extends DualSyntaxCommand {
 		Location lockLocation = null;
 		long selectedId = -1;
 		if (user.getHandle() instanceof Player)
-			lockLocation = user.getPlayerHandle().getTargetBlock(Constants.getTransparentBlocks(), 10).getLocation();
+			lockLocation = user.getPlayerHandle().getTargetBlock(null, 10).getLocation();
 
 		if (args.length == 0 || args[0].equals("-?") || args[0].equals("help")) {
 			sendHelp(user, commandLabel, true);
@@ -54,7 +54,7 @@ public class LockCommand extends DualSyntaxCommand {
 				instance.locale.sendMessage(user, "error.lock.selectNotFound", false, String.valueOf(selectedId));
 				return;
 			}
-		} else if (lockLocation == null || Constants.getTransparentBlocks().contains((byte)lockLocation.getBlock().getTypeId())) {
+		} else if (lockLocation == null || lockLocation.getBlock().getType() == Material.AIR) {
 			instance.locale.sendMessage(user, "error.lock.invalidBlock", false);
 			return;
 		}
@@ -148,7 +148,7 @@ public class LockCommand extends DualSyntaxCommand {
 		if (!(user.getHandle() instanceof Player))
 			instance.locale.sendMessage(user, "shared.noConsole", false);
 
-		Location lockLocation = user.getPlayerHandle().getTargetBlock(Constants.getTransparentBlocks(), 10).getLocation();
+		Location lockLocation = user.getPlayerHandle().getTargetBlock(null, 10).getLocation();
 
 		if (args.length == 0 || args[0].equals("-?") || args[0].equals("help")) {
 			sendHelp(user, commandLabel, false);

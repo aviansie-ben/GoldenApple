@@ -45,7 +45,7 @@ public abstract class LockedBlock {
 	 */
 	public static void registerBlock(String identifier, Plugin plugin, Material blockType, Class<? extends LockedBlock> blockClass) {
 		for (RegisteredBlock b : registeredBlocks) {
-			if (b.identifier.equals(identifier)) {
+			if (b.identifier.equals(identifier) && (b.blockClass != blockClass || b.blockType == blockType)) {
 				throw new IllegalArgumentException("Identifier " + identifier + " already registered to another class!");
 			}
 		}
@@ -164,7 +164,9 @@ public abstract class LockedBlock {
 
 	static {
 		registerBlock("GA_CHEST", GoldenApple.getInstance(), Material.CHEST, LockedChest.class);
-		registerBlock("GA_FURNACE", GoldenApple.getInstance(), Material.FURNACE, null);
+		registerBlock("GA_FURNACE", GoldenApple.getInstance(), Material.FURNACE, LockedFurnace.class);
+		registerBlock("GA_REDSTONE", GoldenApple.getInstance(), Material.LEVER, LockedRedstoneTrigger.class);
+		registerBlock("GA_REDSTONE", GoldenApple.getInstance(), Material.STONE_BUTTON, LockedRedstoneTrigger.class);
 		registerCorrector(DoubleChestLocationCorrector.class);
 	}
 
