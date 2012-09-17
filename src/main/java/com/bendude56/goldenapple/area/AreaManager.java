@@ -68,7 +68,7 @@ public class AreaManager {
 	 * @return
 	 */
 	private Long generateId() {
-		Long id = (long)0;
+		Long id = 0L;
 		while (areas.containsKey(id))
 			id++;
 		return id;

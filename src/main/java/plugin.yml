@@ -2,34 +2,34 @@ name: GoldenApple
 version: 0.1
 main: com.bendude56.goldenapple.GoldenApple
 website: https://www.github.com/bendude56/GoldenApple
-authors: ['ben_dude56', 'Deaboy']
+authors: [ben_dude56, Deaboy]
 softdepend: [Spout, WorldEdit]
 commands:
     gapermissions:
         usage: Use /<command> -? for help
         description: Edits group and user permissions
-        aliases: ['p', 'permissions']
+        aliases: [p, permissions]
     gaverify:
         usage: /<command>
         description: Confirms the use of a potentially dangerous command
-        aliases: ['verify']
+        aliases: [verify]
     gamodule:
         usage: Use /<command> -? for help
         description: Controls GoldenApple modules
-        aliases: ['m', 'module']
+        aliases: [m, module]
     gaown:
         usage: /<command>
         description: Grants an op full GoldenApple permissions
-        aliases: ['own']
+        aliases: [own]
     galock:
         usage: Use /<command> -? for help
         description: Modifies/creates locks
-        aliases: ['l', 'lock']
+        aliases: [l, lock]
     gacomplex:
         usage: /<command>
         description: Enables or disables complex GoldenApple commands
-        aliases: ['complex']
+        aliases: [complex]
     gaautolock:
         usage: /<command>
         description: Enables or disables auto-lock
-        aliases: ['autolock']
+        aliases: [autolock]
