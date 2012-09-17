@@ -1,0 +1,137 @@
+error.lock.access.unknown=&4ERROR: There is no access level with name &f%1&4!
+error.lock.create.alreadyExists=&4ERROR: A protection already exists on that block!
+error.lock.create.invalidRegistered=&4ERROR: Plugin '%1' has an invalid &1RegisteredBlock&4! Contact an administrator!
+error.lock.create.ioError=&4ERROR: Failed to write new lock to the database!
+error.lock.delete.ioError=&4ERROR: Failed to remove lock from the database!
+error.lock.guest.alreadyGuest=&4ERROR: This lock is already shared with '%1'!
+error.lock.guest.notGuest=&4ERROR: This lock is not shared with '%1'!
+error.lock.invalidBlock=&4ERROR: You are not pointing at a valid block!
+error.lock.noEdit=&4ERROR: You do not have permission to edit the protection on this block.
+error.lock.notFound=&4ERROR: The block you are pointing at is not locked!
+error.lock.noUse=&4ERROR: You do not have permission to use this block. Please contact %1 for permission.
+error.lock.selectCreate=&4ERROR: Cannot use -s and -c together!
+error.lock.selectNoAction=&4ERROR: Cannot use -s without another action!
+error.lock.selectNotFound=&4ERROR: No lock found with ID %1!
+
+error.module.load.alreadyLoaded=&4ERROR: Module '%1' is already enabled!
+error.module.load.dependFail=&4ERROR: Module '%1' cannot be enabled because dependency '%2' failed to load!
+error.module.load.policy=&4ERROR: The security policy is blocking you from loading module '%1'!
+error.module.load.unknown=&4ERROR: An unknown error occured while starting module '%1'! Check the server logs for more details.
+error.module.notFound=&4ERROR: No module was found with the name '%1'
+error.module.unload.dependFail=&4ERROR: Module '%1' cannot be disabled because dependant module '%2' failed to unload!
+error.module.unload.locked=&4ERROR: This module is essential to GoldenApple running properly! It cannot be disabled!
+error.module.unload.notLoaded=&4ERROR: Module '%1' cannot be disabled because it is already disabled!
+error.module.unload.policy=&4ERROR: The security policy is blocking you from unloading module '%1'!
+error.module.unload.unknown=&4ERROR: An unknown error occured while stopping module '%1'! Check the server logs for more details.
+
+error.own.disabled=&4ERROR: This command has been disabled by an administrator for security reasons!
+
+error.permissions.add.groupExists=&4ERROR: Failed to add group '%1': Group already exists!
+error.permissions.add.groupUnknown=&4ERROR: Failed to add group '%1': Unknown error!
+error.permissions.add.userExists=&4ERROR: Failed to add user '%1': User already exists!
+error.permissions.add.userUnknown=&4ERROR: Failed to add user '%1': Unknown error!
+error.permissions.conflict=&4ERROR: There is an option conflict. Make sure you're not trying to modify a group/user as you remove them.
+error.permissions.member.unknown=&4ERROR: Unknown error occured while changing group membership!
+error.permissions.noAction=&4ERROR: No valid actions were specified
+error.permissions.noTarget=&4ERROR: No valid targets were specified for option: %1
+error.permissions.perm.notFound=&eWARNING: Failed to find permission '%1'
+error.permissions.perm.unknown=&4ERROR: Unknown error occured while adding/removing permissions!
+error.permissions.remove.groupUnknown=&4ERROR: Failed to remove group '%1': Unknown error!
+error.permissions.remove.userOnline=&eWARNING: Failed to remove user '%1': Cannot remove user while online!
+error.permissions.remove.userUnknown=&4ERROR: Failed to remove user '%1': Unknown error!
+
+error.verify.noCommand=&4ERROR: No command to verify!
+
+general.complex.successOff=&aNow using simple command syntax
+general.complex.successOn=&aNow using complex command syntax
+general.complex.warnOff=&eWARNING: You are about to disable complex commands! Some commands will be simplified. If you are sure you want to proceed, use /gaverify!
+general.complex.warnOn=&eWARNING: You are about to enable complex commands! Some commands will be given complex syntax. If you are sure you want to proceed, use /gaverify!
+
+general.lock.access.success=&aLock access changed to %1&a successfully.
+general.lock.auto=&aThe block you placed has been automatically locked! Use /gaautolock to disable auto-lock.
+general.lock.auto.off=&aAuto-lock has been turned off
+general.lock.auto.on=&aAuto-lock has been turned on
+general.lock.delete.success=&aThe lock on that block has been deleted successfully!
+general.lock.guest.add.success=&aLock shared with '%1' successfully.
+general.lock.guest.remove.success=&aLock unshared from '%1' successfully.
+general.lock.info.1=&7Lock ID: &f%1
+general.lock.info.2=&7Owner: &f%2
+general.lock.info.3=&7Lock Access: %3
+general.lock.info.4=&7Lock Type: &f%4
+general.lock.info.private=&8Private
+general.lock.info.public=&fPublic
+
+general.module.list=&7The following modules can be queried:
+general.module.load.success=&aModule '%1' loaded successfully...
+general.module.load.warnStart=&eWARNING: To enable this module, the following dependencies must also be enabled:
+general.module.load.warnEnd=&eIf you are sure you wish to enable these modules, use /gaverify.
+general.module.query.1=&7Module Name: &f%1
+general.module.query.2=&7Current Status: %2
+general.module.query.loaded=&aRunning
+general.module.query.loadedLocked=&aRunning &8(Locked)
+general.module.query.loading=&eLoading...
+general.module.query.unloadedDependancy=&4Dependency Failure
+general.module.query.unloadedError=&4Failed
+general.module.query.unloadedPolicy=&5Policy Restriction
+general.module.query.unloadedUser=&7Ready
+general.module.unload.warnStart=&eWARNING: To disable this module, the following modules must also be disabled:
+general.module.unload.warnEnd=&eIf you are sure you wish to disable these modules, use /gaverify
+
+general.own.success=&aYou have been given permission '*'
+general.own.warnAfter=&eWARNING: You may want to disable this command in config.yml to prevent other ops from using this command
+general.own.warnBefore=&eWARNING: You are about to give yourself full permissions! If you are sure you wish to continue, use /gaverify
+
+general.permissions.add.group=&aGroup '%1' added successfully...
+general.permissions.add.user=&aUser '%1' added successfully...
+general.permissions.member.addGroup=&aGroup '%1' added to group '%2' successfully...
+general.permissions.member.addUser=&aUser '%1' added to group '%2' successfully...
+general.permissions.member.remGroup=&aGroup '%1' removed from group '%2' successfully...
+general.permissions.member.remUser=&aUser '%1' removed from group '%2' successfully...
+general.permissions.perm.add=&aPermission '%1' given to '%2' successfully...
+general.permissions.perm.rem=&aPermission '%1' removed from '%2' successfully...
+general.permissions.remove.group=&aGroup '%1' removed successfully...
+general.permissions.remove.user=&aUser '%1' removed successfully...
+general.permissions.remove.warnStart=&eWARNING: You are about to permanently remove the following groups and users:
+general.permissions.remove.warnUser=&e   User: %1
+general.permissions.remove.warnGroup=&e   Group: %1
+general.permissions.remove.warnEnd=&eIf you are sure you wish to permanently remove these groups and users, use /gaverify.
+
+header.help=&7-----&6 GoldenApple Help &7-----
+header.lock=&7-----&6 GoldenApple Locks &7-----
+header.module=&7-----&6 GoldenApple Module Controller &7-----
+header.permissions=&7-----&6 GoldenApple Permissions &7-----
+
+help.lock.complex.1=Select a block by pointing at it or use &7-s <id>
+help.lock.complex.2=Get lock info using &7-i
+help.lock.complex.3=Create a new lock using &7-c
+help.lock.complex.4=&f  -Add &7-p&f for public lock
+help.lock.complex.5=Delete an existing lock using &7-d
+help.lock.complex.6=Add guests using &7-ga <guest>&f, remove using &7-gr <guest>
+help.lock.complex.7=Change lock access using &7-a {public|private}
+
+help.lock.simple.1=Select a block by pointing at it
+help.lock.simple.2=Get lock info using &7/%1 info&f
+help.lock.simple.3=Create a new lock using &7/%1 create&f
+help.lock.simple.4=&f  -Use &7/%1 create public&f for a public lock
+help.lock.simple.5=Delete a lock using &7/%1 delete&f
+help.lock.simple.6=Use &7/%1 share <user>&f to allow another player to use the locked block
+help.lock.simple.7=Use &7/%1 unshare <user>&f to unshare the block from a player
+help.lock.simple.8=Use &7/%1 access {public|private}&f to change access level
+
+help.permissions.1=Select users and groups using &7-u <user>&f and &7-g <group>
+help.permissions.2=Add new users and groups based on selection using &7-a
+help.permissions.3=Delete selected users and groups using &7-r
+help.permissions.4=Add permissions using &7-pa <permission>&f and remove using &7-pr <permission>
+help.permissions.5=Add users/groups to a group using &7-ua <user>&f and &7-ga <group>
+help.permissions.6=Remove users/groups from a group using &7-ur <user>&f and &7-gr <group>
+
+shared.cmdUnload.generic=&4ERROR: This command has been disabled
+shared.cmdUnload.specific=&4ERROR: This command relies on unloaded module '%1'
+shared.groupNotFoundError=&4ERROR: Failed to find group '%1'
+shared.groupNotFoundWarning=&eWARNING: Failed to find group '%1'
+shared.noConsole=&4ERROR: You cannot execute this command from the console!
+shared.noPermission=&4ERROR: You do not have permission to execute this command! This request has been logged.
+shared.parameterMissing=&eWARNING: Parameter missing from option: %1
+shared.unknownOption=&4ERROR: Unknown option: %1
+shared.userNotFoundError=&4ERROR: Failed to find user '%1'
+shared.userNotFoundWarning=&eWARNING: Failed to find user '%1'
