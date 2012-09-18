@@ -32,21 +32,6 @@ public class ChatModuleLoader implements IModuleLoader {
 	public void registerPermissions(PermissionManager permissions) {
 		ChatManager.chatNode = permissions.registerNode("chat", PermissionManager.goldenAppleNode);
 		ChatManager.channelsNode = permissions.registerNode("channels", ChatManager.chatNode);
-		ChatManager.muteNode = permissions.registerNode("mute", ChatManager.chatNode);
-		ChatManager.censorNode = permissions.registerNode("censor", ChatManager.chatNode);
-
-		ChatManager.channelCreatePermission = permissions.registerPermission("add", ChatManager.channelsNode);
-		ChatManager.channelEditPermission = permissions.registerPermission("edit", ChatManager.channelsNode);
-		ChatManager.channelDeletePermission = permissions.registerPermission("remove", ChatManager.channelsNode);
-
-		ChatManager.muteTimedPermission = permissions.registerPermission("timed", ChatManager.muteNode);
-		ChatManager.mutePermanentPermission = permissions.registerPermission("permanent", ChatManager.muteNode);
-		ChatManager.muteUnmutePermission = permissions.registerPermission("unmute", ChatManager.muteNode);
-		ChatManager.muteImmunePermission = permissions.registerPermission("immune", ChatManager.muteNode);
-
-		ChatManager.censorAddWordPermission = permissions.registerPermission("add", ChatManager.censorNode);
-		ChatManager.censorRemoveWordPermission = permissions.registerPermission("remove", ChatManager.censorNode);
-		ChatManager.censorImmunePermission = permissions.registerPermission("immune", ChatManager.censorNode);
 	}
 
 	public void registerEvents() {

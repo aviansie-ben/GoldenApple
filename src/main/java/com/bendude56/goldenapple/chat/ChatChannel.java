@@ -63,13 +63,12 @@ public class ChatChannel implements IChatChannel {
 	}
 	
 	public ChannelAccessLevel getAccess(IPermissionUser user) {
+		return ChannelAccessLevel.NONE;
 	}
 
 	public void broadcastMessage(String message) {
 		for (Player player : GoldenApple.getInstance().chat.getPlayers(this))
 			player.sendMessage(message);
-		for (Player spy : getSpies())
-			spy.sendMessage(color + "[" + label + "] " + ChatColor.WHITE + message);
 	}
 
 	/**

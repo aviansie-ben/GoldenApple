@@ -27,7 +27,7 @@ public class ChatManager {
 	private HashMap<User, Long>			chatPlayers		= new HashMap<User, Long>();
 
 	public ChatChannel createChannel(String label) {
-		ChatChannel channel = new ChatChannel(generateId(), label, ChatColor.WHITE);
+		ChatChannel channel = new ChatChannel(generateId(), label);
 		chatChannels.put(channel.getId(), channel);
 		return channel;
 	}
@@ -43,14 +43,14 @@ public class ChatManager {
 		return null;
 	}
 
-	public ChatChannel deleteChannel(Long ID) {
+	public void deleteChannel(Long ID) {
 		ChatChannel channel = chatChannels.get(ID);
 		if (channel != null) {
 			chatChannels.remove(ID);
 			for (Player player : getPlayers(ID))
-				chatPlayers.put(player, LOBBY.getId());
+				;
+				// chatPlayers.put(player, LOBBY.getId());
 		}
-		return channel;
 	}
 
 	private Long generateId() {
@@ -67,7 +67,7 @@ public class ChatManager {
 	 * @param player
 	 */
 	public void addPlayer(Player player) {
-		chatPlayers.put(player, LOBBY.getId());
+		// chatPlayers.put(player, LOBBY.getId());
 	}
 
 	/**
@@ -77,7 +77,7 @@ public class ChatManager {
 	 * @param channel The channel to set the player to.
 	 */
 	public void setChannel(Player player, ChatChannel channel) {
-		chatPlayers.put(player, channel.getId());
+		// chatPlayers.put(player, channel.getId());
 	}
 
 	/**
@@ -96,9 +96,9 @@ public class ChatManager {
 	 */
 	public List<Player> getPlayers(Long ID) {
 		List<Player> players = new ArrayList<Player>();
-		for (Player player : chatPlayers.keySet())
+		/*for (Player player : chatPlayers.keySet())
 			if (chatPlayers.get(player) == ID)
-				players.add(player);
+				players.add(player);*/
 		return players;
 	}
 
@@ -110,18 +110,18 @@ public class ChatManager {
 	 */
 	public void removePlayer(Player player) {
 		for (ChatChannel channel : chatChannels.values()) {
-			channel.removeSpy(player);
-			LOBBY.removeSpy(player);
+			/*channel.removeSpy(player);
+			LOBBY.removeSpy(player);*/
 		}
 		if (chatPlayers.containsKey(player))
 			chatPlayers.remove(player);
 	}
 
 	public void startSpying(Player player, ChatChannel channel) {
-		channel.addSpy(player);
+		// channel.addSpy(player);
 	}
 
 	public void stopSpying(Player player, ChatChannel channel) {
-		channel.removeSpy(player);
+		// channel.removeSpy(player);
 	}
 }
