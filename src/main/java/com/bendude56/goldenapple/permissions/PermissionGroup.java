@@ -19,7 +19,7 @@ import com.bendude56.goldenapple.util.Serializer;
  * @author Deaboy
  * @author ben_dude56
  */
-public class PermissionGroup {
+public class PermissionGroup implements IPermissionObject {
 	private long					id;
 	private String					name;
 	private ArrayList<Long>			members		= new ArrayList<Long>();
@@ -77,10 +77,7 @@ public class PermissionGroup {
 		}
 	}
 
-	/**
-	 * Gets the ID associated with this instance.
-	 * <em>Where applicable, this value should be stored in place of the group's name.</em>
-	 */
+	@Override
 	public long getId() {
 		return id;
 	}
@@ -149,18 +146,7 @@ public class PermissionGroup {
 		}
 	}
 
-	/**
-	 * Gets a list of permissions that have been granted to this group.
-	 * <p>
-	 * <em><strong>Note:</strong> This list should <strong>not</strong> be used
-	 * to check for permissions!</em>
-	 * 
-	 * @param inherited Determines whether or not this group's supergroup
-	 *            permissions will be included in this list. If true, all
-	 *            applicable permissions (including indirect permissions) will
-	 *            be returned. If false, only permissions specifically given to
-	 *            this group will be returned.
-	 */
+	@Override
 	public List<Permission> getPermissions(boolean inherited) {
 		List<Permission> returnPermissions = permissions;
 		if (inherited) {
@@ -182,6 +168,7 @@ public class PermissionGroup {
 		return returnPermissions;
 	}
 	
+	@Override
 	public void addPermission(Permission permission) {
 		if (!permissions.contains(permission)) {
 			permissions.add(permission);
@@ -189,11 +176,22 @@ public class PermissionGroup {
 		}
 	}
 	
+	@Override
+	public void addPermission(String permission) {
+		addPermission(GoldenApple.getInstance().permissions.getPermissionByName(permission));
+	}
+	
+	@Override
 	public void removePermission(Permission permission) {
 		if (permissions.contains(permission)) {
 			permissions.remove(permission);
 			save();
 		}
+	}
+	
+	@Override
+	public void removePermission(String permission) {
+		removePermission(GoldenApple.getInstance().permissions.registerPermission(permission));
 	}
 
 	/**

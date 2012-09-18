@@ -8,23 +8,19 @@ import com.bendude56.goldenapple.permissions.PermissionManager;
 
 public class ChatModuleLoader implements IModuleLoader {
 
-	private static ModuleState state = ModuleState.UNLOADED_USER;
-	
+	private static ModuleState	state	= ModuleState.UNLOADED_USER;
+
 	@Override
-	public void loadModule(GoldenApple instance) throws ModuleLoadException
-	{
+	public void loadModule(GoldenApple instance) throws ModuleLoadException {
 		state = ModuleState.LOADING;
-		try
-		{
+		try {
 			instance.chat = new ChatManager();
 			registerPermissions(instance.permissions);
 			registerEvents();
 			registerCommands();
-		}
-		catch (Throwable e)
-		{
+		} catch (Throwable e) {
 			state = ModuleState.UNLOADED_ERROR;
-			
+
 			instance.chat = null;
 			unregisterEvents();
 			unregisterCommands();
@@ -33,90 +29,78 @@ public class ChatModuleLoader implements IModuleLoader {
 	}
 
 	@Override
-	public void registerPermissions(PermissionManager permissions)
-	{
+	public void registerPermissions(PermissionManager permissions) {
 		ChatManager.chatNode = permissions.registerNode("chat", PermissionManager.goldenAppleNode);
 		ChatManager.channelsNode = permissions.registerNode("channels", ChatManager.chatNode);
 		ChatManager.muteNode = permissions.registerNode("mute", ChatManager.chatNode);
 		ChatManager.censorNode = permissions.registerNode("censor", ChatManager.chatNode);
-		
+
 		ChatManager.channelCreatePermission = permissions.registerPermission("add", ChatManager.channelsNode);
 		ChatManager.channelEditPermission = permissions.registerPermission("edit", ChatManager.channelsNode);
 		ChatManager.channelDeletePermission = permissions.registerPermission("remove", ChatManager.channelsNode);
-		
+
 		ChatManager.muteTimedPermission = permissions.registerPermission("timed", ChatManager.muteNode);
 		ChatManager.mutePermanentPermission = permissions.registerPermission("permanent", ChatManager.muteNode);
 		ChatManager.muteUnmutePermission = permissions.registerPermission("unmute", ChatManager.muteNode);
 		ChatManager.muteImmunePermission = permissions.registerPermission("immune", ChatManager.muteNode);
-		
+
 		ChatManager.censorAddWordPermission = permissions.registerPermission("add", ChatManager.censorNode);
 		ChatManager.censorRemoveWordPermission = permissions.registerPermission("remove", ChatManager.censorNode);
 		ChatManager.censorImmunePermission = permissions.registerPermission("immune", ChatManager.censorNode);
 	}
 
-	public void registerEvents()
-	{
+	public void registerEvents() {
 		ChatListener.registerEvents();
 	}
 
-	public void registerCommands()
-	{
+	public void registerCommands() {
 		// TODO Register Commands
 	}
 
-	public void unregisterEvents()
-	{
+	public void unregisterEvents() {
 		ChatListener.unregisterEvents();
 	}
 
-	public void unregisterCommands()
-	{
+	public void unregisterCommands() {
 		// TODO Unregister Commands
 	}
 
 	@Override
-	public void unloadModule(GoldenApple instance)
-	{
+	public void unloadModule(GoldenApple instance) {
 		unregisterEvents();
 		unregisterCommands();
 		instance.chat = null;
-		
+
 		state = ModuleState.UNLOADED_USER;
 	}
 
 	@Override
-	public String getModuleName()
-	{
+	public String getModuleName() {
 		return "Chat";
 	}
 
 	@Override
-	public ModuleState getCurrentState()
-	{
+	public ModuleState getCurrentState() {
 		return state;
 	}
 
 	@Override
-	public void setState(ModuleState state)
-	{
+	public void setState(ModuleState state) {
 		ChatModuleLoader.state = state;
 	}
 
 	@Override
-	public String[] getModuleDependencies()
-	{
+	public String[] getModuleDependencies() {
 		return new String[] { "Permissions" };
 	}
 
 	@Override
-	public boolean canLoadAuto()
-	{
+	public boolean canLoadAuto() {
 		return GoldenApple.getInstance().mainConfig.getBoolean("modules.chat.enabled", true);
 	}
 
 	@Override
-	public boolean canPolicyLoad()
-	{
+	public boolean canPolicyLoad() {
 		return !GoldenApple.getInstance().mainConfig.getBoolean("securityPolicy.blockModules.chat", false);
 	}
 

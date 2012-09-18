@@ -3,11 +3,11 @@ package com.bendude56.goldenapple.chat;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Censor {
-	private static List<String> blocked = new ArrayList<String>();
-	private static List<String> blockedStrict = new ArrayList<String>();
+public class ChatCensor {
+	private static List<String>	blocked			= new ArrayList<String>();
+	private static List<String>	blockedStrict	= new ArrayList<String>();
 
-	private static final String CENSOR_STRING = "***";
+	private static final String	CENSOR_STRING	= "***";
 
 	public static void blockWord(String string, boolean strict) {
 		if (strict) {
@@ -22,10 +22,11 @@ public class Censor {
 				blockedStrict.remove(string.toLowerCase());
 		}
 	}
+
 	public static boolean isBlocked(String string) {
-		return (blocked.contains(string.toLowerCase())
-				|| blockedStrict.contains(string.toLowerCase()));
+		return (blocked.contains(string.toLowerCase()) || blockedStrict.contains(string.toLowerCase()));
 	}
+
 	public static void unblockWord(String string) {
 		if (blocked.contains(string.toLowerCase()))
 			blocked.remove(string.toLowerCase());
@@ -40,32 +41,23 @@ public class Censor {
 			int char1 = 0;
 			int char2 = 0;
 			for (char1 = 0; char1 < string.length(); char1++) {
-				if (char2 < blockedWord.length()
-						&& format(string.substring(char1, char1)).equals(
-								format(blockedWord.substring(char2, char2)))) {
+				if (char2 < blockedWord.length() && format(string.substring(char1, char1)).equals(format(blockedWord.substring(char2, char2)))) {
 					char2++;
 					word += string.substring(char1, char1);
 					if (char2 == blockedWord.length()) {
-						if (char1 + 1 >= string.length()
-								|| (char1 + 1 < string.length() && !format(
-										string.substring(char1, char1)).equals(
-										format(string.substring(char1 + 1,
-												char1 + 1))))) {
+						if (char1 + 1 >= string.length() || (char1 + 1 < string.length() && !format(string.substring(char1, char1)).equals(format(string.substring(char1 + 1, char1 + 1))))) {
 							wordsToBlock.add(word);
 							char2 = 0;
 							word = "";
 						}
 					}
-				} else if (char1 > 0
-						&& format(string.substring(char1, char1)).equals(
-								format(string.substring(char1 - 1, char1 - 1)))) {
+				} else if (char1 > 0 && format(string.substring(char1, char1)).equals(format(string.substring(char1 - 1, char1 - 1)))) {
 					word += string.substring(char1, char1);
 				} else if (char2 == blockedWord.length()) {
 					wordsToBlock.add(word);
 					char2 = 0;
 					word = "";
-				} else if (char2 < blockedWord.length()
-						&& format(string.substring(char1, char1)).equals(" ")) {
+				} else if (char2 < blockedWord.length() && format(string.substring(char1, char1)).equals(" ")) {
 					word += string.substring(char1, char1);
 				} else {
 					char2 = 0;
@@ -79,35 +71,23 @@ public class Censor {
 			String word = "";
 			for (char1 = 0; char1 < string.length(); char1++) {
 
-				if (char2 < blockedWord.length()
-						&& format(string.substring(char1, char1)).equals(
-								format(blockedWord.substring(char2, char2)))) {
+				if (char2 < blockedWord.length() && format(string.substring(char1, char1)).equals(format(blockedWord.substring(char2, char2)))) {
 					char2++;
 					word += string.substring(char1, char1);
 					if (char2 == blockedWord.length()) {
-						if (char1 + 1 >= string.length()
-								|| (char1 + 1 < string.length() && !format(
-										string.substring(char1, char1)).equals(
-										format(string.substring(char1 + 1,
-												char1 + 1))))) {
+						if (char1 + 1 >= string.length() || (char1 + 1 < string.length() && !format(string.substring(char1, char1)).equals(format(string.substring(char1 + 1, char1 + 1))))) {
 							wordsToBlock.add(word);
 							char2 = 0;
 							word = "";
 						}
 					}
-				} else if (char1 > 0
-						&& format(string.substring(char1, char1)).equals(
-								format(string.substring(char1 - 1, char1 - 1)))) {
+				} else if (char1 > 0 && format(string.substring(char1, char1)).equals(format(string.substring(char1 - 1, char1 - 1)))) {
 					word += string.substring(char1, char1);
-				} else if (char2 == blockedWord.length()
-						&& (char1 + 1 == string.length() || format(
-								string.substring(char1 + 1, char1 + 1)).equals(
-								" "))) {
+				} else if (char2 == blockedWord.length() && (char1 + 1 == string.length() || format(string.substring(char1 + 1, char1 + 1)).equals(" "))) {
 					wordsToBlock.add(word);
 					char2 = 0;
 					word = "";
-				} else if (char2 < blockedWord.length()
-						&& format(string.substring(char1, char1)).equals(" ")) {
+				} else if (char2 < blockedWord.length() && format(string.substring(char1, char1)).equals(" ")) {
 					word += string.substring(char1, char1);
 				} else {
 					char2 = 0;
@@ -126,18 +106,12 @@ public class Censor {
 			int char1 = 0;
 			int char2 = 0;
 			for (char1 = 0; char1 < string.length(); char1++) {
-				if (format(string.substring(char1, char1)).equals(
-						format(blockedWord.substring(char2, char2)))) {
+				if (format(string.substring(char1, char1)).equals(format(blockedWord.substring(char2, char2)))) {
 					char2++;
 					if (char2 >= blockedWord.length()) {
 						return true;
 					}
-				} else if (char1 > 0
-						&& format(string.substring(char1, char1)).equals(
-								format(string.substring(char1 - 1, char1 - 1)))) {
-				} else if (char2 < blockedWord.length()
-						&& format(string.substring(char1, char1)).equals(" ")) {
-				} else {
+				} else if (char1 > 0 && format(string.substring(char1, char1)).equals(format(string.substring(char1 - 1, char1 - 1)))) {} else if (char2 < blockedWord.length() && format(string.substring(char1, char1)).equals(" ")) {} else {
 					char2 = 0;
 				}
 			}
@@ -146,24 +120,13 @@ public class Censor {
 			int char1 = 0;
 			int char2 = 0;
 			for (char1 = 0; char1 < string.length(); char1++) {
-				if (format(string.substring(char1, char1)).equals(
-						format(blockedWord.substring(char2, char2)))
-						&& (char2 > 0 || (char1 > 0 && format(
-								string.substring(char1 - 1, char1 - 1)).equals(
-								" ")))) {
+				if (format(string.substring(char1, char1)).equals(format(blockedWord.substring(char2, char2))) && (char2 > 0 || (char1 > 0 && format(string.substring(char1 - 1, char1 - 1)).equals(" ")))) {
 					char2++;
 					if (char2 >= blockedWord.length()) {
-						if (char1 + 1 >= string.length()
-								|| string.substring(char1 + 1, char1 + 1)
-										.equals(" "))
+						if (char1 + 1 >= string.length() || string.substring(char1 + 1, char1 + 1).equals(" "))
 							return true;
 					}
-				} else if (char1 > 0
-						&& format(string.substring(char1, char1)).equals(
-								format(string.substring(char1 - 1, char1 - 1)))) {
-				} else if (char2 < blockedWord.length()
-						&& format(string.substring(char1, char1)).equals(" ")) {
-				} else {
+				} else if (char1 > 0 && format(string.substring(char1, char1)).equals(format(string.substring(char1 - 1, char1 - 1)))) {} else if (char2 < blockedWord.length() && format(string.substring(char1, char1)).equals(" ")) {} else {
 					char2 = 0;
 				}
 			}
