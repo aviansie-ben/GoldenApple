@@ -309,6 +309,8 @@ public class LockCommand extends DualSyntaxCommand {
 			case PRIVATE:
 				access = GoldenApple.getInstance().locale.getMessage(user, "general.lock.info.private");
 				break;
+			default:
+				break;
 		}
 		GoldenApple.getInstance().locale.sendMessage(user, "general.lock.info", true, String.valueOf(b.getLockId()), instance.permissions.getUser(b.getOwner()).getName(), access, b.getTypeIdentifier());
 	}
