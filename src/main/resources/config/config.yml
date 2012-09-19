@@ -72,6 +72,7 @@ securityPolicy:
         lock: false
         area: false
         warp: false
+        chat: false
 
 # Options for GoldenApple modules
 modules:
@@ -108,14 +109,16 @@ modules:
     # Lock system options
     lock:
         
-        # Determines whether or not the GoldenApple locking system will
-        # be loaded or used by default when the server is started.
+        # Determines whether or not the GoldenApple locking system
+        # will be loaded or used by default when the server is
+        # started.
         enabled: true
         
-        # The size of the GoldenApple lock cache. It is recommended to
-        # keep this above at least 20 in order to minimize database
-        # loading time. A size of 3 or higher is mandatory in order to
-        # prevent locks from being double-loaded into memory.
+        # The size of the GoldenApple lock cache. It is recommended
+        # to keep this above at least 20 in order to minimize
+        # database loading time. A size of 3 or higher is mandatory
+        # in order to prevent locks from being double-loaded into
+        # memory.
         cacheSize: 100
         
         # Whether or not to display details about the protection when
@@ -131,4 +134,23 @@ modules:
         # Determines whether auto-lock will default to on or off for
         # new users.
         autoLockDefault: true
+        
+    # Chat system options
+    chat:
+        
+        # Determines whether or not GoldenApple will take over chat
+        # functions
+        enabled: true
+        
+        # The chat channel that users should join by default when
+        # they first log into the server
+        defaultChatChannel: 'default'
+        
+        # A list of words that should be censored in all chat
+        # channels
+        censorList:
+        
+        # A list of words that should be censored in chat channels
+        # with strict censoring set to on
+        strictCensorList:
         
