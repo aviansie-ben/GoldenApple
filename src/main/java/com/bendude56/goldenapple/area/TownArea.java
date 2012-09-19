@@ -5,15 +5,18 @@ import java.util.List;
 
 import org.bukkit.Location;
 
+import com.bendude56.goldenapple.area.AreaManager.AreaType;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
 
-public class TownArea extends ParentArea {
+public class TownArea extends ParentArea implements IArea
+{
 	private Long owner;
 	
 	private List<PrivateArea> subdivisions = new ArrayList<PrivateArea>();
 	
-	public TownArea(Long ID, Location corner1, Location corner2, boolean ignoreY, IPermissionUser owner) {
-		super(ID, corner1, corner2, ignoreY);
+	public TownArea(Long ID, Location corner1, Location corner2, boolean ignoreY, IPermissionUser owner)
+	{
+		super(ID, AreaType.TOWN, corner1, corner2, ignoreY);
 		this.owner = owner.getId();
 	}
 	
@@ -38,5 +41,10 @@ public class TownArea extends ParentArea {
 	}
 	public boolean canEdit(IPermissionUser user) {
 		return (isOwner(user));
+	}
+	
+	public AreaType getType()
+	{
+		return AreaType.TOWN;
 	}
 }

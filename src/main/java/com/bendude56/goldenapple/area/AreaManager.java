@@ -97,6 +97,21 @@ public class AreaManager {
 		return area;
 	}
 
+	/**
+	 * Finds out if a lot with the given ID exists.
+	 * 
+	 * @param ID The ID of the lot in question.
+	 * @return True if the lot exists, false if it doesn't.
+	 */
+	public boolean areaExists(Long ID) {
+		for (long areaId : areas.keySet())
+		{
+			if (areaId == ID)
+				return true;
+		}
+		return false;
+	}
+
 	// ----------------PARENT METHODS--------------------
 
 	/**
@@ -444,5 +459,10 @@ public class AreaManager {
 			}
 		}
 		return false;
+	}
+	
+	public enum AreaType
+	{
+		CHILD, PRIVATE, PVP, SAFETY, TOWN;
 	}
 }

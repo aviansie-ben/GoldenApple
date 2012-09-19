@@ -3,6 +3,7 @@ package com.bendude56.goldenapple.area;
 import org.bukkit.Location;
 import org.bukkit.World;
 
+import com.bendude56.goldenapple.area.AreaManager.AreaType;
 import com.bendude56.goldenapple.util.Calculations;
 
 /**
@@ -12,7 +13,8 @@ import com.bendude56.goldenapple.util.Calculations;
  * @author Deaboy
  * 
  */
-public class Area {
+public class Area implements IArea
+{
 	final Long			ID;
 	
 	private Location	corner1;
@@ -21,11 +23,14 @@ public class Area {
 	private boolean		ignoreY;
 	private boolean		disabled;
 	
-	public Area(Long ID, Location corner1, Location corner2, boolean ignoreY){
+	private final AreaType	type;
+	
+	public Area(Long ID, AreaType type, Location corner1, Location corner2, boolean ignoreY){
 		this.ID = ID;
 		this.corner1 = corner1.clone();
 		this.corner2 = corner2.clone();
 		this.ignoreY = ignoreY;
+		this.type = type;
 	}
 	
 	/**
@@ -176,5 +181,10 @@ public class Area {
 	}
 	public double getDepth(){
 		return(Math.abs(corner1.getZ())+Math.abs(corner2.getZ()));
+	}
+	
+	public AreaType getType()
+	{
+		return type;
 	}
 }

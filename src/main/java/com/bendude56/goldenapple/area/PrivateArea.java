@@ -6,6 +6,7 @@ import java.util.List;
 import org.bukkit.Location;
 
 import com.bendude56.goldenapple.GoldenApple;
+import com.bendude56.goldenapple.area.AreaManager.AreaType;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
 import com.bendude56.goldenapple.permissions.PermissionGroup;
 import com.bendude56.goldenapple.permissions.PermissionUser;
@@ -15,13 +16,14 @@ import com.bendude56.goldenapple.permissions.PermissionUser;
  * 
  * @author Deaboy
  */
-public class PrivateArea extends ParentArea {
+public class PrivateArea extends ParentArea implements IArea
+{
 	private Long ownerID;
 	private List<Long> guestIDs = new ArrayList<Long>();
 	private Long groupID;
 	
 	public PrivateArea(Long ID, Location corner1, Location corner2, boolean ignoreY, IPermissionUser owner) {
-		super(ID, corner1, corner2, ignoreY);
+		super(ID, AreaType.PRIVATE, corner1, corner2, ignoreY);
 		this.setOwner(owner);
 	}
 	
@@ -86,5 +88,10 @@ public class PrivateArea extends ParentArea {
 	
 	public boolean canEdit(IPermissionUser user) {
 		return (isOwner(user) || isGuest(user) || memberOfGroup(user));
+	}
+	
+	public AreaType getType()
+	{
+		return AreaType.PRIVATE;
 	}
 }
