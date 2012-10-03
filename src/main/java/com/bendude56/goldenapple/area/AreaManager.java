@@ -25,7 +25,7 @@ public class AreaManager {
 
 	private static HashMap<Long, Area>	areas;
 
-	// --------------GENERALIZED METHODS-----------------
+	// ----------------GENERAL METHODS-------------------
 
 	/**
 	 * Returns the stored Area by ID number
@@ -110,6 +110,32 @@ public class AreaManager {
 				return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Gets a complete list of all areas.
+	 * @return ArrayList of all areas.
+	 */
+	public List<Area> getAllAreas(boolean includeChildren)
+	{
+		List<Area> result = new ArrayList<Area>();
+		
+		if (includeChildren)
+		{
+			result.addAll(areas.values());
+		}
+		else
+		{
+			for (Area area : areas.values())
+			{
+				if (area.getType() != AreaType.CHILD)
+				{
+					result.add(area);
+				}
+			}
+		}
+		
+		return result;
 	}
 
 	// ----------------PARENT METHODS--------------------
@@ -241,18 +267,28 @@ public class AreaManager {
 
 	/**
 	 * Assembles and returns an ArrayList of all stored PrivateAreas
+	 * Expensive function; use sparingly.
 	 * 
 	 * @param includeChildren If true, will include ChildAreas who's parents are
 	 *            instances of PrivateAreas
 	 * @return Returns an ArrayList of stored PrivateAreas
 	 */
-	public List<PrivateArea> getAllPrivateAreas(boolean includeChildren) {
+	public List<PrivateArea> getAllPrivateAreas(boolean includeChildren)
+	{
 		List<PrivateArea> privateAreas = new ArrayList<PrivateArea>();
 		for (Area area : areas.values())
-			if (area instanceof PrivateArea)
+		{
+			if (area.getType() == AreaType.PRIVATE)
+			{
 				privateAreas.add((PrivateArea)area);
-			else if (includeChildren && area instanceof ChildArea && ((ChildArea)area).getParent() instanceof PrivateArea)
+			}
+			else if (includeChildren
+					&& area.getType() == AreaType.CHILD
+					&& ((ChildArea)area).getParent().getType() == AreaType.PRIVATE)
+			{
 				privateAreas.add((PrivateArea)((ChildArea)area).getParent());
+			}
+		}
 		return privateAreas;
 	}
 
@@ -287,18 +323,28 @@ public class AreaManager {
 
 	/**
 	 * Assembles and returns an ArrayList of all stored PvpAreas
+	 * Expensive function; use sparingly.
 	 * 
 	 * @param includeChildren If true, will include ChildAreas who's parents are
 	 *            instances of PvpAreas
 	 * @return Returns an ArrayList of stored PvpAreas
 	 */
-	public List<PvpArea> getAllPvpAreas(boolean includeChildren) {
+	public List<PvpArea> getAllPvpAreas(boolean includeChildren)
+	{
 		List<PvpArea> pvpAreas = new ArrayList<PvpArea>();
 		for (Area area : areas.values())
-			if (area instanceof PvpArea)
+		{
+			if (area.getType() == AreaType.PVP)
+			{
 				pvpAreas.add((PvpArea)area);
-			else if (includeChildren && area instanceof ChildArea && ((ChildArea)area).getParent() instanceof PvpArea)
+			}
+			else if (includeChildren
+					&& area.getType() == AreaType.CHILD
+					&& ((ChildArea)area).getParent().getType() == AreaType.PVP)
+			{
 				pvpAreas.add((PvpArea)((ChildArea)area).getParent());
+			}
+		}
 		return pvpAreas;
 	}
 
@@ -333,18 +379,28 @@ public class AreaManager {
 
 	/**
 	 * Assembles and returns an ArrayList of all stored SafetyAreas
+	 * Expensive function; use sparingly.
 	 * 
 	 * @param includeChildren If true, will include ChildAreas who's parents are
 	 *            instances of SafetyAreas
 	 * @return Returns an ArrayList of stored SafetyAreas
 	 */
-	public List<SafetyArea> getAllSafetyAreas(boolean includeChildren) {
+	public List<SafetyArea> getAllSafetyAreas(boolean includeChildren)
+	{
 		List<SafetyArea> safetyAreas = new ArrayList<SafetyArea>();
 		for (Area area : areas.values())
-			if (area instanceof SafetyArea)
+		{
+			if (area.getType() == AreaType.SAFETY)
+			{
 				safetyAreas.add((SafetyArea)area);
-			else if (includeChildren && area instanceof ChildArea && ((ChildArea)area).getParent() instanceof SafetyArea)
+			}
+			else if (includeChildren
+					&& area.getType() == AreaType.CHILD
+					&& ((ChildArea)area).getParent().getType() == AreaType.SAFETY)
+			{
 				safetyAreas.add((SafetyArea)((ChildArea)area).getParent());
+			}
+		}
 		return safetyAreas;
 	}
 
@@ -380,6 +436,7 @@ public class AreaManager {
 
 	/**
 	 * Assembles and returns an ArrayList of all stored TownAreas
+	 * Expensive function; use sparingly.
 	 * 
 	 * @param includeChildren If true, will include ChildAreas who's parents are
 	 *            instances of TownAreas
@@ -388,10 +445,18 @@ public class AreaManager {
 	public List<TownArea> getAllTownAreas(boolean includeChildren) {
 		List<TownArea> townAreas = new ArrayList<TownArea>();
 		for (Area area : areas.values())
-			if (area instanceof TownArea)
+		{
+			if (area.getType() == AreaType.TOWN)
+			{
 				townAreas.add((TownArea)area);
-			else if (includeChildren && area instanceof ChildArea && ((ChildArea)area).getParent() instanceof TownArea)
+			}
+			else if (includeChildren
+					&& area.getType() == AreaType.CHILD
+					&& ((ChildArea)area).getParent().getType() == AreaType.TOWN)
+			{
 				townAreas.add((TownArea)((ChildArea)area).getParent());
+			}
+		}
 		return townAreas;
 	}
 
@@ -428,15 +493,21 @@ public class AreaManager {
 	}
 
 	/**
-	 * Assembles and returns an ArrayList of all stored ChildAreas
+	 * Assembles and returns an ArrayList of all stored ChildAreas.
+	 * Expensive function; use sparingly.
 	 * 
 	 * @return Returns an ArrayList of stored ChildAreas
 	 */
-	public List<ChildArea> getAllChildAreas() {
+	public List<ChildArea> getAllChildAreas()
+	{
 		List<ChildArea> childAreas = new ArrayList<ChildArea>();
 		for (Area area : areas.values())
-			if (area instanceof ChildArea)
+		{
+			if (area.getType() == AreaType.CHILD)
+			{
 				childAreas.add((ChildArea)area);
+			}
+		}
 		return childAreas;
 	}
 
@@ -449,6 +520,8 @@ public class AreaManager {
 		sortChildren(parent);
 		return getChildren(parent).size();
 	}
+
+	// ------------------MISCELLANEOUS-------------------
 
 	public boolean canEditLocation(Location location, IPermissionUser user) {
 		for (Area area : this.getAreasAtLocation(location, false)) {

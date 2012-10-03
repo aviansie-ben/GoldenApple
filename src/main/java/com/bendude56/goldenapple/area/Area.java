@@ -138,7 +138,7 @@ public class Area implements IArea
 	 * As opposed to <i>getCorner2()</i>, this method does <u>not</u> take ignoreY into account.
 	 * @return Returns an exact clone of the area's corner2.
 	 */
-	public Location		getRealCorner2(){
+	public Location		getRealCorner2() {
 		return corner2.clone();
 	}
 	public void 		ignoreY(boolean ignore) {
