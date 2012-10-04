@@ -1,6 +1,5 @@
 package com.bendude56.goldenapple.commands;
 
-import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.entity.Player;
@@ -8,7 +7,6 @@ import org.bukkit.entity.Player;
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.area.Area;
-import com.bendude56.goldenapple.util.CommandUtil;
 
 public class AreaCommand extends DualSyntaxCommand
 {
@@ -16,7 +14,10 @@ public class AreaCommand extends DualSyntaxCommand
 	@Override
 	public void onCommandComplex(GoldenApple instance, User user, String commandLabel, String[] args)
 	{
-		long selectedId = -1;
+		Arguments arguments = new Arguments(args);
+		
+		Long selectedId = null;
+		
 		if (user.getHandle() instanceof Player)
 		{
 			
@@ -30,43 +31,34 @@ public class AreaCommand extends DualSyntaxCommand
 		
 		instance.locale.sendMessage(user, "header.area", false);
 		
-		HashMap<String, String> arguments = CommandUtil.parseArguments(args);
+		// LIST command. Exclusive: if command contains any version of "list" will
+		//      return after executing the command
 		
-		if (arguments.containsKey("-l")
-				|| arguments.containsKey("-ls")
-				|| arguments.containsKey("-list"))
+		if (arguments.getBoolean("-l")
+				|| arguments.getBoolean("-ls")
+				|| arguments.getBoolean("-list"))
 		{
-			int page;
-			try
+			Integer page;
+			if ((page = arguments.getInteger("p")) == null
+					&& (page = arguments.getInteger("pg")) == null
+					&& (page = arguments.getInteger("page")) == null)
 			{
-				if (arguments.containsKey("p"))
-					page = Integer.parseInt(arguments.get("p"));
-				else if (arguments.containsKey("pg"))
-					page = Integer.parseInt(arguments.get("pg"));
-				else if (arguments.containsKey("page"))
-					page = Integer.parseInt(arguments.get("page"));
-				else
-					page = 0;
-			}
-			catch (NumberFormatException e)
-			{
-				page = 0;
+				page = 1;
 			}
 			
-			sendAreaList(user, page);
+			sendAreaList(user, page - 1);
 			
 			return;
 		}
 		
-		if (arguments.containsKey("s"))
+		if (arguments.contains("s"))
 		{
-			try
-			{
-				selectedId = Long.parseLong(arguments.get("s"));
-			}
-			catch (NumberFormatException | ArrayIndexOutOfBoundsException e)
+			selectedId = arguments.getLong("s");
+			
+			if (selectedId == null)
 			{
 				instance.locale.sendMessage(user,  "shared.parameterMissing",  false, "-s");
+				return;
 			}
 			
 			/*
@@ -97,6 +89,7 @@ public class AreaCommand extends DualSyntaxCommand
 		else if (instance.areas.getAreasAtLocation(((Player) user.getHandle()).getLocation(), true).isEmpty())
 		{
 			instance.locale.sendMessage(user, "error.area.noArea", false);
+			return;
 		}
 		
 	}
