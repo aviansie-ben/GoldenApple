@@ -1,7 +1,5 @@
 package com.bendude56.goldenapple.permissions;
 
-import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
-
 public interface IPermissionUser extends IPermissionObject {
 	/**
 	 * Gets the name of the user represented by this instance.

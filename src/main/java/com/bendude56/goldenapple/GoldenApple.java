@@ -19,6 +19,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.bendude56.goldenapple.IModuleLoader.ModuleState;
+import com.bendude56.goldenapple.antigrief.AntigriefModuleLoader;
 import com.bendude56.goldenapple.area.AreaManager;
 import com.bendude56.goldenapple.chat.ChatManager;
 import com.bendude56.goldenapple.commands.UnloadedCommand;
@@ -32,7 +33,7 @@ public class GoldenApple extends JavaPlugin {
 	private static Logger								log			= Logger.getLogger("Minecraft");
 
 	public static final HashMap<String, IModuleLoader>	modules		= new HashMap<String, IModuleLoader>();
-	public static final String[]						loadOrder	= new String[] { "Base", "Permissions", "Lock" };
+	public static final String[]						loadOrder	= new String[] { "Base", "Permissions", "Lock", "Antigrief" };
 	public static final String[]						commands	= new String[] { "gamodule", "gaverify", "gaown", "gapermissions", "galock", "gacomplex", "gaautolock" };
 	public static final String[]						devs		= new String[] { "ben_dude56", "Deaboy" };
 	public static final UnloadedCommand					defCmd		= new UnloadedCommand();
@@ -41,6 +42,7 @@ public class GoldenApple extends JavaPlugin {
 		modules.put("Base", new BaseModuleLoader());
 		modules.put("Permissions", new PermissionsModuleLoader());
 		modules.put("Lock", new LockModuleLoader());
+		modules.put("Antigrief", new AntigriefModuleLoader());
 	}
 
 	public static void logPermissionFail(User u, String command, String[] args, boolean sendMessage) {

@@ -1,3 +1,5 @@
+error.antigrief.tnt=&4ERROR: You are not allowed to ignite TNT! This attempt has been logged.
+
 error.lock.access.unknown=&4ERROR: There is no access level with name &f%1&4!
 error.lock.create.alreadyExists=&4ERROR: A protection already exists on that block!
 error.lock.create.invalidRegistered=&4ERROR: Plugin '%1' has an invalid &1RegisteredBlock&4! Contact an administrator!
@@ -74,6 +76,7 @@ general.module.query.unloadedDependancy=&4Dependency Failure
 general.module.query.unloadedError=&4Failed
 general.module.query.unloadedPolicy=&5Policy Restriction
 general.module.query.unloadedUser=&7Ready
+general.module.unload.success=&aModule '%1' unloaded successfully...
 general.module.unload.warnStart=&eWARNING: To disable this module, the following modules must also be disabled:
 general.module.unload.warnEnd=&eIf you are sure you wish to disable these modules, use /gaverify
 

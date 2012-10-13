@@ -73,6 +73,7 @@ securityPolicy:
         area: false
         warp: false
         chat: false
+        antigrief: false 
 
 # Options for GoldenApple modules
 modules:
@@ -154,3 +155,33 @@ modules:
         # with strict censoring set to on
         strictCensorList:
         
+    # Anti-griefing system options
+    antigrief:
+    
+        # Determines the global status of the entire anti-griefing
+        # module. WARNING: Setting this to false disables ALL
+        # griefing protection, REGARDLESS OF ANY SETTINGS BELOW!!
+        enabled: true
+        
+        # Setting this to true prevents TNT from being activated
+        # using redstone. Due to the nature of redstone, this cannot
+        # be configured on a per-user basis.
+        noRedstoneTnt: true
+        
+        # Setting this to true prevents TNT from being activated from
+        # being next to fire. Due to the nature of fire, this cannot
+        # be configured on a per-user basis.
+        noFireTnt: true
+        
+        # Setting this to true prevents flint and steel from being
+        # used to light TNT. IMPORTANT: A user with proper
+        # permissions can override this setting.
+        noLightTnt: true
+        
+        # Setting this to true prevents creepers from exploding at
+        # all. They will be made COMPLETELY PASSIVE.
+        noCreeperExplosion: false
+        
+        # Setting this to true prevents creeper explosions from
+        # damaging any blocks. They will still damage players.
+        noCreeperBlockDamage: true
