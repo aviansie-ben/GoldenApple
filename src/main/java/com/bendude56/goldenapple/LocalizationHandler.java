@@ -16,10 +16,11 @@ public class LocalizationHandler {
 		for (String locale : GoldenApple.getInstance().mainConfig.getStringList("message.availableLocales")) {
 			Properties p = new Properties();
 			try {
-				p.load(loader.getResourceAsStream("locale/" + locale + ".lang"));
-			} catch (IOException e) {
+				p.load(loader.getResourceAsStream("src/main/resources/locale/" + locale + ".lang"));
+			} catch (IOException | NullPointerException e) {
 				GoldenApple.log(Level.WARNING, "Failed to load language from " + locale + ".lang:");
 				GoldenApple.log(Level.WARNING, e);
+				e.printStackTrace();
 			}
 			secondaryMessages.put(locale, new HashMap<String, String>());
 			for (String entry : p.stringPropertyNames()) {
