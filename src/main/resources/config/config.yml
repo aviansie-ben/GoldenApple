@@ -73,7 +73,18 @@ securityPolicy:
         area: false
         warp: false
         chat: false
-        antigrief: false 
+        antigrief: false
+    
+    # Determines whether or not a module can be manually unloaded
+    # using /gamodule. These modules will still be unloaded if a
+    # fatal error occurs.
+    blockManualUnload:
+        permissions: true
+        lock: false
+        area: false
+        warp: false
+        chat: false
+        antigrief: false
 
 # Options for GoldenApple modules
 modules:

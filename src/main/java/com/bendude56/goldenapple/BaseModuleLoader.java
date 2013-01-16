@@ -69,5 +69,10 @@ public class BaseModuleLoader implements IModuleLoader {
 	public boolean canPolicyLoad() {
 		return true;
 	}
+	
+	@Override
+	public boolean canPolicyUnload() {
+		return false;
+	}
 
 }

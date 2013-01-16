@@ -63,6 +63,12 @@ public interface IModuleLoader {
 	 * be loaded.
 	 */
 	public boolean canPolicyLoad();
+	
+	/**
+	 * Gets a value indicating whether the security policy allows this module to
+	 * be unloaded manually
+	 */
+	public boolean canPolicyUnload();
 
 	/**
 	 * Represents the state of a module at a given moment in time.

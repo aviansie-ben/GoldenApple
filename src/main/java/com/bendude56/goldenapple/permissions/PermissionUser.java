@@ -208,7 +208,7 @@ public class PermissionUser implements IPermissionUser {
 			List<Long> gr = new ArrayList<Long>();
 			ResultSet r = null;
 			try {
-				r = GoldenApple.getInstance().database.executeQuery("SELECT GroupID FROM GroupUserMembership WHERE MemberID=?", id);
+				r = GoldenApple.getInstance().database.executeQuery("SELECT GroupID FROM GroupUserMembers WHERE MemberID=?", id);
 				while (r.next())
 					gr.add(r.getLong("GroupID"));
 			} finally {
@@ -220,7 +220,7 @@ public class PermissionUser implements IPermissionUser {
 				for (int i = 0; i < gr.size(); i++) {
 					r = null;
 					try {
-						r = GoldenApple.getInstance().database.executeQuery("SELECT GroupID FROM GroupGroupMembership WHERE MemberID=?", gr.get(i));
+						r = GoldenApple.getInstance().database.executeQuery("SELECT GroupID FROM GroupGroupMembers WHERE MemberID=?", gr.get(i));
 						while (r.next())
 							gr.add(r.getLong("GroupID"));
 					} finally {

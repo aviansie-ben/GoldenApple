@@ -143,5 +143,10 @@ public class WarpModuleLoader implements IModuleLoader {
 	public boolean canPolicyLoad() {
 		return !GoldenApple.getInstance().mainConfig.getBoolean("securityPolicy.blockModules.warp", false);
 	}
+	
+	@Override
+	public boolean canPolicyUnload() {
+		return !GoldenApple.getInstance().mainConfig.getBoolean("securityPolicy.blockManualUnload.warp", false);
+	}
 
 }

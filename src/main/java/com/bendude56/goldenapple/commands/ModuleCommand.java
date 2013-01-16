@@ -26,27 +26,24 @@ public class ModuleCommand implements CommandExecutor {
 				instance.locale.sendMessage(user, "header.module", false);
 				instance.locale.sendMessage(user, "general.module.list", false);
 				for (Entry<String, IModuleLoader> module : GoldenApple.modules.entrySet()) {
-					if (module.getValue().canPolicyLoad()) {
-						switch (module.getValue().getCurrentState()) {
-							case LOADED:
-								if (module.getKey().equals("Base"))
-									user.getHandle().sendMessage(ChatColor.GREEN + module.getValue().getModuleName() + ChatColor.DARK_GRAY + " [!]");
-								else
-									user.getHandle().sendMessage(ChatColor.GREEN + module.getValue().getModuleName());
-								break;
-							case LOADING:
-								user.getHandle().sendMessage(ChatColor.YELLOW + module.getValue().getModuleName());
-								break;
-							case UNLOADED_USER:
-								user.getHandle().sendMessage(ChatColor.GRAY + module.getValue().getModuleName());
-								break;
-							case UNLOADED_ERROR:
-							case UNLOADED_MISSING_DEPENDENCY:
-								user.getHandle().sendMessage(ChatColor.RED + module.getValue().getModuleName());
-								break;
-						}
-					} else {
-						user.getHandle().sendMessage(ChatColor.DARK_PURPLE + module.getValue().getModuleName());
+					String suffix = "";
+					if (!module.getValue().canPolicyLoad() || (module.getValue().getCurrentState() == ModuleState.LOADED && !module.getValue().canPolicyUnload())) {
+						suffix += ChatColor.DARK_GRAY + " [!]";
+					}
+					switch (module.getValue().getCurrentState()) {
+						case LOADED:
+							user.getHandle().sendMessage(ChatColor.GREEN + module.getValue().getModuleName() + suffix);
+							break;
+						case LOADING:
+							user.getHandle().sendMessage(ChatColor.YELLOW + module.getValue().getModuleName() + suffix);
+							break;
+						case UNLOADED_USER:
+							user.getHandle().sendMessage(ChatColor.GRAY + module.getValue().getModuleName() + suffix);
+							break;
+						case UNLOADED_ERROR:
+						case UNLOADED_MISSING_DEPENDENCY:
+							user.getHandle().sendMessage(ChatColor.RED + module.getValue().getModuleName() + suffix);
+							break;
 					}
 				}
 			} else if (args[0].equalsIgnoreCase("help")) {
@@ -59,10 +56,10 @@ public class ModuleCommand implements CommandExecutor {
 					if (module.canPolicyLoad()) {
 						switch (module.getCurrentState()) {
 							case LOADED:
-								if (module.getModuleName().equals("Base"))
-									status = instance.locale.getMessage(user, "general.module.query.loadedLocked");
-								else
+								if (module.canPolicyUnload())
 									status = instance.locale.getMessage(user, "general.module.query.loaded");
+								else
+									status = instance.locale.getMessage(user, "general.module.query.loadedLocked");
 								break;
 							case LOADING:
 								status = instance.locale.getMessage(user, "general.module.query.loading");
@@ -78,7 +75,7 @@ public class ModuleCommand implements CommandExecutor {
 								break;
 						}
 					} else {
-						status = instance.locale.getMessage(user, "general.module.query.unloadedPolicy");
+						status = instance.locale.getMessage(user, "general.module.query.unloadedLocked");
 					}
 					instance.locale.sendMessage(user, "general.module.query", true, module.getModuleName(), status);
 				} else if (args[1].equalsIgnoreCase("-e") || args[1].equalsIgnoreCase("--enable")) {
@@ -159,8 +156,8 @@ public class ModuleCommand implements CommandExecutor {
 						GoldenApple.logPermissionFail(user, commandLabel, args, true);
 					} else if (module.getCurrentState() != ModuleState.LOADED) {
 						instance.locale.sendMessage(user, "error.module.unload.notLoaded", false, module.getModuleName());
-					} else if (module.getModuleName().equals("Base")) {
-						instance.locale.sendMessage(user, "error.module.unload.locked", false, module.getModuleName());
+					} else if (!module.canPolicyUnload()) {
+						instance.locale.sendMessage(user, "error.module.unload.policy", false, module.getModuleName());
 					} else {
 						ArrayDeque<IModuleLoader> depend = new ArrayDeque<IModuleLoader>();
 						ArrayList<IModuleLoader> oldDepend = new ArrayList<IModuleLoader>();
@@ -168,13 +165,18 @@ public class ModuleCommand implements CommandExecutor {
 						while (!oldDepend.isEmpty()) {
 							ArrayList<IModuleLoader> newDepend = new ArrayList<IModuleLoader>();
 							for (Entry<String, IModuleLoader> m : GoldenApple.modules.entrySet()) {
-								if (m.getValue().getCurrentState() != ModuleState.LOADED)
+								if (m.getValue().getCurrentState() != ModuleState.LOADED) {
 									continue;
+								}
 								for (IModuleLoader dis : oldDepend) {
 									for (String d : m.getValue().getModuleDependencies()) {
 										if (d.equals(dis.getModuleName())) {
 											newDepend.add(m.getValue());
 											depend.addFirst(m.getValue());
+											if (!m.getValue().canPolicyUnload()) {
+												instance.locale.sendMessage(user, "error.module.unload.dependFail", false, module.getModuleName(), m.getValue().getModuleName());
+												return true;
+											}
 										}
 									}
 								}

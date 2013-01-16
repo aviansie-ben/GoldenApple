@@ -54,6 +54,9 @@ public class LockModuleLoader implements IModuleLoader {
 	@Override
 	public void unloadModule(GoldenApple instance) {
 		LockListener.stopListening();
+		GoldenApple.getInstance().locks = null;
+		Bukkit.getPluginCommand("galock").setExecutor(GoldenApple.defCmd);
+		Bukkit.getPluginCommand("gaautolock").setExecutor(GoldenApple.defCmd);
 		state = ModuleState.UNLOADED_USER;
 	}
 
@@ -85,6 +88,11 @@ public class LockModuleLoader implements IModuleLoader {
 	@Override
 	public boolean canPolicyLoad() {
 		return !GoldenApple.getInstance().mainConfig.getBoolean("securityPolicy.blockModules.lock", false);
+	}
+	
+	@Override
+	public boolean canPolicyUnload() {
+		return !GoldenApple.getInstance().mainConfig.getBoolean("securityPolicy.blockManualUnload.lock", false);
 	}
 
 }

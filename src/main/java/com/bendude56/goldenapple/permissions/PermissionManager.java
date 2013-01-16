@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import com.bendude56.goldenapple.GoldenApple;
-import com.bendude56.goldenapple.util.Serializer;
 
 /**
  * Manages the inner workings of the GoldenApple permissions system
@@ -515,8 +514,20 @@ public class PermissionManager {
 	 *         error occurred, null is returned.
 	 */
 	public PermissionUser createUser(String name) {
-		// TODO Add user creation
-		return null;
+		try {
+			if (userExists(name))
+				return getUser(name);
+		} catch (SQLException e) { }
+		try {
+			GoldenApple.getInstance().database.execute("INSERT INTO Users (Name, ComplexCommands, AutoLock) VALUES (?, ?, ?)", name,
+					GoldenApple.getInstance().mainConfig.getBoolean("modules.permissions.defaultComplexCommands", true),
+					GoldenApple.getInstance().mainConfig.getBoolean("modules.lock.autoLockDefault", true));
+			return getUser(name);
+		} catch (SQLException e) {
+			GoldenApple.log(Level.WARNING, "Failed to create user '" + name + "':");
+			GoldenApple.log(Level.WARNING, e);
+			return null;
+		}
 	}
 
 	/**

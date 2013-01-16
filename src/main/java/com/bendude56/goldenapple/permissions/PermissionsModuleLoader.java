@@ -59,6 +59,10 @@ public class PermissionsModuleLoader implements IModuleLoader {
 	public void unloadModule(GoldenApple instance) {
 		PermissionListener.stopListening();
 		User.clearCache();
+		GoldenApple.getInstance().permissions.close();
+		GoldenApple.getInstance().permissions = null;
+		Bukkit.getPluginCommand("gapermissions").setExecutor(GoldenApple.defCmd);
+		Bukkit.getPluginCommand("gaown").setExecutor(GoldenApple.defCmd);
 		state = ModuleState.UNLOADED_USER;
 	}
 
@@ -90,6 +94,11 @@ public class PermissionsModuleLoader implements IModuleLoader {
 	@Override
 	public boolean canPolicyLoad() {
 		return true;
+	}
+	
+	@Override
+	public boolean canPolicyUnload() {
+		return !GoldenApple.getInstance().mainConfig.getBoolean("securityPolicy.blockManualUnload.permissions", true);
 	}
 
 }

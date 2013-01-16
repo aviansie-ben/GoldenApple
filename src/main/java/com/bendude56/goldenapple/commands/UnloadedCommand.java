@@ -16,6 +16,8 @@ public class UnloadedCommand implements CommandExecutor {
 	static {
 		reqModule.put("gapermissions", "Permissions");
 		reqModule.put("gaown", "Permissions");
+		reqModule.put("galock", "Lock");
+		reqModule.put("gaautolock", "Lock");
 	}
 	
 	@Override

@@ -76,5 +76,10 @@ public class AntigriefModuleLoader implements IModuleLoader {
 	public boolean canPolicyLoad() {
 		return !GoldenApple.getInstance().mainConfig.getBoolean("securityPolicy.blockModules.antigrief", false);
 	}
+	
+	@Override
+	public boolean canPolicyUnload() {
+		return !GoldenApple.getInstance().mainConfig.getBoolean("securityPolicy.blockManualUnload.antigrief", false);
+	}
 
 }

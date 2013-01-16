@@ -88,5 +88,10 @@ public class ChatModuleLoader implements IModuleLoader {
 	public boolean canPolicyLoad() {
 		return !GoldenApple.getInstance().mainConfig.getBoolean("securityPolicy.blockModules.chat", false);
 	}
+	
+	@Override
+	public boolean canPolicyUnload() {
+		return !GoldenApple.getInstance().mainConfig.getBoolean("securityPolicy.blockManualUnload.chat", false);
+	}
 
 }
