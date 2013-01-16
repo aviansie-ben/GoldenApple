@@ -1,5 +1,12 @@
 package com.bendude56.goldenapple;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
@@ -42,6 +49,7 @@ public final class Database {
 		} else {
 			mySql = false;
 			try {
+				GoldenApple.log(Level.WARNING, "SQLite support has not yet been fully added. It is recommended that you use MySQL.");
 				Driver d = new JDBC();
 				GoldenApple.log("Loading database using SQLite v" + d.getMajorVersion() + "." + d.getMinorVersion());
 				connection = d.connect("jdbc:sqlite:" + GoldenApple.getInstance().mainConfig.getString("database.path"), new Properties());
@@ -90,7 +98,7 @@ public final class Database {
 	 * Executes an SQL query on the database and returns the result. This should
 	 * <strong>not</strong> be used to execute a command with user data, because
 	 * their data will not be sanitized.
-	 * {@link Database#executeQuery(String comman, Object[] parameters)} should
+	 * {@link Database#executeQuery(String command, Object[] parameters)} should
 	 * be used instead when user-entered data will be used in the command.
 	 * 
 	 * @param command The command to execute
@@ -112,6 +120,42 @@ public final class Database {
 			s.setObject(i + 1, parameters[i]);
 		}
 		return s.executeQuery();
+	}
+	
+	public void executeFromResource(String resourceName) throws SQLException, IOException {
+		executeFromResource(resourceName, new Object[0]);
+	}
+	
+	public void executeFromResource(String resourceName, Object... parameters) throws SQLException, IOException {
+		execute(readResource("sql/" + ((mySql) ? "mysql" : "sqlite") + "/" + resourceName + ".sql"), parameters);
+	}
+	
+	public ResultSet executeQueryFromResource(String resourceName) throws SQLException, IOException {
+		return executeQueryFromResource(resourceName, new Object[0]);
+	}
+	
+	public ResultSet executeQueryFromResource(String resourceName, Object... parameters) throws SQLException, IOException {
+		return executeQuery(readResource("sql/" + ((mySql) ? "mysql" : "sqlite") + "/" + resourceName + ".sql"), parameters);
+	}
+	
+	private String readResource(String resource) throws IOException {
+		Writer w = new StringWriter();
+		char[] buffer = new char[1024];
+		InputStream i = null;
+		
+		try {
+            Reader r = new BufferedReader(
+                    new InputStreamReader(i = getClass().getClassLoader().getResourceAsStream(resource), "UTF-8"));
+            int n;
+            while ((n = r.read(buffer)) != -1) {
+                w.write(buffer, 0, n);
+            }
+        } finally {
+        	if (i != null)
+        		i.close();
+        }
+		
+		return w.toString();
 	}
 
 	/**

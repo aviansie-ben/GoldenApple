@@ -32,36 +32,8 @@ public class PermissionUser implements IPermissionUser {
 	private boolean				complexCommands;
 	private boolean				autoLock;
 
-	protected PermissionUser(long id, String name, String preferredLocale, String permissions, boolean complexCommands, boolean autoLock) {
+	private PermissionUser(long id) {
 		this.id = id;
-		this.name = name;
-		this.preferredLocale = preferredLocale;
-		try {
-			@SuppressWarnings("unchecked")
-			ArrayList<String> p = (ArrayList<String>)Serializer.deserialize(permissions);
-			for (String permission : p) {
-				this.permissions.add(GoldenApple.getInstance().permissions.registerPermission(permission));
-			}
-		} catch (Exception e) {
-			GoldenApple.log(Level.SEVERE, "Failed to deserialize permissions for user " + name + ":");
-			GoldenApple.log(Level.SEVERE, e);
-		}
-		this.complexCommands = complexCommands;
-		this.autoLock = autoLock;
-	}
-
-	private String serializePermissions() {
-		try {
-			ArrayList<String> p = new ArrayList<String>();
-			for (Permission permission : permissions) {
-				p.add(permission.getFullName());
-			}
-			return Serializer.serialize(p);
-		} catch (Exception e) {
-			GoldenApple.log(Level.SEVERE, "Failed to serialize permissions for " + name + ":");
-			GoldenApple.log(Level.SEVERE, e);
-			return "";
-		}
 	}
 
 	/**
@@ -69,7 +41,7 @@ public class PermissionUser implements IPermissionUser {
 	 */
 	public void save() {
 		try {
-			GoldenApple.getInstance().database.execute("UPDATE Users SET Locale=?, Permissions=?, ComplexCommands=?, AutoLock=? WHERE ID=?", new Object[] { preferredLocale, serializePermissions(), complexCommands, autoLock, id });
+			GoldenApple.getInstance().database.execute("UPDATE Users SET Locale=?, ComplexCommands=?, AutoLock=? WHERE ID=?", new Object[] { preferredLocale, complexCommands, autoLock, id });
 		} catch (SQLException e) {
 			GoldenApple.log(Level.SEVERE, "Failed to save changes to user '" + name + "':");
 			GoldenApple.log(Level.SEVERE, e);

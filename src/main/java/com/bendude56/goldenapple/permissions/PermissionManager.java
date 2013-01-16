@@ -59,36 +59,31 @@ public class PermissionManager {
 		nodes.add(rootNode);
 		rootStar = new Permission("*", rootNode);
 		permissions.add(rootStar);
-		try {
-			GoldenApple.getInstance().database.execute("CREATE TABLE IF NOT EXISTS Users (ID BIGINT PRIMARY KEY, Name VARCHAR(128), Locale VARCHAR(128), Permissions TEXT, ComplexCommands BOOLEAN, AutoLock BOOLEAN)");
-		} catch (SQLException e) {
-			GoldenApple.log(Level.SEVERE, "Failed to create table 'Users':");
-			GoldenApple.log(Level.SEVERE, e);
-		}
-		try {
-			GoldenApple.getInstance().database.execute("CREATE TABLE IF NOT EXISTS Groups (ID BIGINT PRIMARY KEY, Name VARCHAR(128), Permissions TEXT, Users TEXT, Groups TEXT)");
-		} catch (SQLException e) {
-			GoldenApple.log(Level.SEVERE, "Failed to create table 'Groups':");
-			GoldenApple.log(Level.SEVERE, e);
-		}
+		
+		tryCreateTable("Users");
+		tryCreateTable("UserPermissions");
+		tryCreateTable("Groups");
+		tryCreateTable("GroupPermissions");
+		tryCreateTable("GroupGroupMembers");
+		tryCreateTable("GroupUserMembers");
+		
 		if (GoldenApple.getInstance().database.usingMySql()) {
 			checkUserColumnsMySql();
 			checkGroupColumnsMySql();
 		} else {
-			checkUserColumnsSqlite();
-			checkGroupColumnsSqlite();
+			GoldenApple.log(Level.WARNING, "SQLite is being used. Cannot check permissions tables for missing columns.");
 		}
+		
+		checkDefaultGroups();
+	}
+	
+	private void tryCreateTable(String tableName) {
 		try {
-			ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT ID, Name, Permissions, Users, Groups FROM Groups");
-			while (r.next()) {
-				groups.put(r.getLong("ID"), new PermissionGroup(r.getLong("ID"), r.getString("Name"), r.getString("Users"), r.getString("Groups"), r.getString("Permissions")));
-			}
-			r.close();
-		} catch (SQLException e) {
-			GoldenApple.log(Level.SEVERE, "Failed to load groups:");
+			GoldenApple.getInstance().database.executeFromResource(tableName.toLowerCase() + "_create");
+		} catch (SQLException | IOException e) {
+			GoldenApple.log(Level.SEVERE, "Failed to create table '" + tableName + "':");
 			GoldenApple.log(Level.SEVERE, e);
 		}
-		checkDefaultGroups();
 	}
 	
 	private void checkUserColumnsMySql() {
@@ -100,13 +95,10 @@ public class PermissionManager {
 			}
 			r.close();
 			if (!columns.contains("Name")) {
-				GoldenApple.getInstance().database.execute("ALTER TABLE Users ADD COLUMN Name VARCHAR(128)");
+				GoldenApple.getInstance().database.execute("ALTER TABLE Users ADD COLUMN Name VARCHAR(128) NOT NULL");
 			}
 			if (!columns.contains("Locale")) {
 				GoldenApple.getInstance().database.execute("ALTER TABLE Users ADD COLUMN Locale VARCHAR(128)");
-			}
-			if (!columns.contains("Permissions")) {
-				GoldenApple.getInstance().database.execute("ALTER TABLE Users ADD COLUMN Permissions TEXT");
 			}
 			if (!columns.contains("ComplexCommands")) {
 				GoldenApple.getInstance().database.execute("ALTER TABLE Users ADD COLUMN ComplexCommands BOOLEAN");
@@ -130,64 +122,6 @@ public class PermissionManager {
 			r.close();
 			if (!columns.contains("Name")) {
 				GoldenApple.getInstance().database.execute("ALTER TABLE Groups ADD COLUMN Name VARCHAR(128)");
-			}
-			if (!columns.contains("Permissions")) {
-				GoldenApple.getInstance().database.execute("ALTER TABLE Groups ADD COLUMN Permissions TEXT");
-			}
-			if (!columns.contains("Users")) {
-				GoldenApple.getInstance().database.execute("ALTER TABLE Groups ADD COLUMN Users TEXT");
-			}
-			if (!columns.contains("Groups")) {
-				GoldenApple.getInstance().database.execute("ALTER TABLE Groups ADD COLUMN Groups TEXT");
-			}
-		} catch (SQLException e) {
-			GoldenApple.log(Level.SEVERE, "Failed to verify structure of table 'Groups':");
-			GoldenApple.log(Level.SEVERE, e);
-		}
-	}
-
-	private void checkUserColumnsSqlite() {
-		try {
-			ArrayList<String> columns = new ArrayList<String>();
-			ResultSet r = GoldenApple.getInstance().database.executeQuery("PRAGMA TABLE_INFO(Users)");
-			while (r.next()) {
-				columns.add(r.getString(2));
-			}
-			r.close();
-			if (!columns.contains("Name")) {
-				GoldenApple.getInstance().database.execute("ALTER TABLE Users ADD COLUMN Name VARCHAR(128)");
-			}
-			if (!columns.contains("Locale")) {
-				GoldenApple.getInstance().database.execute("ALTER TABLE Users ADD COLUMN Locale VARCHAR(128)");
-			}
-			if (!columns.contains("Permissions")) {
-				GoldenApple.getInstance().database.execute("ALTER TABLE Users ADD COLUMN Permissions TEXT");
-			}
-			if (!columns.contains("ComplexCommands")) {
-				GoldenApple.getInstance().database.execute("ALTER TABLE Users ADD COLUMN ComplexCommands BOOLEAN");
-			}
-			if (!columns.contains("AutoLock")) {
-				GoldenApple.getInstance().database.execute("ALTER TABLE Users ADD COLUMN AutoLock BOOLEAN");
-			}
-		} catch (SQLException e) {
-			GoldenApple.log(Level.SEVERE, "Failed to verify structure of table 'Users':");
-			GoldenApple.log(Level.SEVERE, e);
-		}
-	}
-
-	private void checkGroupColumnsSqlite() {
-		try {
-			ArrayList<String> columns = new ArrayList<String>();
-			ResultSet r = GoldenApple.getInstance().database.executeQuery("PRAGMA TABLE_INFO(Groups)");
-			while (r.next()) {
-				columns.add(r.getString(2));
-			}
-			r.close();
-			if (!columns.contains("Name")) {
-				GoldenApple.getInstance().database.execute("ALTER TABLE Groups ADD COLUMN Name VARCHAR(128)");
-			}
-			if (!columns.contains("Permissions")) {
-				GoldenApple.getInstance().database.execute("ALTER TABLE Groups ADD COLUMN Permissions TEXT");
 			}
 			if (!columns.contains("Users")) {
 				GoldenApple.getInstance().database.execute("ALTER TABLE Groups ADD COLUMN Users TEXT");
@@ -416,7 +350,8 @@ public class PermissionManager {
 			try {
 				ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT * FROM Users WHERE ID=?", new Object[] { id });
 				if (r.next()) {
-					PermissionUser u = new PermissionUser(r.getLong("ID"), r.getString("Name"), r.getString("Locale"), r.getString("Permissions"), r.getBoolean("ComplexCommands"), r.getBoolean("AutoLock"));
+					// PermissionUser u = new PermissionUser(r.getLong("ID"), r.getString("Name"), r.getString("Locale"), r.getString("Permissions"), r.getBoolean("ComplexCommands"), r.getBoolean("AutoLock"));
+					PermissionUser u = null;
 					r.close();
 					return u;
 				} else {
@@ -450,7 +385,7 @@ public class PermissionManager {
 		try {
 			ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT * FROM Users WHERE Name=?", new Object[] { name });
 			if (r.next()) {
-				PermissionUser p = new PermissionUser(r.getLong("ID"), r.getString("Name"), r.getString("Locale"), r.getString("Permissions"), r.getBoolean("ComplexCommands"), r.getBoolean("AutoLock"));
+				PermissionUser p = null;
 				r.close();
 				userCache.put(p.getId(), p);
 				cacheOut.addLast(p.getId());
