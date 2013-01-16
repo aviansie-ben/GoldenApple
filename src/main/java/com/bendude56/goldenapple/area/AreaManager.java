@@ -537,5 +537,28 @@ public class AreaManager {
 	public enum AreaType
 	{
 		CHILD, PRIVATE, PVP, SAFETY, TOWN;
+		
+		public static AreaType fromString(String string)
+		{
+			string = string.toLowerCase();
+			switch (string)
+			{
+			case "child":
+				return AreaType.CHILD;
+			case "private":
+			case "priv":
+			case "lot":
+				return AreaType.PRIVATE;
+			case "pvp":
+				return AreaType.PVP;
+			case "safety":
+			case "safe":
+				return AreaType.SAFETY;
+			case "town":
+				return AreaType.TOWN;
+			default:
+				return null;
+			}
+		}
 	}
 }
