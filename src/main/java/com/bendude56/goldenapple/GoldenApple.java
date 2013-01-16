@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -238,10 +239,19 @@ public class GoldenApple extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
-		permissions.close();
-		permissions = null;
-		database.close();
-		database = null;
+		// Unload all modules
+		for (Map.Entry<String, IModuleLoader> module : modules.entrySet()) {
+			if (module.getValue().getCurrentState() == ModuleState.LOADED) {
+				disableModule(module.getValue(), true);
+			}
+		}
+		
+		// Unload the database
+		if (database != null) {
+			database.close();
+			database = null;
+		}
+		
 		mainConfig = null;
 	}
 }

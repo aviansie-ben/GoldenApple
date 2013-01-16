@@ -18,8 +18,8 @@ public class BaseModuleLoader implements IModuleLoader {
 			registerCommands();
 			state = ModuleState.LOADED;
 		} catch (Throwable e) {
-			state = ModuleState.UNLOADED_ERROR;
-			// TODO Add cleanup code to clean up after failed module start
+			// This module should NEVER fail to load! This is a major problem.
+			throw new ModuleLoadException("Base", e);
 		}
 	}
 
@@ -36,7 +36,8 @@ public class BaseModuleLoader implements IModuleLoader {
 
 	@Override
 	public void unloadModule(GoldenApple instance) {
-		// This module should never be unloaded during normal operation
+		// This module should only be unloaded when GoldenApple is shutting down
+		state = ModuleState.UNLOADED_USER;
 	}
 
 	@Override

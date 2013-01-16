@@ -119,9 +119,11 @@ public final class Database {
 	 */
 	public void close() {
 		try {
+			if (connection == null || connection.isClosed())
+				return;
 			connection.close();
 		} catch (SQLException e) {
-			throw new RuntimeException(e);
+			// Ignore any SQL problems while closing the connection
 		}
 	}
 }
