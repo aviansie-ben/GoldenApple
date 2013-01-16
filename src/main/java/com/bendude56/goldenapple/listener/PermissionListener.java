@@ -59,7 +59,7 @@ public class PermissionListener implements Listener, EventExecutor {
 				continue;
 			
 			if (!g.isMember(u, true)) {
-				g.addMember(u);
+				g.addUser(u);
 			}
 		}
 		
@@ -70,7 +70,7 @@ public class PermissionListener implements Listener, EventExecutor {
 					continue;
 				
 				if (!g.isMember(u, true)) {
-					g.addMember(u);
+					g.addUser(u);
 				}
 			}
 		}
@@ -83,7 +83,7 @@ public class PermissionListener implements Listener, EventExecutor {
 						continue;
 					
 					if (!g.isMember(u, true)) {
-						g.addMember(u);
+						g.addUser(u);
 					}
 				}
 				break;
@@ -98,7 +98,7 @@ public class PermissionListener implements Listener, EventExecutor {
 					event.disallow(Result.KICK_WHITELIST, "You aren't allowed to connect. Contact an administrator for further details.");
 				}
 			} else {
-				if (!reqGroup.getMembers().contains(u.getId())) {
+				if (!reqGroup.isMember(u, false)) {
 					event.disallow(Result.KICK_WHITELIST, "You aren't allowed to connect. Contact an administrator for further details.");
 				}
 			}

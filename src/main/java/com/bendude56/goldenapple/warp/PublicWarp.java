@@ -41,8 +41,9 @@ public class PublicWarp extends Warp{
 	public boolean canUse(IPermissionUser user){
 		if (getGroup()==null)
 			return true;
-		if (GoldenApple.getInstance().permissions.getGroup(getGroup()).getMembers().contains(user.getId()))
-			return true;
+		// TODO Implement the new group system
+		/*if (GoldenApple.getInstance().permissions.getGroup(getGroup()).getMembers().contains(user.getId()))
+			return true;*/
 		return false;
 	}
 	

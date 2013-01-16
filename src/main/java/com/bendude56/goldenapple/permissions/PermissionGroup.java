@@ -1,6 +1,7 @@
 package com.bendude56.goldenapple.permissions;
 
 import java.io.IOException;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,47 +23,8 @@ import com.bendude56.goldenapple.util.Serializer;
 public class PermissionGroup implements IPermissionObject {
 	private long					id;
 	private String					name;
-	private ArrayList<Long>			members		= new ArrayList<Long>();
-	private ArrayList<Long>			subGroups	= new ArrayList<Long>();
-	private ArrayList<Permission>	permissions	= new ArrayList<Permission>();
 
-	protected PermissionGroup(long id, String name) {
-		this.id = id;
-		this.name = name;
-		this.members = new ArrayList<Long>();
-		this.subGroups = new ArrayList<Long>();
-		this.permissions = new ArrayList<Permission>();
-	}
-
-	@SuppressWarnings("unchecked")
-	protected PermissionGroup(long id, String name, String users, String groups, String permissions) {
-		this.id = id;
-		this.name = name;
-		try {
-			this.members = (ArrayList<Long>)Serializer.deserialize(users);
-			this.subGroups = (ArrayList<Long>)Serializer.deserialize(groups);
-			List<String> p = (List<String>)Serializer.deserialize(permissions);
-			for (String permission : p) {
-				this.permissions.add(GoldenApple.getInstance().permissions.registerPermission(permission));
-			}
-		} catch (Exception e) {
-			GoldenApple.log(Level.SEVERE, "Failed to deserialize info for group " + name + ":");
-			GoldenApple.log(Level.SEVERE, e);
-		}
-	}
-
-	private String serializePermissions() {
-		try {
-			ArrayList<String> p = new ArrayList<String>();
-			for (Permission permission : permissions) {
-				p.add(permission.getFullName());
-			}
-			return Serializer.serialize(p);
-		} catch (Exception e) {
-			GoldenApple.log(Level.SEVERE, "Failed to serialize permissions for " + name + ":");
-			GoldenApple.log(Level.SEVERE, e);
-			return "";
-		}
+	private PermissionGroup() {
 	}
 
 	/**
@@ -70,8 +32,8 @@ public class PermissionGroup implements IPermissionObject {
 	 */
 	public void save() {
 		try {
-			GoldenApple.getInstance().database.execute("UPDATE Groups SET Permissions=?, Users=?, Groups=? WHERE ID=?", new Object[] { serializePermissions(), Serializer.serialize(members), Serializer.serialize(subGroups), id });
-		} catch (SQLException | IOException e) {
+			GoldenApple.getInstance().database.execute("UPDATE Groups SET Name=? WHERE ID=?", name, id);
+		} catch (SQLException e) {
 			GoldenApple.log(Level.SEVERE, "Failed to save changes to group '" + name + "':");
 			GoldenApple.log(Level.SEVERE, e);
 		}
@@ -92,88 +54,50 @@ public class PermissionGroup implements IPermissionObject {
 	/**
 	 * Gets a list of user IDs for users that inherit this group's permissions.
 	 */
-	public List<Long> getMembers() {
-		return members;
+	public List<Long> getUsers() {
+		// TODO Implement group membership
+		return null;
 	}
 	
-	public void addMember(IPermissionUser user) {
-		if (!members.contains(user.getId())) {
-			members.add(user.getId());
-			save();
-		}
+	public void addUser(IPermissionUser user) {
+		// TODO Implement group membership
 	}
 	
-	public void removeMember(IPermissionUser user) {
-		if (members.contains(user.getId())) {
-			members.remove((Object) user.getId());
-			save();
-		}
+	public void removeUser(IPermissionUser user) {
+		// TODO Implement group membership
 	}
 	
 	public boolean isMember(IPermissionUser user, boolean directOnly) {
-		if (members.contains(user.getId())) {
-			return true;
-		} else if (directOnly) {
-			return false;
-		} else {
-			for (Long g : subGroups) {
-				if (GoldenApple.getInstance().permissions.getGroup(g).isMember(user, false))
-					return true;
-			}
-			return false;
-		}
+		// TODO Implement group membership
+		return false;
 	}
 
 	/**
 	 * Gets a list of group IDs for groups that inherit this group's
 	 * permissions.
 	 */
-	public List<Long> getSubGroups() {
-		return subGroups;
+	public List<Long> getGroups() {
+		// TODO Implement group membership
+		return null;
 	}
 	
-	public void addSubGroup(PermissionGroup group) {
-		if (!subGroups.contains(group.getId())) {
-			subGroups.add(group.getId());
-			save();
-		}
+	public void addGroup(PermissionGroup group) {
+		// TODO Implement group membership
 	}
 	
-	public void removeSubGroup(PermissionGroup group) {
-		if (subGroups.contains(group.getId())) {
-			subGroups.remove((Object) group.getId());
-			save();
-		}
+	public void removeGroup(PermissionGroup group) {
+		// TODO Implement group membership
 	}
 
 	@Override
 	public List<Permission> getPermissions(boolean inherited) {
-		List<Permission> returnPermissions = permissions;
-		if (inherited) {
-			List<Long> previousGroups = new ArrayList<Long>();
-			for (Long groupID : GoldenApple.getInstance().permissions.getGroups().keySet()) {
-				if (!previousGroups.contains(groupID)) {
-					for (Long checkedGroupID : previousGroups) {
-						if (GoldenApple.getInstance().permissions.getGroup(groupID).getSubGroups().contains(checkedGroupID)) {
-							for (Permission perm : GoldenApple.getInstance().permissions.getGroup(groupID).getPermissions(false)) {
-								if (!returnPermissions.contains(perm)) {
-									returnPermissions.add(perm);
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		return returnPermissions;
+		// TODO Implement group permissions
+		return null;
 	}
 	
 	@Override
 	public void addPermission(Permission permission) {
-		if (!permissions.contains(permission)) {
-			permissions.add(permission);
-			save();
-		}
+		// TODO Implement group permissions
 	}
 	
 	@Override
@@ -183,10 +107,7 @@ public class PermissionGroup implements IPermissionObject {
 	
 	@Override
 	public void removePermission(Permission permission) {
-		if (permissions.contains(permission)) {
-			permissions.remove(permission);
-			save();
-		}
+		// TODO Implement group permissions
 	}
 	
 	@Override
@@ -239,6 +160,19 @@ public class PermissionGroup implements IPermissionObject {
 	 * @return True if the group has the specified permission, false otherwise.
 	 */
 	public boolean hasPermission(Permission permission, boolean specific) {
-		return getPermissions(!specific).contains(permission);
+		// TODO Implement group permissions
+		return false;
+	}
+
+	@Override
+	public boolean hasPermissionSpecific(Permission permission) {
+		// TODO Implement group permissions
+		return false;
+	}
+
+	@Override
+	public List<Long> getParentGroups(boolean directOnly) {
+		// TODO Implement group membership
+		return null;
 	}
 }

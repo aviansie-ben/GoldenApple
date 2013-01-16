@@ -50,7 +50,9 @@ public class PrivateArea extends ParentArea implements IArea
 	}
 
 	public boolean memberOfGroup(IPermissionUser user) {
-		return (getGroup().getMembers().contains(user.getId()));
+		// TODO Implement the new group system
+		return false;
+		// return (getGroup().getMembers().contains(user.getId()));
 	}
 	
 	public void addGuest(IPermissionUser guest) {

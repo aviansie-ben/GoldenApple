@@ -148,7 +148,7 @@ public class PermissionsCommand implements CommandExecutor {
 					}
 				}
 				for (long id : users) {
-					if (instance.permissions.isSticky(id)) {
+					if (instance.permissions.isUserSticky(id)) {
 						instance.locale.sendMessage(user, "error.permissions.remove.userOnline", false, instance.permissions.getUser(id).getName());
 					} else {
 						String name = instance.permissions.getUser(id).getName();
@@ -345,14 +345,14 @@ public class PermissionsCommand implements CommandExecutor {
 		try {
 			for (PermissionUser u : addUsers) {
 				for (PermissionGroup ch : groups) {
-					ch.addMember(u);
+					ch.addUser(u);
 					GoldenApple.log(Level.INFO, "User " + u.getName() + " (PU" + u.getId() + ") has been added to group " + ch.getName() + " (PG" + ch.getId() + ") by " + user.getName());
 					instance.locale.sendMessage(user, "general.permissions.member.addUser", false, u.getName(), ch.getName());
 				}
 			}
 			for (PermissionUser u : remUsers) {
 				for (PermissionGroup ch : groups) {
-					ch.removeMember(u);
+					ch.removeUser(u);
 					GoldenApple.log(Level.INFO, "User " + u.getName() + " (PU" + u.getId() + ") has been removed from group " + ch.getName() + " (PG" + ch.getId() + ") by " + user.getName());
 					instance.locale.sendMessage(user, "general.permissions.member.remUser", false, u.getName(), ch.getName());
 				}
@@ -366,14 +366,14 @@ public class PermissionsCommand implements CommandExecutor {
 		try {
 			for (PermissionGroup g : addGroups) {
 				for (PermissionGroup ch : groups) {
-					ch.addSubGroup(g);
+					ch.addGroup(g);
 					GoldenApple.log(Level.INFO, "Group " + g.getName() + " (PG" + g.getId() + ") has been added to group " + ch.getName() + " (PG" + ch.getId() + ") by " + user.getName());
 					instance.locale.sendMessage(user, "general.permissions.member.addGroup", false, g.getName(), ch.getName());
 				}
 			}
 			for (PermissionGroup g : remGroups) {
 				for (PermissionGroup ch : groups) {
-					ch.removeSubGroup(g);
+					ch.removeGroup(g);
 					GoldenApple.log(Level.INFO, "Group " + g.getName() + " (PG" + g.getId() + ") has been removed from group " + ch.getName() + " (PG" + ch.getId() + ") by " + user.getName());
 					instance.locale.sendMessage(user, "general.permissions.member.remUser", false, g.getName(), ch.getName());
 				}

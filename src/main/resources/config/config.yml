@@ -106,6 +106,16 @@ modules:
         # basic syntax. Users can change this themselves using
         # /gacomplex.
         defaultComplexCommands: true
+        
+        # The number of users (who are not logged in) that should
+        # be kept in the user cache. A larger cache will mean less
+        # database requests, but will require more RAM.
+        userCacheSize: 20
+        
+        # The number of groups that should be kept in the group
+        # cache. WARNING: If this value is too low, permission
+        # checks may take a long time.
+        groupCacheSize: 20
     
     # Lock system options
     lock:

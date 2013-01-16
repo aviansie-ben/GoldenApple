@@ -70,6 +70,16 @@ public interface IPermissionObject {
 	 *         otherwise.
 	 */
 	boolean hasPermission(Permission permission, boolean specific);
+	
+	/**
+	 * Checks whether this permission object has been specifically granted a
+	 * permission. Does not check for any star permissions.
+	 * 
+	 * @param permission The permission to check for.
+	 * @return True if the permission object has the specified permission
+	 *         specifically, false otherwise.
+	 */
+	boolean hasPermissionSpecific(Permission permission);
 
 	/**
 	 * Grants this permission object a given permission and saves the object's
@@ -106,5 +116,14 @@ public interface IPermissionObject {
 	 * @param permission The permission that should be revoked from this object
 	 */
 	void removePermission(String permission);
+	
+	/**
+	 * Gets a list of the IDs for all parent groups that contain this object.
+	 * 
+	 * @param directOnly When false, any groups that are parents of the parent
+	 *                   groups of this object are included as well.
+	 * @return A list of the IDs of all parent groups
+	 */
+	List<Long> getParentGroups(boolean directOnly);
 
 }

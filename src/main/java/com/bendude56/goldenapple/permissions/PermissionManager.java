@@ -21,38 +21,44 @@ import com.bendude56.goldenapple.util.Serializer;
  * @author ben_dude56
  */
 public class PermissionManager {
-	
+
 	// goldenapple
-	public static PermissionNode goldenAppleNode;
-	
+	public static PermissionNode			goldenAppleNode;
+
 	// goldenapple.permissions
-	public static PermissionNode permissionNode;
-	
+	public static PermissionNode			permissionNode;
+
 	// goldenapple.permissions.user
-	public static PermissionNode userNode;
-	public static Permission userAddPermission;
-	public static Permission userRemovePermission;
-	public static Permission userEditPermission;
-	
+	public static PermissionNode			userNode;
+	public static Permission				userAddPermission;
+	public static Permission				userRemovePermission;
+	public static Permission				userEditPermission;
+
 	// goldenapple.permissions.group
-	public static PermissionNode groupNode;
-	public static Permission groupAddPermission;
-	public static Permission groupRemovePermission;
-	public static Permission groupEditPermission;
-	
+	public static PermissionNode			groupNode;
+	public static Permission				groupAddPermission;
+	public static Permission				groupRemovePermission;
+	public static Permission				groupEditPermission;
+
 	// goldenapple.module
-	public static PermissionNode moduleNode;
-	public static Permission moduleLoadPermission;
-	public static Permission moduleUnloadPermission;
-	public static Permission moduleQueryPermission;
+	public static PermissionNode			moduleNode;
+	public static Permission				moduleLoadPermission;
+	public static Permission				moduleUnloadPermission;
+	public static Permission				moduleQueryPermission;
+
+	private int                             userCacheSize;
+	private HashMap<Long, PermissionUser>	userCache		= new HashMap<Long, PermissionUser>();
+	private Deque<Long>						userCacheOut	= new ArrayDeque<Long>();
 	
-	private HashMap<Long, PermissionUser>	userCache	= new HashMap<Long, PermissionUser>();
-	private Deque<Long>						cacheOut	= new ArrayDeque<Long>();
-	private HashMap<Long, PermissionGroup>	groups		= new HashMap<Long, PermissionGroup>();
-	private List<Permission>				permissions	= new ArrayList<Permission>();
-	private List<PermissionNode>			nodes		= new ArrayList<PermissionNode>();
+	private int                             groupCacheSize;
+	private HashMap<Long, PermissionGroup>	groupCache		= new HashMap<Long, PermissionGroup>();
+	private Deque<Long>						groupCacheOut   = new ArrayDeque<Long>();
+	
+	private List<Permission>				permissions		= new ArrayList<Permission>();
+	private List<PermissionNode>			nodes			= new ArrayList<PermissionNode>();
+	
 	private PermissionNode					rootNode;
-	public 	Permission						rootStar;
+	public Permission						rootStar;
 
 	public PermissionManager() {
 		rootNode = new PermissionNode("", null);
@@ -60,23 +66,26 @@ public class PermissionManager {
 		rootStar = new Permission("*", rootNode);
 		permissions.add(rootStar);
 		
+		userCacheSize = Math.max(GoldenApple.getInstance().mainConfig.getInt("modules.permissions.userCacheSize", 20), 5);
+		groupCacheSize = Math.max(GoldenApple.getInstance().mainConfig.getInt("modules.permissions.groupCacheSize", 20), 5);
+
 		tryCreateTable("Users");
 		tryCreateTable("UserPermissions");
 		tryCreateTable("Groups");
 		tryCreateTable("GroupPermissions");
 		tryCreateTable("GroupGroupMembers");
 		tryCreateTable("GroupUserMembers");
-		
+
 		if (GoldenApple.getInstance().database.usingMySql()) {
 			checkUserColumnsMySql();
 			checkGroupColumnsMySql();
 		} else {
 			GoldenApple.log(Level.WARNING, "SQLite is being used. Cannot check permissions tables for missing columns.");
 		}
-		
+
 		checkDefaultGroups();
 	}
-	
+
 	private void tryCreateTable(String tableName) {
 		try {
 			GoldenApple.getInstance().database.executeFromResource(tableName.toLowerCase() + "_create");
@@ -85,7 +94,7 @@ public class PermissionManager {
 			GoldenApple.log(Level.SEVERE, e);
 		}
 	}
-	
+
 	private void checkUserColumnsMySql() {
 		try {
 			ArrayList<String> columns = new ArrayList<String>();
@@ -111,7 +120,7 @@ public class PermissionManager {
 			GoldenApple.log(Level.SEVERE, e);
 		}
 	}
-	
+
 	private void checkGroupColumnsMySql() {
 		try {
 			ArrayList<String> columns = new ArrayList<String>();
@@ -132,6 +141,16 @@ public class PermissionManager {
 		} catch (SQLException e) {
 			GoldenApple.log(Level.SEVERE, "Failed to verify structure of table 'Groups':");
 			GoldenApple.log(Level.SEVERE, e);
+		}
+	}
+	
+	private void popCache() {
+		while (userCacheOut.size() > userCacheSize) {
+			userCache.remove(userCacheOut.pop());
+		}
+		
+		while (groupCacheOut.size() > groupCacheSize) {
+			groupCache.remove(groupCacheOut.pop());
 		}
 	}
 
@@ -232,10 +251,15 @@ public class PermissionManager {
 	}
 
 	/**
-	 * Gets a list of all groups in the database.
+	 * Gets a list of all groups in the database that are currently in the group
+	 * cache.
+	 * <p>
+	 * <em><strong>Note:</strong> Does not return handles to groups that are not currently in the
+	 * group cache. In order to find a specific group, use {@link PermissionManager#getGroup(long id)}
+	 * or {@link PermissionManager#getGroup(String name)}</em>
 	 */
-	public HashMap<Long, PermissionGroup> getGroups() {
-		return groups;
+	public HashMap<Long, PermissionGroup> getGroupCache() {
+		return groupCache;
 	}
 
 	/**
@@ -250,7 +274,7 @@ public class PermissionManager {
 	 * 
 	 * @param name The name of the permission to get information on
 	 * @return Information about the requested permission
-	 */	
+	 */
 	public Permission getPermissionByName(String name) {
 		for (Permission perm : permissions) {
 			if (perm.getFullName().equalsIgnoreCase(name)) {
@@ -258,17 +282,6 @@ public class PermissionManager {
 			}
 		}
 		return null;
-		/*String[] path = name.split(".");
-		String PermName = path[path.length-1];
-		String PermNode = "";
-		if (path.length > 1) {
-			PermNode = path[path.length-2];
-		}
-		for (Permission perm : permissions) {
-			if (perm.getName() == PermName && (PermNode != "" || perm.getNode().getName() == PermNode))
-				return perm;
-		}
-		return null;*/
 	}
 
 	/**
@@ -316,20 +329,23 @@ public class PermissionManager {
 	 *         not found or an error occurred, -1 will be returned.
 	 */
 	public long getUserId(String name) {
+		ResultSet r = null;
 		try {
-			ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT ID FROM Users WHERE Name=?", new Object[] { name });
+			r = GoldenApple.getInstance().database.executeQuery("SELECT ID FROM Users WHERE Name=?", new Object[] { name });
 			if (r.next()) {
-				long id = r.getLong("ID");
-				r.close();
-				return id;
+				return r.getLong("ID");
 			} else {
-				r.close();
 				return -1;
 			}
 		} catch (SQLException e) {
 			GoldenApple.log(Level.WARNING, "Failed to retrieve ID for user '" + name + "':");
 			GoldenApple.log(Level.WARNING, e);
 			return -1;
+		} finally {
+			try {
+				if (r != null)
+					r.close();
+			} catch (SQLException e) { }
 		}
 	}
 
@@ -348,18 +364,20 @@ public class PermissionManager {
 			return userCache.get(id);
 		} else {
 			try {
-				ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT * FROM Users WHERE ID=?", new Object[] { id });
-				if (r.next()) {
-					// PermissionUser u = new PermissionUser(r.getLong("ID"), r.getString("Name"), r.getString("Locale"), r.getString("Permissions"), r.getBoolean("ComplexCommands"), r.getBoolean("AutoLock"));
-					PermissionUser u = null;
-					r.close();
-					return u;
-				} else {
-					r.close();
-					return null;
+				ResultSet r = null;
+				try {
+					r = GoldenApple.getInstance().database.executeQuery("SELECT * FROM Users WHERE ID=?", id);
+					if (r.next()) {
+						return new PermissionUser(r.getLong("ID"), r.getString("Name"), r.getString("Locale"), r.getBoolean("ComplexCommands"), r.getBoolean("AutoLock"));
+					} else {
+						return null;
+					}
+				} finally {
+					if (r != null)
+						r.close();
 				}
 			} catch (SQLException e) {
-				GoldenApple.log(Level.WARNING, "Failed to retrieve user with ID " + id + ":");
+				GoldenApple.log(Level.WARNING, "Failed to load user " + id + ":");
 				GoldenApple.log(Level.WARNING, e);
 				return null;
 			}
@@ -383,23 +401,24 @@ public class PermissionManager {
 			}
 		}
 		try {
-			ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT * FROM Users WHERE Name=?", new Object[] { name });
-			if (r.next()) {
-				PermissionUser p = null;
-				r.close();
-				userCache.put(p.getId(), p);
-				cacheOut.addLast(p.getId());
-				if (cacheOut.size() > 10) {
-					long id = cacheOut.pop();
-					userCache.remove(id);
+			ResultSet r = null;
+			try {
+				r = GoldenApple.getInstance().database.executeQuery("SELECT * FROM Users WHERE Name=?", name);
+				if (r.next()) {
+					PermissionUser u = new PermissionUser(r.getLong("ID"), r.getString("Name"), r.getString("Locale"), r.getBoolean("ComplexCommands"), r.getBoolean("AutoLock"));
+					userCache.put(u.getId(), u);
+					userCacheOut.addLast(u.getId());
+					popCache();
+					return u;
+				} else {
+					return null;
 				}
-				return p;
-			} else {
-				r.close();
-				return null;
+			} finally {
+				if (r != null)
+					r.close();
 			}
 		} catch (SQLException e) {
-			GoldenApple.log(Level.WARNING, "Failed to retrieve user with name '" + name + "':");
+			GoldenApple.log(Level.WARNING, "Failed to load user '" + name + "':");
 			GoldenApple.log(Level.WARNING, e);
 			return null;
 		}
@@ -414,14 +433,14 @@ public class PermissionManager {
 	 * @param sticky True to never unload this user from the cache, false to
 	 *            unload them when space is needed in the cache
 	 */
-	public void setSticky(long id, boolean sticky) {
+	public void setUserSticky(long id, boolean sticky) {
 		if (userCache.containsKey(id)) {
-			if (sticky && cacheOut.contains(id)) {
-				cacheOut.remove(id);
-			} else if (!sticky && !cacheOut.contains(id)) {
-				cacheOut.addLast(id);
-				if (cacheOut.size() > 10) {
-					long id2 = cacheOut.pop();
+			if (sticky && userCacheOut.contains(id)) {
+				userCacheOut.remove(id);
+			} else if (!sticky && !userCacheOut.contains(id)) {
+				userCacheOut.addLast(id);
+				if (userCacheOut.size() > 10) {
+					long id2 = userCacheOut.pop();
 					userCache.remove(id2);
 				}
 			}
@@ -434,13 +453,13 @@ public class PermissionManager {
 
 	/**
 	 * Checks whether or not a user with a given ID is currently marked as
-	 * sticky. (See {@link PermissionManager#setSticky(long id, boolean sticky)}
+	 * sticky. (See {@link PermissionManager#setUserSticky(long id, boolean sticky)}
 	 * for info on stickyness)
 	 * 
 	 * @param id The ID of the user to check
 	 */
-	public boolean isSticky(long id) {
-		return userCache.containsKey(id) && !cacheOut.contains(id);
+	public boolean isUserSticky(long id) {
+		return userCache.containsKey(id) && !userCacheOut.contains(id);
 	}
 
 	/**
@@ -452,11 +471,8 @@ public class PermissionManager {
 	 *         cached, then returned. Otherwise, null will be returned.
 	 */
 	public PermissionGroup getGroup(long id) {
-		if (groups.containsKey(id)) {
-			return groups.get(id);
-		} else {
-			return null;
-		}
+		// TODO Add group loading
+		return null;
 	}
 
 	/**
@@ -468,11 +484,7 @@ public class PermissionManager {
 	 *         cached, then returned. Otherwise, null will be returned.
 	 */
 	public PermissionGroup getGroup(String name) {
-		for (Map.Entry<Long, PermissionGroup> group : groups.entrySet()) {
-			if (group.getValue().getName().equalsIgnoreCase(name)) {
-				return group.getValue();
-			}
-		}
+		// TODO Add group loading
 		return null;
 	}
 
@@ -482,13 +494,13 @@ public class PermissionManager {
 	 * @param name The name to check the database against
 	 */
 	public boolean userExists(String name) throws SQLException {
-		ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT NULL FROM Users WHERE Name=?", new Object[] { name });
-		if (r.next()) {
-			r.close();
-			return true;
-		} else {
-			r.close();
-			return false;
+		ResultSet r = null;
+		try {
+			r = GoldenApple.getInstance().database.executeQuery("SELECT NULL FROM Users WHERE Name=?", new Object[] { name });
+			return r.next();
+		} finally {
+			if (r != null)
+				r.close();
 		}
 	}
 
@@ -503,27 +515,8 @@ public class PermissionManager {
 	 *         error occurred, null is returned.
 	 */
 	public PermissionUser createUser(String name) {
-		try {
-			if (userExists(name)) {
-				return getUser(name);
-			} else {
-				ResultSet r = null;
-				long id = -1;
-				do {
-					id++;
-					if (r != null)
-						r.close();
-					r = GoldenApple.getInstance().database.executeQuery("SELECT NULL FROM Users WHERE ID=?", new Object[] { id });
-				} while (r.next());
-				r.close();
-				GoldenApple.getInstance().database.execute("INSERT INTO Users (ID, Name, Locale, Permissions, ComplexCommands, AutoLock) VALUES (?, ?, '', ?, ?, ?)", new Object[] { id, name, Serializer.serialize(new ArrayList<String>()), GoldenApple.getInstance().mainConfig.getBoolean("modules.permissions.defaultComplexCommands", false), GoldenApple.getInstance().mainConfig.getBoolean("modules.lock.autoLockDefault") });
-				return getUser(id);
-			}
-		} catch (SQLException | IOException e) {
-			GoldenApple.log(Level.WARNING, "Failed to create new user:");
-			GoldenApple.log(Level.WARNING, e);
-			return null;
-		}
+		// TODO Add user creation
+		return null;
 	}
 
 	/**
@@ -532,13 +525,13 @@ public class PermissionManager {
 	 * @param name The name to check the database against
 	 */
 	public boolean groupExists(String name) throws SQLException {
-		ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT NULL FROM Groups WHERE Name=?", new Object[] { name });
-		if (r.next()) {
-			r.close();
-			return true;
-		} else {
-			r.close();
-			return false;
+		ResultSet r = null;
+		try {
+			r = GoldenApple.getInstance().database.executeQuery("SELECT NULL FROM Groups WHERE Name=?", new Object[] { name });
+			return r.next();
+		} finally {
+			if (r != null)
+				r.close();
 		}
 	}
 
@@ -552,29 +545,8 @@ public class PermissionManager {
 	 *         an error occurred, null is returned.
 	 */
 	public PermissionGroup createGroup(String name) {
-		try {
-			if (groupExists(name)) {
-				return getGroup(name);
-			} else {
-				ResultSet r = null;
-				long id = -1;
-				do {
-					id++;
-					if (r != null)
-						r.close();
-					r = GoldenApple.getInstance().database.executeQuery("SELECT NULL FROM Groups WHERE ID=?", new Object[] { id });
-				} while (r.next());
-				r.close();
-				GoldenApple.getInstance().database.execute("INSERT INTO Groups (ID, Name, Permissions, Users, Groups) VALUES (?, ?, ?, ?, ?)", new Object[] { id, name, Serializer.serialize(new ArrayList<String>()), Serializer.serialize(new ArrayList<Long>()), Serializer.serialize(new ArrayList<Long>()) });
-				PermissionGroup g;
-				groups.put(id, g = new PermissionGroup(id, name));
-				return g;
-			}
-		} catch (SQLException | IOException e) {
-			GoldenApple.log(Level.WARNING, "Failed to create new group:");
-			GoldenApple.log(Level.WARNING, e);
-			return null;
-		}
+		// TODO Add group creation
+		return null;
 	}
 
 	/**
@@ -585,15 +557,15 @@ public class PermissionManager {
 	public void deleteUser(long id) throws SQLException {
 		if (id < 0) {
 			throw new IllegalArgumentException("id cannot be < 0");
-		} else if (isSticky(id)) {
+		} else if (isUserSticky(id)) {
 			throw new UnsupportedOperationException("Cannot delete a sticky user");
 		}
-		if (userCache.containsKey(id)) {
+		
+		if (userCache.containsKey(id))
 			userCache.remove(id);
-		}
-		if (cacheOut.contains(id)) {
-			cacheOut.remove(id);
-		}
+		if (userCacheOut.contains(id))
+			userCacheOut.remove(id);
+		
 		GoldenApple.getInstance().database.execute("DELETE FROM Users WHERE ID=?", id);
 	}
 
@@ -606,9 +578,10 @@ public class PermissionManager {
 		if (id < 0) {
 			throw new IllegalArgumentException("id cannot be < 0");
 		}
-		if (groups.containsKey(id)) {
-			groups.remove(id);
-		}
+		
+		if (groupCache.containsKey(id))
+			groupCache.remove(id);
+		
 		GoldenApple.getInstance().database.execute("DELETE FROM Groups WHERE ID=?", id);
 	}
 
@@ -617,7 +590,7 @@ public class PermissionManager {
 	 */
 	public void close() {
 		userCache = null;
-		groups = null;
+		groupCache = null;
 		permissions = null;
 		nodes = null;
 		rootNode = null;

@@ -52,7 +52,7 @@ public class User implements IPermissionUser {
 		} else {
 			User u;
 			activeUsers.put(id, u = new User(id, sender, true));
-			GoldenApple.getInstance().permissions.setSticky(u.getId(), true);
+			GoldenApple.getInstance().permissions.setUserSticky(u.getId(), true);
 			return u;
 		}
 	}
@@ -67,7 +67,7 @@ public class User implements IPermissionUser {
 	public static void unloadUser(User user) {
 		activeUsers.remove(user.getId());
 		if (GoldenApple.getInstance().permissions != null)
-			GoldenApple.getInstance().permissions.setSticky(user.getId(), false);
+			GoldenApple.getInstance().permissions.setUserSticky(user.getId(), false);
 	}
 
 	/**
@@ -89,7 +89,7 @@ public class User implements IPermissionUser {
 			permissions = null;
 		} else {
 			permissions = GoldenApple.getInstance().permissions.getUser(id);
-			GoldenApple.getInstance().permissions.setSticky(id, true);
+			GoldenApple.getInstance().permissions.setUserSticky(id, true);
 		}
 		this.handle = handle;
 	}
@@ -240,5 +240,21 @@ public class User implements IPermissionUser {
 		if (permissions == null)
 			throw new UnsupportedOperationException();
 		permissions.setAutoLockEnabled(autoLock);
+	}
+
+	@Override
+	public boolean hasPermissionSpecific(Permission permission) {
+		if (permissions == null)
+			return false;
+		else
+			return permissions.hasPermissionSpecific(permission);
+	}
+
+	@Override
+	public List<Long> getParentGroups(boolean directOnly) {
+		if (permissions == null)
+			throw new UnsupportedOperationException();
+		else
+			return permissions.getParentGroups(directOnly);
 	}
 }
