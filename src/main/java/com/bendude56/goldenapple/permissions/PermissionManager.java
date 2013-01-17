@@ -470,8 +470,28 @@ public class PermissionManager {
 	 *         cached, then returned. Otherwise, null will be returned.
 	 */
 	public PermissionGroup getGroup(long id) {
-		// TODO Add group loading
-		return null;
+		if (groupCache.containsKey(id)) {
+			return groupCache.get(id);
+		} else {
+			try {
+				ResultSet r = null;
+				try {
+					r = GoldenApple.getInstance().database.executeQuery("SELECT * FROM Groups WHERE ID=?", id);
+					if (r.next()) {
+						return new PermissionGroup(r.getLong("ID"), r.getString("Name"));
+					} else {
+						return null;
+					}
+				} finally {
+					if (r != null)
+						r.close();
+				}
+			} catch (SQLException e) {
+				GoldenApple.log(Level.WARNING, "Failed to load group " + id + ":");
+				GoldenApple.log(Level.WARNING, e);
+				return null;
+			}
+		}
 	}
 
 	/**
@@ -483,8 +503,33 @@ public class PermissionManager {
 	 *         cached, then returned. Otherwise, null will be returned.
 	 */
 	public PermissionGroup getGroup(String name) {
-		// TODO Add group loading
-		return null;
+		for (Map.Entry<Long, PermissionGroup> entry : groupCache.entrySet()) {
+			if (entry.getValue().getName().equalsIgnoreCase(name)) {
+				return entry.getValue();
+			}
+		}
+		try {
+			ResultSet r = null;
+			try {
+				r = GoldenApple.getInstance().database.executeQuery("SELECT * FROM Groups WHERE Name=?", name);
+				if (r.next()) {
+					PermissionGroup g = new PermissionGroup(r.getLong("ID"), r.getString("Name"));
+					groupCache.put(g.getId(), g);
+					groupCacheOut.addLast(g.getId());
+					popCache();
+					return g;
+				} else {
+					return null;
+				}
+			} finally {
+				if (r != null)
+					r.close();
+			}
+		} catch (SQLException e) {
+			GoldenApple.log(Level.WARNING, "Failed to load group '" + name + "':");
+			GoldenApple.log(Level.WARNING, e);
+			return null;
+		}
 	}
 
 	/**
@@ -556,8 +601,18 @@ public class PermissionManager {
 	 *         an error occurred, null is returned.
 	 */
 	public PermissionGroup createGroup(String name) {
-		// TODO Add group creation
-		return null;
+		try {
+			if (groupExists(name))
+				return getGroup(name);
+		} catch (SQLException e) { }
+		try {
+			GoldenApple.getInstance().database.execute("INSERT INTO Groups (Name) VALUES (?)", name);
+			return getGroup(name);
+		} catch (SQLException e) {
+			GoldenApple.log(Level.WARNING, "Failed to create group '" + name + "':");
+			GoldenApple.log(Level.WARNING, e);
+			return null;
+		}
 	}
 
 	/**

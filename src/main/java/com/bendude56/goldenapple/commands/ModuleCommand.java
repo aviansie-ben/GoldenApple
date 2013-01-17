@@ -46,7 +46,7 @@ public class ModuleCommand implements CommandExecutor {
 							break;
 					}
 				}
-			} else if (args[0].equalsIgnoreCase("help")) {
+			} else if (args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("-?")) {
 				// TODO Implement help
 			} else if (GoldenApple.modules.containsKey(args[0])) {
 				instance.locale.sendMessage(user, "header.module", false);

@@ -1,15 +1,11 @@
 package com.bendude56.goldenapple.permissions;
 
-import java.io.IOException;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
-import com.bendude56.goldenapple.util.Serializer;
 
 /**
  * Represents a group in the GoldenApple permissions database.
@@ -21,10 +17,12 @@ import com.bendude56.goldenapple.util.Serializer;
  * @author ben_dude56
  */
 public class PermissionGroup implements IPermissionObject {
-	private long					id;
-	private String					name;
+	private long	id;
+	private String	name;
 
-	private PermissionGroup() {
+	protected PermissionGroup(long id, String name) {
+		this.id = id;
+		this.name = name;
 	}
 
 	/**
@@ -58,15 +56,15 @@ public class PermissionGroup implements IPermissionObject {
 		// TODO Implement group membership
 		return null;
 	}
-	
+
 	public void addUser(IPermissionUser user) {
 		// TODO Implement group membership
 	}
-	
+
 	public void removeUser(IPermissionUser user) {
 		// TODO Implement group membership
 	}
-	
+
 	public boolean isMember(IPermissionUser user, boolean directOnly) {
 		// TODO Implement group membership
 		return false;
@@ -80,11 +78,11 @@ public class PermissionGroup implements IPermissionObject {
 		// TODO Implement group membership
 		return null;
 	}
-	
+
 	public void addGroup(PermissionGroup group) {
 		// TODO Implement group membership
 	}
-	
+
 	public void removeGroup(PermissionGroup group) {
 		// TODO Implement group membership
 	}
@@ -94,22 +92,22 @@ public class PermissionGroup implements IPermissionObject {
 		// TODO Implement group permissions
 		return null;
 	}
-	
+
 	@Override
 	public void addPermission(Permission permission) {
 		// TODO Implement group permissions
 	}
-	
+
 	@Override
 	public void addPermission(String permission) {
 		addPermission(GoldenApple.getInstance().permissions.getPermissionByName(permission));
 	}
-	
+
 	@Override
 	public void removePermission(Permission permission) {
 		// TODO Implement group permissions
 	}
-	
+
 	@Override
 	public void removePermission(String permission) {
 		removePermission(GoldenApple.getInstance().permissions.registerPermission(permission));
