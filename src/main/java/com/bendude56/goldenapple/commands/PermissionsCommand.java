@@ -385,14 +385,14 @@ public class PermissionsCommand implements CommandExecutor {
 	
 	private void updatePermissions(GoldenApple instance, User user, PermissionUser u, ArrayList<Permission> add, ArrayList<Permission> remove) {
 		for (Permission p : add) {
-			if (!u.hasPermission(p, false)) {
+			if (!u.hasPermissionSpecific(p)) {
 				u.addPermission(p);
 				GoldenApple.log(Level.INFO, "User " + u.getName() + " (PU" + u.getId() + ") has been granted permission '" + p.getFullName() + "' by " + user.getName());
 				instance.locale.sendMessage(user, "general.permissions.perm.add", false, p.getFullName(), u.getName());
 			}
 		}
 		for (Permission p : remove) {
-			if (u.hasPermission(p, false)) {
+			if (u.hasPermissionSpecific(p)) {
 				u.removePermission(p);
 				GoldenApple.log(Level.INFO, "User " + u.getName() + " (PU" + u.getId() + ") has had permission '" + p.getFullName() + "' revoked by " + user.getName());
 				instance.locale.sendMessage(user, "general.permissions.perm.rem", false, p.getFullName(), u.getName());
