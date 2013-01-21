@@ -1,10 +1,12 @@
 package com.bendude56.goldenapple.listener;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 import java.util.logging.Level;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventException;
@@ -13,6 +15,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.EventExecutor;
 import org.bukkit.plugin.RegisteredListener;
@@ -44,6 +47,7 @@ public class AntigriefListener implements Listener, EventExecutor {
 		PlayerInteractEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
 		BlockBurnEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
 		EntityExplodeEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
+		EntityTargetEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
 		try {
 			registerTntBlock();
 		} catch (Throwable e) {
@@ -57,6 +61,7 @@ public class AntigriefListener implements Listener, EventExecutor {
 		PlayerInteractEvent.getHandlerList().unregister(this);
 		BlockBurnEvent.getHandlerList().unregister(this);
 		EntityExplodeEvent.getHandlerList().unregister(this);
+		EntityTargetEvent.getHandlerList().unregister(this);
 		if (!errorLoadingTntBlock) {
 			try {
 				unregisterTntBlock();
@@ -80,6 +85,8 @@ public class AntigriefListener implements Listener, EventExecutor {
 			blockBurn((BlockBurnEvent)event);
 		} else if (event instanceof EntityExplodeEvent) {
 			entityExplode((EntityExplodeEvent)event);
+		} else if (event instanceof EntityTargetEvent) {
+			entityTarget((EntityTargetEvent)event);
 		} else {
 			GoldenApple.log(Level.WARNING, "Unrecognized event in AntigriefListener: " + event.getClass().getName());
 		}
@@ -109,6 +116,16 @@ public class AntigriefListener implements Listener, EventExecutor {
 	
 	private void entityExplode(EntityExplodeEvent event) {
 		if (event.getEntityType() == EntityType.PRIMED_TNT && errorLoadingTntBlock && GoldenApple.getInstance().mainConfig.getBoolean("modules.antigrief.blockTntOnLoadFail", true)) {
+			event.setCancelled(true);
+		} else if (event.getEntityType() == EntityType.CREEPER && GoldenApple.getInstance().mainConfig.getBoolean("modules.antigrief.noCreeperBlockDamage", true)) {
+			List<Block> blockList = event.blockList();
+			while (blockList.size() > 0)
+				blockList.remove(0);
+		}
+	}
+	
+	private void entityTarget(EntityTargetEvent event) {
+		if (event.getEntityType() == EntityType.CREEPER && GoldenApple.getInstance().mainConfig.getBoolean("modules.antigrief.noCreeperExplosion", true)) {
 			event.setCancelled(true);
 		}
 	}
