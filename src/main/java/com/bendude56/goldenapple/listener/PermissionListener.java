@@ -58,9 +58,7 @@ public class PermissionListener implements Listener, EventExecutor {
 			if (g == null)
 				continue;
 			
-			if (!g.isMember(u, true)) {
-				g.addUser(u);
-			}
+			g.addUser(u);
 		}
 		
 		if (event.getPlayer().isOp()) {

@@ -56,21 +56,82 @@ public class PermissionGroup implements IPermissionObject {
 	 * Gets a list of user IDs for users that inherit this group's permissions.
 	 */
 	public List<Long> getUsers() {
-		// TODO Implement group membership
-		return null;
+		try {
+			List<Long> users = new ArrayList<Long>();
+			ResultSet r = null;
+			try {
+				r = GoldenApple.getInstance().database.executeQuery("SELECT MemberID FROM GroupUserMembers WHERE GroupID=?", id);
+				while (r.next()) {
+					users.add(r.getLong("MemberID"));
+				}
+			} finally {
+				if (r != null)
+					r.close();
+			}
+			
+			return users;
+		} catch (SQLException e) {
+			GoldenApple.log(Level.SEVERE, "Failed to retrieve users for group '" + name + "':");
+			GoldenApple.log(Level.SEVERE, e);
+			return null;
+		}
 	}
 
 	public void addUser(IPermissionUser user) {
-		// TODO Implement group membership
+		if (!isMember(user, true)) {
+			try {
+				GoldenApple.getInstance().database.execute("INSERT INTO GroupUserMembers (GroupID, MemberID) VALUES (?, ?)", id, user.getId());
+			} catch (SQLException e) {
+				GoldenApple.log(Level.SEVERE, "Failed to add user '" + user.getName() + "' to group '" + name + "':");
+				GoldenApple.log(Level.SEVERE, e);
+			}
+		}
 	}
 
 	public void removeUser(IPermissionUser user) {
-		// TODO Implement group membership
+		if (isMember(user, true)) {
+			try {
+				GoldenApple.getInstance().database.execute("DELETE FROM GroupUserMembers WHERE GroupID=? AND MemberID=?", id, user.getId());
+			} catch (SQLException e) {
+				GoldenApple.log(Level.SEVERE, "Failed to remove user '" + user.getName() + "' from group '" + name + "':");
+				GoldenApple.log(Level.SEVERE, e);
+			}
+		}
 	}
 
 	public boolean isMember(IPermissionUser user, boolean directOnly) {
-		// TODO Implement group membership
-		return false;
+		try {
+			ResultSet r = null;
+			try {
+				r = GoldenApple.getInstance().database.executeQuery("SELECT NULL FROM GroupUserMembers WHERE GroupID=? AND MemberID=?", id, user.getId());
+				if (r.next())
+					return true;
+			} finally {
+				if (r != null)
+					r.close();
+			}
+			
+			if (!directOnly) {
+				for (Long g : getParentGroups(true)) {
+					r = null;
+					
+					try {
+						r = GoldenApple.getInstance().database.executeQuery("SELECT NULL FROM GroupUserMembers WHERE GroupID=? AND MemberID=?", g, user.getId());
+						if (r.next())
+							return true;
+					} finally {
+						if (r != null)
+							r.close();
+					}
+				}
+			}
+			
+			return false;
+		} catch (SQLException e) {
+			GoldenApple.log(Level.SEVERE, "Failed to determine if user '" + user.getName() + "' is in group '" + name + "':");
+			GoldenApple.log(Level.SEVERE, e);
+			return false;
+		}
 	}
 
 	/**
@@ -78,16 +139,82 @@ public class PermissionGroup implements IPermissionObject {
 	 * permissions.
 	 */
 	public List<Long> getGroups() {
-		// TODO Implement group membership
-		return null;
+		try {
+			List<Long> groups = new ArrayList<Long>();
+			ResultSet r = null;
+			try {
+				r = GoldenApple.getInstance().database.executeQuery("SELECT MemberID FROM GroupGroupMembers WHERE GroupID=?", id);
+				while (r.next()) {
+					groups.add(r.getLong("MemberID"));
+				}
+			} finally {
+				if (r != null)
+					r.close();
+			}
+			
+			return groups;
+		} catch (SQLException e) {
+			GoldenApple.log(Level.SEVERE, "Failed to retrieve sub-groups for group '" + name + "':");
+			GoldenApple.log(Level.SEVERE, e);
+			return null;
+		}
 	}
 
 	public void addGroup(PermissionGroup group) {
-		// TODO Implement group membership
+		if (!isMember(group, true)) {
+			try {
+				GoldenApple.getInstance().database.execute("INSERT INTO GroupGroupMembers (GroupID, MemberID) VALUES (?, ?)", id, group.getId());
+			} catch (SQLException e) {
+				GoldenApple.log(Level.SEVERE, "Failed to add group '" + group.getName() + "' to group '" + name + "':");
+				GoldenApple.log(Level.SEVERE, e);
+			}
+		}
 	}
 
 	public void removeGroup(PermissionGroup group) {
-		// TODO Implement group membership
+		if (isMember(group, true)) {
+			try {
+				GoldenApple.getInstance().database.execute("DELETE FROM GroupGroupMembers WHERE GroupID=? AND MemberID=?", id, group.getId());
+			} catch (SQLException e) {
+				GoldenApple.log(Level.SEVERE, "Failed to remove group '" + group.getName() + "' from group '" + name + "':");
+				GoldenApple.log(Level.SEVERE, e);
+			}
+		}
+	}
+	
+	public boolean isMember(PermissionGroup group, boolean directOnly) {
+		try {
+			ResultSet r = null;
+			try {
+				r = GoldenApple.getInstance().database.executeQuery("SELECT NULL FROM GroupGroupMembers WHERE GroupID=? AND MemberID=?", id, group.getId());
+				if (r.next())
+					return true;
+			} finally {
+				if (r != null)
+					r.close();
+			}
+			
+			if (!directOnly) {
+				for (Long g : getParentGroups(true)) {
+					r = null;
+					
+					try {
+						r = GoldenApple.getInstance().database.executeQuery("SELECT NULL FROM GroupGroupMembers WHERE GroupID=? AND MemberID=?", g, group.getId());
+						if (r.next())
+							return true;
+					} finally {
+						if (r != null)
+							r.close();
+					}
+				}
+			}
+			
+			return false;
+		} catch (SQLException e) {
+			GoldenApple.log(Level.SEVERE, "Failed to determine if group '" + group.getName() + "' is in group '" + name + "':");
+			GoldenApple.log(Level.SEVERE, e);
+			return false;
+		}
 	}
 
 	@Override
@@ -123,7 +250,7 @@ public class PermissionGroup implements IPermissionObject {
 			
 			return permissions;
 		} catch (SQLException e) {
-			GoldenApple.log(Level.SEVERE, "Failed to calculate permissions for user '" + name + "':");
+			GoldenApple.log(Level.SEVERE, "Failed to calculate permissions for group '" + name + "':");
 			GoldenApple.log(Level.SEVERE, e);
 			return null;
 		}
