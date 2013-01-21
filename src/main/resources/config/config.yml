@@ -194,10 +194,25 @@ modules:
         # be configured on a per-user basis.
         noFireTnt: true
         
+        # Setting this to true prevents TNT from being activated by
+        # other explosions in the vicinity. Note that this will also
+        # prevent chain TNT explosions, even if the original
+        # explosion was allowed.
+        noExplosionTnt: true
+        
+        # Setting this to true prevents TNT from being activated by
+        # using a flaming arrow. IMPORTANT: A user with proper
+        # permissions can override this setting.
+        noFireArrowTnt: true
+        
         # Setting this to true prevents flint and steel from being
         # used to light TNT. IMPORTANT: A user with proper
         # permissions can override this setting.
         noLightTnt: true
+        
+        # If there is an error replacing the TNT block data, this
+        # setting will determine if any TNT explosions are allowed.
+        blockTntOnLoadFail: true
         
         # Setting this to true prevents creepers from exploding at
         # all. They will be made COMPLETELY PASSIVE.
