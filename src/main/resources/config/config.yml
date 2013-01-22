@@ -201,8 +201,7 @@ modules:
         noExplosionTnt: true
         
         # Setting this to true prevents TNT from being activated by
-        # using a flaming arrow. IMPORTANT: A user with proper
-        # permissions can override this setting.
+        # using a flaming arrow.
         noFireArrowTnt: true
         
         # Setting this to true prevents flint and steel from being
@@ -221,3 +220,48 @@ modules:
         # Setting this to true prevents creeper explosions from
         # damaging any blocks. They will still damage players.
         noCreeperBlockDamage: true
+        
+        # Setting a potion's value to true here will cause the potion
+        # to have no effect when drunk by a player
+        noDrinkPotion:
+            regeneration: false
+            swiftness: false
+            fireResistance: false
+            poison: false
+            instantHealth: false
+            weakness: false
+            strength: false
+            invisibility: true
+            nightVision: true
+            slowness: false
+            harming: false
+        
+        # Setting a potion's value to true here will cause the potion
+        # to have no effect when it hits a player.
+        noSplashPlayerPotion:
+            regeneration: false
+            swiftness: false
+            fireResistance: false
+            poison: true
+            instantHealth: false
+            weakness: true
+            strength: false
+            invisibility: true
+            nightVision: true
+            slowness: true
+            harming: true
+        
+        # Setting a potion's value to true here will cause the potion
+        # to have no effect when it hits a mob.
+        noSplashMobPotion:
+            regeneration: false
+            swiftness: false
+            fireResistance: false
+            poison: false
+            instantHealth: false
+            weakness: false
+            strength: false
+            invisibility: false
+            nightVision: false
+            slowness: false
+            harming: false

@@ -1,3 +1,5 @@
+error.antigrief.potionBlock=&4ERROR: The potion you are attempting to use has been blocked.
+error.antigrief.potionCheckFail=&4ERROR: Internal error while checking for blocked potion.
 error.antigrief.tnt=&4ERROR: You are not allowed to ignite TNT! This attempt has been logged.
 
 error.lock.access.unknown=&4ERROR: There is no access level with name &f%1&4!

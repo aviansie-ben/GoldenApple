@@ -19,7 +19,6 @@ import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.EventExecutor;
 import org.bukkit.plugin.RegisteredListener;
-
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.antigrief.AntigriefModuleLoader;
@@ -55,6 +54,12 @@ public class AntigriefListener implements Listener, EventExecutor {
 			GoldenApple.log(Level.WARNING, (e instanceof InvocationTargetException) ? e.getCause() : e);
 			errorLoadingTntBlock = true;
 		}
+		try {
+			registerPotionItem();
+		} catch (Throwable e) {
+			GoldenApple.log(Level.WARNING, "Failed to replace potion item data. Are you running the right version of Bukkit?");
+			GoldenApple.log(Level.WARNING, (e instanceof InvocationTargetException) ? e.getCause() : e);
+		}
 	}
 
 	private void unregisterEvents() {
@@ -62,11 +67,15 @@ public class AntigriefListener implements Listener, EventExecutor {
 		BlockBurnEvent.getHandlerList().unregister(this);
 		EntityExplodeEvent.getHandlerList().unregister(this);
 		EntityTargetEvent.getHandlerList().unregister(this);
+		
 		if (!errorLoadingTntBlock) {
 			try {
 				unregisterTntBlock();
 			} catch (Throwable e) { }
 		}
+		try {
+			unregisterPotionItem();
+		} catch (Throwable e) { }
 	}
 	
 	private void registerTntBlock() throws Throwable {
@@ -75,6 +84,16 @@ public class AntigriefListener implements Listener, EventExecutor {
 	
 	private void unregisterTntBlock() throws Throwable {
 		Class.forName("com.bendude56.goldenapple.antigrief.BlockTNT").getMethod("unregisterBlock", new Class<?>[0]).invoke(null, new Object[0]);
+	}
+	
+	private void registerPotionItem() throws Throwable {
+		Class.forName("com.bendude56.goldenapple.antigrief.ItemPotion").getMethod("registerItem", new Class<?>[0]).invoke(null, new Object[0]);
+		Class.forName("com.bendude56.goldenapple.antigrief.BlockDispenser").getMethod("registerBlock", new Class<?>[0]).invoke(null, new Object[0]);
+	}
+	
+	private void unregisterPotionItem() throws Throwable {
+		Class.forName("com.bendude56.goldenapple.antigrief.ItemPotion").getMethod("unregisterItem", new Class<?>[0]).invoke(null, new Object[0]);
+		Class.forName("com.bendude56.goldenapple.antigrief.BlockDispenser").getMethod("unregisterBlock", new Class<?>[0]).invoke(null, new Object[0]);
 	}
 
 	@Override
