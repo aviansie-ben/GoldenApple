@@ -1,11 +1,11 @@
 package com.bendude56.goldenapple.lock;
 
-import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -15,7 +15,8 @@ import org.bukkit.plugin.Plugin;
 
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
-import com.bendude56.goldenapple.util.Serializer;
+import com.bendude56.goldenapple.permissions.IPermissionUser;
+import com.bendude56.goldenapple.permissions.PermissionGroup;
 
 /**
  * Represents a GoldenApple lock on a block. This class can represent
@@ -170,29 +171,17 @@ public abstract class LockedBlock {
 		registerCorrector(DoubleChestLocationCorrector.class);
 	}
 
-	private final long		lockId;
-	private Location		l;
-	private long			ownerId;
-	private ArrayList<Long>	guests;
-	private LockLevel		level;
-	private String			typeId;
+	private final long	lockId;
+	private Location	l;
+	private long		ownerId;
+	private LockLevel	level;
+	private String		typeId;
 
-	@SuppressWarnings("unchecked")
-	protected LockedBlock(ResultSet r, String typeId) throws SQLException, ClassNotFoundException, IOException {
+	protected LockedBlock(ResultSet r, String typeId) throws SQLException, ClassNotFoundException {
 		this.lockId = r.getLong("ID");
 		this.l = new Location(Bukkit.getWorld(r.getString("World")), r.getLong("X"), r.getLong("Y"), r.getLong("Z"));
 		this.ownerId = r.getLong("Owner");
-		this.guests = (ArrayList<Long>)Serializer.deserialize(r.getString("Guests"));
 		this.level = LockLevel.getLevel(r.getInt("AccessLevel"));
-		this.typeId = typeId;
-	}
-
-	protected LockedBlock(long id, Location l, long ownerId, LockLevel level, String typeId) {
-		this.lockId = id;
-		this.l = l;
-		this.ownerId = ownerId;
-		this.guests = new ArrayList<Long>();
-		this.level = level;
 		this.typeId = typeId;
 	}
 
@@ -201,18 +190,11 @@ public abstract class LockedBlock {
 	 */
 	public void save() {
 		try {
-			GoldenApple.getInstance().database.execute("UPDATE Locks SET AccessLevel=?, Owner=?, Guests=? WHERE ID=?", level.levelId, ownerId, Serializer.serialize(guests), lockId);
-		} catch (SQLException | IOException e) {
+			GoldenApple.getInstance().database.execute("UPDATE Locks SET AccessLevel=?, Owner=? WHERE ID=?", level.levelId, (ownerId <= 0) ? null : ownerId, lockId);
+		} catch (SQLException e) {
 			GoldenApple.log(Level.SEVERE, "Failed to save changes to lock " + lockId + ":");
 			GoldenApple.log(Level.SEVERE, e);
 		}
-	}
-
-	/**
-	 * Saves the lock into the SQL database as a new row
-	 */
-	public void saveNew() throws SQLException, IOException {
-		GoldenApple.getInstance().database.execute("INSERT INTO Locks (ID, X, Y, Z, World, Type, AccessLevel, Owner, Guests) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", lockId, l.getBlockX(), l.getBlockY(), l.getBlockZ(), l.getWorld().getName(), typeId, level.levelId, ownerId, Serializer.serialize(guests));
 	}
 
 	/**
@@ -238,12 +220,8 @@ public abstract class LockedBlock {
 	}
 
 	/**
-	 * Changes the user that owns this block. Pass -1 to make this block owned
-	 * by no one player.
-	 * <p>
-	 * <em><strong>Note:</strong> When overriding this method, <strong>never
-	 * </strong> cancel the event! Cancelling this call may have unintended
-	 * consequences!</em>
+	 * Changes the user that owns this block. Pass 0 to make this block owned by
+	 * nobody.
 	 * 
 	 * @param ownerId The ID of the user that should be the new owner of this
 	 *            block.
@@ -254,43 +232,122 @@ public abstract class LockedBlock {
 	}
 
 	/**
-	 * Gets a <em>read-only</em> list of guests that have limited access to this
-	 * block.
+	 * Gets a <em>read-only</em> list of users and their access levels
+	 * associated with this lock.
 	 */
-	public final List<Long> getGuests() {
-		return Collections.unmodifiableList(guests);
-	}
-
-	/**
-	 * Adds a user to the list of guests that can have limited access. A user
-	 * appointed as a guest will be able to use the block and change the
-	 * contents of the block (if applicable).
-	 * 
-	 * @param guestId The ID of the user that should be added to the guest list
-	 *            of this block.
-	 */
-	public void addGuest(long guestId) {
-		if (!guests.contains(guestId)) {
-			guests.add(guestId);
-			save();
+	public final HashMap<Long, GuestLevel> getUsers() {
+		HashMap<Long, GuestLevel> guests = new HashMap<Long, GuestLevel>();
+		try {
+			ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT GuestID, AccessLevel FROM LockUsers WHERE LockID=?", lockId);
+			try {
+				while (r.next()) {
+					guests.put(r.getLong("GuestID"), GuestLevel.getLevel(r.getInt("AccessLevel")));
+				}
+				return guests;
+			} finally {
+				r.close();
+			}
+		} catch (SQLException e) {
+			GoldenApple.log(Level.SEVERE, "Error while determining guests for lock " + lockId + ":");
+			GoldenApple.log(Level.SEVERE, e);
+			return null;
 		}
 	}
 
 	/**
-	 * Removes a user from the guest list of this block.
-	 * 
-	 * <em><strong>Note:</strong> When overriding this method, <strong>never
-	 * </strong> cancel the event! Cancelling this call may have unintended
-	 * consequences!</em>
-	 * 
-	 * @param guestId The ID of the user that should be removed from the guest
-	 *            list of this block.
+	 * Gets a <em>read-only</em> list of groups and their access levels
+	 * associated with this lock.
 	 */
-	public void remGuest(long guestId) {
-		if (guests.contains(guestId)) {
-			guests.remove(guestId);
-			save();
+	public final HashMap<Long, GuestLevel> getGroups() {
+		HashMap<Long, GuestLevel> guests = new HashMap<Long, GuestLevel>();
+		try {
+			ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT GuestID, AccessLevel FROM LockGroups WHERE LockID=?", lockId);
+			try {
+				while (r.next()) {
+					guests.put(r.getLong("GuestID"), GuestLevel.getLevel(r.getInt("AccessLevel")));
+				}
+				return guests;
+			} finally {
+				r.close();
+			}
+		} catch (SQLException e) {
+			GoldenApple.log(Level.SEVERE, "Error while determining guests for lock " + lockId + ":");
+			GoldenApple.log(Level.SEVERE, e);
+			return null;
 		}
+	}
+
+	/**
+	 * Adds a user to the guestlist with the specified level of permissions for
+	 * this locked block.
+	 * 
+	 * @param user The user to add to the guest list
+	 * @param level The level of access that this user should be given
+	 */
+	public void addUser(IPermissionUser user, GuestLevel level) {
+		try {
+			ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT NULL FROM LockUsers WHERE LockID=? AND GuestID=?", lockId, user.getId());
+			try {
+				if (r.next()) {
+					GoldenApple.getInstance().database.execute("UPDATE LockUsers SET AccessLevel=? WHERE LockID=? AND GuestID=?", level.levelId, lockId, user.getId());
+				} else {
+					GoldenApple.getInstance().database.execute("INSERT INTO LockUsers (LockID, GuestID, AccessLevel) VALUES (?, ?, ?)", lockId, user.getId(), level.levelId);
+				}
+			} finally {
+				r.close();
+			}
+		} catch (SQLException e) {
+			GoldenApple.log(Level.SEVERE, "Error while adding user '" + user.getName() + "' to the guestlist for lock " + lockId + ":");
+			GoldenApple.log(Level.SEVERE, e);
+		}
+	}
+
+	/**
+	 * Removes a user from this block's guestlist.
+	 * 
+	 * @param user The user that should be removed from the guestlist
+	 */
+	public void remUser(IPermissionUser user) {
+		try {
+			GoldenApple.getInstance().database.execute("DELETE FROM LockUsers WHERE LockID=? AND GuestID=?", lockId, user.getId());
+		} catch (SQLException e) {
+			GoldenApple.log(Level.SEVERE, "Error while removing user '" + user.getName() + "' from the guestlist for lock " + lockId + ":");
+			GoldenApple.log(Level.SEVERE, e);
+		}
+	}
+
+	public GuestLevel getEffectiveLevel(IPermissionUser user) {
+		GuestLevel l = (this.level == LockLevel.PUBLIC) ? GuestLevel.USE : GuestLevel.NONE;
+
+		if (ownerId == user.getId() || user.hasPermission(LockManager.fullPermission))
+			return GuestLevel.FULL;
+		else if (user.hasPermission(LockManager.modifyBlockPermission))
+			l = GuestLevel.ALLOW_BLOCK_MODIFY;
+		else if (user.hasPermission(LockManager.invitePermission))
+			l = GuestLevel.ALLOW_INVITE;
+		else if (level != LockLevel.PUBLIC && user.hasPermission(LockManager.usePermission))
+			l = GuestLevel.USE;
+
+		try {
+			ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT AccessLevel FROM LockUsers WHERE LockID=? AND GuestID=?", lockId, user.getId());
+			try {
+				if (r.next()) {
+					l = (l.levelId < r.getInt("AccessLevel")) ? GuestLevel.getLevel(r.getInt("AccessLevel")) : l;
+				}
+			} finally {
+				r.close();
+			}
+		} catch (SQLException e) {}
+
+		for (Map.Entry<Long, GuestLevel> group : getGroups().entrySet()) {
+			PermissionGroup g = GoldenApple.getInstance().permissions.getGroup(group.getKey());
+
+			if (g.isMember(user, false) && group.getValue().levelId > l.levelId) {
+				l = group.getValue();
+			}
+		}
+
+		return l;
 	}
 
 	/**
@@ -298,13 +355,6 @@ public abstract class LockedBlock {
 	 */
 	public final LockLevel getLevel() {
 		return level;
-	}
-
-	/**
-	 * Gets a unique identifier for the lock type associated with this lock.
-	 */
-	public final String getTypeIdentifier() {
-		return typeId;
 	}
 
 	/**
@@ -318,6 +368,13 @@ public abstract class LockedBlock {
 	}
 
 	/**
+	 * Gets a unique identifier for the lock type associated with this lock.
+	 */
+	public final String getTypeIdentifier() {
+		return typeId;
+	}
+
+	/**
 	 * Checks whether or not the user may use this block. Use in this context is
 	 * defined as being able to use right-click actions and, if applicable,
 	 * modify the contents of the block represented by this protection.
@@ -326,19 +383,40 @@ public abstract class LockedBlock {
 	 * @return True if the user is allowed to use this block, false otherwise.
 	 */
 	public boolean canUse(User user) {
-		return (level == LockLevel.PUBLIC || user.getId() == ownerId || guests.contains(user.getId()));
+		return (getEffectiveLevel(user).levelId >= GuestLevel.USE.levelId);
 	}
 
 	/**
-	 * Checks whether or not the user may edit this block. Edit in this context
-	 * is defined as being able to destroy the block, or change the properties
-	 * of the lock on this block.
+	 * Checks whether or not the user may invite users for access to this block
+	 * as a user with use priviledges only.
 	 * 
 	 * @param user The user that is being checked for access to this block.
 	 * @return True if the user is allowed to edit this block, false otherwise.
 	 */
-	public boolean canEdit(User user) {
-		return (user.getId() == ownerId);
+	public boolean canInvite(User user) {
+		return (getEffectiveLevel(user).levelId >= GuestLevel.ALLOW_INVITE.levelId);
+	}
+
+	/**
+	 * Checks whether or not the user may modify properties of the lock on this
+	 * block. In this case, modification means moving, deleting, and changing
+	 * default access level.
+	 * 
+	 * @param user The user that is being checked for access to this block.
+	 * @return True if the user is allowed to edit this block, false otherwise.
+	 */
+	public boolean canModifyBlock(User user) {
+		return (getEffectiveLevel(user).levelId >= GuestLevel.ALLOW_BLOCK_MODIFY.levelId);
+	}
+	
+	/**
+	 * Checks whether or not the user has full control over the lock on this block
+	 * 
+	 * @param user The user that is being checked for access to this block.
+	 * @return True if the user is allowed to edit this block, false otherwise.
+	 */
+	public boolean hasFullControl(User user) {
+		return (getEffectiveLevel(user).levelId >= GuestLevel.FULL.levelId);
 	}
 
 	/**
@@ -350,6 +428,36 @@ public abstract class LockedBlock {
 	public void moveLock(Location l) throws SQLException {
 		this.l = l;
 		GoldenApple.getInstance().database.execute("UPDATE Locks SET X=?, Y=?, Z=?, World=? WHERE ID=?", l.getBlockX(), l.getBlockY(), l.getBlockZ(), l.getWorld().getName(), lockId);
+	}
+
+	public static enum GuestLevel {
+		UNKNOWN(-1), NONE(0), USE(1), ALLOW_INVITE(2), ALLOW_BLOCK_MODIFY(3), FULL(4);
+
+		/**
+		 * The level ID that this access level should be represented by in the
+		 * SQL database.
+		 */
+		public int	levelId;
+
+		GuestLevel(int levelId) {
+			this.levelId = levelId;
+		}
+
+		/**
+		 * Gets the access level corresponding to a specific level ID from the
+		 * SQL database.
+		 * 
+		 * @param levelId The level ID of the access level to find.
+		 * @return If the level was found, it is returned, otherwise
+		 *         GuestLevel.UNKNOWN is returned.
+		 */
+		public static GuestLevel getLevel(int levelId) {
+			for (GuestLevel l : GuestLevel.values()) {
+				if (l.levelId == levelId)
+					return l;
+			}
+			return GuestLevel.UNKNOWN;
+		}
 	}
 
 	/**

@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.IModuleLoader;
+import com.bendude56.goldenapple.ModuleLoadException;
 import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.commands.OwnCommand;
 import com.bendude56.goldenapple.commands.PermissionsCommand;
@@ -16,12 +17,17 @@ public class PermissionsModuleLoader implements IModuleLoader {
 	@Override
 	public void loadModule(GoldenApple instance) {
 		state = ModuleState.LOADING;
-		instance.permissions = new PermissionManager();
-		User.clearCache();
-		registerPermissions(instance.permissions);
-		registerEvents();
-		registerCommands();
-		state = ModuleState.LOADED;
+		try {
+			instance.permissions = new PermissionManager();
+			User.clearCache();
+			registerPermissions(instance.permissions);
+			registerEvents();
+			registerCommands();
+			state = ModuleState.LOADED;
+		} catch (Throwable e) {
+			// This module should NEVER fail to load! This is a major problem.
+			throw new ModuleLoadException("Base", e);
+		}
 	}
 	
 	@Override

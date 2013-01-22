@@ -24,16 +24,10 @@ public class LockManager {
 	// goldenapple.lock
 	public static PermissionNode		lockNode;
 	public static Permission			addPermission;
-
-	// goldenapple.lock.delete
-	public static PermissionNode		removeNode;
-	public static Permission			removeOwnPermission;
-	public static Permission			removeAllPermission;
-
-	// goldenapple.lock.guest
-	public static PermissionNode		guestNode;
-	public static Permission			guestOwnPermission;
-	public static Permission			guestAllPermission;
+	public static Permission			usePermission;
+	public static Permission			invitePermission;
+	public static Permission			modifyBlockPermission;
+	public static Permission			fullPermission;
 
 	private HashMap<Long, LockedBlock>	lockCache;
 	private Deque<Long>					cacheOut;
@@ -45,11 +39,17 @@ public class LockManager {
 		cacheSize = GoldenApple.getInstance().mainConfig.getInt("modules.lock.cacheSize", 100);
 		if (cacheSize < 3)
 			cacheSize = 3;
-		
+
+		tryCreateTable("locks");
+		tryCreateTable("lockusers");
+		tryCreateTable("lockgroups");
+	}
+
+	private void tryCreateTable(String tableName) {
 		try {
-			GoldenApple.getInstance().database.execute("CREATE TABLE IF NOT EXISTS Locks (ID BIGINT PRIMARY KEY, X BIGINT, Y BIGINT, Z BIGINT, World VARCHAR(128), Type VARCHAR(32), AccessLevel INT, Owner BIGINT, Guests TEXT)");
-		} catch (SQLException e) {
-			GoldenApple.log(Level.SEVERE, "Failed to create table 'Locks':");
+			GoldenApple.getInstance().database.executeFromResource(tableName.toLowerCase() + "_create");
+		} catch (SQLException | IOException e) {
+			GoldenApple.log(Level.SEVERE, "Failed to create table '" + tableName + "':");
 			GoldenApple.log(Level.SEVERE, e);
 		}
 	}
@@ -118,7 +118,7 @@ public class LockManager {
 		LockedBlock.correctLocation(l);
 		return getLockSpecific(l);
 	}
-	
+
 	public LockedBlock getLockSpecific(Location l) {
 		LockedBlock b = checkCache(l);
 		if (b != null)
@@ -138,24 +138,16 @@ public class LockManager {
 		}
 	}
 
-	public LockedBlock createLock(Location loc, LockLevel access, IPermissionUser owner) throws IOException, InvocationTargetException {
+	public LockedBlock createLock(Location loc, LockLevel access, IPermissionUser owner) throws SQLException, InvocationTargetException {
 		LockedBlock.correctLocation(loc);
 
 		RegisteredBlock r = LockedBlock.getBlock(loc.getBlock().getType());
 		if (r == null)
 			throw new UnsupportedOperationException();
 
-		try {
-			LockedBlock b = r.blockClass.getConstructor(Long.class, Location.class, Long.class, LockLevel.class).newInstance(nextId(), loc, owner.getId(), access);
-			lockCache.put(b.getLockId(), b);
-			cacheOut.add(b.getLockId());
-			b.saveNew();
-			return b;
-		} catch (SQLException | IOException e) {
-			throw new IOException(e);
-		} catch (Exception e) {
-			throw new InvocationTargetException(e);
-		}
+		GoldenApple.getInstance().database.execute("INSERT INTO Locks (X, Y, Z, World, Type, AccessLevel, Owner) VALUES (?, ?, ?, ?, ?, ?, ?)",
+				loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), loc.getWorld().getName(), r.identifier, access.levelId, (owner == null) ? 0 : owner.getId());
+		return getLockSpecific(loc);
 	}
 
 	public void deleteLock(long id) throws SQLException {
@@ -163,23 +155,17 @@ public class LockManager {
 			cacheOut.remove(id);
 		if (lockCache.containsKey(id))
 			lockCache.remove(id);
-		
+
 		GoldenApple.getInstance().database.execute("DELETE FROM Locks WHERE ID=?", String.valueOf(id));
 	}
 
 	public boolean lockExists(long id) throws SQLException {
-		ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT ID FROM Locks WHERE ID=?", String.valueOf(id));
+		ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT NULL FROM Locks WHERE ID=?", String.valueOf(id));
 		try {
 			return r.next();
 		} finally {
 			r.close();
 		}
-	}
-
-	public long nextId() throws SQLException {
-		long id;
-		for (id = 0; lockExists(id); id++);
-		return id;
 	}
 
 }

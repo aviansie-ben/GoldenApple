@@ -81,7 +81,7 @@ public class LockListener implements Listener, EventExecutor {
 		if (lock == null)
 			return;
 
-		if (!lock.canEdit(u)) {
+		if (!lock.canModifyBlock(u)) {
 			GoldenApple.getInstance().locale.sendMessage(u, "error.lock.noEdit", false);
 			event.setCancelled(true);
 			return;

@@ -21,25 +21,21 @@ public class LockModuleLoader implements IModuleLoader {
 			registerPermissions(instance.permissions);
 			registerEvents();
 			registerCommands();
+			state = ModuleState.LOADED;
 		} catch (Throwable e) {
 			state = ModuleState.UNLOADED_ERROR;
 			// TODO Add cleanup code to clean up after failed module start
 		}
-		state = ModuleState.LOADED;
 	}
 	
 	@Override
 	public void registerPermissions(PermissionManager permissions) {
 		LockManager.lockNode = permissions.registerNode("lock", PermissionManager.goldenAppleNode);
 		LockManager.addPermission = permissions.registerPermission("add", LockManager.lockNode);
-		
-		LockManager.removeNode = permissions.registerNode("remove", LockManager.lockNode);
-		LockManager.removeAllPermission = permissions.registerPermission("all", LockManager.removeNode);
-		LockManager.removeOwnPermission = permissions.registerPermission("own", LockManager.removeNode);
-		
-		LockManager.guestNode = permissions.registerNode("guest", LockManager.lockNode);
-		LockManager.guestAllPermission = permissions.registerPermission("all", LockManager.guestNode);
-		LockManager.guestOwnPermission = permissions.registerPermission("own", LockManager.guestNode);
+		LockManager.usePermission = permissions.registerPermission("use", LockManager.lockNode);
+		LockManager.invitePermission = permissions.registerPermission("invite", LockManager.lockNode);
+		LockManager.modifyBlockPermission = permissions.registerPermission("modifyBlock", LockManager.lockNode);
+		LockManager.fullPermission = permissions.registerPermission("full", LockManager.lockNode);
 	}
 	
 	private void registerEvents() {

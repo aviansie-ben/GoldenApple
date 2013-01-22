@@ -1,6 +1,5 @@
 package com.bendude56.goldenapple.commands;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -14,6 +13,7 @@ import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.lock.LockManager;
 import com.bendude56.goldenapple.lock.LockedBlock;
+import com.bendude56.goldenapple.lock.LockedBlock.GuestLevel;
 import com.bendude56.goldenapple.lock.LockedBlock.LockLevel;
 import com.bendude56.goldenapple.permissions.PermissionUser;
 
@@ -87,7 +87,7 @@ public class LockCommand extends DualSyntaxCommand {
 		} else if (args[arg].equalsIgnoreCase("-d")) {
 			if (lock == null) {
 				instance.locale.sendMessage(user, "error.lock.notFound", false);
-			} else if (!user.hasPermission(LockManager.removeAllPermission) && (!lock.canEdit(user) || !user.hasPermission(LockManager.removeOwnPermission))) {
+			} else if (!lock.canModifyBlock(user)) {
 				GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			} else {
 				deleteLock(instance, user, lock.getLockId());
@@ -101,33 +101,66 @@ public class LockCommand extends DualSyntaxCommand {
 		}
 
 		while (arg < args.length) {
-			if (args[arg].equalsIgnoreCase("-ga")) {
+			if (args[arg].equalsIgnoreCase("-in") || args[arg].equalsIgnoreCase("-in:u")) {
 				arg++;
 				if (arg == args.length) {
-					instance.locale.sendMessage(user, "shared.parameterMissing", false, "-ga");
-				} else if (!user.hasPermission(LockManager.guestAllPermission) && (!lock.canEdit(user) || !user.hasPermission(LockManager.guestOwnPermission))) {
+					instance.locale.sendMessage(user, "shared.parameterMissing", false, "-in:u");
+				} else if (!lock.canInvite(user)) {
 					GoldenApple.logPermissionFail(user, commandLabel, args, true);
 					return;
 				} else {
-					addGuest(instance, user, lock, args[arg]);
+					addUser(instance, user, lock, args[arg], GuestLevel.USE);
 					arg++;
 				}
-			} else if (args[arg].equalsIgnoreCase("-gr")) {
+			} else if (args[arg].equalsIgnoreCase("-in:i")) {
 				arg++;
 				if (arg == args.length) {
-					instance.locale.sendMessage(user, "shared.parameterMissing", false, "-gr");
-				} else if (!user.hasPermission(LockManager.guestAllPermission) && (!lock.canEdit(user) || !user.hasPermission(LockManager.guestOwnPermission))) {
+					instance.locale.sendMessage(user, "shared.parameterMissing", false, "-in:i");
+				} else if (!lock.hasFullControl(user)) {
 					GoldenApple.logPermissionFail(user, commandLabel, args, true);
 					return;
 				} else {
-					removeGuest(instance, user, lock, args[arg]);
+					addUser(instance, user, lock, args[arg], GuestLevel.ALLOW_INVITE);
+					arg++;
+				}
+			} else if (args[arg].equalsIgnoreCase("-in:m")) {
+				arg++;
+				if (arg == args.length) {
+					instance.locale.sendMessage(user, "shared.parameterMissing", false, "-in:m");
+				} else if (!lock.hasFullControl(user)) {
+					GoldenApple.logPermissionFail(user, commandLabel, args, true);
+					return;
+				} else {
+					addUser(instance, user, lock, args[arg], GuestLevel.ALLOW_BLOCK_MODIFY);
+					arg++;
+				}
+			} else if (args[arg].equalsIgnoreCase("-in:f")) {
+				arg++;
+				if (arg == args.length) {
+					instance.locale.sendMessage(user, "shared.parameterMissing", false, "-in:f");
+				} else if (!lock.hasFullControl(user)) {
+					GoldenApple.logPermissionFail(user, commandLabel, args, true);
+					return;
+				} else {
+					addUser(instance, user, lock, args[arg], GuestLevel.FULL);
+					arg++;
+				}
+			} else if (args[arg].equalsIgnoreCase("-in:n")) {
+				arg++;
+				if (arg == args.length) {
+					instance.locale.sendMessage(user, "shared.parameterMissing", false, "-in:n");
+				} else if (!lock.hasFullControl(user)) {
+					GoldenApple.logPermissionFail(user, commandLabel, args, true);
+					return;
+				} else {
+					removeUser(instance, user, lock, args[arg]);
 					arg++;
 				}
 			} else if (args[arg].equalsIgnoreCase("-a")) {
 				arg++;
 				if (arg == args.length) {
 					instance.locale.sendMessage(user, "shared.parameterMissing", false, "-gr");
-				} else if (!user.hasPermission(LockManager.guestAllPermission) && (!lock.canEdit(user) || !user.hasPermission(LockManager.guestOwnPermission))) {
+				} else if (!lock.canModifyBlock(user)) {
 					GoldenApple.logPermissionFail(user, commandLabel, args, true);
 					return;
 				} else {
@@ -182,39 +215,39 @@ public class LockCommand extends DualSyntaxCommand {
 			if (args[0].equalsIgnoreCase("delete")) {
 				if (args.length > 1) {
 					instance.locale.sendMessage(user, "shared.unknownOption", false, args[1]);
-				} else if (!user.hasPermission(LockManager.removeAllPermission) && (!lock.canEdit(user) || !user.hasPermission(LockManager.removeOwnPermission))) {
+				} else if (!lock.canModifyBlock(user)) {
 					GoldenApple.logPermissionFail(user, commandLabel, args, true);
 				} else {
 					deleteLock(instance, user, lock.getLockId());
 				}
-			} else if (args[0].equalsIgnoreCase("share")) {
+			} else if (args[0].equalsIgnoreCase("invite")) {
 				if (args.length == 1) {
-					instance.locale.sendMessage(user, "shared.parameterMissing", false, "share");
+					instance.locale.sendMessage(user, "shared.parameterMissing", false, "invite");
 				} else if (args.length > 2) {
 					instance.locale.sendMessage(user, "shared.unknownOption", false, args[2]);
-				} else if (!user.hasPermission(LockManager.guestAllPermission) && (!lock.canEdit(user) || !user.hasPermission(LockManager.guestOwnPermission))) {
+				} else if (!lock.canInvite(user)) {
 					GoldenApple.logPermissionFail(user, commandLabel, args, true);
 					return;
 				} else {
-					addGuest(instance, user, lock, args[1]);
+					addUser(instance, user, lock, args[1], GuestLevel.USE);
 				}
-			} else if (args[0].equalsIgnoreCase("unshare")) {
+			} else if (args[0].equalsIgnoreCase("uninvite")) {
 				if (args.length == 1) {
-					instance.locale.sendMessage(user, "shared.parameterMissing", false, "share");
+					instance.locale.sendMessage(user, "shared.parameterMissing", false, "uninvite");
 				} else if (args.length > 2) {
 					instance.locale.sendMessage(user, "shared.unknownOption", false, args[2]);
-				} else if (!user.hasPermission(LockManager.guestAllPermission) && (!lock.canEdit(user) || !user.hasPermission(LockManager.guestOwnPermission))) {
+				} else if (!lock.hasFullControl(user)) {
 					GoldenApple.logPermissionFail(user, commandLabel, args, true);
 					return;
 				} else {
-					removeGuest(instance, user, lock, args[1]);
+					removeUser(instance, user, lock, args[1]);
 				}
 			} else if (args[0].equalsIgnoreCase("access")) {
 				if (args.length == 1) {
 					instance.locale.sendMessage(user, "shared.parameterMissing", false, "share");
 				} else if (args.length > 2) {
 					instance.locale.sendMessage(user, "shared.unknownOption", false, args[2]);
-				} else if (!user.hasPermission(LockManager.guestAllPermission) && (!lock.canEdit(user) || !user.hasPermission(LockManager.guestOwnPermission))) {
+				} else if (!lock.canModifyBlock(user)) {
 					GoldenApple.logPermissionFail(user, commandLabel, args, true);
 					return;
 				} else {
@@ -239,7 +272,7 @@ public class LockCommand extends DualSyntaxCommand {
 			GoldenApple.log(Level.SEVERE, "Failed to lock block due to RegisteredBlock failure (Plugin: " + LockedBlock.getBlock(loc.getBlock().getType()).plugin.getName() + ")");
 			GoldenApple.log(Level.SEVERE, e);
 			return null;
-		} catch (IOException e) {
+		} catch (SQLException e) {
 			instance.locale.sendMessage(user, "error.lock.create.ioError", false);
 			return null;
 		} catch (UnsupportedOperationException e) {
@@ -257,28 +290,24 @@ public class LockCommand extends DualSyntaxCommand {
 		}
 	}
 
-	private void addGuest(GoldenApple instance, User user, LockedBlock lock, String guest) {
+	private void addUser(GoldenApple instance, User user, LockedBlock lock, String guest, GuestLevel level) {
 		PermissionUser gUser = instance.permissions.getUser(guest);
 
 		if (gUser == null) {
 			instance.locale.sendMessage(user, "shared.userNotFoundWarning", false, guest);
-		} else if (lock.getGuests().contains(gUser.getId())) {
-			instance.locale.sendMessage(user, "error.lock.guest.alreadyGuest", false, gUser.getName());
 		} else {
-			lock.addGuest(gUser.getId());
+			lock.addUser(gUser, level);
 			instance.locale.sendMessage(user, "general.lock.guest.add.success", false, gUser.getName());
 		}
 	}
 
-	private void removeGuest(GoldenApple instance, User user, LockedBlock lock, String guest) {
+	private void removeUser(GoldenApple instance, User user, LockedBlock lock, String guest) {
 		PermissionUser gUser = instance.permissions.getUser(guest);
 
 		if (gUser == null) {
 			instance.locale.sendMessage(user, "shared.userNotFoundWarning", false, guest);
-		} else if (!lock.getGuests().contains(gUser.getId())) {
-			instance.locale.sendMessage(user, "error.lock.guest.notGuest", false, gUser.getName());
 		} else {
-			lock.remGuest(gUser.getId());
+			lock.remUser(gUser);
 			instance.locale.sendMessage(user, "general.lock.guest.remove.success", false, gUser.getName());
 		}
 	}

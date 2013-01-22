@@ -111,16 +111,17 @@ help.lock.complex.2=Get lock info using &7-i
 help.lock.complex.3=Create a new lock using &7-c
 help.lock.complex.4=&f  -Add &7-p&f for public lock
 help.lock.complex.5=Delete an existing lock using &7-d
-help.lock.complex.6=Add guests using &7-ga <guest>&f, remove using &7-gr <guest>
-help.lock.complex.7=Change lock access using &7-a {public|private}
+help.lock.complex.6=Change a user's access level using &7-in:<lvl> <usr>
+help.lock.complex.7=Valid levels are &7n&f (none), &7u&f (use), &7i&f (invite), &7m&f (modify), and &7f&f (full)
+help.lock.complex.8=Change lock access using &7-a {public|private}
 
 help.lock.simple.1=Select a block by pointing at it
 help.lock.simple.2=Get lock info using &7/%1 info&f
 help.lock.simple.3=Create a new lock using &7/%1 create&f
 help.lock.simple.4=&f  -Use &7/%1 create public&f for a public lock
 help.lock.simple.5=Delete a lock using &7/%1 delete&f
-help.lock.simple.6=Use &7/%1 share <user>&f to allow another player to use the locked block
-help.lock.simple.7=Use &7/%1 unshare <user>&f to unshare the block from a player
+help.lock.simple.6=Use &7/%1 invite <user>&f to allow another player to use the locked block
+help.lock.simple.7=Use &7/%1 uninvite <user>&f to unshare the block from a player
 help.lock.simple.8=Use &7/%1 access {public|private}&f to change access level
 
 help.permissions.1=Select users and groups using &7-u <user>&f and &7-g <group>
