@@ -140,6 +140,10 @@ public class AntigriefListener implements Listener, EventExecutor {
 			List<Block> blockList = event.blockList();
 			while (blockList.size() > 0)
 				blockList.remove(0);
+		} else if ((event.getEntityType() == EntityType.FIREBALL || event.getEntityType() == EntityType.SMALL_FIREBALL) && GoldenApple.getInstance().mainConfig.getBoolean("modules.antigrief.noFireballBlockDamage", true)) {
+			List<Block> blockList = event.blockList();
+			while (blockList.size() > 0)
+				blockList.remove(0);
 		}
 	}
 	
