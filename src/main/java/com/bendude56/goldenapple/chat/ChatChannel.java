@@ -1,131 +1,70 @@
 package com.bendude56.goldenapple.chat;
 
-import java.io.IOException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-
-import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
-import com.bendude56.goldenapple.permissions.IPermissionObject;
-import com.bendude56.goldenapple.permissions.IPermissionUser;
-import com.bendude56.goldenapple.permissions.PermissionGroup;
-import com.bendude56.goldenapple.util.Serializer;
 
-public class ChatChannel implements IChatChannel {
-	private final long							id;
-	private String								name;
-	private HashMap<Long, ChannelAccessLevel>	userAccess;
-	private HashMap<Long, ChannelAccessLevel>	groupAccess;
-	private boolean								strictCensor;
+public abstract class ChatChannel {
+	protected String name;
+	protected ChatChannelUserLevel defaultLevel;
+	protected ChatCensor censor;
+	protected HashMap<User, ChatChannelUserLevel> connectedUsers;
 	
-	public List<User>							spyUsers;
+	public abstract boolean isTemporary();
 	
-	@SuppressWarnings("unchecked")
-	public ChatChannel(ResultSet r) throws SQLException, ClassNotFoundException, IOException {
-		this.id = r.getLong("ID");
-		this.name = r.getString("Name");
-		this.userAccess = (HashMap<Long, ChannelAccessLevel>) Serializer.deserialize(r.getString("UserAccess"));
-		this.groupAccess = (HashMap<Long, ChannelAccessLevel>) Serializer.deserialize(r.getString("GroupAccess"));
-		this.strictCensor = r.getBoolean("StrictCensor");
-	}
-
-	public ChatChannel(long id, String name) {
-		this.id = id;
-		this.name = name;
-	}
-
-	public long getId() {
-		return this.id;
-	}
-
 	public String getName() {
 		return name;
 	}
 	
-	public boolean isTemporary() {
-		return false;
-	}
-
-	public ChannelAccessLevel getSpecificAccess(IPermissionObject obj) {
-		if (obj instanceof IPermissionUser) {
-			return (userAccess.containsKey(obj.getId())) ? userAccess.get(obj.getId()) : ChannelAccessLevel.NONE;
-		} else if (obj instanceof PermissionGroup) {
-			return (groupAccess.containsKey(obj.getId())) ? groupAccess.get(obj.getId()) : ChannelAccessLevel.NONE;
-		} else {
-			throw new IllegalArgumentException();
-		}
+	public void tryJoin(User user) {
+		// TODO Implement this
 	}
 	
-	public ChannelAccessLevel getAccess(IPermissionUser user) {
-		return ChannelAccessLevel.NONE;
+	public ChatChannelUserLevel calculateLevel(User user) {
+		ChatChannelUserLevel level = getSpecificLevel(user);
+		
+		if (level == ChatChannelUserLevel.UNKNOWN) {
+			for (long group : user.getParentGroups(false)) {
+				ChatChannelUserLevel groupLevel = getGroupLevel(group);
+				level = (groupLevel.id > level.id) ? groupLevel : level; 
+			}
+			level = (getDefaultLevel().id > level.id) ? getDefaultLevel() : level;
+		}
+		
+		return level;
 	}
-
+	
+	public abstract ChatChannelUserLevel getSpecificLevel(User user);
+	public abstract ChatChannelUserLevel getGroupLevel(long group);
+	
+	public ChatChannelUserLevel getDefaultLevel() {
+		return defaultLevel;
+	}
+	
+	public void sendMessage(User user, String message) {
+		// TODO Implement this
+	}
+	
 	public void broadcastMessage(String message) {
-		for (Player player : GoldenApple.getInstance().chat.getPlayers(this))
-			player.sendMessage(message);
+		// TODO Implement this
 	}
-
-	/**
-	 * Represents the amount of access that a user will be granted when
-	 * connecting to a specific chat channel
-	 * 
-	 * @author ben_dude56
-	 */
-	public enum ChannelAccessLevel {
-		/**
-		 * This user has been granted administrative permissions in all channels
-		 * and can perform any function on any channel
-		 */
-		SUPER_ADMINISTRATOR(4, 4),
-		/**
-		 * This user has been granted moderator permissions in all channels, but
-		 * has been granted administrative permissions for this channel only
-		 */
-		ADMINISTRATOR_SUPER_MODERATOR(4, 4),
-		/**
-		 * This user is an administrator, and can perform all channel functions,
-		 * including promotion of other users to moderator, deletion of the
-		 * channel, and renaming of the channel
-		 */
-		ADMINISTRATOR(4, 4),
-		/**
-		 * This user has been granted moderator permissions in all channels, and
-		 * can perform moderator commands on any channel
-		 */
-		SUPER_MODERATOR(3, 3),
-		/**
-		 * This user is a moderator and can perform lower-level channel
-		 * functions, including banning/muting users, allowing users into the
-		 * channel, and activating channel slow mode
-		 */
-		MODERATOR(3, 3),
-		/**
-		 * This user can connect and chat in this chat channel, but does not
-		 * have any additional privileges
-		 */
-		NORMAL(2, 2),
-		/**
-		 * This user can join the channel, but cannot talk in it
-		 */
-		GUEST(1, 1),
-		/**
-		 * This user CANNOT join the channel or perform any functions on the
-		 * channel
-		 */
-		NONE(0, 0);
-
-		public int	storageId;
-		public int	accessLevel;
-
-		private ChannelAccessLevel(int storageId, int accessLevel) {
-			this.storageId = storageId;
-			this.accessLevel = accessLevel;
+	
+	
+	public enum ChatChannelUserLevel {
+		UNKNOWN(-1), NO_ACCESS(0), JOIN(1), CHAT(2), VIP(3), MODERATOR(4), SUPER_MODERATOR(5), ADMINISTRATOR(6);
+		
+		public int id;
+		
+		ChatChannelUserLevel(int id) {
+			this.id = id;
+		}
+		
+		public static ChatChannelUserLevel getLevel(int id) {
+			for (ChatChannelUserLevel l : ChatChannelUserLevel.values()) {
+				if (l.id == id)
+					return l;
+			}
+			return ChatChannelUserLevel.UNKNOWN;
 		}
 	}
 }

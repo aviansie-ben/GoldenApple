@@ -27,9 +27,10 @@ public class ChatManager {
 	private HashMap<User, Long>			chatPlayers		= new HashMap<User, Long>();
 
 	public ChatChannel createChannel(String label) {
-		ChatChannel channel = new ChatChannel(generateId(), label);
+		return null;
+		/*ChatChannel channel = new ChatChannel(generateId(), label);
 		chatChannels.put(channel.getId(), channel);
-		return channel;
+		return channel;*/
 	}
 
 	public ChatChannel getChannel(Long ID) {
@@ -86,7 +87,8 @@ public class ChatManager {
 	 * @param channel The channel to search for
 	 */
 	public List<Player> getPlayers(ChatChannel channel) {
-		return getPlayers(channel.getId());
+		return null;
+		// return getPlayers(channel.getId());
 	}
 
 	/**
