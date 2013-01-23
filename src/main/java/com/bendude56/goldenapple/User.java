@@ -8,6 +8,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permissible;
+import org.bukkit.permissions.PermissionAttachment;
 
 import com.bendude56.goldenapple.permissions.IPermissionUser;
 import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
@@ -56,6 +58,13 @@ public class User implements IPermissionUser {
 			return u;
 		}
 	}
+	
+	public static User getUser(long id) {
+		if (activeUsers.containsKey(id))
+			return activeUsers.get(id);
+		else
+			return null;
+	}
 
 	/**
 	 * Unloads an instance of a User from memory. This method is designed for
@@ -78,10 +87,21 @@ public class User implements IPermissionUser {
 	public static void clearCache() {
 		activeUsers.clear();
 	}
+	
+	public static void refreshPermissions(long id) {
+		if (activeUsers.containsKey(id)) {
+			activeUsers.get(id).registerBukkitPermissions();
+		}
+	}
+	
+	public static boolean hasUserInstance(long id) {
+		return activeUsers.containsKey(id);
+	}
 
-	private PermissionUser	permissions;
-	private CommandSender	handle;
-	private long			id;
+	private PermissionUser			permissions;
+	private PermissionAttachment	bukkitPermissions;
+	private CommandSender			handle;
+	private long					id;
 
 	private User(long id, CommandSender handle, boolean loadPermissions) {
 		this.id = id;
@@ -92,6 +112,26 @@ public class User implements IPermissionUser {
 			GoldenApple.getInstance().permissions.setUserSticky(id, true);
 		}
 		this.handle = handle;
+		if (permissions != null && handle != null && handle instanceof Permissible)
+			registerBukkitPermissions();
+	}
+
+	public void registerBukkitPermissions() {
+		if (!(handle instanceof Permissible) || permissions == null) {
+			throw new UnsupportedOperationException();
+		} else {
+			if (bukkitPermissions != null)
+				bukkitPermissions.remove();
+			bukkitPermissions = handle.addAttachment(GoldenApple.getInstance());
+			
+			for (Permission p : getPermissions(true)) {
+				bukkitPermissions.setPermission(p.getFullName(), true);
+			}
+		}
+	}
+	
+	public PermissionAttachment getPermissionAttachment() {
+		return bukkitPermissions;
 	}
 
 	@Override
@@ -190,6 +230,8 @@ public class User implements IPermissionUser {
 	public void addPermission(Permission permission) {
 		if (permissions == null)
 			throw new UnsupportedOperationException();
+		
+		bukkitPermissions.setPermission(permission.getFullName(), true);
 		permissions.addPermission(permission);
 	}
 
@@ -197,6 +239,8 @@ public class User implements IPermissionUser {
 	public void addPermission(String permission) {
 		if (permissions == null)
 			throw new UnsupportedOperationException();
+		
+		bukkitPermissions.setPermission(permission, true);
 		permissions.addPermission(permission);
 	}
 
@@ -204,6 +248,8 @@ public class User implements IPermissionUser {
 	public void removePermission(Permission permission) {
 		if (permissions == null)
 			throw new UnsupportedOperationException();
+		
+		bukkitPermissions.unsetPermission(permission.getFullName());
 		permissions.removePermission(permission);
 	}
 
@@ -211,6 +257,8 @@ public class User implements IPermissionUser {
 	public void removePermission(String permission) {
 		if (permissions == null)
 			throw new UnsupportedOperationException();
+		
+		bukkitPermissions.unsetPermission(permission);
 		permissions.removePermission(permission);
 	}
 

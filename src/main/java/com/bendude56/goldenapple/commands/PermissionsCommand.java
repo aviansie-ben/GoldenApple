@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -13,6 +14,7 @@ import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.permissions.PermissionGroup;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
+import com.bendude56.goldenapple.permissions.IPermissionUser;
 import com.bendude56.goldenapple.permissions.PermissionUser;
 
 public class PermissionsCommand implements CommandExecutor {
@@ -207,7 +209,7 @@ public class PermissionsCommand implements CommandExecutor {
 					if (instance.permissions.userExists(u)) {
 						instance.locale.sendMessage(user, "error.permissions.add.userExists", false, u);
 					} else {
-						PermissionUser newUser = instance.permissions.createUser(u);
+						IPermissionUser newUser = instance.permissions.createUser(u);
 						GoldenApple.log(Level.INFO, "User " + newUser.getName() + " (PU" + newUser.getId() + ") has been created by " + user.getName());
 						instance.locale.sendMessage(user, "general.permissions.add.user", false, u);
 					}
@@ -229,7 +231,7 @@ public class PermissionsCommand implements CommandExecutor {
 				}
 			}
 		} else {
-			ArrayList<PermissionUser> ul = new ArrayList<PermissionUser>();
+			ArrayList<IPermissionUser> ul = new ArrayList<IPermissionUser>();
 			ArrayList<PermissionGroup> gl = new ArrayList<PermissionGroup>();
 			
 			resolveUsers(instance, user, changeUsers, ul);
@@ -244,8 +246,8 @@ public class PermissionsCommand implements CommandExecutor {
 					return true;
 				}
 				
-				ArrayList<PermissionUser> ua = new ArrayList<PermissionUser>();
-				ArrayList<PermissionUser> ur = new ArrayList<PermissionUser>();
+				ArrayList<IPermissionUser> ua = new ArrayList<IPermissionUser>();
+				ArrayList<IPermissionUser> ur = new ArrayList<IPermissionUser>();
 				
 				resolveUsers(instance, user, addUsers, ua);
 				resolveUsers(instance, user, remUsers, ur);
@@ -288,7 +290,7 @@ public class PermissionsCommand implements CommandExecutor {
 				resolvePermissions(instance, user, addPermissions, addPerm);
 				resolvePermissions(instance, user, remPermissions, remPerm);
 				
-				for (PermissionUser u : ul) {
+				for (IPermissionUser u : ul) {
 					updatePermissions(instance, user, u, addPerm, remPerm);
 				}
 				for (PermissionGroup g : gl) {
@@ -299,12 +301,13 @@ public class PermissionsCommand implements CommandExecutor {
 		return true;
 	}
 	
-	private void resolveUsers(GoldenApple instance, User user, ArrayList<String> usersInput, ArrayList<PermissionUser> usersOutput) {
+	private void resolveUsers(GoldenApple instance, User user, ArrayList<String> usersInput, ArrayList<IPermissionUser> usersOutput) {
 		usersOutput.clear();
 		for (String u : usersInput) {
 			try {
 				if (instance.permissions.userExists(u)) {
-					usersOutput.add(instance.permissions.getUser(u));
+					PermissionUser pUser = instance.permissions.getUser(u);
+					usersOutput.add((User.hasUserInstance(pUser.getId())) ? User.getUser(pUser.getId()) : pUser);
 				} else {
 					instance.locale.sendMessage(user, "shared.userNotFoundWarning", false, u);
 				}
@@ -333,6 +336,9 @@ public class PermissionsCommand implements CommandExecutor {
 		permsOutput.clear();
 		for (String ps : permsInput) {
 			Permission p = instance.permissions.getPermissionByName(ps);
+			if (p == null &&  Bukkit.getPluginManager().getPermission(ps) != null)
+				p = instance.permissions.registerPermission(ps);
+			
 			if (p == null) {
 				instance.locale.sendMessage(user, "error.permissions.perm.notFound", false, ps);
 			} else {
@@ -341,16 +347,16 @@ public class PermissionsCommand implements CommandExecutor {
 		}
 	}
 	
-	private void modifyGroupMembershipUsers(GoldenApple instance, User user, ArrayList<PermissionGroup> groups, ArrayList<PermissionUser> addUsers, ArrayList<PermissionUser> remUsers) {
+	private void modifyGroupMembershipUsers(GoldenApple instance, User user, ArrayList<PermissionGroup> groups, ArrayList<IPermissionUser> addUsers, ArrayList<IPermissionUser> remUsers) {
 		try {
-			for (PermissionUser u : addUsers) {
+			for (IPermissionUser u : addUsers) {
 				for (PermissionGroup ch : groups) {
 					ch.addUser(u);
 					GoldenApple.log(Level.INFO, "User " + u.getName() + " (PU" + u.getId() + ") has been added to group " + ch.getName() + " (PG" + ch.getId() + ") by " + user.getName());
 					instance.locale.sendMessage(user, "general.permissions.member.addUser", false, u.getName(), ch.getName());
 				}
 			}
-			for (PermissionUser u : remUsers) {
+			for (IPermissionUser u : remUsers) {
 				for (PermissionGroup ch : groups) {
 					ch.removeUser(u);
 					GoldenApple.log(Level.INFO, "User " + u.getName() + " (PU" + u.getId() + ") has been removed from group " + ch.getName() + " (PG" + ch.getId() + ") by " + user.getName());
@@ -383,7 +389,7 @@ public class PermissionsCommand implements CommandExecutor {
 		}
 	}
 	
-	private void updatePermissions(GoldenApple instance, User user, PermissionUser u, ArrayList<Permission> add, ArrayList<Permission> remove) {
+	private void updatePermissions(GoldenApple instance, User user, IPermissionUser u, ArrayList<Permission> add, ArrayList<Permission> remove) {
 		for (Permission p : add) {
 			if (!u.hasPermissionSpecific(p)) {
 				u.addPermission(p);

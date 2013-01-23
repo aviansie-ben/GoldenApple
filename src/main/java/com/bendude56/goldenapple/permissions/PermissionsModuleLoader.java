@@ -26,7 +26,7 @@ public class PermissionsModuleLoader implements IModuleLoader {
 			state = ModuleState.LOADED;
 		} catch (Throwable e) {
 			// This module should NEVER fail to load! This is a major problem.
-			throw new ModuleLoadException("Base", e);
+			throw new ModuleLoadException("Permissions", e);
 		}
 	}
 	

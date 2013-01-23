@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import com.bendude56.goldenapple.GoldenApple;
+import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
 import com.bendude56.goldenapple.permissions.PermissionManager.PermissionNode;
 
@@ -76,11 +77,33 @@ public class PermissionGroup implements IPermissionObject {
 			return null;
 		}
 	}
+	
+	public List<Long> getAllUsers() {
+		try {
+			List<Long> users = getUsers();
+			for (long g : getAllGroups()) {
+				ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT MemberID FROM GroupUserMembers WHERE GroupID=?", g);
+				try {
+					while (r.next())
+						users.add(r.getLong("MemberID"));
+				} finally {
+					r.close();
+				}
+			}
+			return users;
+		} catch (SQLException e) {
+			GoldenApple.log(Level.SEVERE, "Failed to retrieve users for group '" + name + "':");
+			GoldenApple.log(Level.SEVERE, e);
+			return null;
+		}
+	}
 
 	public void addUser(IPermissionUser user) {
 		if (!isMember(user, true)) {
 			try {
 				GoldenApple.getInstance().database.execute("INSERT INTO GroupUserMembers (GroupID, MemberID) VALUES (?, ?)", id, user.getId());
+				if (user instanceof User)
+					((User)user).registerBukkitPermissions();
 			} catch (SQLException e) {
 				GoldenApple.log(Level.SEVERE, "Failed to add user '" + user.getName() + "' to group '" + name + "':");
 				GoldenApple.log(Level.SEVERE, e);
@@ -92,6 +115,8 @@ public class PermissionGroup implements IPermissionObject {
 		if (isMember(user, true)) {
 			try {
 				GoldenApple.getInstance().database.execute("DELETE FROM GroupUserMembers WHERE GroupID=? AND MemberID=?", id, user.getId());
+				if (user instanceof User)
+					((User)user).registerBukkitPermissions();
 			} catch (SQLException e) {
 				GoldenApple.log(Level.SEVERE, "Failed to remove user '" + user.getName() + "' from group '" + name + "':");
 				GoldenApple.log(Level.SEVERE, e);
@@ -159,11 +184,33 @@ public class PermissionGroup implements IPermissionObject {
 			return null;
 		}
 	}
+	
+	public List<Long> getAllGroups() {
+		try {
+			List<Long> groups = getGroups();
+			for (int i = 0; i < groups.size(); i++) {
+				ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT MemberID FROM GroupGroupMembers WHERE GroupID=?", groups.get(i));
+				try {
+					while (r.next())
+						groups.add(r.getLong("MemberID"));
+				} finally {
+					r.close();
+				}
+			}
+			return groups;
+		} catch (SQLException e) {
+			GoldenApple.log(Level.SEVERE, "Failed to retrieve sub-groups for group '" + name + "':");
+			GoldenApple.log(Level.SEVERE, e);
+			return null;
+		}
+	}
 
 	public void addGroup(PermissionGroup group) {
 		if (!isMember(group, true)) {
 			try {
 				GoldenApple.getInstance().database.execute("INSERT INTO GroupGroupMembers (GroupID, MemberID) VALUES (?, ?)", id, group.getId());
+				for (long id : group.getAllUsers())
+					User.refreshPermissions(id);
 			} catch (SQLException e) {
 				GoldenApple.log(Level.SEVERE, "Failed to add group '" + group.getName() + "' to group '" + name + "':");
 				GoldenApple.log(Level.SEVERE, e);
@@ -175,6 +222,8 @@ public class PermissionGroup implements IPermissionObject {
 		if (isMember(group, true)) {
 			try {
 				GoldenApple.getInstance().database.execute("DELETE FROM GroupGroupMembers WHERE GroupID=? AND MemberID=?", id, group.getId());
+				for (long id : group.getAllUsers())
+					User.refreshPermissions(id);
 			} catch (SQLException e) {
 				GoldenApple.log(Level.SEVERE, "Failed to remove group '" + group.getName() + "' from group '" + name + "':");
 				GoldenApple.log(Level.SEVERE, e);
@@ -261,6 +310,11 @@ public class PermissionGroup implements IPermissionObject {
 		if (!hasPermissionSpecific(permission)) {
 			try {
 				GoldenApple.getInstance().database.execute("INSERT INTO GroupPermissions (GroupID, Permission) VALUES (?, ?)", id, permission.getFullName());
+				for (long id : getAllUsers()) {
+					User u = User.getUser(id);
+					if (u != null)
+						u.getPermissionAttachment().setPermission(permission.getFullName(), true);
+				}
 			} catch (SQLException e) {
 				GoldenApple.log(Level.SEVERE, "Error while adding permission '" + permission.getFullName() + "' to group '" + name + "':");
 				GoldenApple.log(Level.SEVERE, e);
@@ -278,6 +332,11 @@ public class PermissionGroup implements IPermissionObject {
 		if (hasPermissionSpecific(permission)) {
 			try {
 				GoldenApple.getInstance().database.execute("DELETE FROM GroupPermissions WHERE GroupID=? AND Permission=?", id, permission.getFullName());
+				for (long id : getAllUsers()) {
+					User u = User.getUser(id);
+					if (u != null)
+						u.getPermissionAttachment().unsetPermission(permission.getFullName());
+				}
 			} catch (SQLException e) {
 				GoldenApple.log(Level.SEVERE, "Error while removing permission '" + permission.getFullName() + "' from group '" + name + "':");
 				GoldenApple.log(Level.SEVERE, e);
