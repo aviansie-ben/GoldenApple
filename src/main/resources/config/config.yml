@@ -225,6 +225,10 @@ modules:
         # from damaging blocks. They will still damage players.
         noFireballBlockDamage: true
         
+        # Setting this to true will prevent Endermen from picking up
+        # and moving any blocks.
+        noEndermanMoveBlock: true
+        
         # Setting a potion's value to true here will cause the potion
         # to have no effect when drunk by a player
         noDrinkPotion:

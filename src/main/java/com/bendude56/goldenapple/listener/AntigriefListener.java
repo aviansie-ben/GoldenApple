@@ -14,6 +14,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBurnEvent;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -47,6 +48,7 @@ public class AntigriefListener implements Listener, EventExecutor {
 		BlockBurnEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
 		EntityExplodeEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
 		EntityTargetEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
+		EntityChangeBlockEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
 		try {
 			registerTntBlock();
 		} catch (Throwable e) {
@@ -67,6 +69,7 @@ public class AntigriefListener implements Listener, EventExecutor {
 		BlockBurnEvent.getHandlerList().unregister(this);
 		EntityExplodeEvent.getHandlerList().unregister(this);
 		EntityTargetEvent.getHandlerList().unregister(this);
+		EntityChangeBlockEvent.getHandlerList().unregister(this);
 		
 		if (!errorLoadingTntBlock) {
 			try {
@@ -106,6 +109,8 @@ public class AntigriefListener implements Listener, EventExecutor {
 			entityExplode((EntityExplodeEvent)event);
 		} else if (event instanceof EntityTargetEvent) {
 			entityTarget((EntityTargetEvent)event);
+		} else if (event instanceof EntityChangeBlockEvent) {
+			entityChangeBlock((EntityChangeBlockEvent)event);
 		} else {
 			GoldenApple.log(Level.WARNING, "Unrecognized event in AntigriefListener: " + event.getClass().getName());
 		}
@@ -149,6 +154,12 @@ public class AntigriefListener implements Listener, EventExecutor {
 	
 	private void entityTarget(EntityTargetEvent event) {
 		if (event.getEntityType() == EntityType.CREEPER && GoldenApple.getInstance().mainConfig.getBoolean("modules.antigrief.noCreeperExplosion", true)) {
+			event.setCancelled(true);
+		}
+	}
+	
+	private void entityChangeBlock(EntityChangeBlockEvent event) { 
+		if (event.getEntityType() == EntityType.ENDERMAN && GoldenApple.getInstance().mainConfig.getBoolean("modules.antigrief.noEndermanMoveBlock", true)) {
 			event.setCancelled(true);
 		}
 	}
