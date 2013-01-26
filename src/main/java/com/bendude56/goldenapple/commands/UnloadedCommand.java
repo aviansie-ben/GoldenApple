@@ -18,6 +18,8 @@ public class UnloadedCommand implements CommandExecutor {
 		reqModule.put("gaown", "Permissions");
 		reqModule.put("galock", "Lock");
 		reqModule.put("gaautolock", "Lock");
+		reqModule.put("game", "Chat");
+		reqModule.put("gachannel", "Chat");
 	}
 	
 	@Override

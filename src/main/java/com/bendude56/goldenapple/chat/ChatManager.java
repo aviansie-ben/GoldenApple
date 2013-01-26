@@ -1,12 +1,16 @@
 package com.bendude56.goldenapple.chat;
 
-import java.util.ArrayList;
+import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.List;
+import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
 import com.bendude56.goldenapple.permissions.PermissionManager.PermissionNode;
@@ -14,116 +18,123 @@ import com.bendude56.goldenapple.permissions.PermissionManager.PermissionNode;
 public class ChatManager {
 
 	// goldenapple.chat
-	public static PermissionNode		chatNode;
-	public static Permission			tellPermission;
+	public static PermissionNode			chatNode;
+	public static Permission				tellPermission;
 
 	// goldenapple.chat.channel
-	public static PermissionNode		channelsNode;
-	public static Permission			channelAddPermission;
-	public static Permission			channelModPermission;
-	public static Permission			channelAdminPermission;
+	public static PermissionNode			channelsNode;
+	public static Permission				channelAddPermission;
+	public static Permission				channelModPermission;
+	public static Permission				channelAdminPermission;
 
-	private HashMap<Long, ChatChannel>	chatChannels	= new HashMap<Long, ChatChannel>();
-	private HashMap<User, Long>			chatPlayers		= new HashMap<User, Long>();
+	private HashMap<String, ChatChannel>	activeChannels	= new HashMap<String, ChatChannel>();
+	private HashMap<User, String>			userChannels	= new HashMap<User, String>();
 
-	public ChatChannel createChannel(String label) {
-		return null;
-		/*ChatChannel channel = new ChatChannel(generateId(), label);
-		chatChannels.put(channel.getId(), channel);
-		return channel;*/
+	private ChatChannel						defaultChannel;
+	
+	public ChatManager() {
+		activeChannels = new HashMap<String, ChatChannel>();
+		userChannels = new HashMap<User, String>();
+		
+		tryCreateTable("channels");
+		tryCreateTable("channelusers");
+		tryCreateTable("channelgroups");
+		
+		try {
+			ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT * FROM Channels");
+			try {
+				while (r.next()) {
+					ChatChannel c = new DatabaseChatChannel(r);
+					activeChannels.put(c.getName(), c);
+				}
+			} finally {
+				r.close();
+			}
+		} catch (SQLException e) {
+			GoldenApple.log(Level.SEVERE, "Failed to load channels:");
+			GoldenApple.log(Level.SEVERE, e);
+			throw new RuntimeException(e);
+		}
+		
+		if (!channelExists(GoldenApple.getInstance().mainConfig.getString("modules.chat.defaultChatChannel", "default"))) {
+			defaultChannel = createChannel(GoldenApple.getInstance().mainConfig.getString("modules.chat.defaultChatChannel", "default"));
+		} else {
+			defaultChannel = getChannel(GoldenApple.getInstance().mainConfig.getString("modules.chat.defaultChatChannel", "default"));
+		}
+		
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			User u = User.getUser(p);
+			defaultChannel.tryJoin(u, false);
+		}
 	}
-
-	public ChatChannel getChannel(Long ID) {
-		if (chatChannels.containsKey(ID))
-			return chatChannels.get(ID);
+	
+	private void tryCreateTable(String tableName) {
+		try {
+			GoldenApple.getInstance().database.executeFromResource(tableName.toLowerCase() + "_create");
+		} catch (SQLException | IOException e) {
+			GoldenApple.log(Level.SEVERE, "Failed to create table '" + tableName + "':");
+			GoldenApple.log(Level.SEVERE, e);
+		}
+	}
+	
+	public void tryJoinChannel(User user, ChatChannel channel, boolean broadcast) {
+		if (channel.tryJoin(user, broadcast)) {
+			userChannels.put(user, channel.getName());
+		}
+	}
+	
+	public ChatChannel getActiveChannel(User user) {
+		if (userChannels.containsKey(user))
+			return activeChannels.get(userChannels.get(user));
 		else
 			return null;
 	}
 
-	public ChatChannel getChannel(String name) {
-		return null;
+	public ChatChannel getDefaultChannel() {
+		return defaultChannel;
 	}
 
-	public void deleteChannel(Long ID) {
-		ChatChannel channel = chatChannels.get(ID);
-		if (channel != null) {
-			chatChannels.remove(ID);
-			for (Player player : getPlayers(ID))
-				;
-				// chatPlayers.put(player, LOBBY.getId());
+	public ChatChannel createTemporaryChannel(String identifier) {
+		// TODO Temporary chat channel creation
+		return null;
+	}
+	
+	public ChatChannel createChannel(String identifier) {
+		try {
+			GoldenApple.getInstance().database.execute("INSERT INTO Channels (Identifier, DisplayName, MOTD, StrictCensor, DefaultLevel) VALUES (?, ?, NULL, FALSE, 2)", identifier, ChatColor.WHITE + identifier);
+			
+			ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT * FROM Channels WHERE Identifier=?", identifier);
+			try {
+				if (r.next()) {
+					ChatChannel c = new DatabaseChatChannel(r);
+					activeChannels.put(identifier, c);
+					return c;
+				} else {
+					return null;
+				}
+			} finally {
+				r.close();
+			}
+		} catch (SQLException e) {
+			GoldenApple.log(Level.SEVERE, "Failed to create channel '" + identifier + "':");
+			GoldenApple.log(Level.SEVERE, e);
+			return null;
+		}
+	}
+	
+	public boolean channelExists(String identifier) {
+		return activeChannels.containsKey(identifier);
+	}
+
+	public ChatChannel getChannel(String identifier) {
+		if (activeChannels.containsKey(identifier)) {
+			return activeChannels.get(identifier);
+		} else {
+			return null;
 		}
 	}
 
-	private Long generateId() {
-		Long id = (long)0;
-		while (!chatChannels.containsKey(0))
-			id++;
-		return id;
-	}
-
-	/**
-	 * Adds a player to the chat channel system. ONLY to be used when the player
-	 * first logs on.
-	 * 
-	 * @param player
-	 */
-	public void addPlayer(Player player) {
-		// chatPlayers.put(player, LOBBY.getId());
-	}
-
-	/**
-	 * Sets what channel a player is assigned to.
-	 * 
-	 * @param player The player who's channel is being set.
-	 * @param channel The channel to set the player to.
-	 */
-	public void setChannel(Player player, ChatChannel channel) {
-		// chatPlayers.put(player, channel.getId());
-	}
-
-	/**
-	 * Returns a list of all players assigned a certain channel
-	 * 
-	 * @param channel The channel to search for
-	 */
-	public List<Player> getPlayers(ChatChannel channel) {
-		return null;
-		// return getPlayers(channel.getId());
-	}
-
-	/**
-	 * Returns a list of all players assigned a certain channel
-	 * 
-	 * @param ID The ID of the channel to search for
-	 */
-	public List<Player> getPlayers(Long ID) {
-		List<Player> players = new ArrayList<Player>();
-		/*for (Player player : chatPlayers.keySet())
-			if (chatPlayers.get(player) == ID)
-				players.add(player);*/
-		return players;
-	}
-
-	/**
-	 * Removes a player from all channels. Intended to only be used when the
-	 * player goes offline.
-	 * 
-	 * @param player
-	 */
-	public void removePlayer(Player player) {
-		for (ChatChannel channel : chatChannels.values()) {
-			/*channel.removeSpy(player);
-			LOBBY.removeSpy(player);*/
-		}
-		if (chatPlayers.containsKey(player))
-			chatPlayers.remove(player);
-	}
-
-	public void startSpying(Player player, ChatChannel channel) {
-		// channel.addSpy(player);
-	}
-
-	public void stopSpying(Player player, ChatChannel channel) {
-		// channel.removeSpy(player);
+	public void deleteChannel(String identifier) {
+		
 	}
 }

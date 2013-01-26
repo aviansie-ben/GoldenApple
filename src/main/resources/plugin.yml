@@ -33,3 +33,7 @@ commands:
         usage: /<command>
         description: Enables or disables auto-lock
         aliases: [autolock]
+    game:
+        usage: /<command> <action>
+        description: Performs the specified action in chat
+        aliases: [me]

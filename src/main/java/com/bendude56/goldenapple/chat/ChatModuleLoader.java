@@ -18,6 +18,7 @@ public class ChatModuleLoader implements IModuleLoader {
 			registerPermissions(instance.permissions);
 			registerEvents();
 			registerCommands();
+			state = ModuleState.LOADED;
 		} catch (Throwable e) {
 			state = ModuleState.UNLOADED_ERROR;
 
@@ -25,17 +26,20 @@ public class ChatModuleLoader implements IModuleLoader {
 			unregisterEvents();
 			unregisterCommands();
 		}
-		state = ModuleState.LOADED;
 	}
 
 	@Override
 	public void registerPermissions(PermissionManager permissions) {
 		ChatManager.chatNode = permissions.registerNode("chat", PermissionManager.goldenAppleNode);
+		
 		ChatManager.channelsNode = permissions.registerNode("channels", ChatManager.chatNode);
+		ChatManager.channelAddPermission = permissions.registerPermission("add", ChatManager.channelsNode);
+		ChatManager.channelModPermission = permissions.registerPermission("mod", ChatManager.channelsNode);
+		ChatManager.channelAdminPermission = permissions.registerPermission("admin", ChatManager.channelsNode);
 	}
 
 	public void registerEvents() {
-		ChatListener.registerEvents();
+		ChatListener.startListening();
 	}
 
 	public void registerCommands() {
@@ -43,7 +47,7 @@ public class ChatModuleLoader implements IModuleLoader {
 	}
 
 	public void unregisterEvents() {
-		ChatListener.unregisterEvents();
+		ChatListener.stopListening();
 	}
 
 	public void unregisterCommands() {

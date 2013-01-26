@@ -1,39 +1,73 @@
 package com.bendude56.goldenapple.listener;
 
-import org.bukkit.Bukkit;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.HandlerList;
+import java.util.logging.Level;
+
+import org.bukkit.event.Event;
+import org.bukkit.event.EventException;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.plugin.EventExecutor;
+import org.bukkit.plugin.RegisteredListener;
 
 import com.bendude56.goldenapple.GoldenApple;
+import com.bendude56.goldenapple.User;
+import com.bendude56.goldenapple.chat.ChatChannel;
 
-public class ChatListener implements Listener
-{
-	private static ChatListener instance = null;
+public class ChatListener implements Listener, EventExecutor {
+	private static ChatListener listener = null;
 	
-	public static void registerEvents()
-	{
-		if (instance == null)
-		{
-			instance = new ChatListener();
-			Bukkit.getServer().getPluginManager().registerEvents(instance, GoldenApple.getInstance());
+	public static void startListening() {
+		listener = new ChatListener();
+		listener.registerEvents();
+	}
+	
+	public static void stopListening() {
+		if (listener != null) {
+			listener.unregisterEvents();
+			listener = null;
 		}
 	}
 	
-	public static void unregisterEvents()
-	{
-		if (instance != null)
-		{
-			HandlerList.unregisterAll(instance);
-			instance = null;
-		}
+	public void registerEvents() {
+		AsyncPlayerChatEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.HIGH, GoldenApple.getInstance(), true));
+		PlayerJoinEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.HIGH, GoldenApple.getInstance(), true));
 	}
-
-	@EventHandler
-	public void onAsyncPlayerChat(AsyncPlayerChatEvent e)
-	{
+	
+	public void unregisterEvents() {
+		AsyncPlayerChatEvent.getHandlerList().unregister(this);
+		PlayerJoinEvent.getHandlerList().unregister(this);
 		
 	}
-
+	
+	@Override
+	public void execute(Listener listener, Event event) throws EventException {
+		if (event instanceof AsyncPlayerChatEvent) {
+			asyncPlayerChat((AsyncPlayerChatEvent) event);
+		} else if (event instanceof PlayerJoinEvent) {
+			playerJoin((PlayerJoinEvent)event);
+		} else {
+			GoldenApple.log(Level.WARNING, "Unrecognized event in ChatListener: " + event.getClass().getName());
+		}
+	}
+	
+	public void asyncPlayerChat(AsyncPlayerChatEvent event) {
+		User u = User.getUser(event.getPlayer());
+		ChatChannel channel = GoldenApple.getInstance().chat.getActiveChannel(u);
+		if (channel == null) {
+			GoldenApple.getInstance().locale.sendMessage(u, "error.channel.notInChannel", false);
+		} else {
+			synchronized (channel) {
+				channel.sendMessage(u, event.getMessage());
+			}
+		}
+		event.setCancelled(true);
+	}
+	
+	public void playerJoin(PlayerJoinEvent event) {
+		User user = User.getUser(event.getPlayer());
+		
+		GoldenApple.getInstance().chat.tryJoinChannel(user, GoldenApple.getInstance().chat.getDefaultChannel(), false);
+	}
 }

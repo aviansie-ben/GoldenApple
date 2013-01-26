@@ -168,12 +168,12 @@ modules:
         # they first log into the server
         defaultChatChannel: 'default'
         
-        # A list of words that should be censored in all chat
-        # channels
+        # A list of regex patterns that should be censored in all
+        # chat channels.
         censorList:
         
-        # A list of words that should be censored in chat channels
-        # with strict censoring set to on
+        # A list of regex patterns that should be censored in any
+        # chat channels which have strict censoring on.
         strictCensorList:
         
     # Anti-griefing system options
