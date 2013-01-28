@@ -1,8 +1,11 @@
 package com.bendude56.goldenapple.chat;
 
+import org.bukkit.Bukkit;
+
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.IModuleLoader;
 import com.bendude56.goldenapple.ModuleLoadException;
+import com.bendude56.goldenapple.commands.ChannelCommand;
 import com.bendude56.goldenapple.listener.ChatListener;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 
@@ -14,8 +17,8 @@ public class ChatModuleLoader implements IModuleLoader {
 	public void loadModule(GoldenApple instance) throws ModuleLoadException {
 		state = ModuleState.LOADING;
 		try {
-			instance.chat = new ChatManager();
 			registerPermissions(instance.permissions);
+			instance.chat = new ChatManager();
 			registerEvents();
 			registerCommands();
 			state = ModuleState.LOADED;
@@ -25,6 +28,8 @@ public class ChatModuleLoader implements IModuleLoader {
 			instance.chat = null;
 			unregisterEvents();
 			unregisterCommands();
+			
+			throw new ModuleLoadException("Chat", e);
 		}
 	}
 
@@ -43,7 +48,7 @@ public class ChatModuleLoader implements IModuleLoader {
 	}
 
 	public void registerCommands() {
-		// TODO Register Commands
+		Bukkit.getPluginCommand("gachannel").setExecutor(new ChannelCommand());
 	}
 
 	public void unregisterEvents() {
@@ -51,7 +56,7 @@ public class ChatModuleLoader implements IModuleLoader {
 	}
 
 	public void unregisterCommands() {
-		// TODO Unregister Commands
+		Bukkit.getPluginCommand("gachannel").setExecutor(GoldenApple.defCmd);
 	}
 
 	@Override

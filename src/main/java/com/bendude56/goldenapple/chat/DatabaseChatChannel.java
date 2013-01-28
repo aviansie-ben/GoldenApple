@@ -21,6 +21,27 @@ public class DatabaseChatChannel extends ChatChannel {
 	public boolean isTemporary() {
 		return false;
 	}
+	
+	@Override
+	public void save() {
+		try {
+			GoldenApple.getInstance().database.execute("UPDATE Channels SET DisplayName=?, MOTD=?, StrictCensor=?, DefaultLevel=? WHERE Identifier=?", this.displayName, this.motd, this.censor == ChatCensor.strictChatCensor, this.defaultLevel.id, this.name);
+		} catch (SQLException e) {
+			GoldenApple.log(Level.SEVERE, "Failed to save channel '" + this.name + "' to database:");
+			GoldenApple.log(Level.SEVERE, e);
+		}
+	}
+	
+	@Override
+	public void delete() {
+		try {
+			GoldenApple.getInstance().database.execute("DELETE FROM Channels WHERE Identifier=?", this.name);
+			super.delete();
+		} catch (SQLException e) {
+			GoldenApple.log(Level.SEVERE, "Failed to delete channel '" + this.name + "' from the database:");
+			GoldenApple.log(Level.SEVERE, e);
+		}
+	}
 
 	@Override
 	public ChatChannelUserLevel getSpecificLevel(User user) {
@@ -59,16 +80,6 @@ public class DatabaseChatChannel extends ChatChannel {
 			GoldenApple.log(Level.WARNING, "Unable to retrieve channel access level for group '" + group + "' in channel '" + this.name + "':");
 			GoldenApple.log(Level.WARNING, e);
 			return ChatChannelUserLevel.UNKNOWN;
-		}
-	}
-	
-	@Override
-	public void save() {
-		try {
-			GoldenApple.getInstance().database.execute("UPDATE Channels SET DisplayName=?, MOTD=?, StrictCensor=?, DefaultLevel=?", this.displayName, this.motd, this.censor == ChatCensor.strictChatCensor, this.defaultLevel.id);
-		} catch (SQLException e) {
-			GoldenApple.log(Level.SEVERE, "Failed to save channel '" + this.name + "' to database:");
-			GoldenApple.log(Level.SEVERE, e);
 		}
 	}
 

@@ -60,6 +60,19 @@ public class User implements IPermissionUser {
 		}
 	}
 	
+	public static User getUser(String name) {
+		if (GoldenApple.getInstance().permissions == null) {
+			for (Entry<Long, User> cached : activeUsers.entrySet()) {
+				if (cached.getValue().getName().equals(name)) {
+					return cached.getValue();
+				}
+			}
+			return null;
+		} else {
+			return getUser(GoldenApple.getInstance().permissions.getUserId(name));
+		}
+	}
+	
 	public static User getUser(long id) {
 		if (activeUsers.containsKey(id))
 			return activeUsers.get(id);

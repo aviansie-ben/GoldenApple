@@ -8,6 +8,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.EventExecutor;
 import org.bukkit.plugin.RegisteredListener;
 
@@ -33,12 +34,13 @@ public class ChatListener implements Listener, EventExecutor {
 	public void registerEvents() {
 		AsyncPlayerChatEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.HIGH, GoldenApple.getInstance(), true));
 		PlayerJoinEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.HIGH, GoldenApple.getInstance(), true));
+		PlayerQuitEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.HIGH, GoldenApple.getInstance(), true));
 	}
 	
 	public void unregisterEvents() {
 		AsyncPlayerChatEvent.getHandlerList().unregister(this);
 		PlayerJoinEvent.getHandlerList().unregister(this);
-		
+		PlayerQuitEvent.getHandlerList().unregister(this);
 	}
 	
 	@Override
@@ -47,12 +49,14 @@ public class ChatListener implements Listener, EventExecutor {
 			asyncPlayerChat((AsyncPlayerChatEvent) event);
 		} else if (event instanceof PlayerJoinEvent) {
 			playerJoin((PlayerJoinEvent)event);
+		} else if (event instanceof PlayerQuitEvent) {
+			playerQuit((PlayerQuitEvent)event);
 		} else {
 			GoldenApple.log(Level.WARNING, "Unrecognized event in ChatListener: " + event.getClass().getName());
 		}
 	}
 	
-	public void asyncPlayerChat(AsyncPlayerChatEvent event) {
+	private void asyncPlayerChat(AsyncPlayerChatEvent event) {
 		User u = User.getUser(event.getPlayer());
 		ChatChannel channel = GoldenApple.getInstance().chat.getActiveChannel(u);
 		if (channel == null) {
@@ -65,9 +69,13 @@ public class ChatListener implements Listener, EventExecutor {
 		event.setCancelled(true);
 	}
 	
-	public void playerJoin(PlayerJoinEvent event) {
+	private void playerJoin(PlayerJoinEvent event) {
 		User user = User.getUser(event.getPlayer());
 		
 		GoldenApple.getInstance().chat.tryJoinChannel(user, GoldenApple.getInstance().chat.getDefaultChannel(), false);
+	}
+	
+	private void playerQuit(PlayerQuitEvent event) {
+		GoldenApple.getInstance().chat.leaveChannel(User.getUser(event.getPlayer()), false);
 	}
 }

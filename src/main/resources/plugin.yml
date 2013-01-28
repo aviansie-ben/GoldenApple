@@ -37,3 +37,7 @@ commands:
         usage: /<command> <action>
         description: Performs the specified action in chat
         aliases: [me]
+    gachannel:
+        usage: Use /<command> -? for help
+        description: Modifies, joins, and leaves chat channels.
+        aliases: [c, channel]

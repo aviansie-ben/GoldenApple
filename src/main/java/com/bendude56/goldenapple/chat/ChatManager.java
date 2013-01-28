@@ -3,7 +3,10 @@ package com.bendude56.goldenapple.chat;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -12,6 +15,7 @@ import org.bukkit.entity.Player;
 
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
+import com.bendude56.goldenapple.chat.ChatChannel.ChatChannelUserLevel;
 import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
 import com.bendude56.goldenapple.permissions.PermissionManager.PermissionNode;
 
@@ -28,7 +32,7 @@ public class ChatManager {
 	public static Permission				channelAdminPermission;
 
 	private HashMap<String, ChatChannel>	activeChannels	= new HashMap<String, ChatChannel>();
-	private HashMap<User, String>			userChannels	= new HashMap<User, String>();
+	protected HashMap<User, String>			userChannels	= new HashMap<User, String>();
 
 	private ChatChannel						defaultChannel;
 	
@@ -64,7 +68,7 @@ public class ChatManager {
 		
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			User u = User.getUser(p);
-			defaultChannel.tryJoin(u, false);
+			tryJoinChannel(u, defaultChannel, false);
 		}
 	}
 	
@@ -78,9 +82,29 @@ public class ChatManager {
 	}
 	
 	public void tryJoinChannel(User user, ChatChannel channel, boolean broadcast) {
+		if (userChannels.containsKey(user))
+			leaveChannel(user, broadcast);
+		
 		if (channel.tryJoin(user, broadcast)) {
 			userChannels.put(user, channel.getName());
 		}
+	}
+	
+	public void leaveChannel(User user, boolean broadcast) {
+		if (userChannels.containsKey(user)) {
+			activeChannels.get(userChannels.get(user)).leave(user, broadcast);
+			userChannels.remove(user);
+		}
+	}
+	
+	public void kickFromChannel(User user) {
+		if (userChannels.containsKey(user)) {
+			activeChannels.get(userChannels.get(user)).kick(user);
+		}
+	}
+	
+	public ChatChannelUserLevel getActiveChannelLevel(User user) {
+		return (userChannels.containsKey(user)) ? activeChannels.get(userChannels.get(user)).connectedUsers.get(user) : ChatChannelUserLevel.UNKNOWN;
 	}
 	
 	public ChatChannel getActiveChannel(User user) {
@@ -88,6 +112,10 @@ public class ChatManager {
 			return activeChannels.get(userChannels.get(user));
 		else
 			return null;
+	}
+	
+	public List<ChatChannel> getActiveChannels() {
+		return Collections.unmodifiableList(new ArrayList<ChatChannel>(activeChannels.values()));
 	}
 
 	public ChatChannel getDefaultChannel() {
@@ -135,6 +163,9 @@ public class ChatManager {
 	}
 
 	public void deleteChannel(String identifier) {
-		
+		if (activeChannels.containsKey(identifier)) {
+			activeChannels.get(identifier).delete();
+			activeChannels.remove(identifier);
+		}
 	}
 }

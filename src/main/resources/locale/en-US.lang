@@ -2,9 +2,12 @@ error.antigrief.potionBlock=&4ERROR: The potion you are attempting to use has be
 error.antigrief.potionCheckFail=&4ERROR: Internal error while checking for blocked potion.
 error.antigrief.tnt=&4ERROR: You are not allowed to ignite TNT! This attempt has been logged.
 
+error.channel.kick.notInChannel=&4ERROR: Cannot kick '%1' from this channel since he is not in it.
 error.channel.noJoin=&4ERROR: You don't have permission to join that channel.
 error.channel.noTalk=&4ERROR: You don't have permission to talk in this channel.
+error.channel.notFound=&4ERROR: Cannot find a channel with identifier '%1'.
 error.channel.notInChannel=&4ERROR: You must join a chat channel to talk.
+error.channel.notInChannelCommand=&4ERROR: You must be in a chat channel to use that command.
 
 error.lock.access.unknown=&4ERROR: There is no access level with name &f%1&4!
 error.lock.create.alreadyExists=&4ERROR: A protection already exists on that block!
@@ -50,12 +53,16 @@ error.permissions.remove.userUnknown=&4ERROR: Failed to remove user '%1': Unknow
 
 error.verify.noCommand=&4ERROR: No command to verify!
 
-general.channel.leave=&aYou have left channel %1&a.
-general.channel.leaveBroadcast=%1&7 has left the channel.
+general.channel.deleteBroadcast=&eChannel %1&e is being deleted. Everybody will now be kicked from this channel.
 general.channel.join=&aYou are now in channel %1&a.
 general.channel.joinBroadcast=%1&7 has joined the channel.
 general.channel.kick=&eYou have been kicked from channel %1&e.
 general.channel.kickBroadcast=%1&7 has been kicked from the channel.
+general.channel.leave=&aYou have left channel %1&a.
+general.channel.leaveBroadcast=%1&7 has left the channel.
+general.channel.list=The following chat channels are active:
+general.channel.motd.clear=&aThe MOTD has been cleared.
+general.channel.motd.set=&aThe MOTD has been set.
 general.channel.noTalk=&eNOTE: You aren't allowed to talk in the channel you have joined.
 
 general.complex.successOff=&aNow using simple command syntax
@@ -113,6 +120,7 @@ general.permissions.remove.warnUser=&e   User: %1
 general.permissions.remove.warnGroup=&e   Group: %1
 general.permissions.remove.warnEnd=&eIf you are sure you wish to permanently remove these groups and users, use /gaverify.
 
+header.chat=&7-----&6 GoldenApple Chat &7-----
 header.help=&7-----&6 GoldenApple Help &7-----
 header.lock=&7-----&6 GoldenApple Locks &7-----
 header.module=&7-----&6 GoldenApple Module Controller &7-----

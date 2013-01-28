@@ -11,7 +11,7 @@ import com.bendude56.goldenapple.User;
 public abstract class ChatChannel {
 	protected String name;
 	protected String displayName;
-	protected String motd;
+	public String motd;
 	protected ChatChannelUserLevel defaultLevel;
 	protected ChatCensor censor;
 	protected HashMap<User, ChatChannelUserLevel> connectedUsers;
@@ -26,6 +26,14 @@ public abstract class ChatChannel {
 	}
 	
 	public abstract boolean isTemporary();
+	public abstract void save();
+	
+	public void delete() {
+		broadcastLocalizedMessage("general.channel.deleteBroadcast", displayName);
+		for (Map.Entry<User, ChatChannelUserLevel> user : connectedUsers.entrySet()) {
+			GoldenApple.getInstance().chat.userChannels.remove(user.getKey());
+		}
+	}
 	
 	public final String getName() {
 		return name;
@@ -56,11 +64,11 @@ public abstract class ChatChannel {
 		return true;
 	}
 	
-	public void leave(User user) {
+	public void leave(User user, boolean broadcast) {
 		connectedUsers.remove(user);
 		
 		GoldenApple.getInstance().locale.sendMessage(user, "general.channel.leave", false, displayName);
-		broadcastLocalizedMessage("general.channel.leaveBroadcast", user.getDisplayName());
+		if (broadcast) broadcastLocalizedMessage("general.channel.leaveBroadcast", user.getDisplayName());
 	}
 	
 	public void kick(User user) {
@@ -85,7 +93,21 @@ public abstract class ChatChannel {
 			level = (getDefaultLevel().id > level.id) ? getDefaultLevel() : level;
 		}
 		
+		if (user.hasPermission(ChatManager.channelAdminPermission) && level.id < ChatChannelUserLevel.ADMINISTRATOR.id)
+			level = ChatChannelUserLevel.ADMINISTRATOR;
+		else if (user.hasPermission(ChatManager.channelModPermission) && level.id < ChatChannelUserLevel.MODERATOR.id)
+			level = ChatChannelUserLevel.MODERATOR;
+		
 		return level;
+	}
+	
+	public ChatChannelDisplayLevel getDisplayLevel(User user) {
+		if (connectedUsers.containsKey(user))
+			return ChatChannelDisplayLevel.CONNECTED;
+		else if (calculateLevel(user).id > ChatChannelUserLevel.NO_ACCESS.id)
+			return ChatChannelDisplayLevel.NORMAL;
+		else
+			return ChatChannelDisplayLevel.GRAYED_OUT;
 	}
 	
 	public abstract ChatChannelUserLevel getSpecificLevel(User user);
@@ -93,8 +115,6 @@ public abstract class ChatChannel {
 	
 	public abstract void setUserLevel(long user, ChatChannelUserLevel level);
 	public abstract void setGroupLevel(long group, ChatChannelUserLevel level);
-	
-	public abstract void save();
 	
 	public final void setDefaultLevel(ChatChannelUserLevel defaultLevel) {
 		this.defaultLevel = defaultLevel;
@@ -114,6 +134,7 @@ public abstract class ChatChannel {
 	}
 	
 	public final void broadcastMessage(String message) {
+		GoldenApple.log("[" + name + "] " + message);
 		for (Map.Entry<User, ChatChannelUserLevel> user : connectedUsers.entrySet()) {
 			user.getKey().getHandle().sendMessage(message);
 		}
@@ -132,11 +153,21 @@ public abstract class ChatChannel {
 	}
 	
 	public final void broadcastLocalizedMessage(String message, boolean multiline, String... arguments) {
+		if (multiline) {
+			for (int i = 0; GoldenApple.getInstance().locale.messages.containsKey(message + "." + i); i++) {
+				GoldenApple.log("[" + name + "] " + GoldenApple.getInstance().locale.processMessageDefaultLocale(message + "." + i, arguments));
+			}
+		} else {
+			GoldenApple.log("[" + name + "] " + GoldenApple.getInstance().locale.processMessageDefaultLocale(message, arguments));
+		}
 		for (Map.Entry<User, ChatChannelUserLevel> user : connectedUsers.entrySet()) {
 			GoldenApple.getInstance().locale.sendMessage(user.getKey(), message, multiline);
 		}
 	}
 	
+	public final boolean isInChannel(User user) {
+		return connectedUsers.containsKey(user);
+	}
 	
 	public enum ChatChannelUserLevel {
 		UNKNOWN(-1), NO_ACCESS(0), JOIN(1), CHAT(2), VIP(3), MODERATOR(4), SUPER_MODERATOR(5), ADMINISTRATOR(6);
@@ -154,5 +185,9 @@ public abstract class ChatChannel {
 			}
 			return ChatChannelUserLevel.UNKNOWN;
 		}
+	}
+	
+	public enum ChatChannelDisplayLevel {
+		HIDDEN, GRAYED_OUT, NORMAL, CONNECTED
 	}
 }
