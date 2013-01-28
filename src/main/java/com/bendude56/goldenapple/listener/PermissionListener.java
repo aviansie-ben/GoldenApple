@@ -8,11 +8,13 @@ import org.bukkit.event.EventException;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.plugin.EventExecutor;
 import org.bukkit.plugin.RegisteredListener;
 
 import com.bendude56.goldenapple.GoldenApple;
+import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.permissions.PermissionGroup;
 import com.bendude56.goldenapple.permissions.PermissionUser;
 
@@ -34,16 +36,20 @@ public class PermissionListener implements Listener, EventExecutor {
 
 	private void registerEvents() {
 		PlayerLoginEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
+		PlayerQuitEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.HIGHEST, GoldenApple.getInstance(), true));
 	}
 
 	private void unregisterEvents() {
 		PlayerLoginEvent.getHandlerList().unregister(this);
+		PlayerQuitEvent.getHandlerList().unregister(this);
 	}
 
 	@Override
 	public void execute(Listener listener, Event event) throws EventException {
 		if (event instanceof PlayerLoginEvent) {
 			playerLogin((PlayerLoginEvent)event);
+		} else if (event instanceof PlayerQuitEvent) {
+			playerQuit((PlayerQuitEvent)event);
 		} else {
 			GoldenApple.log(Level.WARNING, "Unrecognized event in PermissionListener: " + event.getClass().getName());
 		}
@@ -101,5 +107,9 @@ public class PermissionListener implements Listener, EventExecutor {
 				}
 			}
 		}
+	}
+	
+	private void playerQuit(PlayerQuitEvent event) {
+		User.unloadUser(User.getUser(event.getPlayer()));
 	}
 }
