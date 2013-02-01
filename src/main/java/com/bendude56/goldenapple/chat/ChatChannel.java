@@ -78,6 +78,14 @@ public abstract class ChatChannel {
 		broadcastLocalizedMessage("general.channel.kickBroadcast", user.getDisplayName());
 	}
 	
+	public final boolean isStrictCensorOn() {
+		return censor == ChatCensor.strictChatCensor;
+	}
+	
+	public void setStrictCensorOn(boolean value) {
+		censor = (value) ? ChatCensor.strictChatCensor : ChatCensor.defaultChatCensor;
+	}
+	
 	public final ChatChannelUserLevel getActiveLevel(User user) {
 		return connectedUsers.get(user);
 	}
@@ -170,17 +178,43 @@ public abstract class ChatChannel {
 	}
 	
 	public enum ChatChannelUserLevel {
-		UNKNOWN(-1), NO_ACCESS(0), JOIN(1), CHAT(2), VIP(3), MODERATOR(4), SUPER_MODERATOR(5), ADMINISTRATOR(6);
+		UNKNOWN(-1, null, null, "???"), NO_ACCESS(0, "n", "none", ChatColor.RED + "None"),
+		JOIN(1, "j", "join", ChatColor.GRAY + "Join"), CHAT(2, "c", "chat", ChatColor.GRAY + "Chat"),
+		VIP(3, "v", "vip", ChatColor.GREEN + "VIP"), MODERATOR(4, "m", "mod", ChatColor.GOLD + "Moderator"),
+		SUPER_MODERATOR(5, "s", "supermod", ChatColor.GOLD + "Super Moderator"),
+		ADMINISTRATOR(6, "a", "admin", ChatColor.GOLD + "Administrator");
 		
 		public int id;
+		public String complexCmd;
+		public String simpleCmd;
+		public String display;
 		
-		ChatChannelUserLevel(int id) {
+		ChatChannelUserLevel(int id, String complexCmd, String simpleCmd, String display) {
 			this.id = id;
+			this.complexCmd = complexCmd;
+			this.simpleCmd = simpleCmd;
+			this.display = display;
 		}
 		
 		public static ChatChannelUserLevel getLevel(int id) {
 			for (ChatChannelUserLevel l : ChatChannelUserLevel.values()) {
 				if (l.id == id)
+					return l;
+			}
+			return ChatChannelUserLevel.UNKNOWN;
+		}
+		
+		public static ChatChannelUserLevel fromCmdComplex(String id) {
+			for (ChatChannelUserLevel l : ChatChannelUserLevel.values()) {
+				if (l.complexCmd != null && l.complexCmd.equals(id))
+					return l;
+			}
+			return ChatChannelUserLevel.UNKNOWN;
+		}
+		
+		public static ChatChannelUserLevel fromCmdSimple(String id) {
+			for (ChatChannelUserLevel l : ChatChannelUserLevel.values()) {
+				if (l.simpleCmd != null && l.simpleCmd.equals(id))
 					return l;
 			}
 			return ChatChannelUserLevel.UNKNOWN;

@@ -2,6 +2,9 @@ error.antigrief.potionBlock=&4ERROR: The potion you are attempting to use has be
 error.antigrief.potionCheckFail=&4ERROR: Internal error while checking for blocked potion.
 error.antigrief.tnt=&4ERROR: You are not allowed to ignite TNT! This attempt has been logged.
 
+error.channel.alreadyExists=&4ERROR: A channel with that name already exists!
+error.channel.defaultLevelTooHigh=&4ERROR: Only None, Join, and Chat can be used as the default level!
+error.channel.invalidLevel=&4ERROR: '%1' is not a valid level!
 error.channel.kick.notInChannel=&4ERROR: Cannot kick '%1' from this channel since he is not in it.
 error.channel.noJoin=&4ERROR: You don't have permission to join that channel.
 error.channel.noTalk=&4ERROR: You don't have permission to talk in this channel.
@@ -54,6 +57,7 @@ error.permissions.remove.userUnknown=&4ERROR: Failed to remove user '%1': Unknow
 error.verify.noCommand=&4ERROR: No command to verify!
 
 general.channel.deleteBroadcast=&eChannel %1&e is being deleted. Everybody will now be kicked from this channel.
+general.channel.deleteWarn=&eWARNING: You are about to permanently delete this chat channel! If you are sure you wish to do this, type /gaverify.
 general.channel.join=&aYou are now in channel %1&a.
 general.channel.joinBroadcast=%1&7 has joined the channel.
 general.channel.kick=&eYou have been kicked from channel %1&e.
@@ -61,9 +65,16 @@ general.channel.kickBroadcast=%1&7 has been kicked from the channel.
 general.channel.leave=&aYou have left channel %1&a.
 general.channel.leaveBroadcast=%1&7 has left the channel.
 general.channel.list=The following chat channels are active:
+general.channel.lvlRemoveGroup=&aAccess for group '%1&a' has been removed.
+general.channel.lvlRemoveUser=&aAccess for user '%1&a' has been removed.
+general.channel.lvlSetDefault=&aThe default level has been set to %1&a.
+general.channel.lvlSetGroup=&aThe level for group '%1&a' has been set to %2&a.
+general.channel.lvlSetUser=&aThe level for user '%1&a' has been set to %2&a.
 general.channel.motd.clear=&aThe MOTD has been cleared.
 general.channel.motd.set=&aThe MOTD has been set.
 general.channel.noTalk=&eNOTE: You aren't allowed to talk in the channel you have joined.
+general.channel.strictOff=&aCensoring on this channel is now set to &eNormal&a.
+general.channel.strictOn=&aCensoring on this channel is now set to &4Strict&a.
 
 general.complex.successOff=&aNow using simple command syntax
 general.complex.successOn=&aNow using complex command syntax

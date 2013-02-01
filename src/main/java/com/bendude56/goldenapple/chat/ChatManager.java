@@ -100,6 +100,7 @@ public class ChatManager {
 	public void kickFromChannel(User user) {
 		if (userChannels.containsKey(user)) {
 			activeChannels.get(userChannels.get(user)).kick(user);
+			userChannels.remove(user);
 		}
 	}
 	
