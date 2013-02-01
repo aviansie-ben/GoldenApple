@@ -139,7 +139,7 @@ header.permissions=&7-----&6 GoldenApple Permissions &7-----
 
 help.channel.inNormal.complex.1=Leave the channel using &7-l
 
-help.channel.inNormal.simple.1=Leave the channel using /%1 leave
+help.channel.inNormal.simple.1=Leave the channel using &7/%1 leave
 
 help.channel.inMod.complex.1=Kick a user using &7-k <user>
 help.channel.inMod.complex.2=Change the MOTD using &7--motd <motd>
@@ -149,10 +149,10 @@ help.channel.inMod.simple.1=Kick a user using &7/%1 kick <user>
 help.channel.inMod.simple.2=Change the MOTD using &7/%1 motd <motd>
 help.channel.inMod.simple.3=View a user's level using &7/%1 whois <user>
 
-help.channel.inSuperMod.complex.1=Set a user's access level using &7-lvl:{n|j|t|v|m|s|a} <user>
-help.channel.inSuperMod.complex.2=Set a group's access level using &7-glvl:{n|j|t|v|m|s|a} <group>
+help.channel.inSuperMod.complex.1=Set a user's access level using &7-lvl:{n|j|t|v|m|s|a|r} <user>
+help.channel.inSuperMod.complex.2=Set a group's access level using &7-glvl:{n|j|t|v|m|s|a|r} <group>
 
-help.channel.inSuperMod.simple.1=Change a user's level using &7/%1 level {none|join|talk|vip|mod|supermod|admin} <group>
+help.channel.inSuperMod.simple.1=Change a user's level using &7/%1 level {none|join|talk|vip|mod|supermod|admin|remove} <user>
 
 help.channel.inAdmin.complex.1=Set the default access level using &7-dlvl:{n|j|t}
 help.channel.inAdmin.complex.2=Delete the channel using &7-d

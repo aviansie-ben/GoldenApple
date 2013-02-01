@@ -18,9 +18,13 @@ public class ChatModuleLoader implements IModuleLoader {
 		state = ModuleState.LOADING;
 		try {
 			registerPermissions(instance.permissions);
+			
+			ChatCensor.loadCensors();
+			
 			instance.chat = new ChatManager();
 			registerEvents();
 			registerCommands();
+			
 			state = ModuleState.LOADED;
 		} catch (Throwable e) {
 			state = ModuleState.UNLOADED_ERROR;
@@ -28,6 +32,8 @@ public class ChatModuleLoader implements IModuleLoader {
 			instance.chat = null;
 			unregisterEvents();
 			unregisterCommands();
+			
+			ChatCensor.unloadCensors();
 			
 			throw new ModuleLoadException("Chat", e);
 		}
@@ -64,6 +70,8 @@ public class ChatModuleLoader implements IModuleLoader {
 		unregisterEvents();
 		unregisterCommands();
 		instance.chat = null;
+		
+		ChatCensor.unloadCensors();
 
 		state = ModuleState.UNLOADED_USER;
 	}
