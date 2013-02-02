@@ -1,39 +1,67 @@
 package com.bendude56.goldenapple.listener;
 
-import org.bukkit.Bukkit;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.HandlerList;
+import java.util.HashMap;
+import java.util.logging.Level;
+
+import org.bukkit.Location;
+import org.bukkit.event.Event;
+import org.bukkit.event.EventException;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.plugin.EventExecutor;
+import org.bukkit.plugin.RegisteredListener;
 
 import com.bendude56.goldenapple.GoldenApple;
+import com.bendude56.goldenapple.User;
 
-public class WarpListener implements Listener
-{
-	private static WarpListener instance;
+public class WarpListener implements Listener, EventExecutor {
+	public static HashMap<User, Location> backLocation = new HashMap<User, Location>();
 	
-	public static void registerEvents()
-	{
-		if (instance == null)
-		{
-			instance = new WarpListener();
-			Bukkit.getServer().getPluginManager().registerEvents(instance, GoldenApple.getInstance());
+	private static WarpListener	listener;
+
+	public static void startListening() {
+		listener = new WarpListener();
+		listener.registerEvents();
+	}
+
+	public static void stopListening() {
+		if (listener != null) {
+			listener.unregisterEvents();
+			listener = null;
 		}
 	}
-	
-	public static void unregisterEvents()
-	{
-		if (instance != null)
-		{
-			HandlerList.unregisterAll(instance);
-			instance = null;
+
+	private void registerEvents() {
+		PlayerTeleportEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
+		PlayerDeathEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
+	}
+
+	private void unregisterEvents() {
+		PlayerTeleportEvent.getHandlerList().unregister(this);
+		PlayerDeathEvent.getHandlerList().unregister(this);
+	}
+
+	@Override
+	public void execute(Listener listener, Event event) throws EventException {
+		if (event instanceof PlayerTeleportEvent) {
+			playerTeleport((PlayerTeleportEvent)event);
+		} else if (event instanceof PlayerDeathEvent) {
+			playerDeath((PlayerDeathEvent)event);
+		} else if (event instanceof EntityDeathEvent) {
+			// Do nothing
+		} else {
+			GoldenApple.log(Level.WARNING, "Unrecognized event in WarpListener: " + event.getClass().getName());
 		}
 	}
-	
-	@EventHandler
-	public void onPlayerRespawn(PlayerRespawnEvent e)
-	{
-		// TODO Option to send player to their home 1
+
+	private void playerTeleport(PlayerTeleportEvent event) {
+		backLocation.put(User.getUser(event.getPlayer()), event.getFrom());
 	}
 	
+	private void playerDeath(PlayerDeathEvent event) {
+		backLocation.put(User.getUser(event.getEntity()), event.getEntity().getLocation());
+	}
 }

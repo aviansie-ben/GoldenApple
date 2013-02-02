@@ -285,3 +285,9 @@ modules:
             nightVision: false
             slowness: false
             harming: false
+            
+    warps:
+        
+        # Determines whether or not the GoldenApple warps module will
+        # be loaded automatically when the server starts up
+        enabled: true

@@ -32,14 +32,14 @@ import com.bendude56.goldenapple.lock.LockManager;
 import com.bendude56.goldenapple.lock.LockModuleLoader;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 import com.bendude56.goldenapple.permissions.PermissionsModuleLoader;
-import com.bendude56.goldenapple.warp.WarpManager;
+import com.bendude56.goldenapple.warp.WarpModuleLoader;
 
 public class GoldenApple extends JavaPlugin {
 	private static Logger								log			= Logger.getLogger("Minecraft");
 
 	public static final HashMap<String, IModuleLoader>	modules		= new HashMap<String, IModuleLoader>();
-	public static final String[]						loadOrder	= new String[] { "Base", "Permissions", "Lock", "Antigrief", "Chat" };
-	public static final String[]						commands	= new String[] { "gamodule", "gaverify", "gaown", "gapermissions", "galock", "gacomplex", "gaautolock" };
+	public static final String[]						loadOrder	= new String[] { "Base", "Permissions", "Lock", "Antigrief", "Chat", "Warp" };
+	public static final String[]						commands	= new String[] { "gamodule", "gaverify", "gaown", "gapermissions", "galock", "gacomplex", "gaautolock", "gaspawn", "gatp", "gatphere", "gachannel", "game" };
 	public static final String[]						devs		= new String[] { "ben_dude56", "Deaboy" };
 	public static final UnloadedCommand					defCmd		= new UnloadedCommand();
 
@@ -49,6 +49,7 @@ public class GoldenApple extends JavaPlugin {
 		modules.put("Lock", new LockModuleLoader());
 		modules.put("Antigrief", new AntigriefModuleLoader());
 		modules.put("Chat", new ChatModuleLoader());
+		modules.put("Warp", new WarpModuleLoader());
 	}
 
 	public static void logPermissionFail(User u, String command, String[] args, boolean sendMessage) {
@@ -90,7 +91,6 @@ public class GoldenApple extends JavaPlugin {
 	public PermissionManager	permissions;
 	public LockManager			locks;
 	public AreaManager			areas;
-	public WarpManager			warp;
 	public ChatManager			chat;
 	public LocalizationHandler	locale;
 

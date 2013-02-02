@@ -169,7 +169,7 @@ public abstract class ChatChannel {
 			GoldenApple.log("[" + name + "] " + GoldenApple.getInstance().locale.processMessageDefaultLocale(message, arguments));
 		}
 		for (Map.Entry<User, ChatChannelUserLevel> user : connectedUsers.entrySet()) {
-			GoldenApple.getInstance().locale.sendMessage(user.getKey(), message, multiline);
+			GoldenApple.getInstance().locale.sendMessage(user.getKey(), message, multiline, arguments);
 		}
 	}
 	

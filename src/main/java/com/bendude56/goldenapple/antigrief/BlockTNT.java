@@ -61,7 +61,6 @@ public class BlockTNT extends net.minecraft.server.v1_4_R1.BlockTNT {
 	
 	@Override
 	public void onPlace(World world, int i, int j, int k) {
-        super.onPlace(world, i, j, k);
         if (!world.suppressPhysics && world.isBlockIndirectlyPowered(i, j, k) && !GoldenApple.getInstance().mainConfig.getBoolean("modules.antigrief.noRedstoneTnt", true)) {
             this.postBreak(world, i, j, k, 1);
             world.setTypeId(i, j, k, 0);

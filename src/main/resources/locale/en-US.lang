@@ -56,6 +56,9 @@ error.permissions.remove.userUnknown=&4ERROR: Failed to remove user '%1': Unknow
 
 error.verify.noCommand=&4ERROR: No command to verify!
 
+error.warps.noBack=&4ERROR: You have nowhere to go back to!
+error.warps.pluginCancel=&4ERROR: Teleport was cancelled by another plugin!
+
 general.channel.deleteBroadcast=&eChannel %1&e is being deleted. Everybody will now be kicked from this channel.
 general.channel.deleteWarn=&eWARNING: You are about to permanently delete this chat channel! If you are sure you wish to do this, type /gaverify.
 general.channel.join=&aYou are now in channel %1&a.
@@ -131,11 +134,16 @@ general.permissions.remove.warnUser=&e   User: %1
 general.permissions.remove.warnGroup=&e   Group: %1
 general.permissions.remove.warnEnd=&eIf you are sure you wish to permanently remove these groups and users, use /gaverify.
 
+general.warps.teleportBy=&aYou have been teleported by %1&a.
+general.warps.teleportSpawn=&aYou have been teleported to spawn.
+general.warps.teleportSpawnWorld=&aYou have been teleported to the spawn of world %1.
+
 header.chat=&7-----&6 GoldenApple Chat &7-----
 header.help=&7-----&6 GoldenApple Help &7-----
 header.lock=&7-----&6 GoldenApple Locks &7-----
 header.module=&7-----&6 GoldenApple Module Controller &7-----
 header.permissions=&7-----&6 GoldenApple Permissions &7-----
+header.warps=&7-----&6 GoldenApple Warps &7-----
 
 help.channel.inNormal.complex.1=Leave the channel using &7-l
 
@@ -205,3 +213,4 @@ shared.parameterMissing=&eWARNING: Parameter missing from option: %1
 shared.unknownOption=&4ERROR: Unknown option: %1
 shared.userNotFoundError=&4ERROR: Failed to find user '%1'
 shared.userNotFoundWarning=&eWARNING: Failed to find user '%1'
+shared.worldNotFoundError=&4ERROR: Failed to find world '%1'

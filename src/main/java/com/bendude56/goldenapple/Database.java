@@ -39,7 +39,7 @@ public final class Database {
 					return;
 				}
 				connection = c;
-				execute("CREATE DATABASE IF NOT EXISTS " + GoldenApple.getInstance().mainConfig.getString("database.database", "ga"));
+				// execute("CREATE DATABASE IF NOT EXISTS " + GoldenApple.getInstance().mainConfig.getString("database.database", "ga"));
 				execute("USE " + GoldenApple.getInstance().mainConfig.getString("database.database", "ga"));
 				GoldenApple.log("Successfully connected to MySQL database at \'" + GoldenApple.getInstance().mainConfig.getString("database.host") + "\'");
 			} catch (Exception e) {

@@ -1,5 +1,5 @@
 name: GoldenApple
-version: 0.1
+version: 1.0.0
 main: com.bendude56.goldenapple.GoldenApple
 website: https://www.github.com/bendude56/GoldenApple
 authors: [ben_dude56, Deaboy]
@@ -41,3 +41,19 @@ commands:
         usage: Use /<command> -? for help
         description: Modifies, joins, and leaves chat channels.
         aliases: [c, channel]
+    gaspawn:
+        usage: /<command> [world]
+        description: Teleports you to the world spawn.
+        aliases: [spawn]
+    gatp:
+        usage: /<command> <player 1> [player 2]
+        description: Teleports you to another player or teleports another player to another player
+        aliases: [tp]
+    gatphere:
+        usage: /<command> <player>
+        description: Teleports another player to you
+        aliases: [tphere]
+    gaback:
+        usage: /<command>
+        description: Teleports you back to before your last teleport
+        aliases: [back]
