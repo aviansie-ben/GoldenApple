@@ -2,6 +2,7 @@ package com.bendude56.goldenapple;
 
 import org.bukkit.Bukkit;
 
+import com.bendude56.goldenapple.audit.AuditLog;
 import com.bendude56.goldenapple.commands.ComplexCommand;
 import com.bendude56.goldenapple.commands.ModuleCommand;
 import com.bendude56.goldenapple.commands.VerifyCommand;
@@ -15,6 +16,7 @@ public class BaseModuleLoader implements IModuleLoader {
 	public void loadModule(GoldenApple instance) {
 		state = ModuleState.LOADING;
 		try {
+			AuditLog.initAuditLog();
 			registerCommands();
 			state = ModuleState.LOADED;
 		} catch (Throwable e) {
@@ -37,6 +39,7 @@ public class BaseModuleLoader implements IModuleLoader {
 	@Override
 	public void unloadModule(GoldenApple instance) {
 		// This module should only be unloaded when GoldenApple is shutting down
+		AuditLog.deinitAuditLog();
 		state = ModuleState.UNLOADED_USER;
 	}
 

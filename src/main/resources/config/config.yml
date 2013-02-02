@@ -88,6 +88,18 @@ securityPolicy:
 
 # Options for GoldenApple modules
 modules:
+
+    # Audit system options
+    audit:
+        
+        # The log file (relative to the CraftBukkit folder) that
+        # should be used to store a duplicate text copy of the audit
+        # log. (Leave blank to disable)
+        textAuditLog: 'plugins/GoldenApple/audit.log'
+        
+        # Setting this to true will prevent the audit log from being
+        # modified by administrators using commands.
+        disableAdminEdit: true
     
     # Permissions system options
     permissions:

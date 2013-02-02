@@ -13,6 +13,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Properties;
 import java.util.logging.Level;
 
@@ -136,6 +137,20 @@ public final class Database {
 	
 	public ResultSet executeQueryFromResource(String resourceName, Object... parameters) throws SQLException, IOException {
 		return executeQuery(readResource("sql/" + ((mySql) ? "mysql" : "sqlite") + "/" + resourceName + ".sql"), parameters);
+	}
+	
+	public ResultSet executeReturnGenKeys(String command) throws SQLException {
+		return executeReturnGenKeys(command, new Object[0]);
+	}
+	
+	public ResultSet executeReturnGenKeys(String command, Object... parameters) throws SQLException {
+		PreparedStatement s = connection.prepareStatement(command, Statement.RETURN_GENERATED_KEYS);
+		for (int i = 0; i < parameters.length; i++) {
+			s.setObject(i + 1, parameters[i]);
+		}
+		s.execute();
+		
+		return s.getGeneratedKeys();
 	}
 	
 	private String readResource(String resource) throws IOException {

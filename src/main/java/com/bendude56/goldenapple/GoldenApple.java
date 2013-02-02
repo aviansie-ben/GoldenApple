@@ -22,6 +22,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.bendude56.goldenapple.IModuleLoader.ModuleState;
 import com.bendude56.goldenapple.antigrief.AntigriefModuleLoader;
 import com.bendude56.goldenapple.area.AreaManager;
+import com.bendude56.goldenapple.audit.AuditLog;
+import com.bendude56.goldenapple.audit.ModuleDisableEvent;
+import com.bendude56.goldenapple.audit.ModuleEnableEvent;
 import com.bendude56.goldenapple.chat.ChatManager;
 import com.bendude56.goldenapple.chat.ChatModuleLoader;
 import com.bendude56.goldenapple.commands.UnloadedCommand;
@@ -63,11 +66,11 @@ public class GoldenApple extends JavaPlugin {
 	}
 
 	public static void log(Throwable e) {
-		log(Level.SEVERE, e.toString());
+		log(Level.SEVERE, e);
 	}
 
 	public static void log(Level level, Throwable e) {
-		log(level, e.toString());
+		log.log(level, "", e);
 	}
 
 	public static void log(String message) {
@@ -172,6 +175,7 @@ public class GoldenApple extends JavaPlugin {
 		verifyModuleLoad(module, loadDependancies);
 		try {
 			module.loadModule(this);
+			AuditLog.logEvent(new ModuleEnableEvent(module.getModuleName()));
 			return true;
 		} catch (Throwable e) {
 			log(Level.SEVERE, "Encountered an unrecoverable error while enabling module '" + module.getModuleName() + "'");
@@ -223,6 +227,7 @@ public class GoldenApple extends JavaPlugin {
 				return false;
 			}
 		}
+		AuditLog.logEvent(new ModuleDisableEvent(module.getModuleName()));
 		return true;
 	}
 
