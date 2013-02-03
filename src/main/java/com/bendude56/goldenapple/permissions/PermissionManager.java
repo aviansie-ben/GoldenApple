@@ -76,13 +76,6 @@ public class PermissionManager {
 		tryCreateTable("GroupGroupMembers");
 		tryCreateTable("GroupUserMembers");
 
-		if (GoldenApple.getInstance().database.usingMySql()) {
-			checkUserColumnsMySql();
-			checkGroupColumnsMySql();
-		} else {
-			GoldenApple.log(Level.WARNING, "SQLite is being used. Cannot check permissions tables for missing columns.");
-		}
-
 		checkDefaultGroups();
 	}
 
@@ -91,55 +84,6 @@ public class PermissionManager {
 			GoldenApple.getInstance().database.executeFromResource(tableName.toLowerCase() + "_create");
 		} catch (SQLException | IOException e) {
 			GoldenApple.log(Level.SEVERE, "Failed to create table '" + tableName + "':");
-			GoldenApple.log(Level.SEVERE, e);
-		}
-	}
-
-	private void checkUserColumnsMySql() {
-		try {
-			ArrayList<String> columns = new ArrayList<String>();
-			ResultSet r = GoldenApple.getInstance().database.executeQuery("DESCRIBE Users");
-			while (r.next()) {
-				columns.add(r.getString(1));
-			}
-			r.close();
-			if (!columns.contains("Name")) {
-				GoldenApple.getInstance().database.execute("ALTER TABLE Users ADD COLUMN Name VARCHAR(128) NOT NULL");
-			}
-			if (!columns.contains("Locale")) {
-				GoldenApple.getInstance().database.execute("ALTER TABLE Users ADD COLUMN Locale VARCHAR(128)");
-			}
-			if (!columns.contains("ComplexCommands")) {
-				GoldenApple.getInstance().database.execute("ALTER TABLE Users ADD COLUMN ComplexCommands BOOLEAN");
-			}
-			if (!columns.contains("AutoLock")) {
-				GoldenApple.getInstance().database.execute("ALTER TABLE Users ADD COLUMN AutoLock BOOLEAN");
-			}
-		} catch (SQLException e) {
-			GoldenApple.log(Level.SEVERE, "Failed to verify structure of table 'Users':");
-			GoldenApple.log(Level.SEVERE, e);
-		}
-	}
-
-	private void checkGroupColumnsMySql() {
-		try {
-			ArrayList<String> columns = new ArrayList<String>();
-			ResultSet r = GoldenApple.getInstance().database.executeQuery("DESCRIBE Groups");
-			while (r.next()) {
-				columns.add(r.getString(1));
-			}
-			r.close();
-			if (!columns.contains("Name")) {
-				GoldenApple.getInstance().database.execute("ALTER TABLE Groups ADD COLUMN Name VARCHAR(128)");
-			}
-			if (!columns.contains("Users")) {
-				GoldenApple.getInstance().database.execute("ALTER TABLE Groups ADD COLUMN Users TEXT");
-			}
-			if (!columns.contains("Groups")) {
-				GoldenApple.getInstance().database.execute("ALTER TABLE Groups ADD COLUMN Groups TEXT");
-			}
-		} catch (SQLException e) {
-			GoldenApple.log(Level.SEVERE, "Failed to verify structure of table 'Groups':");
 			GoldenApple.log(Level.SEVERE, e);
 		}
 	}

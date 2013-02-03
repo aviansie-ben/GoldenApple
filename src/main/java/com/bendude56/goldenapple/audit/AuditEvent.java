@@ -70,10 +70,14 @@ public abstract class AuditEvent {
 	public final void save() throws SQLException {
 		if (auditId == -1) {
 			ResultSet r = GoldenApple.getInstance().database.executeReturnGenKeys("INSERT INTO AuditLog (Time, EventID) VALUES (?, ?)", logTime, eventId);
-			if (r.next()) {
-				auditId = r.getLong(1);
-			} else {
-				throw new SQLException("Failed to retrieve inserted primary key!");
+			try {
+				if (r.next()) {
+					auditId = r.getLong(1);
+				} else {
+					throw new SQLException("Failed to retrieve inserted primary key!");
+				}
+			} finally {
+				r.close();
 			}
 		} else {
 			stripMetadata();

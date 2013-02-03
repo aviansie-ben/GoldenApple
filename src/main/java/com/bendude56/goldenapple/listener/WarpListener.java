@@ -10,6 +10,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.plugin.EventExecutor;
 import org.bukkit.plugin.RegisteredListener;
@@ -37,6 +38,7 @@ public class WarpListener implements Listener, EventExecutor {
 	private void registerEvents() {
 		PlayerTeleportEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
 		PlayerDeathEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
+		PlayerQuitEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
 	}
 
 	private void unregisterEvents() {
@@ -52,6 +54,8 @@ public class WarpListener implements Listener, EventExecutor {
 			playerDeath((PlayerDeathEvent)event);
 		} else if (event instanceof EntityDeathEvent) {
 			// Do nothing
+		} else if (event instanceof PlayerQuitEvent) {
+			backLocation.remove(User.getUser(((PlayerQuitEvent)event).getPlayer()));
 		} else {
 			GoldenApple.log(Level.WARNING, "Unrecognized event in WarpListener: " + event.getClass().getName());
 		}

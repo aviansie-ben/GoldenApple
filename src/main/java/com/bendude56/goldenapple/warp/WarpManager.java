@@ -85,10 +85,14 @@ public class WarpManager {
 	public HomeWarp getHome(IPermissionUser user, int homeNum) {
 		try {
 			ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT * FROM Homes WHERE UserID=? AND Home=?", user.getId(), homeNum);
-			if (r.next()) {
-				return new HomeWarp(r);
-			} else {
-				return null;
+			try {
+				if (r.next()) {
+					return new HomeWarp(r);
+				} else {
+					return null;
+				}
+			} finally {
+				r.close();
 			}
 		} catch (SQLException e) {
 			GoldenApple.log(Level.WARNING, "Error while attempting to retrieve a home from the database:");
@@ -100,10 +104,14 @@ public class WarpManager {
 	public HomeWarp getHome(IPermissionUser user, String alias) {
 		try {
 			ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT * FROM Homes WHERE UserID=? AND Alias=?", user.getId(), alias);
-			if (r.next()) {
-				return new HomeWarp(r);
-			} else {
-				return null;
+			try {
+				if (r.next()) {
+					return new HomeWarp(r);
+				} else {
+					return null;
+				}
+			} finally {
+				r.close();
 			}
 		} catch (SQLException e) {
 			GoldenApple.log(Level.WARNING, "Error while attempting to retrieve a home from the database:");
