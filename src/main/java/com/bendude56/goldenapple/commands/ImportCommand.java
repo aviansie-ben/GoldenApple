@@ -7,6 +7,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.IModuleLoader.ModuleState;
+import com.bendude56.goldenapple.permissions.PermissionManager;
 import com.bendude56.goldenapple.User;
 
 public class ImportCommand implements CommandExecutor {
@@ -23,6 +24,8 @@ public class ImportCommand implements CommandExecutor {
 		
 		if (args.length < 2) {
 			return false;
+		} else if (!user.hasPermission(PermissionManager.importPermission)) {
+			GoldenApple.logPermissionFail(user, commandLabel, args, true);
 		} else {
 			String type = args[0].toLowerCase();
 			if (!typeModules.containsKey(type)) {

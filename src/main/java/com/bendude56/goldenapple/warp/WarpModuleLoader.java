@@ -47,7 +47,6 @@ public class WarpModuleLoader implements IModuleLoader {
 	public void registerPermissions(PermissionManager permissions) {
 		WarpManager.warpNode = permissions.registerNode("warp", PermissionManager.goldenAppleNode);
 		WarpManager.backPermission = permissions.registerPermission("back", WarpManager.warpNode);
-		WarpManager.importPermission = permissions.registerPermission("import", WarpManager.warpNode);
 		
 		WarpManager.tpNode = permissions.registerNode("tp", WarpManager.warpNode);
 		WarpManager.tpSelfToOtherPermission = permissions.registerPermission("selfToOther", WarpManager.tpNode);

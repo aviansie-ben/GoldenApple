@@ -17,6 +17,7 @@ import org.bukkit.plugin.RegisteredListener;
 
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
+import com.bendude56.goldenapple.lock.LockManager;
 import com.bendude56.goldenapple.lock.LockedBlock;
 import com.bendude56.goldenapple.lock.LockedBlock.LockLevel;
 
@@ -158,7 +159,7 @@ public class LockListener implements Listener, EventExecutor {
 		GoldenApple instance = GoldenApple.getInstance();
 		User user = User.getUser(event.getPlayer());
 
-		if (user.isAutoLockEnabled() && instance.mainConfig.getIntegerList("modules.lock.autoLockBlocks").contains(event.getBlock().getTypeId()) && instance.locks.getLock(event.getBlock().getLocation()) == null) {
+		if (user.isAutoLockEnabled() && user.hasPermission(LockManager.addPermission) && instance.mainConfig.getIntegerList("modules.lock.autoLockBlocks").contains(event.getBlock().getTypeId()) && instance.locks.getLock(event.getBlock().getLocation()) == null) {
 			try {
 				instance.locks.createLock(event.getBlock().getLocation(), LockLevel.PRIVATE, user);
 				instance.locale.sendMessage(user, "general.lock.auto", false);

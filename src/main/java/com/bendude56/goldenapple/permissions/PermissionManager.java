@@ -23,6 +23,7 @@ public class PermissionManager {
 
 	// goldenapple
 	public static PermissionNode			goldenAppleNode;
+	public static Permission                importPermission;
 
 	// goldenapple.permissions
 	public static PermissionNode			permissionNode;

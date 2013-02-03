@@ -33,6 +33,7 @@ public class PermissionsModuleLoader implements IModuleLoader {
 	@Override
 	public void registerPermissions(PermissionManager permissions) {
 		PermissionManager.goldenAppleNode = permissions.registerNode("goldenapple", permissions.getRootNode());
+		PermissionManager.importPermission = permissions.registerPermission("import", PermissionManager.goldenAppleNode);
 		
 		PermissionManager.permissionNode = permissions.registerNode("permissions", PermissionManager.goldenAppleNode);
 		
