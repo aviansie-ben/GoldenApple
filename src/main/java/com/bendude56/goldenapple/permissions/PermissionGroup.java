@@ -59,15 +59,13 @@ public class PermissionGroup implements IPermissionObject {
 	public List<Long> getUsers() {
 		try {
 			List<Long> users = new ArrayList<Long>();
-			ResultSet r = null;
+			ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT MemberID FROM GroupUserMembers WHERE GroupID=?", id);;
 			try {
-				r = GoldenApple.getInstance().database.executeQuery("SELECT MemberID FROM GroupUserMembers WHERE GroupID=?", id);
 				while (r.next()) {
 					users.add(r.getLong("MemberID"));
 				}
 			} finally {
-				if (r != null)
-					r.close();
+				r.close();
 			}
 			
 			return users;
@@ -87,7 +85,7 @@ public class PermissionGroup implements IPermissionObject {
 					while (r.next())
 						users.add(r.getLong("MemberID"));
 				} finally {
-					r.close();
+					GoldenApple.getInstance().database.closeResult(r);
 				}
 			}
 			return users;
@@ -126,27 +124,23 @@ public class PermissionGroup implements IPermissionObject {
 
 	public boolean isMember(IPermissionUser user, boolean directOnly) {
 		try {
-			ResultSet r = null;
+			ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT NULL FROM GroupUserMembers WHERE GroupID=? AND MemberID=?", id, user.getId());
 			try {
-				r = GoldenApple.getInstance().database.executeQuery("SELECT NULL FROM GroupUserMembers WHERE GroupID=? AND MemberID=?", id, user.getId());
 				if (r.next())
 					return true;
 			} finally {
-				if (r != null)
-					r.close();
+				GoldenApple.getInstance().database.closeResult(r);
 			}
 			
 			if (!directOnly) {
 				for (Long g : getParentGroups(true)) {
-					r = null;
+					r = GoldenApple.getInstance().database.executeQuery("SELECT NULL FROM GroupUserMembers WHERE GroupID=? AND MemberID=?", g, user.getId());
 					
 					try {
-						r = GoldenApple.getInstance().database.executeQuery("SELECT NULL FROM GroupUserMembers WHERE GroupID=? AND MemberID=?", g, user.getId());
 						if (r.next())
 							return true;
 					} finally {
-						if (r != null)
-							r.close();
+						GoldenApple.getInstance().database.closeResult(r);
 					}
 				}
 			}
@@ -166,15 +160,13 @@ public class PermissionGroup implements IPermissionObject {
 	public List<Long> getGroups() {
 		try {
 			List<Long> groups = new ArrayList<Long>();
-			ResultSet r = null;
+			ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT MemberID FROM GroupGroupMembers WHERE GroupID=?", id);
 			try {
-				r = GoldenApple.getInstance().database.executeQuery("SELECT MemberID FROM GroupGroupMembers WHERE GroupID=?", id);
 				while (r.next()) {
 					groups.add(r.getLong("MemberID"));
 				}
 			} finally {
-				if (r != null)
-					r.close();
+				GoldenApple.getInstance().database.closeResult(r);
 			}
 			
 			return groups;
@@ -194,7 +186,7 @@ public class PermissionGroup implements IPermissionObject {
 					while (r.next())
 						groups.add(r.getLong("MemberID"));
 				} finally {
-					r.close();
+					GoldenApple.getInstance().database.closeResult(r);
 				}
 			}
 			return groups;
@@ -233,27 +225,23 @@ public class PermissionGroup implements IPermissionObject {
 	
 	public boolean isMember(PermissionGroup group, boolean directOnly) {
 		try {
-			ResultSet r = null;
+			ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT NULL FROM GroupGroupMembers WHERE GroupID=? AND MemberID=?", id, group.getId());
 			try {
-				r = GoldenApple.getInstance().database.executeQuery("SELECT NULL FROM GroupGroupMembers WHERE GroupID=? AND MemberID=?", id, group.getId());
 				if (r.next())
 					return true;
 			} finally {
-				if (r != null)
-					r.close();
+				r.close();
 			}
 			
 			if (!directOnly) {
 				for (Long g : getParentGroups(true)) {
-					r = null;
+					r = GoldenApple.getInstance().database.executeQuery("SELECT NULL FROM GroupGroupMembers WHERE GroupID=? AND MemberID=?", g, group.getId());
 					
 					try {
-						r = GoldenApple.getInstance().database.executeQuery("SELECT NULL FROM GroupGroupMembers WHERE GroupID=? AND MemberID=?", g, group.getId());
 						if (r.next())
 							return true;
 					} finally {
-						if (r != null)
-							r.close();
+						r.close();
 					}
 				}
 			}
@@ -271,28 +259,24 @@ public class PermissionGroup implements IPermissionObject {
 		try {
 			List<Long> gr = getParentGroups(inherited);
 			List<Permission> permissions = new ArrayList<Permission>();
-			ResultSet r = null;
+			ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT Permission FROM GroupPermissions WHERE GroupID=?", id);
 			try {
-				r = GoldenApple.getInstance().database.executeQuery("SELECT Permission FROM GroupPermissions WHERE GroupID=?", id);
 				while (r.next()) {
 					permissions.add(GoldenApple.getInstance().permissions.registerPermission(r.getString("Permission")));
 				}
 			} finally {
-				if (r != null)
-					r.close();
+				GoldenApple.getInstance().database.closeResult(r);
 			}
 			
 			if (inherited) {
 				for (Long g : gr) {
-					r = null;
+					r = GoldenApple.getInstance().database.executeQuery("SELECT Permission FROM GroupPermissions WHERE GroupID=?", g);
 					try {
-						r = GoldenApple.getInstance().database.executeQuery("SELECT Permission FROM GroupPermissions WHERE GroupID=?", g);
 						while (r.next()) {
 							permissions.add(GoldenApple.getInstance().permissions.registerPermission(r.getString("Permission")));
 						}
 					} finally {
-						if (r != null)
-							r.close();
+						GoldenApple.getInstance().database.closeResult(r);
 					}
 				}
 			}
@@ -426,14 +410,12 @@ public class PermissionGroup implements IPermissionObject {
 
 	@Override
 	public boolean hasPermissionSpecific(Permission permission) {
-		ResultSet r = null;
 		try {
+			ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT NULL FROM GroupPermissions WHERE GroupID=? AND Permission=?", id, permission.getFullName());
 			try {
-				r = GoldenApple.getInstance().database.executeQuery("SELECT NULL FROM GroupPermissions WHERE GroupID=? AND Permission=?", id, permission.getFullName());
 				return r.next();
 			} finally {
-				if (r != null)
-					r.close();
+				GoldenApple.getInstance().database.closeResult(r);
 			}
 		} catch (SQLException e) {
 			return false;
@@ -444,26 +426,22 @@ public class PermissionGroup implements IPermissionObject {
 	public List<Long> getParentGroups(boolean directOnly) {
 		try {
 			List<Long> gr = new ArrayList<Long>();
-			ResultSet r = null;
+			ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT GroupID FROM GroupGroupMembers WHERE MemberID=?", id);
 			try {
-				r = GoldenApple.getInstance().database.executeQuery("SELECT GroupID FROM GroupGroupMembers WHERE MemberID=?", id);
 				while (r.next())
 					gr.add(r.getLong("GroupID"));
 			} finally {
-				if (r != null)
-					r.close();
+				GoldenApple.getInstance().database.closeResult(r);
 			}
 			
 			if (!directOnly) {
 				for (int i = 0; i < gr.size(); i++) {
-					r = null;
+					r = GoldenApple.getInstance().database.executeQuery("SELECT GroupID FROM GroupGroupMembers WHERE MemberID=?", gr.get(i));
 					try {
-						r = GoldenApple.getInstance().database.executeQuery("SELECT GroupID FROM GroupGroupMembers WHERE MemberID=?", gr.get(i));
 						while (r.next())
 							gr.add(r.getLong("GroupID"));
 					} finally {
-						if (r != null)
-							r.close();
+						GoldenApple.getInstance().database.closeResult(r);
 					}
 				}
 			}

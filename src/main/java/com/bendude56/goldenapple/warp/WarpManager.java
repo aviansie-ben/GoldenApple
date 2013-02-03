@@ -92,7 +92,7 @@ public class WarpManager {
 					return null;
 				}
 			} finally {
-				r.close();
+				GoldenApple.getInstance().database.closeResult(r);
 			}
 		} catch (SQLException e) {
 			GoldenApple.log(Level.WARNING, "Error while attempting to retrieve a home from the database:");
@@ -111,7 +111,7 @@ public class WarpManager {
 					return null;
 				}
 			} finally {
-				r.close();
+				GoldenApple.getInstance().database.closeResult(r);
 			}
 		} catch (SQLException e) {
 			GoldenApple.log(Level.WARNING, "Error while attempting to retrieve a home from the database:");

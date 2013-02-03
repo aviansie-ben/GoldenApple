@@ -52,7 +52,7 @@ public class ChatManager {
 					activeChannels.put(c.getName(), c);
 				}
 			} finally {
-				r.close();
+				GoldenApple.getInstance().database.closeResult(r);
 			}
 		} catch (SQLException e) {
 			GoldenApple.log(Level.SEVERE, "Failed to load channels:");
@@ -142,7 +142,7 @@ public class ChatManager {
 					return null;
 				}
 			} finally {
-				r.close();
+				GoldenApple.getInstance().database.closeResult(r);
 			}
 		} catch (SQLException e) {
 			GoldenApple.log(Level.SEVERE, "Failed to create channel '" + identifier + "':");

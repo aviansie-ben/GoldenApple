@@ -273,23 +273,21 @@ public class PermissionManager {
 	 *         not found or an error occurred, -1 will be returned.
 	 */
 	public long getUserId(String name) {
-		ResultSet r = null;
 		try {
-			r = GoldenApple.getInstance().database.executeQuery("SELECT ID FROM Users WHERE Name=?", new Object[] { name });
-			if (r.next()) {
-				return r.getLong("ID");
-			} else {
-				return -1;
+			ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT ID FROM Users WHERE Name=?", new Object[] { name });
+			try {
+				if (r.next()) {
+					return r.getLong("ID");
+				} else {
+					return -1;
+				}
+			} finally {
+				GoldenApple.getInstance().database.closeResult(r);
 			}
 		} catch (SQLException e) {
 			GoldenApple.log(Level.WARNING, "Failed to retrieve ID for user '" + name + "':");
 			GoldenApple.log(Level.WARNING, e);
 			return -1;
-		} finally {
-			try {
-				if (r != null)
-					r.close();
-			} catch (SQLException e) { }
 		}
 	}
 
@@ -308,17 +306,15 @@ public class PermissionManager {
 			return userCache.get(id);
 		} else {
 			try {
-				ResultSet r = null;
+				ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT * FROM Users WHERE ID=?", id);
 				try {
-					r = GoldenApple.getInstance().database.executeQuery("SELECT * FROM Users WHERE ID=?", id);
 					if (r.next()) {
 						return new PermissionUser(r.getLong("ID"), r.getString("Name"), r.getString("Locale"), r.getBoolean("ComplexCommands"), r.getBoolean("AutoLock"));
 					} else {
 						return null;
 					}
 				} finally {
-					if (r != null)
-						r.close();
+					GoldenApple.getInstance().database.closeResult(r);
 				}
 			} catch (SQLException e) {
 				GoldenApple.log(Level.WARNING, "Failed to load user " + id + ":");
@@ -345,9 +341,8 @@ public class PermissionManager {
 			}
 		}
 		try {
-			ResultSet r = null;
+			ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT * FROM Users WHERE Name=?", name);
 			try {
-				r = GoldenApple.getInstance().database.executeQuery("SELECT * FROM Users WHERE Name=?", name);
 				if (r.next()) {
 					PermissionUser u = new PermissionUser(r.getLong("ID"), r.getString("Name"), r.getString("Locale"), r.getBoolean("ComplexCommands"), r.getBoolean("AutoLock"));
 					userCache.put(u.getId(), u);
@@ -358,8 +353,7 @@ public class PermissionManager {
 					return null;
 				}
 			} finally {
-				if (r != null)
-					r.close();
+				GoldenApple.getInstance().database.closeResult(r);
 			}
 		} catch (SQLException e) {
 			GoldenApple.log(Level.WARNING, "Failed to load user '" + name + "':");
@@ -419,17 +413,15 @@ public class PermissionManager {
 			return groupCache.get(id);
 		} else {
 			try {
-				ResultSet r = null;
+				ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT * FROM Groups WHERE ID=?", id);
 				try {
-					r = GoldenApple.getInstance().database.executeQuery("SELECT * FROM Groups WHERE ID=?", id);
 					if (r.next()) {
 						return new PermissionGroup(r.getLong("ID"), r.getString("Name"));
 					} else {
 						return null;
 					}
 				} finally {
-					if (r != null)
-						r.close();
+					GoldenApple.getInstance().database.closeResult(r);
 				}
 			} catch (SQLException e) {
 				GoldenApple.log(Level.WARNING, "Failed to load group " + id + ":");
@@ -454,9 +446,8 @@ public class PermissionManager {
 			}
 		}
 		try {
-			ResultSet r = null;
+			ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT * FROM Groups WHERE Name=?", name);
 			try {
-				r = GoldenApple.getInstance().database.executeQuery("SELECT * FROM Groups WHERE Name=?", name);
 				if (r.next()) {
 					PermissionGroup g = new PermissionGroup(r.getLong("ID"), r.getString("Name"));
 					groupCache.put(g.getId(), g);
@@ -467,8 +458,7 @@ public class PermissionManager {
 					return null;
 				}
 			} finally {
-				if (r != null)
-					r.close();
+				GoldenApple.getInstance().database.closeResult(r);
 			}
 		} catch (SQLException e) {
 			GoldenApple.log(Level.WARNING, "Failed to load group '" + name + "':");
@@ -483,13 +473,11 @@ public class PermissionManager {
 	 * @param name The name to check the database against
 	 */
 	public boolean userExists(String name) throws SQLException {
-		ResultSet r = null;
+		ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT NULL FROM Users WHERE Name=?", new Object[] { name });
 		try {
-			r = GoldenApple.getInstance().database.executeQuery("SELECT NULL FROM Users WHERE Name=?", new Object[] { name });
 			return r.next();
 		} finally {
-			if (r != null)
-				r.close();
+			GoldenApple.getInstance().database.closeResult(r);
 		}
 	}
 
@@ -526,13 +514,11 @@ public class PermissionManager {
 	 * @param name The name to check the database against
 	 */
 	public boolean groupExists(String name) throws SQLException {
-		ResultSet r = null;
+		ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT NULL FROM Groups WHERE Name=?", new Object[] { name });
 		try {
-			r = GoldenApple.getInstance().database.executeQuery("SELECT NULL FROM Groups WHERE Name=?", new Object[] { name });
 			return r.next();
 		} finally {
-			if (r != null)
-				r.close();
+			GoldenApple.getInstance().database.closeResult(r);
 		}
 	}
 

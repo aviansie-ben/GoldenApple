@@ -77,7 +77,7 @@ public abstract class AuditEvent {
 					throw new SQLException("Failed to retrieve inserted primary key!");
 				}
 			} finally {
-				r.close();
+				GoldenApple.getInstance().database.closeResult(r);
 			}
 		} else {
 			stripMetadata();

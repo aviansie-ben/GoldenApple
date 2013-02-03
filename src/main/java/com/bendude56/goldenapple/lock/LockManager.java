@@ -105,7 +105,7 @@ public class LockManager {
 			try {
 				return (r.next()) ? loadIntoCache(r) : null;
 			} finally {
-				r.close();
+				GoldenApple.getInstance().database.closeResult(r);
 			}
 		} catch (SQLException e) {
 			GoldenApple.log(Level.WARNING, "Error while attempting to retrieve a lock from the database:");
@@ -129,7 +129,7 @@ public class LockManager {
 			try {
 				return (r.next()) ? loadIntoCache(r) : null;
 			} finally {
-				r.close();
+				GoldenApple.getInstance().database.closeResult(r);
 			}
 		} catch (SQLException e) {
 			GoldenApple.log(Level.WARNING, "Error while attempting to retrieve a lock from the database:");
@@ -164,7 +164,7 @@ public class LockManager {
 		try {
 			return r.next();
 		} finally {
-			r.close();
+			GoldenApple.getInstance().database.closeResult(r);
 		}
 	}
 

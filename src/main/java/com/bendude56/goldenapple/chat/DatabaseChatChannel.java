@@ -54,7 +54,7 @@ public class DatabaseChatChannel extends ChatChannel {
 					return ChatChannelUserLevel.UNKNOWN;
 				}
 			} finally {
-				r.close();
+				GoldenApple.getInstance().database.closeResult(r);
 			}
 		} catch (SQLException e) {
 			GoldenApple.log(Level.WARNING, "Unable to retrieve channel access level for user '" + user.getName() + "' in channel '" + this.name + "':");
@@ -74,7 +74,7 @@ public class DatabaseChatChannel extends ChatChannel {
 					return ChatChannelUserLevel.UNKNOWN;
 				}
 			} finally {
-				r.close();
+				GoldenApple.getInstance().database.closeResult(r);
 			}
 		} catch (SQLException e) {
 			GoldenApple.log(Level.WARNING, "Unable to retrieve channel access level for group '" + group + "' in channel '" + this.name + "':");
@@ -96,7 +96,7 @@ public class DatabaseChatChannel extends ChatChannel {
 					else
 						GoldenApple.getInstance().database.execute("INSERT INTO ChannelUsers (AccessLevel, Channel, UserID) VALUES (?, ?, ?)", level.id, this.name, user);
 				} finally {
-					r.close();
+					GoldenApple.getInstance().database.closeResult(r);
 				}
 				if (User.hasUserInstance(user)) {
 					User u = User.getUser(user);
@@ -124,7 +124,7 @@ public class DatabaseChatChannel extends ChatChannel {
 					else
 						GoldenApple.getInstance().database.execute("INSERT INTO ChannelGroups (AccessLevel, Channel, GroupID) VALUES (?, ?, ?)", level.id, this.name, group);
 				} finally {
-					r.close();
+					GoldenApple.getInstance().database.closeResult(r);
 				}
 			}
 		} catch (SQLException e) {

@@ -14,6 +14,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
 import java.util.Properties;
 import java.util.logging.Level;
 
@@ -27,6 +28,8 @@ import org.sqlite.JDBC;
 public final class Database {
 	private Connection	connection;
 	private boolean		mySql;
+	
+	private HashMap<ResultSet, PreparedStatement> toClose = new HashMap<ResultSet, PreparedStatement>();
 
 	protected Database() {
 		if (GoldenApple.getInstance().mainConfig.getBoolean("database.useMySQL", false)) {
@@ -89,10 +92,14 @@ public final class Database {
 	 */
 	public void execute(String command, Object... parameters) throws SQLException {
 		PreparedStatement s = connection.prepareStatement(command);
-		for (int i = 0; i < parameters.length; i++) {
-			s.setObject(i + 1, parameters[i]);
+		try {
+			for (int i = 0; i < parameters.length; i++) {
+				s.setObject(i + 1, parameters[i]);
+			}
+			s.execute();
+		} finally {
+			s.close();
 		}
-		s.execute();
 	}
 
 	/**
@@ -117,10 +124,20 @@ public final class Database {
 	 */
 	public ResultSet executeQuery(String command, Object... parameters) throws SQLException {
 		PreparedStatement s = connection.prepareStatement(command);
-		for (int i = 0; i < parameters.length; i++) {
-			s.setObject(i + 1, parameters[i]);
+		try {
+			for (int i = 0; i < parameters.length; i++) {
+				s.setObject(i + 1, parameters[i]);
+			}
+			
+			ResultSet r = s.executeQuery();
+			
+			toClose.put(r, s);
+
+			return r;
+		} finally {
+			if (!toClose.containsValue(s))
+				s.close();
 		}
-		return s.executeQuery();
 	}
 	
 	public void executeFromResource(String resourceName) throws SQLException, IOException {
@@ -145,12 +162,21 @@ public final class Database {
 	
 	public ResultSet executeReturnGenKeys(String command, Object... parameters) throws SQLException {
 		PreparedStatement s = connection.prepareStatement(command, Statement.RETURN_GENERATED_KEYS);
-		for (int i = 0; i < parameters.length; i++) {
-			s.setObject(i + 1, parameters[i]);
-		}
-		s.execute();
+		try {
+			for (int i = 0; i < parameters.length; i++) {
+				s.setObject(i + 1, parameters[i]);
+			}
+			s.execute();
 		
-		return s.getGeneratedKeys();
+			ResultSet r = s.getGeneratedKeys();
+			
+			toClose.put(r, s);
+			
+			return r;
+		} finally {
+			if (!toClose.containsValue(s))
+				s.close();
+		}
 	}
 	
 	private String readResource(String resource) throws IOException {
@@ -171,6 +197,10 @@ public final class Database {
         }
 		
 		return w.toString();
+	}
+	
+	public void closeResult(ResultSet r) throws SQLException {
+		toClose.get(r).close();
 	}
 
 	/**

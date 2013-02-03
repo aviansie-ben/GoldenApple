@@ -245,7 +245,7 @@ public abstract class LockedBlock {
 				}
 				return guests;
 			} finally {
-				r.close();
+				GoldenApple.getInstance().database.closeResult(r);
 			}
 		} catch (SQLException e) {
 			GoldenApple.log(Level.SEVERE, "Error while determining guests for lock " + lockId + ":");
@@ -268,7 +268,7 @@ public abstract class LockedBlock {
 				}
 				return guests;
 			} finally {
-				r.close();
+				GoldenApple.getInstance().database.closeResult(r);
 			}
 		} catch (SQLException e) {
 			GoldenApple.log(Level.SEVERE, "Error while determining guests for lock " + lockId + ":");
@@ -294,7 +294,7 @@ public abstract class LockedBlock {
 					GoldenApple.getInstance().database.execute("INSERT INTO LockUsers (LockID, GuestID, AccessLevel) VALUES (?, ?, ?)", lockId, user.getId(), level.levelId);
 				}
 			} finally {
-				r.close();
+				GoldenApple.getInstance().database.closeResult(r);
 			}
 		} catch (SQLException e) {
 			GoldenApple.log(Level.SEVERE, "Error while adding user '" + user.getName() + "' to the guestlist for lock " + lockId + ":");
@@ -335,7 +335,7 @@ public abstract class LockedBlock {
 					l = (l.levelId < r.getInt("AccessLevel")) ? GuestLevel.getLevel(r.getInt("AccessLevel")) : l;
 				}
 			} finally {
-				r.close();
+				GoldenApple.getInstance().database.closeResult(r);
 			}
 		} catch (SQLException e) {}
 
