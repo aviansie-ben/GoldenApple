@@ -5,30 +5,16 @@ import org.bukkit.Bukkit;
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.IModuleLoader;
 import com.bendude56.goldenapple.commands.BackCommand;
+import com.bendude56.goldenapple.commands.DelHomeCommand;
+import com.bendude56.goldenapple.commands.HomeCommand;
+import com.bendude56.goldenapple.commands.SetHomeCommand;
 import com.bendude56.goldenapple.commands.SpawnCommand;
 import com.bendude56.goldenapple.commands.TpCommand;
 import com.bendude56.goldenapple.commands.TpHereCommand;
 import com.bendude56.goldenapple.listener.WarpListener;
 import com.bendude56.goldenapple.permissions.PermissionManager;
-import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
-import com.bendude56.goldenapple.permissions.PermissionManager.PermissionNode;
 
 public class WarpModuleLoader implements IModuleLoader {
-	
-	// goldenapple.warp
-	public static PermissionNode warpNode;
-	public static Permission backPermission;
-	
-	// goldenapple.tp
-	public static PermissionNode tpNode;
-	public static Permission tpSelfToOtherPermission;
-	public static Permission tpOtherToSelfPermission;
-	public static Permission tpOtherToOtherPermission;
-	
-	// goldenapple.spawn
-	public static PermissionNode spawnNode;
-	public static Permission spawnCurrentPermission;
-	public static Permission spawnAllPermission;
 
 	private static ModuleState	state	= ModuleState.UNLOADED_USER;
 
@@ -36,6 +22,8 @@ public class WarpModuleLoader implements IModuleLoader {
 	public void loadModule(GoldenApple instance) {
 		state = ModuleState.LOADING;
 		try {
+			GoldenApple.getInstance().warps = new WarpManager();
+			
 			registerCommands();
 			registerPermissions(instance.permissions);
 			WarpListener.startListening();
@@ -50,29 +38,47 @@ public class WarpModuleLoader implements IModuleLoader {
 		Bukkit.getPluginCommand("gatp").setExecutor(new TpCommand());
 		Bukkit.getPluginCommand("gatphere").setExecutor(new TpHereCommand());
 		Bukkit.getPluginCommand("gaback").setExecutor(new BackCommand());
+		Bukkit.getPluginCommand("gahome").setExecutor(new HomeCommand());
+		Bukkit.getPluginCommand("gasethome").setExecutor(new SetHomeCommand());
+		Bukkit.getPluginCommand("gadelhome").setExecutor(new DelHomeCommand());
 	}
 
 	@Override
 	public void registerPermissions(PermissionManager permissions) {
-		warpNode = permissions.registerNode("warp", PermissionManager.goldenAppleNode);
-		backPermission = permissions.registerPermission("back", warpNode);
+		WarpManager.warpNode = permissions.registerNode("warp", PermissionManager.goldenAppleNode);
+		WarpManager.backPermission = permissions.registerPermission("back", WarpManager.warpNode);
+		WarpManager.importPermission = permissions.registerPermission("import", WarpManager.warpNode);
 		
-		tpNode = permissions.registerNode("tp", warpNode);
-		tpSelfToOtherPermission = permissions.registerPermission("selfToOther", tpNode);
-		tpOtherToSelfPermission = permissions.registerPermission("otherToSelf", tpNode);
-		tpOtherToOtherPermission = permissions.registerPermission("otherToOther", tpNode);
+		WarpManager.tpNode = permissions.registerNode("tp", WarpManager.warpNode);
+		WarpManager.tpSelfToOtherPermission = permissions.registerPermission("selfToOther", WarpManager.tpNode);
+		WarpManager.tpOtherToSelfPermission = permissions.registerPermission("otherToSelf", WarpManager.tpNode);
+		WarpManager.tpOtherToOtherPermission = permissions.registerPermission("otherToOther", WarpManager.tpNode);
 		
-		spawnNode = permissions.registerNode("spawn", warpNode);
-		spawnCurrentPermission = permissions.registerPermission("current", spawnNode);
-		spawnAllPermission = permissions.registerPermission("all", spawnNode);
+		WarpManager.spawnNode = permissions.registerNode("spawn", WarpManager.warpNode);
+		WarpManager.spawnCurrentPermission = permissions.registerPermission("current", WarpManager.spawnNode);
+		WarpManager.spawnAllPermission = permissions.registerPermission("all", WarpManager.spawnNode);
+		
+		WarpManager.homeNode = permissions.registerNode("home", WarpManager.warpNode);
+		
+		WarpManager.homeTpNode = permissions.registerNode("tp", WarpManager.homeNode);
+		WarpManager.homeTpOwn = permissions.registerPermission("own", WarpManager.homeTpNode);
+		WarpManager.homeTpPublic = permissions.registerPermission("public", WarpManager.homeTpNode);
+		WarpManager.homeTpAll = permissions.registerPermission("all", WarpManager.homeTpNode);
+		
+		WarpManager.homeEditNode = permissions.registerNode("edit", WarpManager.homeNode);
+		WarpManager.homeEditOwn = permissions.registerPermission("own", WarpManager.homeEditNode);
+		WarpManager.homeEditPublic = permissions.registerPermission("public", WarpManager.homeEditNode);
+		WarpManager.homeEditAll = permissions.registerPermission("all", WarpManager.homeEditNode);
 	}
 
 	@Override
 	public void unloadModule(GoldenApple instance) {
+		GoldenApple.getInstance().warps = null;
 		Bukkit.getPluginCommand("gaspawn").setExecutor(GoldenApple.defCmd);
 		Bukkit.getPluginCommand("gatp").setExecutor(GoldenApple.defCmd);
 		Bukkit.getPluginCommand("gatphere").setExecutor(GoldenApple.defCmd);
 		Bukkit.getPluginCommand("gaback").setExecutor(GoldenApple.defCmd);
+		Bukkit.getPluginCommand("gahome").setExecutor(GoldenApple.defCmd);
 		WarpListener.stopListening();
 		state = ModuleState.UNLOADED_USER;
 	}

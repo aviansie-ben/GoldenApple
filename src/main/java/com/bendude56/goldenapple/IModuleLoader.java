@@ -63,7 +63,7 @@ public interface IModuleLoader {
 	 * be loaded.
 	 */
 	public boolean canPolicyLoad();
-	
+
 	/**
 	 * Gets a value indicating whether the security policy allows this module to
 	 * be unloaded manually
@@ -76,6 +76,11 @@ public interface IModuleLoader {
 	 * @author ben_dude56
 	 */
 	public enum ModuleState {
+		/**
+		 * The module is performing a background operation that is stopping
+		 * users from accessing one or more features.
+		 */
+		BUSY,
 		/**
 		 * The module has been successfully loaded into memory and is currently
 		 * working as intended.

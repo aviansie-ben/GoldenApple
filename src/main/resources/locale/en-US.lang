@@ -12,6 +12,19 @@ error.channel.notFound=&4ERROR: Cannot find a channel with identifier '%1'.
 error.channel.notInChannel=&4ERROR: You must join a chat channel to talk.
 error.channel.notInChannelCommand=&4ERROR: You must be in a chat channel to use that command.
 
+error.home.notFoundAliasOther=&4ERROR: Player '%1' doesn't have a home with name '%2'.
+error.home.notFoundAliasSelf=&4ERROR: You don't have a home with name '%1'.
+error.home.notFoundIdOther=&4ERROR: Player '%1' doesn't have a home with ID %2.
+error.home.notFoundIdSelf=&4ERROR: You don't have a home with ID %1.
+error.home.setFail=&4ERROR: An error was encountered while setting your home!
+error.home.setMax=&4ERROR: You cannot have more than %1 homes!
+
+error.import.dataNotFound=&4ERROR: No data was found from plugin '%1'
+error.import.moduleNotReady=&4ERROR: The module needed to use import is not ready for importing
+error.import.pluginNotFound=&4ERROR: GoldenApple cannot import from plugin '%1'
+error.import.typeNotFound=&4ERROR: Import type not found
+error.import.typeNotSupported=&4ERROR: Importing of type '%1' is not supported from plugin '%2'
+
 error.lock.access.unknown=&4ERROR: There is no access level with name &f%1&4!
 error.lock.create.alreadyExists=&4ERROR: A protection already exists on that block!
 error.lock.create.invalidRegistered=&4ERROR: Plugin '%1' has an invalid &1RegisteredBlock&4! Contact an administrator!
@@ -84,6 +97,15 @@ general.complex.successOn=&aNow using complex command syntax
 general.complex.warnOff=&eWARNING: You are about to disable complex commands! Some commands will be simplified. If you are sure you want to proceed, use /gaverify!
 general.complex.warnOn=&eWARNING: You are about to enable complex commands! Some commands will be given complex syntax. If you are sure you want to proceed, use /gaverify!
 
+general.home.deleteAlias=&aYour home '%1' has been deleted.
+general.home.deleteId=&aYour home #%1 has been deleted.
+general.home.set=&aYour home #%1 has been set here.
+
+general.import.homesSuccess=&aImport successful! %1 home(s) were imported from %2 user(s), creating %3 new user(s).
+general.import.started=&aImport started... Any associated modules are locked until the import is complete.
+general.import.warning.1=&eWARNING: You are about to import objects of type '%1' from plugin '%2'. Under some circumstances, existing objects may be replaced or deleted.
+general.import.warning.2=&eIf you are sure you wish to continue, type /gaverify to begin the import.
+
 general.lock.access.success=&aLock access changed to %1&a successfully.
 general.lock.auto=&aThe block you placed has been automatically locked! Use /gaautolock to disable auto-lock.
 general.lock.auto.off=&aAuto-lock has been turned off
@@ -104,6 +126,7 @@ general.module.load.warnStart=&eWARNING: To enable this module, the following de
 general.module.load.warnEnd=&eIf you are sure you wish to enable these modules, use /gaverify.
 general.module.query.1=&7Module Name: &f%1
 general.module.query.2=&7Current Status: %2
+general.module.query.busy=&eBusy...
 general.module.query.loaded=&aRunning
 general.module.query.loadedLocked=&aRunning &8(Locked)
 general.module.query.loading=&eLoading...
@@ -209,6 +232,7 @@ shared.groupNotFoundError=&4ERROR: Failed to find group '%1'
 shared.groupNotFoundWarning=&eWARNING: Failed to find group '%1'
 shared.noConsole=&4ERROR: You cannot execute this command from the console!
 shared.noPermission=&4ERROR: You do not have permission to execute this command! This request has been logged.
+shared.notANumber=&4ERROR: '%1' cannot be converted to a number
 shared.parameterMissing=&eWARNING: Parameter missing from option: %1
 shared.unknownOption=&4ERROR: Unknown option: %1
 shared.userNotFoundError=&4ERROR: Failed to find user '%1'

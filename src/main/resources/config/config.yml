@@ -289,5 +289,9 @@ modules:
     warps:
         
         # Determines whether or not the GoldenApple warps module will
-        # be loaded automatically when the server starts up
+        # be loaded automatically when the server starts up.
         enabled: true
+        
+        # The maximum number of homes that any one player can have at
+        # one time.
+        maxHomes: 5

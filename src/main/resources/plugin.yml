@@ -1,5 +1,5 @@
 name: GoldenApple
-version: 1.0.0
+version: 1.0.1
 main: com.bendude56.goldenapple.GoldenApple
 website: https://www.github.com/bendude56/GoldenApple
 authors: [ben_dude56, Deaboy]
@@ -57,3 +57,19 @@ commands:
         usage: /<command>
         description: Teleports you back to before your last teleport
         aliases: [back]
+    gahome:
+        usage: Use /<command> -? for help
+        description: Controls GoldenApple homes
+        aliases: [home]
+    gasethome:
+        usage: '/<command> [Home #] [{public|private}] [Alias]'
+        description: Sets your specified home to your current location
+        aliases: [sethome]
+    gadelhome:
+        usage: '/<command> [Home #]'
+        description: Deletes the specified home
+        aliases: [delhome]
+    gaimport:
+        usage: /<command> <Import Type> <Import From>
+        description: Imports information from another plugin
+        aliases: []

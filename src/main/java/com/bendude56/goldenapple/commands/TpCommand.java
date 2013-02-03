@@ -8,7 +8,7 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
-import com.bendude56.goldenapple.warp.WarpModuleLoader;
+import com.bendude56.goldenapple.warp.WarpManager;
 
 public class TpCommand implements CommandExecutor {
 	@Override
@@ -22,7 +22,7 @@ public class TpCommand implements CommandExecutor {
 			User user2 = User.getUser(args[0]);
 			if (!(user.getHandle() instanceof Player)) {
 				instance.locale.sendMessage(user, "shared.noConsole", false);
-			} else if (!user.hasPermission(WarpModuleLoader.tpSelfToOtherPermission)) {
+			} else if (!user.hasPermission(WarpManager.tpSelfToOtherPermission)) {
 				GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			} else if (user2 == null) {
 				GoldenApple.getInstance().locale.sendMessage(user, "shared.userNotFoundError", false, args[0]);
@@ -33,7 +33,7 @@ public class TpCommand implements CommandExecutor {
 		} else {
 			User user1 = User.getUser(args[0]);
 			User user2 = User.getUser(args[1]);
-			if (!user.hasPermission(WarpModuleLoader.tpOtherToOtherPermission)) {
+			if (!user.hasPermission(WarpManager.tpOtherToOtherPermission)) {
 				GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			} else if (user1 == null) {
 				GoldenApple.getInstance().locale.sendMessage(user, "shared.userNotFoundError", false, args[0]);

@@ -24,6 +24,9 @@ public class UnloadedCommand implements CommandExecutor {
 		reqModule.put("gatp", "Warp");
 		reqModule.put("gatphere", "Warp");
 		reqModule.put("gaback", "Warp");
+		reqModule.put("gahome", "Warp");
+		reqModule.put("gasethome", "Warp");
+		reqModule.put("gadelhome", "Warp");
 	}
 	
 	@Override

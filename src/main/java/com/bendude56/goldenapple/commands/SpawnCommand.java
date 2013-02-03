@@ -10,7 +10,7 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
-import com.bendude56.goldenapple.warp.WarpModuleLoader;
+import com.bendude56.goldenapple.warp.WarpManager;
 
 public class SpawnCommand implements CommandExecutor {
 	@Override
@@ -20,7 +20,7 @@ public class SpawnCommand implements CommandExecutor {
 		
 		if (user.getHandle() instanceof Player) {
 			if (args.length == 0) {
-				if (!user.hasPermission(WarpModuleLoader.spawnCurrentPermission)) {
+				if (!user.hasPermission(WarpManager.spawnCurrentPermission)) {
 					GoldenApple.logPermissionFail(user, commandLabel, args, true);
 				} else if (user.getPlayerHandle().teleport(user.getPlayerHandle().getWorld().getSpawnLocation(), TeleportCause.COMMAND)) {
 					GoldenApple.getInstance().locale.sendMessage(user, "general.warps.teleportSpawn", false);
@@ -29,7 +29,7 @@ public class SpawnCommand implements CommandExecutor {
 				}
 			} else {
 				World w = Bukkit.getWorld(args[0]);
-				if (!user.hasPermission(WarpModuleLoader.spawnAllPermission)) {
+				if (!user.hasPermission(WarpManager.spawnAllPermission)) {
 					GoldenApple.logPermissionFail(user, commandLabel, args, true);
 				} else if (w == null) {
 					GoldenApple.getInstance().locale.sendMessage(user, "shared.worldNotFoundError", false, args[0]);

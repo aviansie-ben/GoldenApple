@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 
 import com.bendude56.goldenapple.audit.AuditLog;
 import com.bendude56.goldenapple.commands.ComplexCommand;
+import com.bendude56.goldenapple.commands.ImportCommand;
 import com.bendude56.goldenapple.commands.ModuleCommand;
 import com.bendude56.goldenapple.commands.VerifyCommand;
 import com.bendude56.goldenapple.permissions.PermissionManager;
@@ -29,6 +30,7 @@ public class BaseModuleLoader implements IModuleLoader {
 		Bukkit.getPluginCommand("gaverify").setExecutor(new VerifyCommand());
 		Bukkit.getPluginCommand("gamodule").setExecutor(new ModuleCommand());
 		Bukkit.getPluginCommand("gacomplex").setExecutor(new ComplexCommand());
+		Bukkit.getPluginCommand("gaimport").setExecutor(new ImportCommand());
 	}
 
 	@Override

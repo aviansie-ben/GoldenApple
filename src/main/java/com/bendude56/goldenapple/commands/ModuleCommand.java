@@ -31,6 +31,9 @@ public class ModuleCommand implements CommandExecutor {
 						suffix += ChatColor.DARK_GRAY + " [!]";
 					}
 					switch (module.getValue().getCurrentState()) {
+						case BUSY:
+							user.getHandle().sendMessage(ChatColor.YELLOW + module.getValue().getModuleName() + suffix);
+							break;
 						case LOADED:
 							user.getHandle().sendMessage(ChatColor.GREEN + module.getValue().getModuleName() + suffix);
 							break;
@@ -55,6 +58,9 @@ public class ModuleCommand implements CommandExecutor {
 					String status = "???";
 					if (module.canPolicyLoad()) {
 						switch (module.getCurrentState()) {
+							case BUSY:
+								status = instance.locale.getMessage(user, "general.module.query.busy");
+								break;
 							case LOADED:
 								if (module.canPolicyUnload())
 									status = instance.locale.getMessage(user, "general.module.query.loaded");

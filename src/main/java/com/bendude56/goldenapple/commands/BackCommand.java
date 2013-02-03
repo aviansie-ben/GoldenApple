@@ -9,7 +9,7 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.listener.WarpListener;
-import com.bendude56.goldenapple.warp.WarpModuleLoader;
+import com.bendude56.goldenapple.warp.WarpManager;
 
 public class BackCommand implements CommandExecutor {
 	@Override
@@ -18,7 +18,7 @@ public class BackCommand implements CommandExecutor {
 		User user = User.getUser(sender);
 		
 		if (user.getHandle() instanceof Player) {
-			if (!user.hasPermission(WarpModuleLoader.backPermission)) {
+			if (!user.hasPermission(WarpManager.backPermission)) {
 				GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			} else if (!WarpListener.backLocation.containsKey(user)) {
 				GoldenApple.getInstance().locale.sendMessage(user, "error.warps.noBack", false);
