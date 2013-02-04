@@ -157,10 +157,12 @@ public class User implements IPermissionUser {
 	}
 	
 	public String getDisplayName() {
-		if (handle instanceof ConsoleCommandSender)
-			return ChatColor.DARK_BLUE + "Server";
-		else
-			return permissions.getName();
+		return getName();
+	}
+	
+	public String getChatDisplayName() {
+		String prefix = getPrefix();
+		return (prefix == null) ? (getChatColor() + getName()) : (getChatColor() + "[" + prefix + "] " + getName());
 	}
 
 	@Override
@@ -325,5 +327,21 @@ public class User implements IPermissionUser {
 			throw new UnsupportedOperationException();
 		else
 			return permissions.getParentGroups(directOnly);
+	}
+
+	@Override
+	public ChatColor getChatColor() {
+		if (permissions == null)
+			return ChatColor.DARK_BLUE;
+		else
+			return permissions.getChatColor();
+	}
+
+	@Override
+	public String getPrefix() {
+		if (permissions == null)
+			return "The Almighty";
+		else
+			return permissions.getPrefix();
 	}
 }

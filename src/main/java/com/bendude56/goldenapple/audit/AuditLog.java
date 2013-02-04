@@ -14,8 +14,8 @@ public class AuditLog {
 		try {
 			Class.forName("com.bendude56.goldenapple.audit.AuditEvent");
 			
-			GoldenApple.getInstance().database.executeFromResource("auditlog_create");
-			GoldenApple.getInstance().database.executeFromResource("auditlogparams_create");
+			GoldenApple.getInstance().database.createOrUpdateTable("auditlog");
+			GoldenApple.getInstance().database.createOrUpdateTable("auditlogparams");
 			
 			String logLocation = GoldenApple.getInstance().mainConfig.getString("modules.audit.textAuditLog", "plugins/GoldenApple/audit.log");
 			if (logLocation != "") {

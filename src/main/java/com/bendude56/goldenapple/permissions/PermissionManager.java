@@ -1,6 +1,5 @@
 package com.bendude56.goldenapple.permissions;
 
-import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayDeque;
@@ -69,23 +68,14 @@ public class PermissionManager {
 		userCacheSize = Math.max(GoldenApple.getInstance().mainConfig.getInt("modules.permissions.userCacheSize", 20), 5);
 		groupCacheSize = Math.max(GoldenApple.getInstance().mainConfig.getInt("modules.permissions.groupCacheSize", 20), 5);
 
-		tryCreateTable("Users");
-		tryCreateTable("UserPermissions");
-		tryCreateTable("Groups");
-		tryCreateTable("GroupPermissions");
-		tryCreateTable("GroupGroupMembers");
-		tryCreateTable("GroupUserMembers");
+		GoldenApple.getInstance().database.createOrUpdateTable("Users");
+		GoldenApple.getInstance().database.createOrUpdateTable("UserPermissions");
+		GoldenApple.getInstance().database.createOrUpdateTable("Groups");
+		GoldenApple.getInstance().database.createOrUpdateTable("GroupPermissions");
+		GoldenApple.getInstance().database.createOrUpdateTable("GroupGroupMembers");
+		GoldenApple.getInstance().database.createOrUpdateTable("GroupUserMembers");
 
 		checkDefaultGroups();
-	}
-
-	private void tryCreateTable(String tableName) {
-		try {
-			GoldenApple.getInstance().database.executeFromResource(tableName.toLowerCase() + "_create");
-		} catch (SQLException | IOException e) {
-			GoldenApple.log(Level.SEVERE, "Failed to create table '" + tableName + "':");
-			GoldenApple.log(Level.SEVERE, e);
-		}
 	}
 	
 	private void popCache() {
@@ -416,7 +406,7 @@ public class PermissionManager {
 				ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT * FROM Groups WHERE ID=?", id);
 				try {
 					if (r.next()) {
-						return new PermissionGroup(r.getLong("ID"), r.getString("Name"));
+						return new PermissionGroup(r);
 					} else {
 						return null;
 					}
@@ -449,7 +439,7 @@ public class PermissionManager {
 			ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT * FROM Groups WHERE Name=?", name);
 			try {
 				if (r.next()) {
-					PermissionGroup g = new PermissionGroup(r.getLong("ID"), r.getString("Name"));
+					PermissionGroup g = new PermissionGroup(r);
 					groupCache.put(g.getId(), g);
 					groupCacheOut.addLast(g.getId());
 					popCache();

@@ -19,6 +19,7 @@ public class UnloadedCommand implements CommandExecutor {
 		reqModule.put("galock", "Lock");
 		reqModule.put("gaautolock", "Lock");
 		reqModule.put("game", "Chat");
+		reqModule.put("galemonpledge", "Chat");
 		reqModule.put("gachannel", "Chat");
 		reqModule.put("gaspawn", "Warp");
 		reqModule.put("gatp", "Warp");

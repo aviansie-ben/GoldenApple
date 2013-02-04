@@ -40,7 +40,7 @@ public class GoldenApple extends JavaPlugin {
 
 	public static final HashMap<String, IModuleLoader>	modules		= new HashMap<String, IModuleLoader>();
 	public static final String[]						loadOrder	= new String[] { "Base", "Permissions", "Lock", "Antigrief", "Chat", "Warp" };
-	public static final String[]						commands	= new String[] { "gamodule", "gaverify", "gaown", "gapermissions", "galock", "gacomplex", "gaautolock", "gaspawn", "gatp", "gatphere", "gachannel", "game", "gahome", "gasethome", "gadelhome" };
+	public static final String[]						commands	= new String[] { "gamodule", "gaverify", "gaown", "gapermissions", "galock", "gacomplex", "gaautolock", "gaspawn", "gatp", "gatphere", "gachannel", "game", "galemonpledge", "gahome", "gasethome", "gadelhome" };
 	public static final String[]						devs		= new String[] { "ben_dude56", "Deaboy" };
 	public static final UnloadedCommand					defCmd		= new UnloadedCommand();
 
@@ -89,6 +89,7 @@ public class GoldenApple extends JavaPlugin {
 
 	public Database				database;
 	public Configuration		mainConfig;
+	public Configuration        databaseVersion;
 	public PermissionManager	permissions;
 	public LockManager			locks;
 	public AreaManager			areas;
@@ -117,6 +118,19 @@ public class GoldenApple extends JavaPlugin {
 			}
 		}
 		mainConfig = YamlConfiguration.loadConfiguration(new File(this.getDataFolder() + "/config.yml"));
+		try {
+			if (new File(this.getDataFolder() + "/dbversion.yml").exists()) {
+				databaseVersion = YamlConfiguration.loadConfiguration(new File(this.getDataFolder() + "/dbversion.yml"));
+			} else {
+				databaseVersion = new YamlConfiguration();
+				databaseVersion.createSection("tableVersions");
+				((YamlConfiguration)databaseVersion).save(new File(this.getDataFolder() + "/dbversion.yml"));
+			}
+		} catch (IOException e) {
+			GoldenApple.log(Level.SEVERE, "Failed to load database version!");
+			GoldenApple.log(e);
+			getServer().getPluginManager().disablePlugin(this);
+		}
 		database = new Database();
 		locale = new LocalizationHandler(getClassLoader());
 		for (String cmd : commands) {

@@ -6,6 +6,8 @@ import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.IModuleLoader;
 import com.bendude56.goldenapple.ModuleLoadException;
 import com.bendude56.goldenapple.commands.ChannelCommand;
+import com.bendude56.goldenapple.commands.LemonPledgeCommand;
+import com.bendude56.goldenapple.commands.MeCommand;
 import com.bendude56.goldenapple.listener.ChatListener;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 
@@ -55,6 +57,8 @@ public class ChatModuleLoader implements IModuleLoader {
 
 	public void registerCommands() {
 		Bukkit.getPluginCommand("gachannel").setExecutor(new ChannelCommand());
+		Bukkit.getPluginCommand("game").setExecutor(new MeCommand());
+		Bukkit.getPluginCommand("galemonpledge").setExecutor(new LemonPledgeCommand());
 	}
 
 	public void unregisterEvents() {
@@ -63,6 +67,8 @@ public class ChatModuleLoader implements IModuleLoader {
 
 	public void unregisterCommands() {
 		Bukkit.getPluginCommand("gachannel").setExecutor(GoldenApple.defCmd);
+		Bukkit.getPluginCommand("game").setExecutor(GoldenApple.defCmd);
+		Bukkit.getPluginCommand("galemonpledge").setExecutor(new MeCommand());
 	}
 
 	@Override

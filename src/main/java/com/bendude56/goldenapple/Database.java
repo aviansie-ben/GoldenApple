@@ -1,6 +1,7 @@
 package com.bendude56.goldenapple;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -18,6 +19,7 @@ import java.util.HashMap;
 import java.util.Properties;
 import java.util.logging.Level;
 
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.sqlite.JDBC;
 
 /**
@@ -26,6 +28,8 @@ import org.sqlite.JDBC;
  * @author ben_dude56
  */
 public final class Database {
+	public static int DB_VERSION = 2;
+	
 	private Connection	connection;
 	private boolean		mySql;
 	
@@ -36,7 +40,7 @@ public final class Database {
 			mySql = true;
 			try {
 				Class.forName("com.mysql.jdbc.Driver");
-				Connection c = DriverManager.getConnection("jdbc:mysql://" + GoldenApple.getInstance().mainConfig.getString("database.host", "localhost") + "/mysql", GoldenApple.getInstance().mainConfig.getString("database.user", ""), GoldenApple.getInstance().mainConfig.getString("database.password", ""));
+				Connection c = DriverManager.getConnection("jdbc:mysql://" + GoldenApple.getInstance().mainConfig.getString("database.host", "localhost") + "/mysql?allowMultiQueries=true", GoldenApple.getInstance().mainConfig.getString("database.user", ""), GoldenApple.getInstance().mainConfig.getString("database.password", ""));
 				if (!c.isValid(1000)) {
 					GoldenApple.log(Level.SEVERE, "Failed to connect to MySQL database!");
 					return;
@@ -199,9 +203,45 @@ public final class Database {
 		return w.toString();
 	}
 	
+	private boolean resourceExists(String resource) throws IOException {
+		return getClass().getClassLoader().getResource(resource) != null;
+	}
+	
 	public void closeResult(ResultSet r) throws SQLException {
 		toClose.get(r).close();
 		toClose.remove(r);
+	}
+	
+	public void createOrUpdateTable(String tableName) {
+		int expectedDbVersion = DB_VERSION;
+		try {
+			tableName = tableName.toLowerCase();
+			int actualDbVersion = GoldenApple.getInstance().databaseVersion.getInt("tableVersions." + tableName, 0);
+			
+			if (actualDbVersion == 0) {
+				executeFromResource(tableName + "_create");
+				GoldenApple.getInstance().databaseVersion.set("tableVersions." + tableName, expectedDbVersion);
+				((YamlConfiguration)GoldenApple.getInstance().databaseVersion).save(new File(GoldenApple.getInstance().getDataFolder() + "/dbversion.yml"));
+				GoldenApple.log("Table " + tableName + " has been created at database version " + expectedDbVersion + "...");
+			} else if (actualDbVersion < expectedDbVersion) {
+				boolean executed = false;
+				for (int i = actualDbVersion + 1; i <= expectedDbVersion; i++) {
+					if (resourceExists("sql/" + ((mySql) ? "mysql" : "sqlite") + "/update/" + i + "/" + tableName + "_update.sql")) {
+						executeFromResource("update/" + i + "/" + tableName + "_update");
+						executed = true;
+					}
+				}
+				GoldenApple.getInstance().databaseVersion.set("tableVersions." + tableName, expectedDbVersion);
+				((YamlConfiguration)GoldenApple.getInstance().databaseVersion).save(new File(GoldenApple.getInstance().getDataFolder() + "/dbversion.yml"));
+				if (executed)
+					GoldenApple.log("Table " + tableName + " has been updated from version " + actualDbVersion + " to version " + expectedDbVersion + "...");
+			} else if (actualDbVersion > expectedDbVersion) {
+				GoldenApple.log(Level.SEVERE, "Table " + tableName + " has a newer database revision than this version of GoldenApple. Unexpected behaviour may result...");
+			}
+		} catch (Throwable e) {
+			GoldenApple.log(Level.SEVERE, "Failed to create or update table " + tableName + ". More errors might occur as a result.");
+			GoldenApple.log(Level.SEVERE, e);
+		}
 	}
 
 	/**

@@ -1,6 +1,5 @@
 package com.bendude56.goldenapple.chat;
 
-import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -40,9 +39,9 @@ public class ChatManager {
 		activeChannels = new HashMap<String, ChatChannel>();
 		userChannels = new HashMap<User, String>();
 		
-		tryCreateTable("channels");
-		tryCreateTable("channelusers");
-		tryCreateTable("channelgroups");
+		GoldenApple.getInstance().database.createOrUpdateTable("channels");
+		GoldenApple.getInstance().database.createOrUpdateTable("channelusers");
+		GoldenApple.getInstance().database.createOrUpdateTable("channelgroups");
 		
 		try {
 			ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT * FROM Channels");
@@ -69,15 +68,6 @@ public class ChatManager {
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			User u = User.getUser(p);
 			tryJoinChannel(u, defaultChannel, false);
-		}
-	}
-	
-	private void tryCreateTable(String tableName) {
-		try {
-			GoldenApple.getInstance().database.executeFromResource(tableName.toLowerCase() + "_create");
-		} catch (SQLException | IOException e) {
-			GoldenApple.log(Level.SEVERE, "Failed to create table '" + tableName + "':");
-			GoldenApple.log(Level.SEVERE, e);
 		}
 	}
 	

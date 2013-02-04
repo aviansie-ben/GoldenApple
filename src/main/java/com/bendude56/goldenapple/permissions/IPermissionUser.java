@@ -1,5 +1,7 @@
 package com.bendude56.goldenapple.permissions;
 
+import org.bukkit.ChatColor;
+
 public interface IPermissionUser extends IPermissionObject {
 	/**
 	 * Gets the name of the user represented by this instance.
@@ -43,4 +45,8 @@ public interface IPermissionUser extends IPermissionObject {
 	 *            locked
 	 */
 	void setAutoLockEnabled(boolean autoLock);
+	
+	ChatColor getChatColor();
+	
+	String getPrefix();
 }

@@ -1,7 +1,6 @@
 package com.bendude56.goldenapple.warp;
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
@@ -57,17 +56,8 @@ public class WarpManager {
 	private boolean homeBusy, warpBusy;
 	
 	public WarpManager() {
-		tryCreateTable("homes");
+		GoldenApple.getInstance().database.createOrUpdateTable("homes");
 		maxHomes = GoldenApple.getInstance().mainConfig.getInt("modules.warps.maxHomes", 5);
-	}
-	
-	private void tryCreateTable(String tableName) {
-		try {
-			GoldenApple.getInstance().database.executeFromResource(tableName.toLowerCase() + "_create");
-		} catch (SQLException | IOException e) {
-			GoldenApple.log(Level.SEVERE, "Failed to create table '" + tableName + "':");
-			GoldenApple.log(Level.SEVERE, e);
-		}
 	}
 	
 	public boolean isHomeBusy() {

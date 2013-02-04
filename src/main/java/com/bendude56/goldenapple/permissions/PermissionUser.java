@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
+import org.bukkit.ChatColor;
+
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
 import com.bendude56.goldenapple.permissions.PermissionManager.PermissionNode;
@@ -249,5 +251,37 @@ public class PermissionUser implements IPermissionUser {
 	public void setAutoLockEnabled(boolean autoLock) {
 		this.autoLock = autoLock;
 		save();
+	}
+
+	@Override
+	public ChatColor getChatColor() {
+		int priority = -1;
+		ChatColor color = ChatColor.WHITE;
+		
+		for (Long gid : getParentGroups(false)) {
+			PermissionGroup g = GoldenApple.getInstance().permissions.getGroup(gid);
+			if (g.isChatColorSet() && g.getPriority() > priority) {
+				priority = g.getPriority();
+				color = g.getChatColor();
+			}
+		}
+		
+		return color;
+	}
+
+	@Override
+	public String getPrefix() {
+		int priority = -1;
+		String prefix = null;
+		
+		for (Long gid : getParentGroups(false)) {
+			PermissionGroup g = GoldenApple.getInstance().permissions.getGroup(gid);
+			if (g.getPrefix() != null && g.getPriority() > priority) {
+				priority = g.getPriority();
+				prefix = g.getPrefix();
+			}
+		}
+		
+		return prefix;
 	}
 }

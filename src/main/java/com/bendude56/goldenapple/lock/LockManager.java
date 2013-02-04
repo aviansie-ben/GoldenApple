@@ -1,6 +1,5 @@
 package com.bendude56.goldenapple.lock;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -40,18 +39,9 @@ public class LockManager {
 		if (cacheSize < 3)
 			cacheSize = 3;
 
-		tryCreateTable("locks");
-		tryCreateTable("lockusers");
-		tryCreateTable("lockgroups");
-	}
-
-	private void tryCreateTable(String tableName) {
-		try {
-			GoldenApple.getInstance().database.executeFromResource(tableName.toLowerCase() + "_create");
-		} catch (SQLException | IOException e) {
-			GoldenApple.log(Level.SEVERE, "Failed to create table '" + tableName + "':");
-			GoldenApple.log(Level.SEVERE, e);
-		}
+		GoldenApple.getInstance().database.createOrUpdateTable("locks");
+		GoldenApple.getInstance().database.createOrUpdateTable("lockusers");
+		GoldenApple.getInstance().database.createOrUpdateTable("lockgroups");
 	}
 
 	private LockedBlock checkCache(long id) {

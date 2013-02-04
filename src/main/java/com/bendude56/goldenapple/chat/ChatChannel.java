@@ -51,7 +51,7 @@ public abstract class ChatChannel {
 		}
 		
 		GoldenApple.getInstance().locale.sendMessage(user, "general.channel.join", false, displayName);
-		if (broadcast) broadcastLocalizedMessage("general.channel.joinBroadcast", user.getDisplayName());
+		if (broadcast) broadcastLocalizedMessage("general.channel.joinBroadcast", user.getChatDisplayName());
 		
 		if (level == ChatChannelUserLevel.JOIN) {
 			GoldenApple.getInstance().locale.sendMessage(user, "general.channel.noTalk", false);
@@ -68,14 +68,14 @@ public abstract class ChatChannel {
 		connectedUsers.remove(user);
 		
 		GoldenApple.getInstance().locale.sendMessage(user, "general.channel.leave", false, displayName);
-		if (broadcast) broadcastLocalizedMessage("general.channel.leaveBroadcast", user.getDisplayName());
+		if (broadcast) broadcastLocalizedMessage("general.channel.leaveBroadcast", user.getChatDisplayName());
 	}
 	
 	public void kick(User user) {
 		connectedUsers.remove(user);
 		
 		GoldenApple.getInstance().locale.sendMessage(user, "general.channel.kick", false, displayName);
-		broadcastLocalizedMessage("general.channel.kickBroadcast", user.getDisplayName());
+		broadcastLocalizedMessage("general.channel.kickBroadcast", user.getChatDisplayName());
 	}
 	
 	public final boolean isStrictCensorOn() {
@@ -137,7 +137,16 @@ public abstract class ChatChannel {
 			GoldenApple.getInstance().locale.sendMessage(user, "error.channel.noTalk", false);
 		} else {
 			message = censor.censorMessage(message);
-			broadcastMessage(user.getDisplayName() + ChatColor.WHITE + ": " + message);
+			broadcastMessage(user.getChatDisplayName() + ChatColor.WHITE + ": " + message);
+		}
+	}
+	
+	public void sendMeMessage(User user, String message) {
+		if (connectedUsers.get(user).id < ChatChannelUserLevel.CHAT.id) {
+			GoldenApple.getInstance().locale.sendMessage(user, "error.channel.noTalk", false);
+		} else {
+			message = censor.censorMessage(message);
+			broadcastMessage(user.getChatDisplayName() + ChatColor.WHITE + " " + message);
 		}
 	}
 	
