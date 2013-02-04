@@ -201,6 +201,7 @@ public final class Database {
 	
 	public void closeResult(ResultSet r) throws SQLException {
 		toClose.get(r).close();
+		toClose.remove(r);
 	}
 
 	/**
