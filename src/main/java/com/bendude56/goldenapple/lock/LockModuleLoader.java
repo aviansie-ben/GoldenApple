@@ -1,11 +1,8 @@
 package com.bendude56.goldenapple.lock;
 
-import org.bukkit.Bukkit;
-
+import com.bendude56.goldenapple.CommandManager;
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.IModuleLoader;
-import com.bendude56.goldenapple.commands.AutoLockCommand;
-import com.bendude56.goldenapple.commands.LockCommand;
 import com.bendude56.goldenapple.listener.LockListener;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 
@@ -20,11 +17,11 @@ public class LockModuleLoader implements IModuleLoader {
 			instance.locks = new LockManager();
 			registerPermissions(instance.permissions);
 			registerEvents();
-			registerCommands();
+			registerCommands(instance.commands);
 			state = ModuleState.LOADED;
 		} catch (Throwable e) {
 			state = ModuleState.UNLOADED_ERROR;
-			// TODO Add cleanup code to clean up after failed module start
+			unregisterCommands(instance.commands);
 		}
 	}
 	
@@ -42,18 +39,26 @@ public class LockModuleLoader implements IModuleLoader {
 		LockListener.startListening();
 	}
 	
-	private void registerCommands() {
-		Bukkit.getPluginCommand("galock").setExecutor(new LockCommand());
-		Bukkit.getPluginCommand("gaautolock").setExecutor(new AutoLockCommand());
+	private void registerCommands(CommandManager commands) {
+		commands.getCommand("galock").register();
+		commands.getCommand("gaautolock").register();
 	}
 
 	@Override
 	public void unloadModule(GoldenApple instance) {
-		LockListener.stopListening();
+		unregisterEvents();
+		unregisterCommands(instance.commands);
 		GoldenApple.getInstance().locks = null;
-		Bukkit.getPluginCommand("galock").setExecutor(GoldenApple.defCmd);
-		Bukkit.getPluginCommand("gaautolock").setExecutor(GoldenApple.defCmd);
 		state = ModuleState.UNLOADED_USER;
+	}
+	
+	private void unregisterCommands(CommandManager commands) {
+		commands.getCommand("galock").unregister();
+		commands.getCommand("gaautolock").unregister();
+	}
+	
+	private void unregisterEvents() {
+		LockListener.stopListening();
 	}
 
 	@Override

@@ -1,13 +1,9 @@
 package com.bendude56.goldenapple.chat;
 
-import org.bukkit.Bukkit;
-
+import com.bendude56.goldenapple.CommandManager;
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.IModuleLoader;
 import com.bendude56.goldenapple.ModuleLoadException;
-import com.bendude56.goldenapple.commands.ChannelCommand;
-import com.bendude56.goldenapple.commands.LemonPledgeCommand;
-import com.bendude56.goldenapple.commands.MeCommand;
 import com.bendude56.goldenapple.listener.ChatListener;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 
@@ -25,7 +21,7 @@ public class ChatModuleLoader implements IModuleLoader {
 			
 			instance.chat = new ChatManager();
 			registerEvents();
-			registerCommands();
+			registerCommands(instance.commands);
 			
 			state = ModuleState.LOADED;
 		} catch (Throwable e) {
@@ -33,7 +29,7 @@ public class ChatModuleLoader implements IModuleLoader {
 
 			instance.chat = null;
 			unregisterEvents();
-			unregisterCommands();
+			unregisterCommands(instance.commands);
 			
 			ChatCensor.unloadCensors();
 			
@@ -55,26 +51,26 @@ public class ChatModuleLoader implements IModuleLoader {
 		ChatListener.startListening();
 	}
 
-	public void registerCommands() {
-		Bukkit.getPluginCommand("gachannel").setExecutor(new ChannelCommand());
-		Bukkit.getPluginCommand("game").setExecutor(new MeCommand());
-		Bukkit.getPluginCommand("galemonpledge").setExecutor(new LemonPledgeCommand());
+	public void registerCommands(CommandManager commands) {
+		commands.getCommand("gachannel").register();
+		commands.getCommand("game").register();
+		commands.getCommand("galemonpledge").register();
 	}
 
 	public void unregisterEvents() {
 		ChatListener.stopListening();
 	}
 
-	public void unregisterCommands() {
-		Bukkit.getPluginCommand("gachannel").setExecutor(GoldenApple.defCmd);
-		Bukkit.getPluginCommand("game").setExecutor(GoldenApple.defCmd);
-		Bukkit.getPluginCommand("galemonpledge").setExecutor(new MeCommand());
+	public void unregisterCommands(CommandManager commands) {
+		commands.getCommand("gachannel").unregister();
+		commands.getCommand("game").unregister();
+		commands.getCommand("galemonpledge").unregister();
 	}
 
 	@Override
 	public void unloadModule(GoldenApple instance) {
 		unregisterEvents();
-		unregisterCommands();
+		unregisterCommands(instance.commands);
 		instance.chat = null;
 		
 		ChatCensor.unloadCensors();

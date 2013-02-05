@@ -27,7 +27,6 @@ import com.bendude56.goldenapple.audit.ModuleDisableEvent;
 import com.bendude56.goldenapple.audit.ModuleEnableEvent;
 import com.bendude56.goldenapple.chat.ChatManager;
 import com.bendude56.goldenapple.chat.ChatModuleLoader;
-import com.bendude56.goldenapple.commands.UnloadedCommand;
 import com.bendude56.goldenapple.lock.LockManager;
 import com.bendude56.goldenapple.lock.LockModuleLoader;
 import com.bendude56.goldenapple.permissions.PermissionManager;
@@ -40,9 +39,7 @@ public class GoldenApple extends JavaPlugin {
 
 	public static final HashMap<String, IModuleLoader>	modules		= new HashMap<String, IModuleLoader>();
 	public static final String[]						loadOrder	= new String[] { "Base", "Permissions", "Lock", "Antigrief", "Chat", "Warp" };
-	public static final String[]						commands	= new String[] { "gamodule", "gaverify", "gaown", "gapermissions", "galock", "gacomplex", "gaautolock", "gaspawn", "gatp", "gatphere", "gachannel", "game", "galemonpledge", "gahome", "gasethome", "gadelhome" };
 	public static final String[]						devs		= new String[] { "ben_dude56", "Deaboy" };
-	public static final UnloadedCommand					defCmd		= new UnloadedCommand();
 
 	static {
 		modules.put("Base", new BaseModuleLoader());
@@ -96,6 +93,7 @@ public class GoldenApple extends JavaPlugin {
 	public ChatManager			chat;
 	public LocalizationHandler	locale;
 	public WarpManager          warps;
+	public CommandManager       commands;
 
 	@Override
 	public void onEnable() {
@@ -131,11 +129,9 @@ public class GoldenApple extends JavaPlugin {
 			GoldenApple.log(e);
 			getServer().getPluginManager().disablePlugin(this);
 		}
+		commands = new CommandManager();
 		database = new Database();
 		locale = new LocalizationHandler(getClassLoader());
-		for (String cmd : commands) {
-			getCommand(cmd).setExecutor(defCmd);
-		}
 		for (String m : loadOrder) {
 			IModuleLoader module = modules.get(m);
 			if (module != null && module.canLoadAuto() && module.canPolicyLoad() && module.getCurrentState() == ModuleState.UNLOADED_USER) {

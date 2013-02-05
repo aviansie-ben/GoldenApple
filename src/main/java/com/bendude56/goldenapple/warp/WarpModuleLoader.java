@@ -1,16 +1,8 @@
 package com.bendude56.goldenapple.warp;
 
-import org.bukkit.Bukkit;
-
+import com.bendude56.goldenapple.CommandManager;
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.IModuleLoader;
-import com.bendude56.goldenapple.commands.BackCommand;
-import com.bendude56.goldenapple.commands.DelHomeCommand;
-import com.bendude56.goldenapple.commands.HomeCommand;
-import com.bendude56.goldenapple.commands.SetHomeCommand;
-import com.bendude56.goldenapple.commands.SpawnCommand;
-import com.bendude56.goldenapple.commands.TpCommand;
-import com.bendude56.goldenapple.commands.TpHereCommand;
 import com.bendude56.goldenapple.listener.WarpListener;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 
@@ -24,7 +16,7 @@ public class WarpModuleLoader implements IModuleLoader {
 		try {
 			GoldenApple.getInstance().warps = new WarpManager();
 			
-			registerCommands();
+			registerCommands(instance.commands);
 			registerPermissions(instance.permissions);
 			WarpListener.startListening();
 			state = ModuleState.LOADED;
@@ -33,14 +25,14 @@ public class WarpModuleLoader implements IModuleLoader {
 		}
 	}
 
-	private void registerCommands() {
-		Bukkit.getPluginCommand("gaspawn").setExecutor(new SpawnCommand());
-		Bukkit.getPluginCommand("gatp").setExecutor(new TpCommand());
-		Bukkit.getPluginCommand("gatphere").setExecutor(new TpHereCommand());
-		Bukkit.getPluginCommand("gaback").setExecutor(new BackCommand());
-		Bukkit.getPluginCommand("gahome").setExecutor(new HomeCommand());
-		Bukkit.getPluginCommand("gasethome").setExecutor(new SetHomeCommand());
-		Bukkit.getPluginCommand("gadelhome").setExecutor(new DelHomeCommand());
+	private void registerCommands(CommandManager commands) {
+		commands.getCommand("gaspawn").register();
+		commands.getCommand("gatp").register();
+		commands.getCommand("gatphere").register();
+		commands.getCommand("gaback").register();
+		commands.getCommand("gahome").register();
+		commands.getCommand("gasethome").register();
+		commands.getCommand("gadelhome").register();
 	}
 
 	@Override
@@ -72,14 +64,20 @@ public class WarpModuleLoader implements IModuleLoader {
 
 	@Override
 	public void unloadModule(GoldenApple instance) {
-		GoldenApple.getInstance().warps = null;
-		Bukkit.getPluginCommand("gaspawn").setExecutor(GoldenApple.defCmd);
-		Bukkit.getPluginCommand("gatp").setExecutor(GoldenApple.defCmd);
-		Bukkit.getPluginCommand("gatphere").setExecutor(GoldenApple.defCmd);
-		Bukkit.getPluginCommand("gaback").setExecutor(GoldenApple.defCmd);
-		Bukkit.getPluginCommand("gahome").setExecutor(GoldenApple.defCmd);
+		unregisterCommands(instance.commands);
 		WarpListener.stopListening();
+		GoldenApple.getInstance().warps = null;
 		state = ModuleState.UNLOADED_USER;
+	}
+	
+	private void unregisterCommands(CommandManager commands) {
+		commands.getCommand("gaspawn").unregister();
+		commands.getCommand("gatp").unregister();
+		commands.getCommand("gatphere").unregister();
+		commands.getCommand("gaback").unregister();
+		commands.getCommand("gahome").unregister();
+		commands.getCommand("gasethome").unregister();
+		commands.getCommand("gadelhome").unregister();
 	}
 
 	@Override

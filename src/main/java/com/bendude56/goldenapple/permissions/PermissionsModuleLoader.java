@@ -1,13 +1,10 @@
 package com.bendude56.goldenapple.permissions;
 
-import org.bukkit.Bukkit;
-
+import com.bendude56.goldenapple.CommandManager;
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.IModuleLoader;
 import com.bendude56.goldenapple.ModuleLoadException;
 import com.bendude56.goldenapple.User;
-import com.bendude56.goldenapple.commands.OwnCommand;
-import com.bendude56.goldenapple.commands.PermissionsCommand;
 import com.bendude56.goldenapple.listener.PermissionListener;
 
 public class PermissionsModuleLoader implements IModuleLoader {
@@ -22,7 +19,7 @@ public class PermissionsModuleLoader implements IModuleLoader {
 			User.clearCache();
 			registerPermissions(instance.permissions);
 			registerEvents();
-			registerCommands();
+			registerCommands(instance.commands);
 			state = ModuleState.LOADED;
 		} catch (Throwable e) {
 			// This module should NEVER fail to load! This is a major problem.
@@ -57,20 +54,28 @@ public class PermissionsModuleLoader implements IModuleLoader {
 		PermissionListener.startListening();
 	}
 	
-	private void registerCommands() {
-		Bukkit.getPluginCommand("gapermissions").setExecutor(new PermissionsCommand());
-		Bukkit.getPluginCommand("gaown").setExecutor(new OwnCommand());
+	private void registerCommands(CommandManager commands) {
+		commands.getCommand("gapermissions").register();
+		commands.getCommand("gaown").register();
 	}
 
 	@Override
 	public void unloadModule(GoldenApple instance) {
-		PermissionListener.stopListening();
+		unregisterEvents();
+		unregisterCommands(instance.commands);
 		User.clearCache();
 		GoldenApple.getInstance().permissions.close();
 		GoldenApple.getInstance().permissions = null;
-		Bukkit.getPluginCommand("gapermissions").setExecutor(GoldenApple.defCmd);
-		Bukkit.getPluginCommand("gaown").setExecutor(GoldenApple.defCmd);
 		state = ModuleState.UNLOADED_USER;
+	}
+	
+	private void unregisterEvents() {
+		PermissionListener.stopListening();
+	}
+	
+	private void unregisterCommands(CommandManager commands) {
+		commands.getCommand("gapermissions").unregister();
+		commands.getCommand("gaown").unregister();
 	}
 
 	@Override
