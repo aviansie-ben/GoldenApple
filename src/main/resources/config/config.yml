@@ -74,6 +74,7 @@ securityPolicy:
         warp: false
         chat: false
         antigrief: false
+        punish: false
     
     # Determines whether or not a module can be manually unloaded
     # using /gamodule. These modules will still be unloaded if a
@@ -85,6 +86,7 @@ securityPolicy:
         warp: false
         chat: false
         antigrief: false
+        punsih: false
 
 # Options for GoldenApple modules
 modules:
@@ -295,3 +297,63 @@ modules:
         # The maximum number of homes that any one player can have at
         # one time.
         maxHomes: 5
+        
+    punish:
+    
+        # Determines whether or not the GoldenApple punishment module
+        # will take over punishments on players
+        enabled: true
+        
+        # Determines whether channel-based muting is enabled. When
+        # set to true, players can be muted in specific channels.
+        channelMute: true
+        
+        # When set to true, channel administrators and moderators are
+        # not permitted to mute players.
+        ignoreChannelLevel: false
+        
+        # The maximum amount of time (in seconds) that a temporary
+        # ban can last for. This can be overriden with the correct
+        # permissions. Permanent bans are also exempt. 0 for no
+        # restriction.
+        maxTempBanTime: 0
+        
+        # The maximum amount of time (in seconds) that a temporary
+        # global mute can last for. This can be overriden with the
+        # correct permissions. Permanent global mutes are also 
+        # exempt. 0 for no restriction.
+        maxTempGlobalMuteTime: 0
+        
+        # The maximum amount of time (in seconds) that a temporary
+        # channel-based mute can last for. This can be overriden with
+        # the correct permissions. Permanent channel-based mutes are
+        # exempt. 0 for no restriction.
+        maxTempChannelMuteTime: 0
+        
+        # The reason that should be used for a permanent ban if a
+        # specific reason is not provided.
+        defaultPermaBanReason: 'You have been banished from this server!'
+        
+        # The reason that should be used for a temporary ban if a
+        # specific reason is not provided.
+        defaultTempBanReason: 'You have been temporarily banished from this server!'
+        
+        # The reason that should be used for a permanent global mute
+        # if a specific reason is not provided.
+        defaultPermaGlobalMuteReason: 'You have been permanently silenced!'
+        
+        # The reason that should be used for a temporary global mute
+        # if a specific reason is not provided.
+        defaultTempGlobalMuteReason: 'An administrator has temporarily silenced you!'
+        
+        # The reason that should be used for a permanent channel mute
+        # if a specific reason is not provided.
+        defaultPermaChannelMuteReason: 'You have been silenced from this channel.'
+        
+        # The reason that should be used for a temporary channel mute
+        # if a specific reason is not provided.
+        defaultTempChannelMuteReason: 'You have been temporarily silenced from this channel.'
+        
+        # A message that should be shown to banned users directing
+        # them on how to appeal a wrongful ban.
+        banAppealMessage: 'Contact an administrator to dispute this ban.'

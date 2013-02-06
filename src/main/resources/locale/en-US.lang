@@ -238,3 +238,8 @@ shared.unknownOption=&4ERROR: Unknown option: %1
 shared.userNotFoundError=&4ERROR: Failed to find user '%1'
 shared.userNotFoundWarning=&eWARNING: Failed to find user '%1'
 shared.worldNotFoundError=&4ERROR: Failed to find world '%1'
+
+time.days=%1 day(s)
+time.hours=%1 hour(s)
+time.minutes = %1 minute(s)
+time.seconds = %1 second(s)

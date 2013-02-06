@@ -58,6 +58,17 @@ public class LocalizationHandler {
 		
 		return msg;
 	}
+	
+	public String processMessage(String locale, String message, String... args) {
+		String msg = secondaryMessages.get(locale).get(message);
+		for (int i = 0; i < args.length; i++) {
+			if (args[i] == null)
+				throw new IllegalArgumentException("args[" + i + "] cannot be null");
+			msg = msg.replace("%" + (i + 1), args[i]);
+		}
+		
+		return msg;
+	}
 
 	public void sendMessage(User user, String message, boolean multiline) {
 		sendMessage(user, message, multiline, new String[0]);

@@ -67,6 +67,12 @@ public class CommandManager {
 		insertCommand("gaback" ,"Warp", new BackCommand());
 		insertCommand("gatp", "Warp", new TpCommand());
 		insertCommand("gatphere", "Warp", new TpHereCommand());
+		
+		// Module - Punish
+		insertCommand("gaban", "Punish", null);
+		insertCommand("gamute", "Punish", null);
+		insertCommand("gaglobalmute", "Punish", null);
+		insertCommand("gawhois", "Punish", null);
 	}
 	
 	public void insertCommand(String commandName, String module, CommandExecutor executor) {
@@ -131,8 +137,6 @@ public class CommandManager {
 				f = Command.class.getDeclaredField("activeAliases");
 				f.setAccessible(true);
 				f.set(command, aliases);
-				
-				
 			} catch (Throwable e) {
 				e.printStackTrace();
 			}
