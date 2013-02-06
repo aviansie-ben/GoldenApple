@@ -3,11 +3,50 @@ package com.bendude56.goldenapple.punish;
 import java.sql.Timestamp;
 
 import com.bendude56.goldenapple.GoldenApple;
+import com.bendude56.goldenapple.permissions.PermissionUser;
 
-public class Punishment {
+public abstract class Punishment {
 	protected long targetId, adminId;
 	protected String reason;
 	protected Timestamp startTime;
+	protected RemainingTime length;
+	protected boolean voided;
+	
+	public long getTargetId() {
+		return targetId;
+	}
+	
+	public PermissionUser getTarget() {
+		return GoldenApple.getInstance().permissions.getUser(targetId);
+	}
+	
+	public long getAdminId() {
+		return adminId;
+	}
+	
+	public PermissionUser getAdmin() {
+		return GoldenApple.getInstance().permissions.getUser(adminId);
+	}
+	
+	public Timestamp getStartTime() {
+		return startTime;
+	}
+	
+	public Timestamp getEndTime() {
+		return RemainingTime.add(startTime, length);
+	}
+	
+	public RemainingTime getDuration() {
+		return length;
+	}
+	
+	public boolean isVoided() {
+		return voided;
+	}
+	
+	public boolean isExpired() {
+		return voided || System.currentTimeMillis() > RemainingTime.add(startTime, length).getTime();
+	}
 	
 	public static class RemainingTime {
 		private long secondsLeft;
@@ -96,13 +135,13 @@ public class Punishment {
 			
 			return new RemainingTime(seconds);
 		}
-	}
-	
-	public static RemainingTime timeBetween(Timestamp time1, Timestamp time2) {
-		return new RemainingTime((time1.getTime() - time2.getTime()) / 1000);
-	}
-	
-	public static Timestamp add(Timestamp time, RemainingTime timeAdd) {
-		return new Timestamp(time.getTime() + timeAdd.getTotalSeconds() * 1000);
+		
+		public static RemainingTime timeBetween(Timestamp time1, Timestamp time2) {
+			return new RemainingTime((time1.getTime() - time2.getTime()) / 1000);
+		}
+		
+		public static Timestamp add(Timestamp time, RemainingTime timeAdd) {
+			return new Timestamp(time.getTime() + timeAdd.getTotalSeconds() * 1000);
+		}
 	}
 }
