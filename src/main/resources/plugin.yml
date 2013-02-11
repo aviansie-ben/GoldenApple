@@ -77,3 +77,19 @@ commands:
         usage: /<command> <Import Type> <Import From>
         description: Imports information from another plugin
         aliases: []
+    gaban:
+        usage: Use /<command> -? for help
+        description: Controls banned players
+        aliases: [ban, banish, banhammer]
+    gamute:
+        usage: Use /<command> -? for help
+        description: Controls muted players
+        aliases: [mute, silence]
+    gaglobalmute:
+        usage: Use /<command> -? for help
+        description: Controls globally muted players
+        aliases: [globalmute, gmute, globalsilence, gsilence]
+    gawhois:
+        usage: /<command> <Player>
+        description: Gets ban/mute information about a player
+        aliases: [whois]

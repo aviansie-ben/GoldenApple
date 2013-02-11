@@ -6,11 +6,19 @@ import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.permissions.PermissionUser;
 
 public abstract class Punishment {
+	protected long id;
 	protected long targetId, adminId;
 	protected String reason;
 	protected Timestamp startTime;
 	protected RemainingTime length;
-	protected boolean voided;
+	protected boolean voided, permanent;
+	
+	public abstract boolean update();
+	public abstract boolean insert();
+	
+	public long getId() {
+		return id;
+	}
 	
 	public long getTargetId() {
 		return targetId;
@@ -28,6 +36,10 @@ public abstract class Punishment {
 		return GoldenApple.getInstance().permissions.getUser(adminId);
 	}
 	
+	public String getReason() {
+		return reason;
+	}
+	
 	public Timestamp getStartTime() {
 		return startTime;
 	}
@@ -40,12 +52,24 @@ public abstract class Punishment {
 		return length;
 	}
 	
+	public RemainingTime getRemainingDuration() {
+		return new RemainingTime((RemainingTime.add(startTime, length).getTime() - System.currentTimeMillis()) / 1000);
+	}
+	
 	public boolean isVoided() {
 		return voided;
 	}
 	
+	public boolean isPermanent() {
+		return permanent;
+	}
+	
 	public boolean isExpired() {
-		return voided || System.currentTimeMillis() > RemainingTime.add(startTime, length).getTime();
+		return voided || (!permanent && System.currentTimeMillis() > RemainingTime.add(startTime, length).getTime());
+	}
+	
+	public void voidPunishment() {
+		voided = true;
 	}
 	
 	public static class RemainingTime {
@@ -97,7 +121,7 @@ public abstract class Punishment {
 				result += GoldenApple.getInstance().locale.processMessageDefaultLocale("time.seconds", seconds + "") + ", ";
 			
 			if (result.length() > 0) {
-				result = result.substring(0, result.length() - 3);
+				result = result.substring(0, result.length() - 2);
 			}
 			
 			return result;
@@ -110,19 +134,19 @@ public abstract class Punishment {
 				int i;
 				for (i = 0; i <= input.length(); i++) {
 					if (i == input.length()) {
-						seconds += Integer.parseInt(input.substring(0, i - 1));
+						seconds += Integer.parseInt(input.substring(0, i));
 						input = "";
 						break;
 					} else if (!Character.isDigit((input.charAt(i)))) {
 						Character c = Character.toLowerCase(input.charAt(i));
 						if (c == 'd') {
-							seconds += Integer.parseInt(input.substring(0, i - 1)) * 86400;
+							seconds += Integer.parseInt(input.substring(0, i)) * 86400;
 						} else if (c == 'h') {
-							seconds += Integer.parseInt(input.substring(0, i - 1)) * 3600;
+							seconds += Integer.parseInt(input.substring(0, i)) * 3600;
 						} else if (c == 'm') {
-							seconds += Integer.parseInt(input.substring(0, i - 1)) * 60;
+							seconds += Integer.parseInt(input.substring(0, i)) * 60;
 						} else if (c == 's') {
-							seconds += Integer.parseInt(input.substring(0, i - 1));
+							seconds += Integer.parseInt(input.substring(0, i));
 						} else {
 							throw new NumberFormatException();
 						}

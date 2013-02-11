@@ -3,7 +3,7 @@ package com.bendude56.goldenapple.punish;
 import com.bendude56.goldenapple.CommandManager;
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.IModuleLoader;
-import com.bendude56.goldenapple.listener.LockListener;
+import com.bendude56.goldenapple.listener.PunishmentListener;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 
 public class PunishModuleLoader implements IModuleLoader {
@@ -14,7 +14,7 @@ public class PunishModuleLoader implements IModuleLoader {
 	public void loadModule(GoldenApple instance) {
 		state = ModuleState.LOADING;
 		try {
-			
+			instance.punish = new PunishmentManager();
 			registerPermissions(instance.permissions);
 			registerEvents();
 			registerCommands(instance.commands);
@@ -27,11 +27,18 @@ public class PunishModuleLoader implements IModuleLoader {
 	
 	@Override
 	public void registerPermissions(PermissionManager permissions) {
+		PunishmentManager.punishNode = permissions.registerNode("punish", PermissionManager.goldenAppleNode);
 		
+		PunishmentManager.banNode = permissions.registerNode("ban", PunishmentManager.punishNode);
+		PunishmentManager.banTempPermission = permissions.registerPermission("temp", PermissionManager.goldenAppleNode);
+		PunishmentManager.banTempOverridePermission = permissions.registerPermission("tempOverride", PermissionManager.goldenAppleNode);
+		PunishmentManager.banPermPermission = permissions.registerPermission("perm", PermissionManager.goldenAppleNode);
+		PunishmentManager.banVoidPermission = permissions.registerPermission("void", PermissionManager.goldenAppleNode);
+		PunishmentManager.banVoidAllPermission = permissions.registerPermission("voidAll", PermissionManager.goldenAppleNode);
 	}
 	
 	private void registerEvents() {
-		LockListener.startListening();
+		PunishmentListener.startListening();
 	}
 	
 	private void registerCommands(CommandManager commands) {
@@ -57,7 +64,7 @@ public class PunishModuleLoader implements IModuleLoader {
 	}
 	
 	private void unregisterEvents() {
-		LockListener.stopListening();
+		PunishmentListener.stopListening();
 	}
 
 	@Override

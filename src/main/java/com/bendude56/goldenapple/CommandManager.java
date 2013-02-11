@@ -16,6 +16,7 @@ import org.bukkit.plugin.SimplePluginManager;
 
 import com.bendude56.goldenapple.commands.AutoLockCommand;
 import com.bendude56.goldenapple.commands.BackCommand;
+import com.bendude56.goldenapple.commands.BanCommand;
 import com.bendude56.goldenapple.commands.ChannelCommand;
 import com.bendude56.goldenapple.commands.ComplexCommand;
 import com.bendude56.goldenapple.commands.DelHomeCommand;
@@ -69,7 +70,7 @@ public class CommandManager {
 		insertCommand("gatphere", "Warp", new TpHereCommand());
 		
 		// Module - Punish
-		insertCommand("gaban", "Punish", null);
+		insertCommand("gaban", "Punish", new BanCommand());
 		insertCommand("gamute", "Punish", null);
 		insertCommand("gaglobalmute", "Punish", null);
 		insertCommand("gawhois", "Punish", null);

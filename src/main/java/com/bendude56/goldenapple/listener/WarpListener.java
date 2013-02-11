@@ -44,6 +44,7 @@ public class WarpListener implements Listener, EventExecutor {
 	private void unregisterEvents() {
 		PlayerTeleportEvent.getHandlerList().unregister(this);
 		PlayerDeathEvent.getHandlerList().unregister(this);
+		PlayerQuitEvent.getHandlerList().unregister(this);
 	}
 
 	@Override

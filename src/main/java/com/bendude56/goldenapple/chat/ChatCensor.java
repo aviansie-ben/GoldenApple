@@ -2,6 +2,7 @@ package com.bendude56.goldenapple.chat;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import com.bendude56.goldenapple.GoldenApple;
 
@@ -34,7 +35,7 @@ public class ChatCensor {
 	
 	public String censorMessage(String message) {
 		for (String regex : censoredRegex) {
-			message = message.replaceAll(regex, censorString);
+			message = Pattern.compile(regex, Pattern.CASE_INSENSITIVE).matcher(message).replaceAll(censorString);
 		}
 		return message;
 	}

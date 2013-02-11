@@ -2,6 +2,11 @@ error.antigrief.potionBlock=&4ERROR: The potion you are attempting to use has be
 error.antigrief.potionCheckFail=&4ERROR: Internal error while checking for blocked potion.
 error.antigrief.tnt=&4ERROR: You are not allowed to ignite TNT! This attempt has been logged.
 
+error.ban.alreadyBanned=&4ERROR: That user is already banned!
+error.ban.notBanned=&4ERROR: That user is not banned!
+error.ban.noUserSelected=&4ERROR: No user was selected.
+error.ban.tooLong=&4ERROR: The maximum time for a temporary ban is %1.
+
 error.channel.alreadyExists=&4ERROR: A channel with that name already exists!
 error.channel.defaultLevelTooHigh=&4ERROR: Only None, Join, and Chat can be used as the default level!
 error.channel.invalidLevel=&4ERROR: '%1' is not a valid level!
@@ -71,6 +76,12 @@ error.verify.noCommand=&4ERROR: No command to verify!
 
 error.warps.noBack=&4ERROR: You have nowhere to go back to!
 error.warps.pluginCancel=&4ERROR: Teleport was cancelled by another plugin!
+
+general.ban.permaban=&a%1 has been banned permanently.
+general.ban.permakick=You have been permanently banned by %1:
+general.ban.tempban=&a%1 has been banned for %2.
+general.ban.tempkick=You have been banned for %1 by %2:
+general.ban.voidban=&aThe ban on %1 has been voided.
 
 general.channel.deleteBroadcast=&eChannel %1&e is being deleted. Everybody will now be kicked from this channel.
 general.channel.deleteWarn=&eWARNING: You are about to permanently delete this chat channel! If you are sure you wish to do this, type /gaverify.
@@ -168,6 +179,14 @@ header.module=&7-----&6 GoldenApple Module Controller &7-----
 header.permissions=&7-----&6 GoldenApple Permissions &7-----
 header.warps=&7-----&6 GoldenApple Warps &7-----
 
+help.ban.complex.1=Select a user using &7-u <user>
+help.ban.complex.2=Specify a ban reason using &7-r <reason>
+help.ban.complex.3=Specify ban duration using &7-d <duration>
+help.ban.complex.4=Void a previous ban using &7-v
+
+help.ban.simple.1=Ban a user using &7/%1 <player> [{<duration>|permanent}] [reason]
+help.ban.simple.2=Void a previous ban using &7/%1 <player> void
+
 help.channel.inNormal.complex.1=Leave the channel using &7-l
 
 help.channel.inNormal.simple.1=Leave the channel using &7/%1 leave
@@ -241,5 +260,5 @@ shared.worldNotFoundError=&4ERROR: Failed to find world '%1'
 
 time.days=%1 day(s)
 time.hours=%1 hour(s)
-time.minutes = %1 minute(s)
-time.seconds = %1 second(s)
+time.minutes=%1 minute(s)
+time.seconds=%1 second(s)
