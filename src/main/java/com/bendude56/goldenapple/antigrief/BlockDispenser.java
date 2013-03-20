@@ -48,13 +48,9 @@ public class BlockDispenser extends net.minecraft.server.v1_5_R1.BlockDispenser 
 		
 		m = Block.class.getDeclaredMethod("a", new Class<?>[] { StepSound.class });
 		m.setAccessible(true);
-		m.invoke(b, Block.h);
+		m.invoke(b, Block.j);
 		
 		b.c("dispenser");
-		
-		m = Block.class.getDeclaredMethod("r", new Class<?>[0]);
-		m.setAccessible(true);
-		m.invoke(b);
 		
 		return b;
 	}
