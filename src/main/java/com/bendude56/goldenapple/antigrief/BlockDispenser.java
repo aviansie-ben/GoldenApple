@@ -50,7 +50,7 @@ public class BlockDispenser extends net.minecraft.server.v1_5_R1.BlockDispenser 
 		m.setAccessible(true);
 		m.invoke(b, Block.h);
 		
-		b.b("dispenser");
+		b.c("dispenser");
 		
 		m = Block.class.getDeclaredMethod("r", new Class<?>[0]);
 		m.setAccessible(true);
@@ -68,7 +68,7 @@ public class BlockDispenser extends net.minecraft.server.v1_5_R1.BlockDispenser 
         TileEntityDispenser tileentitydispenser = (TileEntityDispenser) sourceblock.getTileEntity();
 
         if (tileentitydispenser != null) {
-            int l = tileentitydispenser.i();
+            int l = tileentitydispenser.j();
 
             if (l < 0) {
                 world.triggerEffect(1001, i, j, k, 0);

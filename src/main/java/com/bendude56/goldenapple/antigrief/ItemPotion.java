@@ -2,7 +2,7 @@ package com.bendude56.goldenapple.antigrief;
 
 import java.util.HashMap;
 
-import org.bukkit.craftbukkit.v1_4_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_5_R1.inventory.CraftItemStack;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionType;
 
@@ -46,7 +46,7 @@ public class ItemPotion extends net.minecraft.server.v1_5_R1.ItemPotion {
 	}
 	
 	private static Item prepClass(Item i) throws Exception {
-		return i.b(13, 8).b("potion");
+		return i.b("potion");
 	}
 
 	public ItemPotion(int i) {
@@ -62,12 +62,12 @@ public class ItemPotion extends net.minecraft.server.v1_5_R1.ItemPotion {
     }
 	
 	public ItemStack a(ItemStack itemstack, World world, EntityHuman entityhuman) {
-        if (g(itemstack.getData())) {
+        if (f(itemstack.getData())) {
             if (!entityhuman.abilities.canInstantlyBuild) {
                 --itemstack.count;
             }
 
-            world.makeSound(entityhuman, "random.bow", 0.5F, 0.4F / (d.nextFloat() * 0.4F + 0.8F));
+            world.makeSound(entityhuman, "random.bow", 0.5F, 0.4F / (e.nextFloat() * 0.4F + 0.8F));
             if (!world.isStatic) {
                 world.addEntity(new EntityPotion(world, entityhuman, itemstack));
             }

@@ -18,6 +18,6 @@ public class DispenseBehaviorPotion implements IDispenseBehavior {
     }
 
     public ItemStack a(ISourceBlock isourceblock, ItemStack itemstack) {
-        return ItemPotion.g(itemstack.getData()) ? (new DispenseBehaviorThrownPotion(this, itemstack)).a(isourceblock, itemstack) : this.c.a(isourceblock, itemstack);
+        return ItemPotion.f(itemstack.getData()) ? (new DispenseBehaviorThrownPotion(this, itemstack)).a(isourceblock, itemstack) : this.c.a(isourceblock, itemstack);
     }
 }

@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import org.bukkit.craftbukkit.v1_4_R1.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.v1_4_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_5_R1.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_5_R1.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.potion.Potion;
 
@@ -93,7 +93,7 @@ public class EntityPotion extends net.minecraft.server.v1_5_R1.EntityPotion {
                         }
                     }
 
-                    org.bukkit.event.entity.PotionSplashEvent event = org.bukkit.craftbukkit.v1_4_R1.event.CraftEventFactory.callPotionSplashEvent(this, affected);
+                    org.bukkit.event.entity.PotionSplashEvent event = org.bukkit.craftbukkit.v1_5_R1.event.CraftEventFactory.callPotionSplashEvent(this, affected);
                     if (!event.isCancelled()) {
                         for (LivingEntity victim : event.getAffectedEntities()) {
                             if (!(victim instanceof CraftLivingEntity)) {

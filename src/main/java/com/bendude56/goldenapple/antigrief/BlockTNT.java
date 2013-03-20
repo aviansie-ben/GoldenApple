@@ -12,6 +12,7 @@ import net.minecraft.server.v1_5_R1.Block;
 import net.minecraft.server.v1_5_R1.Entity;
 import net.minecraft.server.v1_5_R1.EntityArrow;
 import net.minecraft.server.v1_5_R1.EntityTNTPrimed;
+import net.minecraft.server.v1_5_R1.Explosion;
 import net.minecraft.server.v1_5_R1.StepSound;
 import net.minecraft.server.v1_5_R1.World;
 
@@ -19,7 +20,7 @@ public class BlockTNT extends net.minecraft.server.v1_5_R1.BlockTNT {
 	
 	public static void registerBlock() throws Exception {
 		Block.byId[Material.TNT.getId()] = null;
-		Block tnt = prepClass((Block)BlockTNT.class.getConstructors()[0].newInstance(46, 8));
+		Block tnt = prepClass((Block)BlockTNT.class.getConstructors()[0].newInstance(46));
 		
 		Field f = Block.class.getField("TNT");
 		Field mod = Field.class.getDeclaredField("modifiers");
@@ -50,20 +51,20 @@ public class BlockTNT extends net.minecraft.server.v1_5_R1.BlockTNT {
 		m.setAccessible(true);
 		m.invoke(b, Block.g);
 		
-		b.b("tnt");
+		b.c("tnt");
 		
 		return b;
 	}
 
-	public BlockTNT(int i, int j) {
-		super(i, j);
+	public BlockTNT(int i) {
+		super(i);
 	}
 	
 	@Override
 	public void onPlace(World world, int i, int j, int k) {
         if (!world.suppressPhysics && world.isBlockIndirectlyPowered(i, j, k) && !GoldenApple.getInstance().mainConfig.getBoolean("modules.antigrief.noRedstoneTnt", true)) {
             this.postBreak(world, i, j, k, 1);
-            world.setTypeId(i, j, k, 0);
+            world.setTypeIdUpdate(i, j, k, 0);
         }
     }
 	
@@ -71,12 +72,12 @@ public class BlockTNT extends net.minecraft.server.v1_5_R1.BlockTNT {
 	public void doPhysics(World world, int i, int j, int k, int l) {
         if (l > 0 && Block.byId[l].isPowerSource() && world.isBlockIndirectlyPowered(i, j, k) && !GoldenApple.getInstance().mainConfig.getBoolean("modules.antigrief.noRedstoneTnt", true)) {
             this.postBreak(world, i, j, k, 1);
-            world.setTypeId(i, j, k, 0);
+            world.setTypeIdUpdate(i, j, k, 0);
         }
     }
 	
 	@Override
-	public void wasExploded(World world, int i, int j, int k) {
+	public void wasExploded(World world, int i, int j, int k, Explosion explosion) {
         if (!world.isStatic  && !GoldenApple.getInstance().mainConfig.getBoolean("modules.antigrief.noExplosionTnt", true)) {
             EntityTNTPrimed entitytntprimed = new EntityTNTPrimed(world, (double) ((float) i + 0.5F), (double) ((float) j + 0.5F), (double) ((float) k + 0.5F));
 
@@ -92,7 +93,7 @@ public class BlockTNT extends net.minecraft.server.v1_5_R1.BlockTNT {
 
             if (entityarrow.isBurning()  && !GoldenApple.getInstance().mainConfig.getBoolean("modules.antigrief.noFireArrowTnt", true)) {
                 this.postBreak(world, i, j, k, 1);
-                world.setTypeId(i, j, k, 0);
+                world.setTypeIdUpdate(i, j, k, 0);
             }
         }
     }
