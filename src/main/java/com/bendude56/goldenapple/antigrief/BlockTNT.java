@@ -8,14 +8,14 @@ import org.bukkit.Material;
 
 import com.bendude56.goldenapple.GoldenApple;
 
-import net.minecraft.server.v1_4_R1.Block;
-import net.minecraft.server.v1_4_R1.Entity;
-import net.minecraft.server.v1_4_R1.EntityArrow;
-import net.minecraft.server.v1_4_R1.EntityTNTPrimed;
-import net.minecraft.server.v1_4_R1.StepSound;
-import net.minecraft.server.v1_4_R1.World;
+import net.minecraft.server.v1_5_R1.Block;
+import net.minecraft.server.v1_5_R1.Entity;
+import net.minecraft.server.v1_5_R1.EntityArrow;
+import net.minecraft.server.v1_5_R1.EntityTNTPrimed;
+import net.minecraft.server.v1_5_R1.StepSound;
+import net.minecraft.server.v1_5_R1.World;
 
-public class BlockTNT extends net.minecraft.server.v1_4_R1.BlockTNT {
+public class BlockTNT extends net.minecraft.server.v1_5_R1.BlockTNT {
 	
 	public static void registerBlock() throws Exception {
 		Block.byId[Material.TNT.getId()] = null;
@@ -31,7 +31,7 @@ public class BlockTNT extends net.minecraft.server.v1_4_R1.BlockTNT {
 	
 	public static void unregisterBlock() throws Exception {
 		Block.byId[Material.TNT.getId()] = null;
-		Block tnt = prepClass((Block)net.minecraft.server.v1_4_R1.BlockTNT.class.getConstructors()[0].newInstance(46, 8));
+		Block tnt = prepClass((Block)net.minecraft.server.v1_5_R1.BlockTNT.class.getConstructors()[0].newInstance(46, 8));
 		
 		Field f = Block.class.getField("TNT");
 		Field mod = Field.class.getDeclaredField("modifiers");
