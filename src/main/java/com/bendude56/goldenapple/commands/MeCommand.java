@@ -16,7 +16,7 @@ public class MeCommand implements CommandExecutor {
 		ChatChannel channel = instance.chat.getActiveChannel(user);
 		if (channel == null) {
 			instance.locale.sendMessage(user, "error.channel.notInChannel", false);
-		} else {
+		} else if (args.length > 0) {
 			String msg = "";
 			for (String arg : args) {
 				msg += arg + " ";
