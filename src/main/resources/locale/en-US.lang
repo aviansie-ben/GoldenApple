@@ -11,6 +11,8 @@ error.channel.alreadyExists=&4ERROR: A channel with that name already exists!
 error.channel.defaultLevelTooHigh=&4ERROR: Only None, Join, and Chat can be used as the default level!
 error.channel.invalidLevel=&4ERROR: '%1' is not a valid level!
 error.channel.kick.notInChannel=&4ERROR: Cannot kick '%1' from this channel since he is not in it.
+error.channel.muted.perma=&4ERROR: You are permanently muted in this channel.
+error.channel.muted.temp=&4ERROR: You are muted in this channel for %1.
 error.channel.noJoin=&4ERROR: You don't have permission to join that channel.
 error.channel.noTalk=&4ERROR: You don't have permission to talk in this channel.
 error.channel.notFound=&4ERROR: Cannot find a channel with identifier '%1'.
@@ -55,6 +57,11 @@ error.module.unload.locked=&4ERROR: This module is essential to GoldenApple runn
 error.module.unload.notLoaded=&4ERROR: Module '%1' cannot be disabled because it is already disabled!
 error.module.unload.policy=&4ERROR: The security policy is blocking you from unloading module '%1'!
 error.module.unload.unknown=&4ERROR: An unknown error occured while stopping module '%1'! Check the server logs for more details.
+
+error.mute.alreadyMuted=&4ERROR: That user is already muted!
+error.mute.notMuted=&4ERROR: That user is not muted!
+error.mute.noUserSelected=&4ERROR: No user was selected.
+error.mute.tooLong=&4ERROR: The maximum time for a temporary mute is %1.
 
 error.own.disabled=&4ERROR: This command has been disabled by an administrator for security reasons!
 

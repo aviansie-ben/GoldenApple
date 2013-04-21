@@ -7,6 +7,7 @@ import org.bukkit.ChatColor;
 
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
+import com.bendude56.goldenapple.punish.PunishmentMute;
 
 public abstract class ChatChannel {
 	protected String name;
@@ -135,6 +136,13 @@ public abstract class ChatChannel {
 	public void sendMessage(User user, String message) {
 		if (connectedUsers.get(user).id < ChatChannelUserLevel.CHAT.id) {
 			GoldenApple.getInstance().locale.sendMessage(user, "error.channel.noTalk", false);
+		} else if (GoldenApple.getInstance().punish.isMuted(user, this)) {
+			PunishmentMute m = (PunishmentMute)GoldenApple.getInstance().punish.getActiveMute(user, this);
+			if (m.isPermanent()) {
+				GoldenApple.getInstance().locale.sendMessage(user, "error.channel.muted.perma", false);
+			} else {
+				GoldenApple.getInstance().locale.sendMessage(user, "error.channel.muted.temp", false, m.getDuration().toString());
+			}
 		} else {
 			message = censor.censorMessage(message);
 			broadcastMessage(user.getChatDisplayName() + ChatColor.WHITE + ": " + message);
@@ -144,6 +152,13 @@ public abstract class ChatChannel {
 	public void sendMeMessage(User user, String message) {
 		if (connectedUsers.get(user).id < ChatChannelUserLevel.CHAT.id) {
 			GoldenApple.getInstance().locale.sendMessage(user, "error.channel.noTalk", false);
+		} else if (GoldenApple.getInstance().punish.isMuted(user, this)) {
+			PunishmentMute m = (PunishmentMute)GoldenApple.getInstance().punish.getActiveMute(user, this);
+			if (m.isPermanent()) {
+				GoldenApple.getInstance().locale.sendMessage(user, "error.channel.muted.perma", false);
+			} else {
+				GoldenApple.getInstance().locale.sendMessage(user, "error.channel.muted.temp", false, m.getDuration().toString());
+			}
 		} else {
 			message = censor.censorMessage(message);
 			broadcastMessage(user.getChatDisplayName() + ChatColor.WHITE + " " + message);
