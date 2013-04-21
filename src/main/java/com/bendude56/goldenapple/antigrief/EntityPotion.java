@@ -5,24 +5,24 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import org.bukkit.craftbukkit.v1_5_R1.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.v1_5_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_5_R2.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_5_R2.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.potion.Potion;
 
 import com.bendude56.goldenapple.GoldenApple;
 
-import net.minecraft.server.v1_5_R1.AxisAlignedBB;
-import net.minecraft.server.v1_5_R1.EntityPlayer;
-import net.minecraft.server.v1_5_R1.Item;
-import net.minecraft.server.v1_5_R1.MobEffect;
-import net.minecraft.server.v1_5_R1.MobEffectList;
-import net.minecraft.server.v1_5_R1.MovingObjectPosition;
-import net.minecraft.server.v1_5_R1.EntityLiving;
-import net.minecraft.server.v1_5_R1.ItemStack;
-import net.minecraft.server.v1_5_R1.World;
+import net.minecraft.server.v1_5_R2.AxisAlignedBB;
+import net.minecraft.server.v1_5_R2.EntityPlayer;
+import net.minecraft.server.v1_5_R2.Item;
+import net.minecraft.server.v1_5_R2.MobEffect;
+import net.minecraft.server.v1_5_R2.MobEffectList;
+import net.minecraft.server.v1_5_R2.MovingObjectPosition;
+import net.minecraft.server.v1_5_R2.EntityLiving;
+import net.minecraft.server.v1_5_R2.ItemStack;
+import net.minecraft.server.v1_5_R2.World;
 
-public class EntityPotion extends net.minecraft.server.v1_5_R1.EntityPotion {
+public class EntityPotion extends net.minecraft.server.v1_5_R2.EntityPotion {
 
 	public EntityPotion(World world, EntityLiving entityliving, ItemStack itemstack) {
 		super(world, entityliving, itemstack);
@@ -46,7 +46,7 @@ public class EntityPotion extends net.minecraft.server.v1_5_R1.EntityPotion {
         	List list;
         	ItemStack item;
         	try {
-	        	Field c = net.minecraft.server.v1_5_R1.EntityPotion.class.getDeclaredField("c");
+	        	Field c = net.minecraft.server.v1_5_R2.EntityPotion.class.getDeclaredField("c");
 	        	c.setAccessible(true);
 	        	
 	            list = Item.POTION.g(item = (ItemStack)c.get(this));
@@ -93,7 +93,7 @@ public class EntityPotion extends net.minecraft.server.v1_5_R1.EntityPotion {
                         }
                     }
 
-                    org.bukkit.event.entity.PotionSplashEvent event = org.bukkit.craftbukkit.v1_5_R1.event.CraftEventFactory.callPotionSplashEvent(this, affected);
+                    org.bukkit.event.entity.PotionSplashEvent event = org.bukkit.craftbukkit.v1_5_R2.event.CraftEventFactory.callPotionSplashEvent(this, affected);
                     if (!event.isCancelled()) {
                         for (LivingEntity victim : event.getAffectedEntities()) {
                             if (!(victim instanceof CraftLivingEntity)) {
