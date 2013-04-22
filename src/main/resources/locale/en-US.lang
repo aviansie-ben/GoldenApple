@@ -156,6 +156,12 @@ general.module.unload.success=&aModule '%1' unloaded successfully...
 general.module.unload.warnStart=&eWARNING: To disable this module, the following modules must also be disabled:
 general.module.unload.warnEnd=&eIf you are sure you wish to disable these modules, use /gaverify
 
+general.mute.permamute=&a%1 has been permanently muted.
+general.mute.permakick=You have been permanently muted by %1:
+general.mute.tempmute=&a%1 has been muted for %2.
+general.mute.tempkick=You have been muted for %1 by %2:
+general.mute.voidmute=&aThe mute on %1 has been voided.
+
 general.own.success=&aYou have been given permission '*'
 general.own.warnAfter=&eWARNING: You may want to disable this command in config.yml to prevent other ops from using this command
 general.own.warnBefore=&eWARNING: You are about to give yourself full permissions! If you are sure you wish to continue, use /gaverify
@@ -264,6 +270,7 @@ shared.unknownOption=&4ERROR: Unknown option: %1
 shared.userNotFoundError=&4ERROR: Failed to find user '%1'
 shared.userNotFoundWarning=&eWARNING: Failed to find user '%1'
 shared.worldNotFoundError=&4ERROR: Failed to find world '%1'
+shared.worldNotFoundWarning=&eWARNING: Failed to find world '%1'
 
 time.days=%1 day(s)
 time.hours=%1 hour(s)
