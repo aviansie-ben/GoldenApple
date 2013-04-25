@@ -227,6 +227,10 @@ modules:
         # setting will determine if any TNT explosions are allowed.
         blockTntOnLoadFail: true
         
+        # Setting this to true will prevent minecarts loaded with TNT
+        # from exploding.
+        noMinecartTnt: true
+        
         # Setting this to true prevents creepers from exploding at
         # all. They will be made COMPLETELY PASSIVE.
         noCreeperExplosion: false

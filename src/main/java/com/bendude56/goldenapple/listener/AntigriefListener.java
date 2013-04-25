@@ -150,6 +150,10 @@ public class AntigriefListener implements Listener, EventExecutor {
 			List<Block> blockList = event.blockList();
 			while (blockList.size() > 0)
 				blockList.remove(0);
+		} else if (event.getEntityType() == EntityType.MINECART_TNT && GoldenApple.getInstanceMainConfig().getBoolean("modules.antigrief.noMinecartTnt", true)) {
+			List<Block> blockList = event.blockList();
+			while (blockList.size() > 0)
+				blockList.remove(0);
 		}
 	}
 	
