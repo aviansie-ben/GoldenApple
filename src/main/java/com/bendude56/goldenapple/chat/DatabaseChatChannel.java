@@ -9,8 +9,8 @@ import com.bendude56.goldenapple.User;
 
 public class DatabaseChatChannel extends ChatChannel {
 	
-	public DatabaseChatChannel(ResultSet r) throws SQLException {
-		super(r.getString("Identifier"));
+	public DatabaseChatChannel(ResultSet r, ChatManager instance) throws SQLException {
+		super(r.getString("Identifier"), instance);
 		this.displayName = r.getString("DisplayName");
 		this.motd = r.getString("MOTD");
 		this.defaultLevel = ChatChannelUserLevel.getLevel(r.getInt("DefaultLevel"));

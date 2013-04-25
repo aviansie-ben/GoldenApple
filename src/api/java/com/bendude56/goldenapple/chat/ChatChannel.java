@@ -18,12 +18,12 @@ public abstract class ChatChannel {
 	protected ChatCensor censor;
 	protected HashMap<User, ChatChannelUserLevel> connectedUsers;
 	
-	protected ChatChannel(String name) {
+	protected ChatChannel(String name, ChatManager instance) {
 		this.name = name;
 		this.displayName = name;
 		this.motd = null;
 		this.defaultLevel = ChatChannelUserLevel.NO_ACCESS;
-		this.censor = ChatManager.getInstance().getDefaultCensor();
+		this.censor = instance.getDefaultCensor();
 		this.connectedUsers = new HashMap<User, ChatChannelUserLevel>();
 	}
 	

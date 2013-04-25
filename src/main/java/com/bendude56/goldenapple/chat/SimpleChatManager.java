@@ -34,7 +34,7 @@ public class SimpleChatManager extends ChatManager {
 			ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT * FROM Channels");
 			try {
 				while (r.next()) {
-					ChatChannel c = new DatabaseChatChannel(r);
+					ChatChannel c = new DatabaseChatChannel(r, this);
 					activeChannels.put(c.getName(), c);
 				}
 			} finally {
@@ -112,7 +112,7 @@ public class SimpleChatManager extends ChatManager {
 			ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT * FROM Channels WHERE Identifier=?", identifier);
 			try {
 				if (r.next()) {
-					ChatChannel c = new DatabaseChatChannel(r);
+					ChatChannel c = new DatabaseChatChannel(r, this);
 					activeChannels.put(identifier, c);
 					return c;
 				} else {
