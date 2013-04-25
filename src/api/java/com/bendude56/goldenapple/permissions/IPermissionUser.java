@@ -6,7 +6,7 @@ public interface IPermissionUser extends IPermissionObject {
 	/**
 	 * Gets the name of the user represented by this instance.
 	 */
-	String getName();
+	public String getName();
 
 	/**
 	 * Gets the user's preferred locale, if they have specifically set one.
@@ -14,13 +14,13 @@ public interface IPermissionUser extends IPermissionObject {
 	 * @return A string representing the user's preferred locale. If default,
 	 *         will return an empty string.
 	 */
-	String getPreferredLocale();
+	public String getPreferredLocale();
 
 	/**
 	 * Gets a boolean representing whether or not the user should have complex
 	 * syntax enabled for commands.
 	 */
-	boolean isUsingComplexCommands();
+	public boolean isUsingComplexCommands();
 
 	/**
 	 * Sets whether or not the user will have complex syntax enabled for
@@ -28,14 +28,14 @@ public interface IPermissionUser extends IPermissionObject {
 	 * 
 	 * @param useComplex True for complex syntax, false for basic syntax
 	 */
-	void setUsingComplexCommands(boolean useComplex);
+	public void setUsingComplexCommands(boolean useComplex);
 
 	/**
 	 * Gets a boolean showing whether the user has auto-lock enabled. When
 	 * auto-lock is enabled, certain blocks, when placed, will be automatically
 	 * locked.
 	 */
-	boolean isAutoLockEnabled();
+	public boolean isAutoLockEnabled();
 
 	/**
 	 * Sets whether certain blocks that the user places will be automatically
@@ -44,9 +44,9 @@ public interface IPermissionUser extends IPermissionObject {
 	 * @param autoLock Whether or not blocks listed in config.yml should be
 	 *            locked
 	 */
-	void setAutoLockEnabled(boolean autoLock);
+	public void setAutoLockEnabled(boolean autoLock);
 	
-	ChatColor getChatColor();
+	public ChatColor getChatColor();
 	
-	String getPrefix();
+	public String getPrefix();
 }

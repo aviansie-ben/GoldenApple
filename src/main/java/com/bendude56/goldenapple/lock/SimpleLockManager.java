@@ -10,38 +10,36 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.lock.LockedBlock.LockLevel;
 import com.bendude56.goldenapple.lock.LockedBlock.RegisteredBlock;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
-import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
-import com.bendude56.goldenapple.permissions.PermissionManager.PermissionNode;
 
-public class LockManager {
-
-	// goldenapple.lock
-	public static PermissionNode		lockNode;
-	public static Permission			addPermission;
-	public static Permission			usePermission;
-	public static Permission			invitePermission;
-	public static Permission			modifyBlockPermission;
-	public static Permission			fullPermission;
-
+public class SimpleLockManager extends LockManager {
+	static {
+		LockedBlock.registerBlock("GA_CHEST", GoldenApple.getInstance(), Material.CHEST, LockedChest.class);
+		LockedBlock.registerBlock("GA_FURNACE", GoldenApple.getInstance(), Material.FURNACE, LockedFurnace.class);
+		LockedBlock.registerBlock("GA_REDSTONE", GoldenApple.getInstance(), Material.LEVER, LockedRedstoneTrigger.class);
+		LockedBlock.registerBlock("GA_REDSTONE", GoldenApple.getInstance(), Material.STONE_BUTTON, LockedRedstoneTrigger.class);
+		LockedBlock.registerCorrector(DoubleChestLocationCorrector.class);
+	}
+	
 	private HashMap<Long, LockedBlock>	lockCache;
 	private Deque<Long>					cacheOut;
 	private int							cacheSize;
 
-	public LockManager() {
+	public SimpleLockManager() {
 		lockCache = new HashMap<Long, LockedBlock>();
 		cacheOut = new ArrayDeque<Long>();
-		cacheSize = GoldenApple.getInstance().mainConfig.getInt("modules.lock.cacheSize", 100);
+		cacheSize = GoldenApple.getInstanceMainConfig().getInt("modules.lock.cacheSize", 100);
 		if (cacheSize < 3)
 			cacheSize = 3;
 
-		GoldenApple.getInstance().database.createOrUpdateTable("locks");
-		GoldenApple.getInstance().database.createOrUpdateTable("lockusers");
-		GoldenApple.getInstance().database.createOrUpdateTable("lockgroups");
+		GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("locks");
+		GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("lockusers");
+		GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("lockgroups");
 	}
 
 	private LockedBlock checkCache(long id) {
@@ -91,11 +89,11 @@ public class LockManager {
 			return b;
 
 		try {
-			ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT * FROM Locks WHERE ID=?", String.valueOf(id));
+			ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT * FROM Locks WHERE ID=?", String.valueOf(id));
 			try {
 				return (r.next()) ? loadIntoCache(r) : null;
 			} finally {
-				GoldenApple.getInstance().database.closeResult(r);
+				GoldenApple.getInstanceDatabaseManager().closeResult(r);
 			}
 		} catch (SQLException e) {
 			GoldenApple.log(Level.WARNING, "Error while attempting to retrieve a lock from the database:");
@@ -115,11 +113,11 @@ public class LockManager {
 			return b;
 
 		try {
-			ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT * FROM Locks WHERE X=? AND Y=? AND Z=? AND World=?", l.getBlockX(), l.getBlockY(), l.getBlockZ(), l.getWorld().getName());
+			ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT * FROM Locks WHERE X=? AND Y=? AND Z=? AND World=?", l.getBlockX(), l.getBlockY(), l.getBlockZ(), l.getWorld().getName());
 			try {
 				return (r.next()) ? loadIntoCache(r) : null;
 			} finally {
-				GoldenApple.getInstance().database.closeResult(r);
+				GoldenApple.getInstanceDatabaseManager().closeResult(r);
 			}
 		} catch (SQLException e) {
 			GoldenApple.log(Level.WARNING, "Error while attempting to retrieve a lock from the database:");
@@ -135,7 +133,7 @@ public class LockManager {
 		if (r == null)
 			throw new UnsupportedOperationException();
 
-		GoldenApple.getInstance().database.execute("INSERT INTO Locks (X, Y, Z, World, Type, AccessLevel, Owner) VALUES (?, ?, ?, ?, ?, ?, ?)",
+		GoldenApple.getInstanceDatabaseManager().execute("INSERT INTO Locks (X, Y, Z, World, Type, AccessLevel, Owner) VALUES (?, ?, ?, ?, ?, ?, ?)",
 				loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), loc.getWorld().getName(), r.identifier, access.levelId, (owner == null) ? 0 : owner.getId());
 		return getLockSpecific(loc);
 	}
@@ -146,15 +144,15 @@ public class LockManager {
 		if (lockCache.containsKey(id))
 			lockCache.remove(id);
 
-		GoldenApple.getInstance().database.execute("DELETE FROM Locks WHERE ID=?", String.valueOf(id));
+		GoldenApple.getInstanceDatabaseManager().execute("DELETE FROM Locks WHERE ID=?", String.valueOf(id));
 	}
 
 	public boolean lockExists(long id) throws SQLException {
-		ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT NULL FROM Locks WHERE ID=?", String.valueOf(id));
+		ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT NULL FROM Locks WHERE ID=?", String.valueOf(id));
 		try {
 			return r.next();
 		} finally {
-			GoldenApple.getInstance().database.closeResult(r);
+			GoldenApple.getInstanceDatabaseManager().closeResult(r);
 		}
 	}
 

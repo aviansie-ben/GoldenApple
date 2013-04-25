@@ -6,51 +6,53 @@ import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.chat.ChatChannel;
 import com.bendude56.goldenapple.chat.ChatChannel.ChatChannelUserLevel;
-import com.bendude56.goldenapple.permissions.PermissionGroup;
-import com.bendude56.goldenapple.permissions.PermissionUser;
+import com.bendude56.goldenapple.chat.ChatManager;
+import com.bendude56.goldenapple.permissions.IPermissionGroup;
+import com.bendude56.goldenapple.permissions.IPermissionUser;
+import com.bendude56.goldenapple.permissions.PermissionManager;
 
 public class ChannelCommand extends DualSyntaxCommand {
 	@Override
 	public void onCommandComplex(GoldenApple instance, User user, String commandLabel, String[] args) {
 		if (args.length == 0 || args[0].equals("-?") || args[0].equals("help")) {
-			sendHelp(user, commandLabel, true, instance.chat.getActiveChannelLevel(user));
+			sendHelp(user, commandLabel, true, ChatManager.getInstance().getActiveChannelLevel(user));
 		} else if (args[0].equals("-l")) {
-			instance.locale.sendMessage(user, "header.chat", false);
-			if (instance.chat.getActiveChannel(user) == null) {
-				instance.locale.sendMessage(user, "error.channel.notInChannelCommand", false);
+			user.sendLocalizedMessage("header.chat");
+			if (ChatManager.getInstance().getActiveChannel(user) == null) {
+				user.sendLocalizedMessage("error.channel.notInChannelCommand");
 			} else {
-				instance.chat.leaveChannel(user, true);
+				ChatManager.getInstance().leaveChannel(user, true);
 			}
 		} else if (args[0].equals("-k")) {
-			ChatChannel c = instance.chat.getActiveChannel(user);
-			instance.locale.sendMessage(user, "header.chat", false);
+			ChatChannel c = ChatManager.getInstance().getActiveChannel(user);
+			user.sendLocalizedMessage("header.chat");
 			if (args.length == 1) {
-				instance.locale.sendMessage(user, "shared.parameterMissing", false, "-k");
+				user.sendLocalizedMessage("shared.parameterMissing", "-k");
 			} else if (c == null) {
-				instance.locale.sendMessage(user, "error.channel.notInChannelCommand", false);
-			} else if (GoldenApple.getInstance().chat.getActiveChannelLevel(user).id < ChatChannelUserLevel.MODERATOR.id) {
+				user.sendLocalizedMessage("error.channel.notInChannelCommand");
+			} else if (ChatManager.getInstance().getActiveChannelLevel(user).id < ChatChannelUserLevel.MODERATOR.id) {
 				GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			} else {
 				User u = User.getUser(args[1]);
 				if (u == null) {
-					instance.locale.sendMessage(user, "shared.userNotFoundError", false);
+					user.sendLocalizedMessage("shared.userNotFoundError");
 				} else if (c.isInChannel(u)) {
-					instance.chat.kickFromChannel(u);
+					ChatManager.getInstance().kickFromChannel(u);
 				} else {
-					instance.locale.sendMessage(user, "error.channel.kick.notInChannel", false, u.getDisplayName());
+					user.sendLocalizedMessage("error.channel.kick.notInChannel", u.getDisplayName());
 				}
 			}
 		} else if (args[0].equals("--motd")) {
-			ChatChannel c = instance.chat.getActiveChannel(user);
-			instance.locale.sendMessage(user, "header.chat", false);
+			ChatChannel c = ChatManager.getInstance().getActiveChannel(user);
+			user.sendLocalizedMessage("header.chat");
 			if (c == null) {
-				instance.locale.sendMessage(user, "error.channel.notInChannelCommand", false);
-			} else if (GoldenApple.getInstance().chat.getActiveChannelLevel(user).id < ChatChannelUserLevel.MODERATOR.id) {
+				user.sendLocalizedMessage("error.channel.notInChannelCommand");
+			} else if (ChatManager.getInstance().getActiveChannelLevel(user).id < ChatChannelUserLevel.MODERATOR.id) {
 				GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			} else if (args.length == 1) {
 				c.motd = null;
 				c.save();
-				instance.locale.sendMessage(user, "general.channel.motd.clear", false);
+				user.sendLocalizedMessage("general.channel.motd.clear");
 			} else {
 				c.motd = "";
 				for (int i = 1; i < args.length; i++) {
@@ -58,137 +60,137 @@ public class ChannelCommand extends DualSyntaxCommand {
 					c.motd += args[i];
 				}
 				c.save();
-				instance.locale.sendMessage(user, "general.channel.motd.set", false);
+				user.sendLocalizedMessage("general.channel.motd.set");
 			}
 		} else if (args[0].startsWith("-lvl:")) {
-			ChatChannel c = instance.chat.getActiveChannel(user);
-			instance.locale.sendMessage(user, "header.chat", false);
+			ChatChannel c = ChatManager.getInstance().getActiveChannel(user);
+			user.sendLocalizedMessage("header.chat");
 			if (args.length < 2) {
-				instance.locale.sendMessage(user, "shared.parameterMissing", false, args[0]);
+				user.sendLocalizedMessage("shared.parameterMissing", args[0]);
 			} else if (c == null) {
-				instance.locale.sendMessage(user, "error.channel.notInChannelCommand", false);
-			} else if (GoldenApple.getInstance().chat.getActiveChannelLevel(user).id < ChatChannelUserLevel.SUPER_MODERATOR.id) {
+				user.sendLocalizedMessage("error.channel.notInChannelCommand");
+			} else if (ChatManager.getInstance().getActiveChannelLevel(user).id < ChatChannelUserLevel.SUPER_MODERATOR.id) {
 				GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			} else {
 				ChatChannelUserLevel l = ChatChannelUserLevel.fromCmdComplex(args[0].substring(5));
 				if (args[0].substring(5).equals("r")) {
-					PermissionUser u = instance.permissions.getUser(args[1]);
+					IPermissionUser u = PermissionManager.getInstance().getUser(args[1]);
 					if (u == null) {
-						instance.locale.sendMessage(user, "shared.userNotFoundError", false, args[1]);
+						user.sendLocalizedMessage("shared.userNotFoundError", args[1]);
 					} else {
 						c.setUserLevel(u.getId(), ChatChannelUserLevel.UNKNOWN);
-						instance.locale.sendMessage(user, "general.channel.lvlRemoveUser", false, u.getName(), l.display);
+						user.sendLocalizedMessage("general.channel.lvlRemoveUser", u.getName(), l.display);
 					}
 				} else if (l == ChatChannelUserLevel.UNKNOWN) {
-					instance.locale.sendMessage(user, "error.channel.invalidLevel", false, args[0].substring(5));
+					user.sendLocalizedMessage("error.channel.invalidLevel", args[0].substring(5));
 				} else {
-					PermissionUser u = instance.permissions.getUser(args[1]);
+					IPermissionUser u = PermissionManager.getInstance().getUser(args[1]);
 					if (u == null) {
-						instance.locale.sendMessage(user, "shared.userNotFoundError", false, args[1]);
+						user.sendLocalizedMessage("shared.userNotFoundError", args[1]);
 					} else {
 						c.setUserLevel(u.getId(), l);
-						instance.locale.sendMessage(user, "general.channel.lvlSetUser", false, u.getName(), l.display);
+						user.sendLocalizedMessage("general.channel.lvlSetUser", u.getName(), l.display);
 					}
 				}
 			}
 		} else if (args[0].startsWith("-glvl:")) {
-			ChatChannel c = instance.chat.getActiveChannel(user);
-			instance.locale.sendMessage(user, "header.chat", false);
+			ChatChannel c = ChatManager.getInstance().getActiveChannel(user);
+			user.sendLocalizedMessage("header.chat");
 			if (args.length < 2) {
-				instance.locale.sendMessage(user, "shared.parameterMissing", false, args[0]);
+				user.sendLocalizedMessage("shared.parameterMissing", args[0]);
 			} else if (c == null) {
-				instance.locale.sendMessage(user, "error.channel.notInChannelCommand", false);
-			} else if (GoldenApple.getInstance().chat.getActiveChannelLevel(user).id < ChatChannelUserLevel.SUPER_MODERATOR.id) {
+				user.sendLocalizedMessage("error.channel.notInChannelCommand");
+			} else if (ChatManager.getInstance().getActiveChannelLevel(user).id < ChatChannelUserLevel.SUPER_MODERATOR.id) {
 				GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			} else {
 				ChatChannelUserLevel l = ChatChannelUserLevel.fromCmdComplex(args[0].substring(6));
 				if (args[0].substring(6).equals("r")) {
-					PermissionGroup g = instance.permissions.getGroup(args[1]);
+					IPermissionGroup g = PermissionManager.getInstance().getGroup(args[1]);
 					if (g == null) {
-						instance.locale.sendMessage(user, "shared.groupNotFoundError", false, args[1]);
+						user.sendLocalizedMessage("shared.groupNotFoundError", args[1]);
 					} else {
 						c.setGroupLevel(g.getId(), ChatChannelUserLevel.UNKNOWN);
-						instance.locale.sendMessage(user, "general.channel.lvlRemoveGroup", false, g.getName(), l.display);
+						user.sendLocalizedMessage("general.channel.lvlRemoveGroup", g.getName(), l.display);
 					}
 				} else if (l == ChatChannelUserLevel.UNKNOWN) {
-					instance.locale.sendMessage(user, "error.channel.invalidLevel", false, args[0].substring(6));
+					user.sendLocalizedMessage("error.channel.invalidLevel", args[0].substring(6));
 				} else {
-					PermissionGroup g = instance.permissions.getGroup(args[1]);
+					IPermissionGroup g = PermissionManager.getInstance().getGroup(args[1]);
 					if (g == null) {
-						instance.locale.sendMessage(user, "shared.groupNotFoundError", false, args[1]);
+						user.sendLocalizedMessage("shared.groupNotFoundError", args[1]);
 					} else {
 						c.setGroupLevel(g.getId(), l);
-						instance.locale.sendMessage(user, "general.channel.lvlSetGroup", false, g.getName(), l.display);
+						user.sendLocalizedMessage("general.channel.lvlSetGroup", g.getName(), l.display);
 					}
 				}
 			}
 		} else if (args[0].startsWith("-dlvl:")) {
-			ChatChannel c = instance.chat.getActiveChannel(user);
-			instance.locale.sendMessage(user, "header.chat", false);
+			ChatChannel c = ChatManager.getInstance().getActiveChannel(user);
+			user.sendLocalizedMessage("header.chat");
 			if (c == null) {
-				instance.locale.sendMessage(user, "error.channel.notInChannelCommand", false);
-			} else if (GoldenApple.getInstance().chat.getActiveChannelLevel(user).id < ChatChannelUserLevel.SUPER_MODERATOR.id) {
+				user.sendLocalizedMessage("error.channel.notInChannelCommand");
+			} else if (ChatManager.getInstance().getActiveChannelLevel(user).id < ChatChannelUserLevel.SUPER_MODERATOR.id) {
 				GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			} else {
 				ChatChannelUserLevel l = ChatChannelUserLevel.fromCmdComplex(args[0].substring(6));
 				if (l == ChatChannelUserLevel.UNKNOWN) {
-					instance.locale.sendMessage(user, "error.channel.invalidLevel", false, args[0].substring(6));
+					user.sendLocalizedMessage("error.channel.invalidLevel", args[0].substring(6));
 				} else if (l.id >= ChatChannelUserLevel.VIP.id) {
-					instance.locale.sendMessage(user, "error.channel.defaultLevelTooHigh", false);
+					user.sendLocalizedMessage("error.channel.defaultLevelTooHigh");
 				} else {
 					c.setDefaultLevel(l);
-					instance.locale.sendMessage(user, "general.channel.lvlSetDefault", false, l.display);
+					user.sendLocalizedMessage("general.channel.lvlSetDefault", l.display);
 				}
 			}
 		} else if (args[0].equals("-d")) {
-			ChatChannel c = instance.chat.getActiveChannel(user);
-			instance.locale.sendMessage(user, "header.chat", false);
+			ChatChannel c = ChatManager.getInstance().getActiveChannel(user);
+			user.sendLocalizedMessage("header.chat");
 			if (c == null) {
-				instance.locale.sendMessage(user, "error.channel.notInChannelCommand", false);
-			} else if (GoldenApple.getInstance().chat.getActiveChannelLevel(user).id < ChatChannelUserLevel.ADMINISTRATOR.id) {
+				user.sendLocalizedMessage("error.channel.notInChannelCommand");
+			} else if (ChatManager.getInstance().getActiveChannelLevel(user).id < ChatChannelUserLevel.ADMINISTRATOR.id) {
 				GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			} else {
 				if (args.length == 2 && args[1].equals("-v")) {
-					instance.chat.deleteChannel(c.getName());
+					ChatManager.getInstance().deleteChannel(c.getName());
 				} else {
 					VerifyCommand.commands.put(user, "gachannel -d -v");
-					instance.locale.sendMessage(user, "general.channel.deleteWarn", false);
+					user.sendLocalizedMessage("general.channel.deleteWarn");
 				}
 			}
 		} else if (args[0].equals("--strict")) {
-			ChatChannel c = instance.chat.getActiveChannel(user);
-			instance.locale.sendMessage(user, "header.chat", false);
+			ChatChannel c = ChatManager.getInstance().getActiveChannel(user);
+			user.sendLocalizedMessage("header.chat");
 			if (c == null) {
-				instance.locale.sendMessage(user, "error.channel.notInChannelCommand", false);
-			} else if (GoldenApple.getInstance().chat.getActiveChannelLevel(user).id < ChatChannelUserLevel.ADMINISTRATOR.id) {
+				user.sendLocalizedMessage("error.channel.notInChannelCommand");
+			} else if (ChatManager.getInstance().getActiveChannelLevel(user).id < ChatChannelUserLevel.ADMINISTRATOR.id) {
 				GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			} else {
 				if (c.isStrictCensorOn()) {
 					c.setStrictCensorOn(false);
 					c.save();
-					instance.locale.sendMessage(user, "general.channel.strictOff", false);
+					user.sendLocalizedMessage("general.channel.strictOff");
 				} else {
 					c.setStrictCensorOn(true);
 					c.save();
-					instance.locale.sendMessage(user, "general.channel.strictOn", false);
+					user.sendLocalizedMessage("general.channel.strictOn");
 				}
 			}
 		} else if (args[0].equals("-j")) {
-			instance.locale.sendMessage(user, "header.chat", false);
+			user.sendLocalizedMessage("header.chat");
 			if (args.length == 1) {
-				instance.locale.sendMessage(user, "shared.parameterMissing", false, "-j");
+				user.sendLocalizedMessage("shared.parameterMissing", "-j");
 			} else {
-				ChatChannel c = instance.chat.getChannel(args[1]);
+				ChatChannel c = ChatManager.getInstance().getChannel(args[1]);
 				if (c == null) {
-					instance.locale.sendMessage(user, "error.channel.notFound", false, args[1]);
+					user.sendLocalizedMessage("error.channel.notFound", args[1]);
 				} else {
-					instance.chat.tryJoinChannel(user, c, true);
+					ChatManager.getInstance().tryJoinChannel(user, c, true);
 				}
 			}
 		} else if (args[0].equals("--list")) {
-			instance.locale.sendMessage(user, "header.chat", false);
-			instance.locale.sendMessage(user, "general.channel.list", false);
-			for (ChatChannel c : instance.chat.getActiveChannels()) {
+			user.sendLocalizedMessage("header.chat");
+			user.sendLocalizedMessage("general.channel.list");
+			for (ChatChannel c : ChatManager.getInstance().getActiveChannels()) {
 				String name = (c.getName().equalsIgnoreCase(ChatColor.stripColor(c.getDisplayName()))) ? c.getDisplayName() : (c.getDisplayName() + " (" + c.getName() + ")");
 				switch (c.getDisplayLevel(user)) {
 					case CONNECTED:
@@ -203,15 +205,15 @@ public class ChannelCommand extends DualSyntaxCommand {
 				}
 			}
 		} else if (args[0].equals("-a")) {
-			instance.locale.sendMessage(user, "header.chat", false);
+			user.sendLocalizedMessage("header.chat");
 			if (args.length < 2) {
-				instance.locale.sendMessage(user, "shared.parameterMissing", false, "-a");
+				user.sendLocalizedMessage("shared.parameterMissing", "-a");
 			} else {
-				if (instance.chat.channelExists(args[1])) {
-					instance.locale.sendMessage(user, "error.channel.alreadyExists", false);
+				if (ChatManager.getInstance().channelExists(args[1])) {
+					user.sendLocalizedMessage("error.channel.alreadyExists");
 				} else {
-					ChatChannel c = instance.chat.createChannel(args[1]);
-					instance.chat.tryJoinChannel(user, c, true);
+					ChatChannel c = ChatManager.getInstance().createChannel(args[1]);
+					ChatManager.getInstance().tryJoinChannel(user, c, true);
 				}
 			}
 		}
@@ -219,44 +221,44 @@ public class ChannelCommand extends DualSyntaxCommand {
 
 	public void onCommandSimple(GoldenApple instance, User user, String commandLabel, String[] args) {
 		if (args.length == 0 || args[0].equals("-?") || args[0].equals("help")) {
-			sendHelp(user, commandLabel, false, instance.chat.getActiveChannelLevel(user));
+			sendHelp(user, commandLabel, false, ChatManager.getInstance().getActiveChannelLevel(user));
 		} else if (args[0].equals("leave")) {
-			instance.locale.sendMessage(user, "header.chat", false);
-			if (instance.chat.getActiveChannel(user) == null) {
-				instance.locale.sendMessage(user, "error.channel.notInChannelCommand", false);
+			user.sendLocalizedMessage("header.chat");
+			if (ChatManager.getInstance().getActiveChannel(user) == null) {
+				user.sendLocalizedMessage("error.channel.notInChannelCommand");
 			} else {
-				instance.chat.leaveChannel(user, true);
+				ChatManager.getInstance().leaveChannel(user, true);
 			}
 		} else if (args[0].equals("kick")) {
-			ChatChannel c = instance.chat.getActiveChannel(user);
-			instance.locale.sendMessage(user, "header.chat", false);
+			ChatChannel c = ChatManager.getInstance().getActiveChannel(user);
+			user.sendLocalizedMessage("header.chat");
 			if (args.length == 1) {
-				instance.locale.sendMessage(user, "shared.parameterMissing", false, "kick");
+				user.sendLocalizedMessage("shared.parameterMissing", "kick");
 			} else if (c == null) {
-				instance.locale.sendMessage(user, "error.channel.notInChannelCommand", false);
-			} else if (GoldenApple.getInstance().chat.getActiveChannelLevel(user).id < ChatChannelUserLevel.MODERATOR.id) {
+				user.sendLocalizedMessage("error.channel.notInChannelCommand");
+			} else if (ChatManager.getInstance().getActiveChannelLevel(user).id < ChatChannelUserLevel.MODERATOR.id) {
 				GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			} else {
 				User u = User.getUser(args[1]);
 				if (u == null) {
-					instance.locale.sendMessage(user, "shared.userNotFoundError", false);
+					user.sendLocalizedMessage("shared.userNotFoundError");
 				} else if (c.isInChannel(u)) {
-					instance.chat.kickFromChannel(u);
+					ChatManager.getInstance().kickFromChannel(u);
 				} else {
-					instance.locale.sendMessage(user, "error.channel.kick.notInChannel", false, u.getDisplayName());
+					user.sendLocalizedMessage("error.channel.kick.notInChannel", u.getDisplayName());
 				}
 			}
 		} else if (args[0].equals("motd")) {
-			ChatChannel c = instance.chat.getActiveChannel(user);
-			instance.locale.sendMessage(user, "header.chat", false);
+			ChatChannel c = ChatManager.getInstance().getActiveChannel(user);
+			user.sendLocalizedMessage("header.chat");
 			if (c == null) {
-				instance.locale.sendMessage(user, "error.channel.notInChannelCommand", false);
-			} else if (GoldenApple.getInstance().chat.getActiveChannelLevel(user).id < ChatChannelUserLevel.MODERATOR.id) {
+				user.sendLocalizedMessage("error.channel.notInChannelCommand");
+			} else if (ChatManager.getInstance().getActiveChannelLevel(user).id < ChatChannelUserLevel.MODERATOR.id) {
 				GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			} else if (args.length == 1) {
 				c.motd = null;
 				c.save();
-				instance.locale.sendMessage(user, "general.channel.motd.clear", false);
+				user.sendLocalizedMessage("general.channel.motd.clear");
 			} else {
 				c.motd = "";
 				for (int i = 1; i < args.length; i++) {
@@ -264,97 +266,97 @@ public class ChannelCommand extends DualSyntaxCommand {
 					c.motd += args[i];
 				}
 				c.save();
-				instance.locale.sendMessage(user, "general.channel.motd.set", false);
+				user.sendLocalizedMessage("general.channel.motd.set");
 			}
 		} else if (args[0].startsWith("level")) {
-			ChatChannel c = instance.chat.getActiveChannel(user);
-			instance.locale.sendMessage(user, "header.chat", false);
+			ChatChannel c = ChatManager.getInstance().getActiveChannel(user);
+			user.sendLocalizedMessage("header.chat");
 			if (args.length < 3) {
-				instance.locale.sendMessage(user, "shared.parameterMissing", false, "level");
+				user.sendLocalizedMessage("shared.parameterMissing", "level");
 			} else if (c == null) {
-				instance.locale.sendMessage(user, "error.channel.notInChannelCommand", false);
-			} else if (GoldenApple.getInstance().chat.getActiveChannelLevel(user).id < ChatChannelUserLevel.SUPER_MODERATOR.id) {
+				user.sendLocalizedMessage("error.channel.notInChannelCommand");
+			} else if (ChatManager.getInstance().getActiveChannelLevel(user).id < ChatChannelUserLevel.SUPER_MODERATOR.id) {
 				GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			} else {
 				ChatChannelUserLevel l = ChatChannelUserLevel.fromCmdSimple(args[1]);
 				if (args[1].equals("remove")) {
-					PermissionUser u = instance.permissions.getUser(args[2]);
+					IPermissionUser u = PermissionManager.getInstance().getUser(args[2]);
 					if (u == null) {
-						instance.locale.sendMessage(user, "shared.userNotFoundError", false, args[2]);
+						user.sendLocalizedMessage("shared.userNotFoundError", args[2]);
 					} else {
 						c.setUserLevel(u.getId(), ChatChannelUserLevel.UNKNOWN);
-						instance.locale.sendMessage(user, "general.channel.lvlRemoveUser", false, u.getName(), l.display);
+						user.sendLocalizedMessage("general.channel.lvlRemoveUser", u.getName(), l.display);
 					}
 				} else if (l == ChatChannelUserLevel.UNKNOWN) {
-					instance.locale.sendMessage(user, "error.channel.invalidLevel", false, args[1]);
+					user.sendLocalizedMessage("error.channel.invalidLevel", args[1]);
 				} else {
 					if (args[2].equals("default")) {
 						if (l.id >= ChatChannelUserLevel.VIP.id) {
-							instance.locale.sendMessage(user, "error.channel.defaultLevelTooHigh", false);
+							user.sendLocalizedMessage("error.channel.defaultLevelTooHigh");
 						} else {
 							c.setDefaultLevel(l);
-							instance.locale.sendMessage(user, "general.channel.lvlSetDefault", false, l.display);
+							user.sendLocalizedMessage("general.channel.lvlSetDefault", l.display);
 						}
 					} else {
-						PermissionUser u = instance.permissions.getUser(args[2]);
+						IPermissionUser u = PermissionManager.getInstance().getUser(args[2]);
 						if (u == null) {
-							instance.locale.sendMessage(user, "shared.userNotFoundError", false, args[2]);
+							user.sendLocalizedMessage("shared.userNotFoundError", args[2]);
 						} else {
 							c.setUserLevel(u.getId(), l);
-							instance.locale.sendMessage(user, "general.channel.lvlSetUser", false, u.getName(), l.display);
+							user.sendLocalizedMessage("general.channel.lvlSetUser", u.getName(), l.display);
 						}
 					}
 				}
 			}
 		} else if (args[0].equals("delete")) {
-			ChatChannel c = instance.chat.getActiveChannel(user);
-			instance.locale.sendMessage(user, "header.chat", false);
+			ChatChannel c = ChatManager.getInstance().getActiveChannel(user);
+			user.sendLocalizedMessage("header.chat");
 			if (c == null) {
-				instance.locale.sendMessage(user, "error.channel.notInChannelCommand", false);
-			} else if (GoldenApple.getInstance().chat.getActiveChannelLevel(user).id < ChatChannelUserLevel.ADMINISTRATOR.id) {
+				user.sendLocalizedMessage("error.channel.notInChannelCommand");
+			} else if (ChatManager.getInstance().getActiveChannelLevel(user).id < ChatChannelUserLevel.ADMINISTRATOR.id) {
 				GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			} else {
 				if (args.length == 2 && args[1].equals("-v")) {
-					instance.chat.deleteChannel(c.getName());
+					ChatManager.getInstance().deleteChannel(c.getName());
 				} else {
 					VerifyCommand.commands.put(user, "gachannel delete -v");
-					instance.locale.sendMessage(user, "general.channel.deleteWarn", false);
+					user.sendLocalizedMessage("general.channel.deleteWarn");
 				}
 			}
 		} else if (args[0].equals("strict")) {
-			ChatChannel c = instance.chat.getActiveChannel(user);
-			instance.locale.sendMessage(user, "header.chat", false);
+			ChatChannel c = ChatManager.getInstance().getActiveChannel(user);
+			user.sendLocalizedMessage("header.chat");
 			if (c == null) {
-				instance.locale.sendMessage(user, "error.channel.notInChannelCommand", false);
-			} else if (GoldenApple.getInstance().chat.getActiveChannelLevel(user).id < ChatChannelUserLevel.ADMINISTRATOR.id) {
+				user.sendLocalizedMessage("error.channel.notInChannelCommand");
+			} else if (ChatManager.getInstance().getActiveChannelLevel(user).id < ChatChannelUserLevel.ADMINISTRATOR.id) {
 				GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			} else {
 				if (c.isStrictCensorOn()) {
 					c.setStrictCensorOn(false);
 					c.save();
-					instance.locale.sendMessage(user, "general.channel.strictOff", false);
+					user.sendLocalizedMessage("general.channel.strictOff");
 				} else {
 					c.setStrictCensorOn(true);
 					c.save();
-					instance.locale.sendMessage(user, "general.channel.strictOn", false);
+					user.sendLocalizedMessage("general.channel.strictOn");
 				}
 			}
 		} else if (args[0].equals("join")) {
-			instance.locale.sendMessage(user, "header.chat", false);
+			user.sendLocalizedMessage("header.chat");
 			if (args.length == 1) {
-				instance.locale.sendMessage(user, "shared.parameterMissing", false, "-j");
+				user.sendLocalizedMessage("shared.parameterMissing", "-j");
 			} else {
-				ChatChannel c = instance.chat.getChannel(args[1]);
+				ChatChannel c = ChatManager.getInstance().getChannel(args[1]);
 				if (c == null) {
-					instance.locale.sendMessage(user, "error.channel.notFound", false, args[1]);
+					user.sendLocalizedMessage("error.channel.notFound", args[1]);
 				} else {
-					instance.chat.tryJoinChannel(user, c, true);
+					ChatManager.getInstance().tryJoinChannel(user, c, true);
 				}
 			}
 		} else if (args[0].equals("list")) {
-			instance.locale.sendMessage(user, "header.chat", false);
-			instance.locale.sendMessage(user, "general.channel.list", false);
-			for (ChatChannel c : instance.chat.getActiveChannels()) {
+			user.sendLocalizedMessage("header.chat");
+			user.sendLocalizedMessage("general.channel.list");
+			for (ChatChannel c : ChatManager.getInstance().getActiveChannels()) {
 				String name = (c.getName().equalsIgnoreCase(ChatColor.stripColor(c.getDisplayName()))) ? c.getDisplayName() : (c.getDisplayName() + " (" + c.getName() + ")");
 				switch (c.getDisplayLevel(user)) {
 					case CONNECTED:
@@ -369,22 +371,22 @@ public class ChannelCommand extends DualSyntaxCommand {
 				}
 			}
 		} else if (args[0].equals("add")) {
-			instance.locale.sendMessage(user, "header.chat", false);
+			user.sendLocalizedMessage("header.chat");
 			if (args.length < 2) {
-				instance.locale.sendMessage(user, "shared.parameterMissing", false, "-a");
+				user.sendLocalizedMessage("shared.parameterMissing", "-a");
 			} else {
-				if (instance.chat.channelExists(args[1])) {
-					instance.locale.sendMessage(user, "error.channel.alreadyExists", false);
+				if (ChatManager.getInstance().channelExists(args[1])) {
+					user.sendLocalizedMessage("error.channel.alreadyExists");
 				} else {
-					ChatChannel c = instance.chat.createChannel(args[1]);
-					instance.chat.tryJoinChannel(user, c, true);
+					ChatChannel c = ChatManager.getInstance().createChannel(args[1]);
+					ChatManager.getInstance().tryJoinChannel(user, c, true);
 				}
 			}
 		}
 	}
 
 	private void sendHelp(User user, String commandLabel, boolean complex, ChatChannelUserLevel level) {
-		GoldenApple.getInstance().locale.sendMessage(user, "header.help", false);
+		user.sendLocalizedMessage("header.help");
 		if (level == ChatChannelUserLevel.UNKNOWN) {
 			showHelpSection(user, commandLabel, "out", complex);
 		} else {
@@ -396,6 +398,6 @@ public class ChannelCommand extends DualSyntaxCommand {
 	}
 	
 	private void showHelpSection(User user, String commandLabel, String section, boolean complex) {
-		GoldenApple.getInstance().locale.sendMessage(user, (complex) ? "help.channel." + section + ".complex" : "help.channel." + section + ".simple", true, commandLabel);
+		user.sendLocalizedMultilineMessage((complex) ? "help.channel." + section + ".complex" : "help.channel." + section + ".simple", commandLabel);
 	}
 }

@@ -19,7 +19,8 @@ import org.bukkit.plugin.RegisteredListener;
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.punish.Punishment;
-import com.bendude56.goldenapple.punish.PunishmentBan;
+import com.bendude56.goldenapple.punish.PunishmentManager;
+import com.bendude56.goldenapple.punish.SimplePunishmentBan;
 
 public class PunishmentListener implements Listener, EventExecutor {
 	public static HashMap<User, Location> backLocation = new HashMap<User, Location>();
@@ -63,20 +64,20 @@ public class PunishmentListener implements Listener, EventExecutor {
 		GoldenApple instance = GoldenApple.getInstance();
 		User u = User.getUser(event.getPlayer());
 		
-		instance.punish.loadIntoCache(u);
-		Punishment ban = instance.punish.getActivePunishment(u, PunishmentBan.class);
+		PunishmentManager.getInstance().loadIntoCache(u);
+		Punishment ban = PunishmentManager.getInstance().getActivePunishment(u, SimplePunishmentBan.class);
 		
 		if (ban != null) {
 			if (ban.isPermanent()) {
-				String msg = instance.locale.processMessageDefaultLocale("general.ban.permakick", (ban.getAdminId() <= 0) ? "???" : ban.getAdmin().getName());
+				String msg = instance.getLocalizationManager().processMessageDefaultLocale("general.ban.permakick", (ban.getAdminId() <= 0) ? "???" : ban.getAdmin().getName());
 				msg += "\n" + ban.getReason();
-				msg += "\n" + instance.mainConfig.getString("banAppealMessage", "Contact an administrator to dispute this ban.");
+				msg += "\n" + GoldenApple.getInstanceMainConfig().getString("banAppealMessage", "Contact an administrator to dispute this ban.");
 				event.setResult(Result.KICK_BANNED);
 				event.setKickMessage(msg);
 			} else {
-				String msg = instance.locale.processMessageDefaultLocale("general.ban.tempkick", ban.getRemainingDuration().toString(), (ban.getAdminId() <= 0) ? "???" : ban.getAdmin().getName());
+				String msg = instance.getLocalizationManager().processMessageDefaultLocale("general.ban.tempkick", ban.getRemainingDuration().toString(), (ban.getAdminId() <= 0) ? "???" : ban.getAdmin().getName());
 				msg += "\n" + ban.getReason();
-				msg += "\n" + instance.mainConfig.getString("banAppealMessage", "Contact an administrator to dispute this ban.");
+				msg += "\n" + GoldenApple.getInstanceMainConfig().getString("banAppealMessage", "Contact an administrator to dispute this ban.");
 				event.setResult(Result.KICK_BANNED);
 				event.setKickMessage(msg);
 			}

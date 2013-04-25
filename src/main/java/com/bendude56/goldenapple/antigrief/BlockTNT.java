@@ -63,7 +63,7 @@ public class BlockTNT extends net.minecraft.server.v1_5_R2.BlockTNT {
 	
 	@Override
 	public void onPlace(World world, int i, int j, int k) {
-        if (world.isBlockIndirectlyPowered(i, j, k) && !GoldenApple.getInstance().mainConfig.getBoolean("modules.antigrief.noRedstoneTnt", true)) {
+        if (world.isBlockIndirectlyPowered(i, j, k) && !GoldenApple.getInstanceMainConfig().getBoolean("modules.antigrief.noRedstoneTnt", true)) {
             this.postBreak(world, i, j, k, 1);
             world.setAir(i, j, k);
         }
@@ -71,7 +71,7 @@ public class BlockTNT extends net.minecraft.server.v1_5_R2.BlockTNT {
 	
 	@Override
 	public void doPhysics(World world, int i, int j, int k, int l) {
-        if (world.isBlockIndirectlyPowered(i, j, k) && !GoldenApple.getInstance().mainConfig.getBoolean("modules.antigrief.noRedstoneTnt", true)) {
+        if (world.isBlockIndirectlyPowered(i, j, k) && !GoldenApple.getInstanceMainConfig().getBoolean("modules.antigrief.noRedstoneTnt", true)) {
             this.postBreak(world, i, j, k, 1);
             world.setAir(i, j, k);
         }
@@ -79,7 +79,7 @@ public class BlockTNT extends net.minecraft.server.v1_5_R2.BlockTNT {
 	
 	@Override
 	public void wasExploded(World world, int i, int j, int k, Explosion explosion) {
-		if (!world.isStatic && !GoldenApple.getInstance().mainConfig.getBoolean("modules.antigrief.noExplosionTnt", true)) {
+		if (!world.isStatic && !GoldenApple.getInstanceMainConfig().getBoolean("modules.antigrief.noExplosionTnt", true)) {
             EntityTNTPrimed entitytntprimed = new EntityTNTPrimed(world, (double) ((float) i + 0.5F), (double) ((float) j + 0.5F), (double) ((float) k + 0.5F), explosion.c());
 
             entitytntprimed.fuseTicks = world.random.nextInt(entitytntprimed.fuseTicks / 4) + entitytntprimed.fuseTicks / 8;
@@ -92,7 +92,7 @@ public class BlockTNT extends net.minecraft.server.v1_5_R2.BlockTNT {
 		if (entity instanceof EntityArrow && !world.isStatic) {
             EntityArrow entityarrow = (EntityArrow) entity;
 
-            if (entityarrow.isBurning() && !GoldenApple.getInstance().mainConfig.getBoolean("modules.antigrief.noFireArrowTnt", true)) {
+            if (entityarrow.isBurning() && !GoldenApple.getInstanceMainConfig().getBoolean("modules.antigrief.noFireArrowTnt", true)) {
                 this.a(world, i, j, k, 1, entityarrow.shooter instanceof EntityLiving ? (EntityLiving) entityarrow.shooter : null);
                 world.setAir(i, j, k);
             }

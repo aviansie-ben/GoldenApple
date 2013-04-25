@@ -23,6 +23,7 @@ import org.bukkit.plugin.RegisteredListener;
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.antigrief.AntigriefModuleLoader;
+import com.bendude56.goldenapple.permissions.PermissionManager;
 
 public class AntigriefListener implements Listener, EventExecutor {
 
@@ -121,9 +122,9 @@ public class AntigriefListener implements Listener, EventExecutor {
 		
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getClickedBlock().getType() == Material.TNT && event.getPlayer().getItemInHand().getType() == Material.FLINT_AND_STEEL) {
 			Location l = event.getClickedBlock().getLocation();
-			if (GoldenApple.getInstance().mainConfig.getBoolean("modules.antigrief.noLightTnt", true) && (GoldenApple.getInstance().permissions == null || !u.hasPermission(AntigriefModuleLoader.tntPermission))) {
+			if (GoldenApple.getInstanceMainConfig().getBoolean("modules.antigrief.noLightTnt", true) && (PermissionManager.getInstance() == null || !u.hasPermission(AntigriefModuleLoader.tntPermission))) {
 				event.setCancelled(true);
-				GoldenApple.getInstance().locale.sendMessage(u, "error.antigrief.tnt", false);
+				u.sendLocalizedMessage("error.antigrief.tnt");
 				GoldenApple.log(Level.WARNING, u.getName() + " attempted to ignite TNT at (" + l.getBlockX() + ", " + l.getBlockY() + ", " + l.getBlockZ() + ", " + l.getWorld().getName() + ")");
 			} else {
 				GoldenApple.log(Level.WARNING, u.getName() + " has ignited TNT at (" + l.getBlockX() + ", " + l.getBlockY() + ", " + l.getBlockZ() + ", " + l.getWorld().getName() + ")");
@@ -133,19 +134,19 @@ public class AntigriefListener implements Listener, EventExecutor {
 	
 	private void blockBurn(BlockBurnEvent event) {
 		if (event.getBlock().getType() == Material.TNT) {
-			if (GoldenApple.getInstance().mainConfig.getBoolean("modules.antigrief.noFireTnt", true))
+			if (GoldenApple.getInstanceMainConfig().getBoolean("modules.antigrief.noFireTnt", true))
 				event.setCancelled(true);
 		}
 	}
 	
 	private void entityExplode(EntityExplodeEvent event) {
-		if (event.getEntityType() == EntityType.PRIMED_TNT && errorLoadingTntBlock && GoldenApple.getInstance().mainConfig.getBoolean("modules.antigrief.blockTntOnLoadFail", true)) {
+		if (event.getEntityType() == EntityType.PRIMED_TNT && errorLoadingTntBlock && GoldenApple.getInstanceMainConfig().getBoolean("modules.antigrief.blockTntOnLoadFail", true)) {
 			event.setCancelled(true);
-		} else if (event.getEntityType() == EntityType.CREEPER && GoldenApple.getInstance().mainConfig.getBoolean("modules.antigrief.noCreeperBlockDamage", true)) {
+		} else if (event.getEntityType() == EntityType.CREEPER && GoldenApple.getInstanceMainConfig().getBoolean("modules.antigrief.noCreeperBlockDamage", true)) {
 			List<Block> blockList = event.blockList();
 			while (blockList.size() > 0)
 				blockList.remove(0);
-		} else if ((event.getEntityType() == EntityType.FIREBALL || event.getEntityType() == EntityType.SMALL_FIREBALL) && GoldenApple.getInstance().mainConfig.getBoolean("modules.antigrief.noFireballBlockDamage", true)) {
+		} else if ((event.getEntityType() == EntityType.FIREBALL || event.getEntityType() == EntityType.SMALL_FIREBALL) && GoldenApple.getInstanceMainConfig().getBoolean("modules.antigrief.noFireballBlockDamage", true)) {
 			List<Block> blockList = event.blockList();
 			while (blockList.size() > 0)
 				blockList.remove(0);
@@ -153,13 +154,13 @@ public class AntigriefListener implements Listener, EventExecutor {
 	}
 	
 	private void entityTarget(EntityTargetEvent event) {
-		if (event.getEntityType() == EntityType.CREEPER && GoldenApple.getInstance().mainConfig.getBoolean("modules.antigrief.noCreeperExplosion", true)) {
+		if (event.getEntityType() == EntityType.CREEPER && GoldenApple.getInstanceMainConfig().getBoolean("modules.antigrief.noCreeperExplosion", true)) {
 			event.setCancelled(true);
 		}
 	}
 	
 	private void entityChangeBlock(EntityChangeBlockEvent event) { 
-		if (event.getEntityType() == EntityType.ENDERMAN && GoldenApple.getInstance().mainConfig.getBoolean("modules.antigrief.noEndermanMoveBlock", true)) {
+		if (event.getEntityType() == EntityType.ENDERMAN && GoldenApple.getInstanceMainConfig().getBoolean("modules.antigrief.noEndermanMoveBlock", true)) {
 			event.setCancelled(true);
 		}
 	}

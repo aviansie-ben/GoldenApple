@@ -69,7 +69,7 @@ public abstract class AuditEvent {
 	
 	public final void save() throws SQLException {
 		if (auditId == -1) {
-			ResultSet r = GoldenApple.getInstance().database.executeReturnGenKeys("INSERT INTO AuditLog (Time, EventID) VALUES (?, ?)", logTime, eventId);
+			ResultSet r = GoldenApple.getInstanceDatabaseManager().executeReturnGenKeys("INSERT INTO AuditLog (Time, EventID) VALUES (?, ?)", logTime, eventId);
 			try {
 				if (r.next()) {
 					auditId = r.getLong(1);
@@ -77,7 +77,7 @@ public abstract class AuditEvent {
 					throw new SQLException("Failed to retrieve inserted primary key!");
 				}
 			} finally {
-				GoldenApple.getInstance().database.closeResult(r);
+				GoldenApple.getInstanceDatabaseManager().closeResult(r);
 			}
 		} else {
 			stripMetadata();
@@ -91,7 +91,7 @@ public abstract class AuditEvent {
 	}
 	
 	private void stripMetadata() throws SQLException {
-		GoldenApple.getInstance().database.execute("DELETE FROM AuditLogParams WHERE AuditID=?", auditId);
+		GoldenApple.getInstanceDatabaseManager().execute("DELETE FROM AuditLogParams WHERE AuditID=?", auditId);
 	}
 	
 	protected AuditMetadata createMetadata(String name, Long iValue) {
@@ -133,7 +133,7 @@ public abstract class AuditEvent {
 		}
 		
 		public void save() throws SQLException {
-			GoldenApple.getInstance().database.execute("INSERT INTO AuditLogParams (AuditID, Param, ValueInt, ValueString) VALUES (?, ?, ?, ?)", auditId, param, valueInt, valueString);
+			GoldenApple.getInstanceDatabaseManager().execute("INSERT INTO AuditLogParams (AuditID, Param, ValueInt, ValueString) VALUES (?, ?, ?, ?)", auditId, param, valueInt, valueString);
 		}
 	}
 	

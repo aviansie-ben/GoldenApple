@@ -112,7 +112,7 @@ public class AreaCommand extends DualSyntaxCommand
 			{
 				if (types.size() == 0)
 				{
-					instance.locale.sendMessage(user, "error.area.chooseType", true);
+					user.sendLocalizedMessage("error.area.chooseType", true);
 					return;
 				}
 				else if (types.size() == 1)
@@ -121,7 +121,7 @@ public class AreaCommand extends DualSyntaxCommand
 				}
 				else
 				{
-					instance.locale.sendMessage(user, "error.area.tooManyTypes", true);
+					user.sendLocalizedMessage("error.area.tooManyTypes", true);
 					return;
 				}
 			}
@@ -140,13 +140,13 @@ public class AreaCommand extends DualSyntaxCommand
 			
 			if (selectedId == null)
 			{
-				instance.locale.sendMessage(user, "error.area.chooseArea", true);
+				user.sendLocalizedMessage("error.area.chooseArea", true);
 				return;
 			}
 			parent = instance.areas.getArea(selectedId);
 			if (parent == null)
 			{
-				instance.locale.sendMessage(user, "error.area.invalidId", true);
+				user.sendLocalizedMessage("error.area.invalidId", true);
 				return;
 			}
 			else if (parent.getType() == AreaType.CHILD)
@@ -167,13 +167,13 @@ public class AreaCommand extends DualSyntaxCommand
 			
 			if (selectedId == null)
 			{
-				instance.locale.sendMessage(user, "error.area.chooseArea", true);
+				user.sendLocalizedMessage("error.area.chooseArea", true);
 				return;
 			}
 			area = instance.areas.getArea(selectedId);
 			if (area == null)
 			{
-				instance.locale.sendMessage(user, "error.area.invalidId", true);
+				user.sendLocalizedMessage("error.area.invalidId", true);
 				return;
 			}
 			
@@ -189,13 +189,13 @@ public class AreaCommand extends DualSyntaxCommand
 
 			if (selectedId == null)
 			{
-				instance.locale.sendMessage(user, "error.area.chooseArea", true);
+				user.sendLocalizedMessage("error.area.chooseArea", true);
 				return;
 			}
 			area = instance.areas.getArea(selectedId);
 			if (area == null)
 			{
-				instance.locale.sendMessage(user, "error.area.invalidId", true);
+				user.sendLocalizedMessage("error.area.invalidId", true);
 				return;
 			}
 			
@@ -203,7 +203,7 @@ public class AreaCommand extends DualSyntaxCommand
 			// Change the owner of the private area
 			if (username != null && !username.isEmpty())
 			{
-				PermissionUser u = instance.permissions.getUser(username);
+				PermissionUser u = PermissionManager.getInstance().getUser(username);
 				if (u == null)
 				{
 					// Send invalid user message
@@ -244,7 +244,7 @@ public class AreaCommand extends DualSyntaxCommand
 				{
 					for (index++; index < args.length && !args[index].startsWith("-"); index++)
 					{
-						PermissionUser u = instance.permissions.getUser(args[index]);
+						PermissionUser u = PermissionManager.getInstance().getUser(args[index]);
 						
 						if (u == null)
 						{
@@ -280,7 +280,7 @@ public class AreaCommand extends DualSyntaxCommand
 				{
 					for (index++; index < args.length && !args[index].startsWith("-"); index++)
 					{
-						PermissionUser u = instance.permissions.getUser(args[index]);
+						PermissionUser u = PermissionManager.getInstance().getUser(args[index]);
 						
 						if (u == null)
 						{

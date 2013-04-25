@@ -12,33 +12,13 @@ import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.chat.ChatChannel;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
-import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
-import com.bendude56.goldenapple.permissions.PermissionManager.PermissionNode;
+import com.bendude56.goldenapple.punish.Punishment.RemainingTime;
 
-public class PunishmentManager {
-	// goldenapple.punish
-	public static PermissionNode		punishNode;
-	
-	// goldenapple.punish.globalmute
-	public static PermissionNode        globalMuteNode;
-	public static Permission            globalMuteTempPermission;
-	public static Permission            globalMuteTempOverridePermission;
-	public static Permission            globalMutePermPermission;
-	public static Permission            globalMuteVoidPermission;
-	public static Permission            globalMuteVoidAllPermission;
-	
-	// goldenapple.punish.ban
-	public static PermissionNode        banNode;
-	public static Permission            banTempPermission;
-	public static Permission            banTempOverridePermission;
-	public static Permission            banPermPermission;
-	public static Permission            banVoidPermission;
-	public static Permission            banVoidAllPermission;
-	
+public class SimplePunishmentManager extends PunishmentManager {
 	private HashMap<Long, ArrayList<Punishment>> cache;
 
-	public PunishmentManager() {
-		GoldenApple.getInstance().database.createOrUpdateTable("bans");
+	public SimplePunishmentManager() {
+		GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("bans");
 		cache = new HashMap<Long, ArrayList<Punishment>>();
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			loadIntoCache(User.getUser(p));
@@ -52,21 +32,21 @@ public class PunishmentManager {
 			cache.put(u.getId(), new ArrayList<Punishment>());
 		}
 		try {
-			ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT * FROM Bans WHERE Target=?", u.getId());
+			ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT * FROM Bans WHERE Target=?", u.getId());
 			try {
 				while (r.next()) {
-					cache.get(u.getId()).add(new PunishmentBan(r));
+					cache.get(u.getId()).add(new SimplePunishmentBan(r));
 				}
 			} finally {
-				GoldenApple.getInstance().database.closeResult(r);
+				GoldenApple.getInstanceDatabaseManager().closeResult(r);
 			}
-			r = GoldenApple.getInstance().database.executeQuery("SELECT * FROM Mutes WHERE Target=?", u.getId());
+			r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT * FROM Mutes WHERE Target=?", u.getId());
 			try {
 				while (r.next()) {
-					cache.get(u.getId()).add(new PunishmentMute(r));
+					cache.get(u.getId()).add(new SimplePunishmentMute(r));
 				}
 			} finally {
-				GoldenApple.getInstance().database.closeResult(r);
+				GoldenApple.getInstanceDatabaseManager().closeResult(r);
 			}
 		} catch (SQLException e) {
 			
@@ -85,18 +65,26 @@ public class PunishmentManager {
 		p.insert();
 	}
 	
+	public void addMute(IPermissionUser target, IPermissionUser admin, String reason, RemainingTime duration, String channel) {
+		addPunishment(new SimplePunishmentMute(target, admin, reason, duration, channel), target);
+	}
+	
+	public void addBan(IPermissionUser target, IPermissionUser admin, String reason, RemainingTime duration) {
+		addPunishment(new SimplePunishmentBan(target, admin, reason, duration), target);
+	}
+	
 	public boolean isMuted(IPermissionUser u, ChatChannel channel) {
 		return (getActiveMute(u, null) != null) || (getActiveMute(u, channel) != null);
 	}
 	
-	public Punishment getActiveMute(IPermissionUser u, ChatChannel channel) {
-		for (Punishment p : getPunishments(u, PunishmentMute.class)) {
-			PunishmentMute m = (PunishmentMute)p;
+	public PunishmentMute getActiveMute(IPermissionUser u, ChatChannel channel) {
+		for (Punishment p : getPunishments(u, SimplePunishmentMute.class)) {
+			SimplePunishmentMute m = (SimplePunishmentMute)p;
 			
 			if (channel == null && m.isGlobal()) {
-				return p;
+				return m;
 			} else if (channel != null && m.getChannelIdentifier().equals(channel.getName())) {
-				return p;
+				return m;
 			}
 		}
 		return null;

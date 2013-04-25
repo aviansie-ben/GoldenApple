@@ -2,11 +2,11 @@ package com.bendude56.goldenapple.warp;
 
 import com.bendude56.goldenapple.CommandManager;
 import com.bendude56.goldenapple.GoldenApple;
-import com.bendude56.goldenapple.IModuleLoader;
+import com.bendude56.goldenapple.ModuleLoader;
 import com.bendude56.goldenapple.listener.WarpListener;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 
-public class WarpModuleLoader implements IModuleLoader {
+public class WarpModuleLoader implements ModuleLoader {
 
 	private static ModuleState	state	= ModuleState.UNLOADED_USER;
 
@@ -14,10 +14,10 @@ public class WarpModuleLoader implements IModuleLoader {
 	public void loadModule(GoldenApple instance) {
 		state = ModuleState.LOADING;
 		try {
-			GoldenApple.getInstance().warps = new WarpManager();
+			WarpManager.instance = new SimpleWarpManager();
 			
-			registerCommands(instance.commands);
-			registerPermissions(instance.permissions);
+			registerCommands(instance.getCommandManager());
+			registerPermissions(PermissionManager.getInstance());
 			WarpListener.startListening();
 			state = ModuleState.LOADED;
 		} catch (Throwable e) {
@@ -64,9 +64,9 @@ public class WarpModuleLoader implements IModuleLoader {
 
 	@Override
 	public void unloadModule(GoldenApple instance) {
-		unregisterCommands(instance.commands);
+		unregisterCommands(instance.getCommandManager());
 		WarpListener.stopListening();
-		GoldenApple.getInstance().warps = null;
+		WarpManager.instance = null;
 		state = ModuleState.UNLOADED_USER;
 	}
 	
@@ -102,17 +102,17 @@ public class WarpModuleLoader implements IModuleLoader {
 
 	@Override
 	public boolean canLoadAuto() {
-		return GoldenApple.getInstance().mainConfig.getBoolean("modules.warps.enabled", true);
+		return GoldenApple.getInstanceMainConfig().getBoolean("modules.warps.enabled", true);
 	}
 
 	@Override
 	public boolean canPolicyLoad() {
-		return !GoldenApple.getInstance().mainConfig.getBoolean("securityPolicy.blockModules.warp", true);
+		return !GoldenApple.getInstanceMainConfig().getBoolean("securityPolicy.blockModules.warp", true);
 	}
 	
 	@Override
 	public boolean canPolicyUnload() {
-		return !GoldenApple.getInstance().mainConfig.getBoolean("securityPolicy.blockManualUnload.warp", false);
+		return !GoldenApple.getInstanceMainConfig().getBoolean("securityPolicy.blockManualUnload.warp", false);
 	}
 
 }

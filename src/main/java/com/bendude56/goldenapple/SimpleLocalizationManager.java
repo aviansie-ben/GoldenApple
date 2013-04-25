@@ -5,15 +5,15 @@ import java.util.HashMap;
 import java.util.Properties;
 import java.util.logging.Level;
 
-public class LocalizationHandler {
+public class SimpleLocalizationManager implements LocalizationManager {
 	public String									defaultLocale;
 	public HashMap<String, String>					messages;
 	public HashMap<String, HashMap<String, String>>	secondaryMessages;
 
-	public LocalizationHandler(ClassLoader loader) {
-		defaultLocale = GoldenApple.getInstance().mainConfig.getString("message.defaultLocale");
+	public SimpleLocalizationManager(ClassLoader loader) {
+		defaultLocale = GoldenApple.getInstanceMainConfig().getString("message.defaultLocale");
 		secondaryMessages = new HashMap<String, HashMap<String, String>>();
-		for (String locale : GoldenApple.getInstance().mainConfig.getStringList("message.availableLocales")) {
+		for (String locale : GoldenApple.getInstanceMainConfig().getStringList("message.availableLocales")) {
 			Properties p = new Properties();
 			try {
 				p.load(loader.getResourceAsStream("locale/" + locale + ".lang"));
@@ -96,5 +96,20 @@ public class LocalizationHandler {
 		}
 		if (msg != null && msg.length() > 0)
 			user.getHandle().sendMessage(msg);
+	}
+
+	@Override
+	public boolean languageExists(String lang) {
+		return secondaryMessages.containsKey(lang);
+	}
+
+	@Override
+	public boolean messageExists(String message) {
+		return messages.containsKey(message);
+	}
+
+	@Override
+	public boolean messageExists(String lang, String message) {
+		return languageExists(lang) && secondaryMessages.get(lang).containsKey(lang);
 	}
 }

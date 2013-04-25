@@ -15,7 +15,6 @@ import com.bendude56.goldenapple.warp.WarpManager;
 public class SpawnCommand implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
-		GoldenApple instance = GoldenApple.getInstance();
 		User user = User.getUser(sender);
 		
 		if (user.getHandle() instanceof Player) {
@@ -23,24 +22,24 @@ public class SpawnCommand implements CommandExecutor {
 				if (!user.hasPermission(WarpManager.spawnCurrentPermission)) {
 					GoldenApple.logPermissionFail(user, commandLabel, args, true);
 				} else if (user.getPlayerHandle().teleport(user.getPlayerHandle().getWorld().getSpawnLocation(), TeleportCause.COMMAND)) {
-					GoldenApple.getInstance().locale.sendMessage(user, "general.warps.teleportSpawn", false);
+					user.sendLocalizedMessage("general.warps.teleportSpawn");
 				} else {
-					GoldenApple.getInstance().locale.sendMessage(user, "error.warps.pluginCancel", false);
+					user.sendLocalizedMessage("error.warps.pluginCancel");
 				}
 			} else {
 				World w = Bukkit.getWorld(args[0]);
 				if (!user.hasPermission(WarpManager.spawnAllPermission)) {
 					GoldenApple.logPermissionFail(user, commandLabel, args, true);
 				} else if (w == null) {
-					GoldenApple.getInstance().locale.sendMessage(user, "shared.worldNotFoundError", false, args[0]);
+					user.sendLocalizedMessage("shared.worldNotFoundError", args[0]);
 				} else if (user.getPlayerHandle().teleport(w.getSpawnLocation(), TeleportCause.COMMAND)) {
-					GoldenApple.getInstance().locale.sendMessage(user, "general.warps.teleportSpawnWorld", false, w.getName());
+					user.sendLocalizedMessage("general.warps.teleportSpawnWorld", w.getName());
 				} else {
-					GoldenApple.getInstance().locale.sendMessage(user, "error.warps.pluginCancel", false);
+					user.sendLocalizedMessage("error.warps.pluginCancel");
 				}
 			}
 		} else {
-			instance.locale.sendMessage(user, "shared.noConsole", false);
+			user.sendLocalizedMessage("shared.noConsole");
 		}
 		
 		return true;

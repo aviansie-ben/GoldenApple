@@ -2,11 +2,11 @@ package com.bendude56.goldenapple.punish;
 
 import com.bendude56.goldenapple.CommandManager;
 import com.bendude56.goldenapple.GoldenApple;
-import com.bendude56.goldenapple.IModuleLoader;
+import com.bendude56.goldenapple.ModuleLoader;
 import com.bendude56.goldenapple.listener.PunishmentListener;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 
-public class PunishModuleLoader implements IModuleLoader {
+public class PunishModuleLoader implements ModuleLoader {
 
 	private static ModuleState state = ModuleState.UNLOADED_USER;
 
@@ -14,14 +14,14 @@ public class PunishModuleLoader implements IModuleLoader {
 	public void loadModule(GoldenApple instance) {
 		state = ModuleState.LOADING;
 		try {
-			instance.punish = new PunishmentManager();
-			registerPermissions(instance.permissions);
+			PunishmentManager.instance = new SimplePunishmentManager();
+			registerPermissions(PermissionManager.getInstance());
 			registerEvents();
-			registerCommands(instance.commands);
+			registerCommands(instance.getCommandManager());
 			state = ModuleState.LOADED;
 		} catch (Throwable e) {
 			state = ModuleState.UNLOADED_ERROR;
-			unregisterCommands(instance.commands);
+			unregisterCommands(instance.getCommandManager());
 		}
 	}
 	
@@ -30,11 +30,11 @@ public class PunishModuleLoader implements IModuleLoader {
 		PunishmentManager.punishNode = permissions.registerNode("punish", PermissionManager.goldenAppleNode);
 		
 		PunishmentManager.banNode = permissions.registerNode("ban", PunishmentManager.punishNode);
-		PunishmentManager.banTempPermission = permissions.registerPermission("temp", PermissionManager.goldenAppleNode);
-		PunishmentManager.banTempOverridePermission = permissions.registerPermission("tempOverride", PermissionManager.goldenAppleNode);
-		PunishmentManager.banPermPermission = permissions.registerPermission("perm", PermissionManager.goldenAppleNode);
-		PunishmentManager.banVoidPermission = permissions.registerPermission("void", PermissionManager.goldenAppleNode);
-		PunishmentManager.banVoidAllPermission = permissions.registerPermission("voidAll", PermissionManager.goldenAppleNode);
+		PunishmentManager.banTempPermission = permissions.registerPermission("temp", PunishmentManager.banNode);
+		PunishmentManager.banTempOverridePermission = permissions.registerPermission("tempOverride", PunishmentManager.banNode);
+		PunishmentManager.banPermPermission = permissions.registerPermission("perm", PunishmentManager.banNode);
+		PunishmentManager.banVoidPermission = permissions.registerPermission("void", PunishmentManager.banNode);
+		PunishmentManager.banVoidAllPermission = permissions.registerPermission("voidAll", PunishmentManager.banNode);
 	}
 	
 	private void registerEvents() {
@@ -51,8 +51,8 @@ public class PunishModuleLoader implements IModuleLoader {
 	@Override
 	public void unloadModule(GoldenApple instance) {
 		unregisterEvents();
-		unregisterCommands(instance.commands);
-		GoldenApple.getInstance().locks = null;
+		unregisterCommands(instance.getCommandManager());
+		PunishmentManager.instance = null;
 		state = ModuleState.UNLOADED_USER;
 	}
 	
@@ -89,17 +89,17 @@ public class PunishModuleLoader implements IModuleLoader {
 
 	@Override
 	public boolean canLoadAuto() {
-		return GoldenApple.getInstance().mainConfig.getBoolean("modules.punish.enabled", true);
+		return GoldenApple.getInstanceMainConfig().getBoolean("modules.punish.enabled", true);
 	}
 
 	@Override
 	public boolean canPolicyLoad() {
-		return !GoldenApple.getInstance().mainConfig.getBoolean("securityPolicy.blockModules.punish", false);
+		return !GoldenApple.getInstanceMainConfig().getBoolean("securityPolicy.blockModules.punish", false);
 	}
 	
 	@Override
 	public boolean canPolicyUnload() {
-		return !GoldenApple.getInstance().mainConfig.getBoolean("securityPolicy.blockManualUnload.punish", false);
+		return !GoldenApple.getInstanceMainConfig().getBoolean("securityPolicy.blockManualUnload.punish", false);
 	}
 
 }

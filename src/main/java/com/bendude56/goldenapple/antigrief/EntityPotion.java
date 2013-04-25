@@ -71,10 +71,10 @@ public class EntityPotion extends net.minecraft.server.v1_5_R2.EntityPotion {
                         
                         try {
 	                        if (entityliving instanceof EntityPlayer) {
-	                        	if (GoldenApple.getInstance().mainConfig.getBoolean("modules.antigrief.noSplashPlayerPotion." + ItemPotion.typeConfigName.get(Potion.fromItemStack(CraftItemStack.asBukkitCopy(item)).getType()), true))
+	                        	if (GoldenApple.getInstanceMainConfig().getBoolean("modules.antigrief.noSplashPlayerPotion." + ItemPotion.typeConfigName.get(Potion.fromItemStack(CraftItemStack.asBukkitCopy(item)).getType()), true))
 	                				continue;
 	                        } else {
-	                        	if (GoldenApple.getInstance().mainConfig.getBoolean("modules.antigrief.noSplashMobPotion." + ItemPotion.typeConfigName.get(Potion.fromItemStack(CraftItemStack.asBukkitCopy(item)).getType()), true))
+	                        	if (GoldenApple.getInstanceMainConfig().getBoolean("modules.antigrief.noSplashMobPotion." + ItemPotion.typeConfigName.get(Potion.fromItemStack(CraftItemStack.asBukkitCopy(item)).getType()), true))
 	                				continue;
 	                        }
                         } catch (Exception e) {

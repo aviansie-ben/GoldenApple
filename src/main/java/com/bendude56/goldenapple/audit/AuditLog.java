@@ -14,10 +14,10 @@ public class AuditLog {
 		try {
 			Class.forName("com.bendude56.goldenapple.audit.AuditEvent");
 			
-			GoldenApple.getInstance().database.createOrUpdateTable("auditlog");
-			GoldenApple.getInstance().database.createOrUpdateTable("auditlogparams");
+			GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("auditlog");
+			GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("auditlogparams");
 			
-			String logLocation = GoldenApple.getInstance().mainConfig.getString("modules.audit.textAuditLog", "plugins/GoldenApple/audit.log");
+			String logLocation = GoldenApple.getInstanceMainConfig().getString("modules.audit.textAuditLog", "plugins/GoldenApple/audit.log");
 			if (logLocation != "") {
 				log = new FileWriter(logLocation, true);
 			}

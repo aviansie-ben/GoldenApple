@@ -13,8 +13,8 @@ import org.bukkit.permissions.Permissible;
 import org.bukkit.permissions.PermissionAttachment;
 
 import com.bendude56.goldenapple.permissions.IPermissionUser;
+import com.bendude56.goldenapple.permissions.PermissionManager;
 import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
-import com.bendude56.goldenapple.permissions.PermissionUser;
 
 public class User implements IPermissionUser {
 	private static HashMap<Long, User>	activeUsers	= new HashMap<Long, User>();
@@ -32,7 +32,7 @@ public class User implements IPermissionUser {
 	public static User getUser(CommandSender sender) {
 		if (sender instanceof ConsoleCommandSender) {
 			return consoleUser;
-		} else if (GoldenApple.getInstance().permissions == null) {
+		} else if (PermissionManager.getInstance() == null) {
 			// Assign each user a temporary id in the event of a permissions
 			// system failure
 			long id = -1;
@@ -47,7 +47,7 @@ public class User implements IPermissionUser {
 			activeUsers.put(id, u = new User(id, sender, false));
 			return u;
 		}
-		long id = GoldenApple.getInstance().permissions.getUserId(sender.getName());
+		long id = PermissionManager.getInstance().getUserId(sender.getName());
 		if (id == -1) {
 			return null;
 		} else if (activeUsers.containsKey(id)) {
@@ -55,13 +55,13 @@ public class User implements IPermissionUser {
 		} else {
 			User u;
 			activeUsers.put(id, u = new User(id, sender, true));
-			GoldenApple.getInstance().permissions.setUserSticky(u.getId(), true);
+			PermissionManager.getInstance().setUserSticky(u.getId(), true);
 			return u;
 		}
 	}
 	
 	public static User getUser(String name) {
-		if (GoldenApple.getInstance().permissions == null) {
+		if (PermissionManager.getInstance() == null) {
 			for (Entry<Long, User> cached : activeUsers.entrySet()) {
 				if (cached.getValue().getName().equals(name)) {
 					return cached.getValue();
@@ -69,7 +69,7 @@ public class User implements IPermissionUser {
 			}
 			return null;
 		} else {
-			return getUser(GoldenApple.getInstance().permissions.getUserId(name));
+			return getUser(PermissionManager.getInstance().getUserId(name));
 		}
 	}
 	
@@ -89,8 +89,8 @@ public class User implements IPermissionUser {
 	 */
 	public static void unloadUser(User user) {
 		activeUsers.remove(user.getId());
-		if (GoldenApple.getInstance().permissions != null)
-			GoldenApple.getInstance().permissions.setUserSticky(user.getId(), false);
+		if (PermissionManager.getInstance() != null)
+			PermissionManager.getInstance().setUserSticky(user.getId(), false);
 	}
 
 	/**
@@ -112,7 +112,7 @@ public class User implements IPermissionUser {
 		return activeUsers.containsKey(id);
 	}
 
-	private PermissionUser			permissions;
+	private IPermissionUser			permissions;
 	private PermissionAttachment	bukkitPermissions;
 	private CommandSender			handle;
 	private long					id;
@@ -122,8 +122,8 @@ public class User implements IPermissionUser {
 		if (!loadPermissions) {
 			permissions = null;
 		} else {
-			permissions = GoldenApple.getInstance().permissions.getUser(id);
-			GoldenApple.getInstance().permissions.setUserSticky(id, true);
+			permissions = PermissionManager.getInstance().getUser(id);
+			PermissionManager.getInstance().setUserSticky(id, true);
 		}
 		this.handle = handle;
 		if (permissions != null && handle != null && handle instanceof Permissible)
@@ -343,5 +343,21 @@ public class User implements IPermissionUser {
 			return "The Almighty";
 		else
 			return permissions.getPrefix();
+	}
+	
+	public void sendLocalizedMessage(String message) {
+		GoldenApple.getInstance().getLocalizationManager().sendMessage(this, message, false);
+	}
+	
+	public void sendLocalizedMessage(String message, String... args) {
+		GoldenApple.getInstance().getLocalizationManager().sendMessage(this, message, false, args);
+	}
+	
+	public void sendLocalizedMultlineMessage(String message) {
+		GoldenApple.getInstance().getLocalizationManager().sendMessage(this, message, true);
+	}
+	
+	public void sendLocalizedMultilineMessage(String message, String... args) {
+		GoldenApple.getInstance().getLocalizationManager().sendMessage(this, message, true, args);
 	}
 }

@@ -2,11 +2,11 @@ package com.bendude56.goldenapple.lock;
 
 import com.bendude56.goldenapple.CommandManager;
 import com.bendude56.goldenapple.GoldenApple;
-import com.bendude56.goldenapple.IModuleLoader;
+import com.bendude56.goldenapple.ModuleLoader;
 import com.bendude56.goldenapple.listener.LockListener;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 
-public class LockModuleLoader implements IModuleLoader {
+public class LockModuleLoader implements ModuleLoader {
 
 	private static ModuleState state = ModuleState.UNLOADED_USER;
 
@@ -14,14 +14,14 @@ public class LockModuleLoader implements IModuleLoader {
 	public void loadModule(GoldenApple instance) {
 		state = ModuleState.LOADING;
 		try {
-			instance.locks = new LockManager();
-			registerPermissions(instance.permissions);
+			LockManager.instance = new SimpleLockManager();
+			registerPermissions(PermissionManager.getInstance());
 			registerEvents();
-			registerCommands(instance.commands);
+			registerCommands(instance.getCommandManager());
 			state = ModuleState.LOADED;
 		} catch (Throwable e) {
 			state = ModuleState.UNLOADED_ERROR;
-			unregisterCommands(instance.commands);
+			unregisterCommands(instance.getCommandManager());
 		}
 	}
 	
@@ -47,8 +47,8 @@ public class LockModuleLoader implements IModuleLoader {
 	@Override
 	public void unloadModule(GoldenApple instance) {
 		unregisterEvents();
-		unregisterCommands(instance.commands);
-		GoldenApple.getInstance().locks = null;
+		unregisterCommands(instance.getCommandManager());
+		LockManager.instance = null;
 		state = ModuleState.UNLOADED_USER;
 	}
 	
@@ -83,17 +83,17 @@ public class LockModuleLoader implements IModuleLoader {
 
 	@Override
 	public boolean canLoadAuto() {
-		return GoldenApple.getInstance().mainConfig.getBoolean("modules.lock.enabled", true);
+		return GoldenApple.getInstanceMainConfig().getBoolean("modules.lock.enabled", true);
 	}
 
 	@Override
 	public boolean canPolicyLoad() {
-		return !GoldenApple.getInstance().mainConfig.getBoolean("securityPolicy.blockModules.lock", false);
+		return !GoldenApple.getInstanceMainConfig().getBoolean("securityPolicy.blockModules.lock", false);
 	}
 	
 	@Override
 	public boolean canPolicyUnload() {
-		return !GoldenApple.getInstance().mainConfig.getBoolean("securityPolicy.blockManualUnload.lock", false);
+		return !GoldenApple.getInstanceMainConfig().getBoolean("securityPolicy.blockManualUnload.lock", false);
 	}
 
 }

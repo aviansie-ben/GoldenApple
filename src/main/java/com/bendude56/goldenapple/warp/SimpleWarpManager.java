@@ -13,51 +13,23 @@ import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import com.bendude56.goldenapple.GoldenApple;
-import com.bendude56.goldenapple.IModuleLoader.ModuleState;
+import com.bendude56.goldenapple.ModuleLoader.ModuleState;
 import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
-import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
-import com.bendude56.goldenapple.permissions.PermissionManager.PermissionNode;
-import com.bendude56.goldenapple.permissions.PermissionUser;
+import com.bendude56.goldenapple.permissions.PermissionManager;
 
-public class WarpManager {
-	// goldenapple.warp
-	public static PermissionNode warpNode;
-	public static Permission backPermission;
-	
-	// goldenapple.warp.tp
-	public static PermissionNode tpNode;
-	public static Permission tpSelfToOtherPermission;
-	public static Permission tpOtherToSelfPermission;
-	public static Permission tpOtherToOtherPermission;
-	
-	// goldenapple.warp.spawn
-	public static PermissionNode spawnNode;
-	public static Permission spawnCurrentPermission;
-	public static Permission spawnAllPermission;
-	
-	// goldenapple.warp.home
-	public static PermissionNode homeNode;
-	
-	// goldenapple.warp.home.teleport
-	public static PermissionNode homeTpNode;
-	public static Permission homeTpOwn;
-	public static Permission homeTpPublic;
-	public static Permission homeTpAll;
-	
-	// goldenapple.warp.home.edit
-	public static PermissionNode homeEditNode;
-	public static Permission homeEditOwn;
-	public static Permission homeEditPublic;
-	public static Permission homeEditAll;
-	
-	public static int maxHomes;
+public class SimpleWarpManager extends WarpManager {
+	private static int maxHomes;
 	
 	private boolean homeBusy, warpBusy;
 	
-	public WarpManager() {
-		GoldenApple.getInstance().database.createOrUpdateTable("homes");
-		maxHomes = GoldenApple.getInstance().mainConfig.getInt("modules.warps.maxHomes", 5);
+	public SimpleWarpManager() {
+		GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("homes");
+		maxHomes = GoldenApple.getInstanceMainConfig().getInt("modules.warps.maxHomes", 5);
+	}
+	
+	public int getMaxHomes() {
+		return maxHomes;
 	}
 	
 	public boolean isHomeBusy() {
@@ -69,12 +41,12 @@ public class WarpManager {
 	}
 	
 	private void updateBusy() {
-		 GoldenApple.modules.get("Warp").setState((homeBusy || warpBusy) ? ModuleState.BUSY : ModuleState.LOADED);
+		 GoldenApple.getInstance().getModuleManager().getModule("Warp").setState((homeBusy || warpBusy) ? ModuleState.BUSY : ModuleState.LOADED);
 	}
 	
-	public HomeWarp getHome(IPermissionUser user, int homeNum) {
+	public BaseWarp getHome(IPermissionUser user, int homeNum) {
 		try {
-			ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT * FROM Homes WHERE UserID=? AND Home=?", user.getId(), homeNum);
+			ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT * FROM Homes WHERE UserID=? AND Home=?", user.getId(), homeNum);
 			try {
 				if (r.next()) {
 					return new HomeWarp(r);
@@ -82,7 +54,7 @@ public class WarpManager {
 					return null;
 				}
 			} finally {
-				GoldenApple.getInstance().database.closeResult(r);
+				GoldenApple.getInstanceDatabaseManager().closeResult(r);
 			}
 		} catch (SQLException e) {
 			GoldenApple.log(Level.WARNING, "Error while attempting to retrieve a home from the database:");
@@ -91,9 +63,9 @@ public class WarpManager {
 		}
 	}
 	
-	public HomeWarp getHome(IPermissionUser user, String alias) {
+	public BaseWarp getHome(IPermissionUser user, String alias) {
 		try {
-			ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT * FROM Homes WHERE UserID=? AND Alias=?", user.getId(), alias);
+			ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT * FROM Homes WHERE UserID=? AND Alias=?", user.getId(), alias);
 			try {
 				if (r.next()) {
 					return new HomeWarp(r);
@@ -101,7 +73,7 @@ public class WarpManager {
 					return null;
 				}
 			} finally {
-				GoldenApple.getInstance().database.closeResult(r);
+				GoldenApple.getInstanceDatabaseManager().closeResult(r);
 			}
 		} catch (SQLException e) {
 			GoldenApple.log(Level.WARNING, "Error while attempting to retrieve a home from the database:");
@@ -132,7 +104,7 @@ public class WarpManager {
 			File userData = new File("plugins/Essentials/userdata");
 			
 			if (!userData.exists() || !userData.isDirectory()) {
-				GoldenApple.getInstance().locale.sendMessage(sender, "error.import.dataNotFound", false, "Essentials");
+				sender.sendLocalizedMessage("error.import.dataNotFound", "Essentials");
 			} else {
 				for (File f : userData.listFiles()) {
 					if (f.getName().endsWith(".yml")) {
@@ -144,12 +116,12 @@ public class WarpManager {
 								int userHome = 1;
 								
 								numUsers++;
-								if (!GoldenApple.getInstance().permissions.userExists(player.getName())) {
+								if (!PermissionManager.getInstance().userExists(player.getName())) {
 									newUsers++;
-									GoldenApple.getInstance().permissions.createUser(player.getName());
+									PermissionManager.getInstance().createUser(player.getName());
 								}
 								
-								PermissionUser u = GoldenApple.getInstance().permissions.getUser(player.getName());
+								IPermissionUser u = PermissionManager.getInstance().getUser(player.getName());
 								
 								for (Map.Entry<String, Object> s : yml.getConfigurationSection("homes").getValues(false).entrySet()) {
 									if (s.getValue() instanceof ConfigurationSection) {
@@ -178,7 +150,7 @@ public class WarpManager {
 			updateBusy();
 			
 			if (sender != null)
-				GoldenApple.getInstance().locale.sendMessage(sender, "general.import.homesSuccess", false, numHomes + "", numUsers + "", newUsers + "");
+				sender.sendLocalizedMessage("general.import.homesSuccess", numHomes + "", numUsers + "", newUsers + "");
 		}
 			
 	}

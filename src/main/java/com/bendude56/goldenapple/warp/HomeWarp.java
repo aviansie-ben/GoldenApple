@@ -8,7 +8,8 @@ import org.bukkit.Location;
 
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
-import com.bendude56.goldenapple.permissions.PermissionUser;
+import com.bendude56.goldenapple.permissions.IPermissionUser;
+import com.bendude56.goldenapple.permissions.PermissionManager;
 
 public class HomeWarp extends BaseWarp {
 	private long userId;
@@ -41,8 +42,8 @@ public class HomeWarp extends BaseWarp {
 		return (alias == null) ? ("Home #" + homeNum) : alias;
 	}
 	
-	public PermissionUser getUser() {
-		return GoldenApple.getInstance().permissions.getUser(userId);
+	public IPermissionUser getUser() {
+		return PermissionManager.getInstance().getUser(userId);
 	}
 	
 	public int getHomeNumber() {
@@ -67,11 +68,11 @@ public class HomeWarp extends BaseWarp {
 
 	@Override
 	public boolean canTeleport(User u) {
-		if (u.getId() == userId && u.hasPermission(WarpManager.homeTpOwn))
+		if (u.getId() == userId && u.hasPermission(SimpleWarpManager.homeTpOwn))
 			return true;
-		else if (isPublic && u.hasPermission(WarpManager.homeTpPublic))
+		else if (isPublic && u.hasPermission(SimpleWarpManager.homeTpPublic))
 			return true;
-		else if (u.hasPermission(WarpManager.homeTpAll))
+		else if (u.hasPermission(SimpleWarpManager.homeTpAll))
 			return true;
 		else
 			return false;
@@ -79,11 +80,11 @@ public class HomeWarp extends BaseWarp {
 
 	@Override
 	public boolean canEdit(User u) {
-		if (u.getId() == userId && u.hasPermission(WarpManager.homeEditOwn))
+		if (u.getId() == userId && u.hasPermission(SimpleWarpManager.homeEditOwn))
 			return true;
-		else if (isPublic && u.hasPermission(WarpManager.homeEditPublic))
+		else if (isPublic && u.hasPermission(SimpleWarpManager.homeEditPublic))
 			return true;
-		else if (u.hasPermission(WarpManager.homeEditAll))
+		else if (u.hasPermission(SimpleWarpManager.homeEditAll))
 			return true;
 		else
 			return false;
@@ -91,17 +92,17 @@ public class HomeWarp extends BaseWarp {
 	
 	@Override
 	public void update() throws SQLException {
-		GoldenApple.getInstance().database.execute("UPDATE Homes SET Alias=?, X=?, Y=?, Z=?, Yaw=?, Pitch=?, World=?, Public=? WHERE UserID=? AND Home=?", alias, loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch(), loc.getWorld().getName(), isPublic, userId, homeNum);
+		GoldenApple.getInstanceDatabaseManager().execute("UPDATE Homes SET Alias=?, X=?, Y=?, Z=?, Yaw=?, Pitch=?, World=?, Public=? WHERE UserID=? AND Home=?", alias, loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch(), loc.getWorld().getName(), isPublic, userId, homeNum);
 	}
 	
 	@Override
 	public void insert() throws SQLException {
-		GoldenApple.getInstance().database.execute("INSERT INTO Homes (UserID, Home, Alias, X, Y, Z, Yaw, Pitch, World, Public) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", userId, homeNum, alias, loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch(), loc.getWorld().getName(), isPublic);
+		GoldenApple.getInstanceDatabaseManager().execute("INSERT INTO Homes (UserID, Home, Alias, X, Y, Z, Yaw, Pitch, World, Public) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", userId, homeNum, alias, loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch(), loc.getWorld().getName(), isPublic);
 	}
 	
 	@Override
 	public void delete() throws SQLException {
-		GoldenApple.getInstance().database.execute("DELETE FROM Homes WHERE UserID=? AND Home=?", userId, homeNum);
+		GoldenApple.getInstanceDatabaseManager().execute("DELETE FROM Homes WHERE UserID=? AND Home=?", userId, homeNum);
 	}
 
 }

@@ -7,6 +7,7 @@ import org.bukkit.ChatColor;
 
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
+import com.bendude56.goldenapple.punish.PunishmentManager;
 import com.bendude56.goldenapple.punish.PunishmentMute;
 
 public abstract class ChatChannel {
@@ -22,7 +23,7 @@ public abstract class ChatChannel {
 		this.displayName = name;
 		this.motd = null;
 		this.defaultLevel = ChatChannelUserLevel.NO_ACCESS;
-		this.censor = ChatCensor.defaultChatCensor;
+		this.censor = ChatManager.getInstance().getDefaultCensor();
 		this.connectedUsers = new HashMap<User, ChatChannelUserLevel>();
 	}
 	
@@ -32,7 +33,7 @@ public abstract class ChatChannel {
 	public void delete() {
 		broadcastLocalizedMessage("general.channel.deleteBroadcast", displayName);
 		for (Map.Entry<User, ChatChannelUserLevel> user : connectedUsers.entrySet()) {
-			GoldenApple.getInstance().chat.userChannels.remove(user.getKey());
+			ChatManager.getInstance().removeChannelAttachment(user.getKey());
 		}
 	}
 	
@@ -47,15 +48,15 @@ public abstract class ChatChannel {
 	public boolean tryJoin(User user, boolean broadcast) {
 		ChatChannelUserLevel level = calculateLevel(user);
 		if (level.id <= ChatChannelUserLevel.NO_ACCESS.id) {
-			GoldenApple.getInstance().locale.sendMessage(user, "error.channel.noJoin", false);
+			user.sendLocalizedMessage("error.channel.noJoin");
 			return false;
 		}
 		
-		GoldenApple.getInstance().locale.sendMessage(user, "general.channel.join", false, displayName);
+		user.sendLocalizedMessage("general.channel.join", displayName);
 		if (broadcast) broadcastLocalizedMessage("general.channel.joinBroadcast", user.getChatDisplayName());
 		
 		if (level == ChatChannelUserLevel.JOIN) {
-			GoldenApple.getInstance().locale.sendMessage(user, "general.channel.noTalk", false);
+			user.sendLocalizedMessage("general.channel.noTalk");
 		}
 		
 		if (motd != null)
@@ -68,23 +69,23 @@ public abstract class ChatChannel {
 	public void leave(User user, boolean broadcast) {
 		connectedUsers.remove(user);
 		
-		GoldenApple.getInstance().locale.sendMessage(user, "general.channel.leave", false, displayName);
+		user.sendLocalizedMessage("general.channel.leave", displayName);
 		if (broadcast) broadcastLocalizedMessage("general.channel.leaveBroadcast", user.getChatDisplayName());
 	}
 	
 	public void kick(User user) {
 		connectedUsers.remove(user);
 		
-		GoldenApple.getInstance().locale.sendMessage(user, "general.channel.kick", false, displayName);
+		user.sendLocalizedMessage("general.channel.kick", displayName);
 		broadcastLocalizedMessage("general.channel.kickBroadcast", user.getChatDisplayName());
 	}
 	
 	public final boolean isStrictCensorOn() {
-		return censor == ChatCensor.strictChatCensor;
+		return censor == ChatManager.getInstance().getStrictCensor();
 	}
 	
 	public void setStrictCensorOn(boolean value) {
-		censor = (value) ? ChatCensor.strictChatCensor : ChatCensor.defaultChatCensor;
+		censor = (value) ? ChatManager.getInstance().getStrictCensor() : ChatManager.getInstance().getDefaultCensor();
 	}
 	
 	public final ChatChannelUserLevel getActiveLevel(User user) {
@@ -135,13 +136,13 @@ public abstract class ChatChannel {
 	
 	public void sendMessage(User user, String message) {
 		if (connectedUsers.get(user).id < ChatChannelUserLevel.CHAT.id) {
-			GoldenApple.getInstance().locale.sendMessage(user, "error.channel.noTalk", false);
-		} else if (GoldenApple.getInstance().punish.isMuted(user, this)) {
-			PunishmentMute m = (PunishmentMute)GoldenApple.getInstance().punish.getActiveMute(user, this);
+			user.sendLocalizedMessage("error.channel.noTalk");
+		} else if (PunishmentManager.getInstance().isMuted(user, this)) {
+			PunishmentMute m = PunishmentManager.getInstance().getActiveMute(user, this);
 			if (m.isPermanent()) {
-				GoldenApple.getInstance().locale.sendMessage(user, "error.channel.muted.perma", false);
+				user.sendLocalizedMessage("error.channel.muted.perma");
 			} else {
-				GoldenApple.getInstance().locale.sendMessage(user, "error.channel.muted.temp", false, m.getDuration().toString());
+				user.sendLocalizedMessage("error.channel.muted.temp", m.getDuration().toString());
 			}
 		} else {
 			message = censor.censorMessage(message);
@@ -151,13 +152,13 @@ public abstract class ChatChannel {
 	
 	public void sendMeMessage(User user, String message) {
 		if (connectedUsers.get(user).id < ChatChannelUserLevel.CHAT.id) {
-			GoldenApple.getInstance().locale.sendMessage(user, "error.channel.noTalk", false);
-		} else if (GoldenApple.getInstance().punish.isMuted(user, this)) {
-			PunishmentMute m = (PunishmentMute)GoldenApple.getInstance().punish.getActiveMute(user, this);
+			user.sendLocalizedMessage("error.channel.noTalk");
+		} else if (PunishmentManager.getInstance().isMuted(user, this)) {
+			PunishmentMute m = PunishmentManager.getInstance().getActiveMute(user, this);
 			if (m.isPermanent()) {
-				GoldenApple.getInstance().locale.sendMessage(user, "error.channel.muted.perma", false);
+				user.sendLocalizedMessage("error.channel.muted.perma");
 			} else {
-				GoldenApple.getInstance().locale.sendMessage(user, "error.channel.muted.temp", false, m.getDuration().toString());
+				user.sendLocalizedMessage("error.channel.muted.temp", m.getDuration().toString());
 			}
 		} else {
 			message = censor.censorMessage(message);
@@ -186,14 +187,14 @@ public abstract class ChatChannel {
 	
 	public final void broadcastLocalizedMessage(String message, boolean multiline, String... arguments) {
 		if (multiline) {
-			for (int i = 0; GoldenApple.getInstance().locale.messages.containsKey(message + "." + i); i++) {
-				GoldenApple.log("[" + name + "] " + GoldenApple.getInstance().locale.processMessageDefaultLocale(message + "." + i, arguments));
+			for (int i = 0; GoldenApple.getInstance().getLocalizationManager().messageExists(message + "." + i); i++) {
+				GoldenApple.log("[" + name + "] " + GoldenApple.getInstance().getLocalizationManager().processMessageDefaultLocale(message + "." + i, arguments));
 			}
 		} else {
-			GoldenApple.log("[" + name + "] " + GoldenApple.getInstance().locale.processMessageDefaultLocale(message, arguments));
+			GoldenApple.log("[" + name + "] " + GoldenApple.getInstance().getLocalizationManager().processMessageDefaultLocale(message, arguments));
 		}
 		for (Map.Entry<User, ChatChannelUserLevel> user : connectedUsers.entrySet()) {
-			GoldenApple.getInstance().locale.sendMessage(user.getKey(), message, multiline, arguments);
+			GoldenApple.getInstance().getLocalizationManager().sendMessage(user.getKey(), message, multiline, arguments);
 		}
 	}
 	

@@ -2,7 +2,6 @@ package com.bendude56.goldenapple.commands;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Map.Entry;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -10,103 +9,102 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 import com.bendude56.goldenapple.GoldenApple;
-import com.bendude56.goldenapple.IModuleLoader;
-import com.bendude56.goldenapple.IModuleLoader.ModuleState;
+import com.bendude56.goldenapple.ModuleLoader;
+import com.bendude56.goldenapple.ModuleLoader.ModuleState;
 import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 
 public class ModuleCommand implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
-		GoldenApple instance = GoldenApple.getInstance();
 		User user = User.getUser(sender);
 		
 		if (user.getHandle().isOp() || user.hasPermission(PermissionManager.moduleQueryPermission)) {
 			if (args.length == 0 || args[0].equalsIgnoreCase("-ls") || args[0].equalsIgnoreCase("--list")) {
-				instance.locale.sendMessage(user, "header.module", false);
-				instance.locale.sendMessage(user, "general.module.list", false);
-				for (Entry<String, IModuleLoader> module : GoldenApple.modules.entrySet()) {
+				user.sendLocalizedMessage("header.module");
+				user.sendLocalizedMessage("general.module.list");
+				for (ModuleLoader module : GoldenApple.getInstance().getModuleManager().getModules()) {
 					String suffix = "";
-					if (!module.getValue().canPolicyLoad() || (module.getValue().getCurrentState() == ModuleState.LOADED && !module.getValue().canPolicyUnload())) {
+					if (!module.canPolicyLoad() || (module.getCurrentState() == ModuleState.LOADED && !module.canPolicyUnload())) {
 						suffix += ChatColor.DARK_GRAY + " [!]";
 					}
-					switch (module.getValue().getCurrentState()) {
+					switch (module.getCurrentState()) {
 						case BUSY:
-							user.getHandle().sendMessage(ChatColor.YELLOW + module.getValue().getModuleName() + suffix);
+							user.getHandle().sendMessage(ChatColor.YELLOW + module.getModuleName() + suffix);
 							break;
 						case LOADED:
-							user.getHandle().sendMessage(ChatColor.GREEN + module.getValue().getModuleName() + suffix);
+							user.getHandle().sendMessage(ChatColor.GREEN + module.getModuleName() + suffix);
 							break;
 						case LOADING:
-							user.getHandle().sendMessage(ChatColor.YELLOW + module.getValue().getModuleName() + suffix);
+							user.getHandle().sendMessage(ChatColor.YELLOW + module.getModuleName() + suffix);
 							break;
 						case UNLOADED_USER:
-							user.getHandle().sendMessage(ChatColor.GRAY + module.getValue().getModuleName() + suffix);
+							user.getHandle().sendMessage(ChatColor.GRAY + module.getModuleName() + suffix);
 							break;
 						case UNLOADED_ERROR:
 						case UNLOADED_MISSING_DEPENDENCY:
-							user.getHandle().sendMessage(ChatColor.RED + module.getValue().getModuleName() + suffix);
+							user.getHandle().sendMessage(ChatColor.RED + module.getModuleName() + suffix);
 							break;
 					}
 				}
 			} else if (args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("-?")) {
 				// TODO Implement help
-			} else if (GoldenApple.modules.containsKey(args[0])) {
-				instance.locale.sendMessage(user, "header.module", false);
-				IModuleLoader module = GoldenApple.modules.get(args[0]);
+			} else if (GoldenApple.getInstance().getModuleManager().getModule(args[0]) != null) {
+				user.sendLocalizedMessage("header.module");
+				ModuleLoader module = GoldenApple.getInstance().getModuleManager().getModule(args[0]);
 				if (args.length == 1 || args[1].equalsIgnoreCase("-q") || args[1].equalsIgnoreCase("--query")) {
 					String status = "???";
 					if (module.canPolicyLoad()) {
 						switch (module.getCurrentState()) {
 							case BUSY:
-								status = instance.locale.getMessage(user, "general.module.query.busy");
+								status = GoldenApple.getInstance().getLocalizationManager().getMessage(user, "general.module.query.busy");
 								break;
 							case LOADED:
 								if (module.canPolicyUnload())
-									status = instance.locale.getMessage(user, "general.module.query.loaded");
+									status = GoldenApple.getInstance().getLocalizationManager().getMessage(user, "general.module.query.loaded");
 								else
-									status = instance.locale.getMessage(user, "general.module.query.loadedLocked");
+									status = GoldenApple.getInstance().getLocalizationManager().getMessage(user, "general.module.query.loadedLocked");
 								break;
 							case LOADING:
-								status = instance.locale.getMessage(user, "general.module.query.loading");
+								status = GoldenApple.getInstance().getLocalizationManager().getMessage(user, "general.module.query.loading");
 								break;
 							case UNLOADED_USER:
-								status = instance.locale.getMessage(user, "general.module.query.unloadedUser");
+								status = GoldenApple.getInstance().getLocalizationManager().getMessage(user, "general.module.query.unloadedUser");
 								break;
 							case UNLOADED_ERROR:
-								status = instance.locale.getMessage(user, "general.module.query.unloadedError");
+								status = GoldenApple.getInstance().getLocalizationManager().getMessage(user, "general.module.query.unloadedError");
 								break;
 							case UNLOADED_MISSING_DEPENDENCY:
-								status = instance.locale.getMessage(user, "general.module.query.unloadedDepend");
+								status = GoldenApple.getInstance().getLocalizationManager().getMessage(user, "general.module.query.unloadedDepend");
 								break;
 						}
 					} else {
-						status = instance.locale.getMessage(user, "general.module.query.unloadedLocked");
+						status = GoldenApple.getInstance().getLocalizationManager().getMessage(user, "general.module.query.unloadedLocked");
 					}
-					instance.locale.sendMessage(user, "general.module.query", true, module.getModuleName(), status);
+					user.sendLocalizedMultilineMessage("general.module.query", module.getModuleName(), status);
 				} else if (args[1].equalsIgnoreCase("-e") || args[1].equalsIgnoreCase("--enable")) {
 					if (!user.hasPermission(PermissionManager.moduleLoadPermission)) {
 						GoldenApple.logPermissionFail(user, commandLabel, args, true);
 					} else if (module.getCurrentState() == ModuleState.LOADED || module.getCurrentState() == ModuleState.LOADING) {
-						instance.locale.sendMessage(user, "error.module.load.alreadyLoaded", false, module.getModuleName());
+						user.sendLocalizedMessage("error.module.load.alreadyLoaded", module.getModuleName());
 					} else if (!module.canPolicyLoad()) {
-						instance.locale.sendMessage(user, "error.module.load.policy", false, module.getModuleName());
+						user.sendLocalizedMessage("error.module.load.policy", module.getModuleName());
 					} else {
-						ArrayDeque<IModuleLoader> depend = new ArrayDeque<IModuleLoader>();
-						ArrayList<IModuleLoader> oldDepend = new ArrayList<IModuleLoader>();
+						ArrayDeque<ModuleLoader> depend = new ArrayDeque<ModuleLoader>();
+						ArrayList<ModuleLoader> oldDepend = new ArrayList<ModuleLoader>();
 						oldDepend.add(module);
 						while (!oldDepend.isEmpty()) {
-							ArrayList<IModuleLoader> newDepend = new ArrayList<IModuleLoader>();
-							for (IModuleLoader m : oldDepend) {
+							ArrayList<ModuleLoader> newDepend = new ArrayList<ModuleLoader>();
+							for (ModuleLoader m : oldDepend) {
 								for (String d : m.getModuleDependencies()) {
-									if (!GoldenApple.modules.containsKey(d)) {
-										instance.locale.sendMessage(user, "error.module.load.dependFail", false, module.getModuleName(), d);
+									if (GoldenApple.getInstance().getModuleManager().getModule(d) == null) {
+										user.sendLocalizedMessage("error.module.load.dependFail", module.getModuleName(), d);
 										return true;
-									} else if (!GoldenApple.modules.get(d).canPolicyLoad()) {
-										instance.locale.sendMessage(user, "error.module.load.dependFail", false, module.getModuleName(), d);
+									} else if (!GoldenApple.getInstance().getModuleManager().getModule(d).canPolicyLoad()) {
+										user.sendLocalizedMessage("error.module.load.dependFail", module.getModuleName(), d);
 										return true;
-									} else if (GoldenApple.modules.get(d).getCurrentState() != ModuleState.LOADED) {
-										newDepend.add(GoldenApple.modules.get(d));
+									} else if (GoldenApple.getInstance().getModuleManager().getModule(d).getCurrentState() != ModuleState.LOADED) {
+										newDepend.add(GoldenApple.getInstance().getModuleManager().getModule(d));
 									}
 								}
 							}
@@ -116,27 +114,27 @@ public class ModuleCommand implements CommandExecutor {
 						}
 						if (!depend.isEmpty()) {
 							if (args.length != 2 && args[2].equalsIgnoreCase("-v")) {
-								for (IModuleLoader mLoad = depend.pollLast(); mLoad != null; mLoad = depend.pollLast()) {
+								for (ModuleLoader mLoad = depend.pollLast(); mLoad != null; mLoad = depend.pollLast()) {
 									try {
-										if (!instance.enableModule(mLoad, false)) {
-											instance.locale.sendMessage(user, "error.module.load.dependFail", false, module.getModuleName(), mLoad.getModuleName());
+										if (!GoldenApple.getInstance().getModuleManager().enableModule(mLoad.getModuleName(), false)) {
+											user.sendLocalizedMessage("error.module.load.dependFail", module.getModuleName(), mLoad.getModuleName());
 											return true;
 										} else {
-											instance.locale.sendMessage(user, "general.module.load.success", false, mLoad.getModuleName());
+											user.sendLocalizedMessage("general.module.load.success", mLoad.getModuleName());
 										}
 									} catch (Throwable t) {
-										instance.locale.sendMessage(user, "error.module.load.dependFail", false, module.getModuleName(), mLoad.getModuleName());
+										user.sendLocalizedMessage("error.module.load.dependFail", module.getModuleName(), mLoad.getModuleName());
 										return true;
 									}
 								}
 							} else {
-								instance.locale.sendMessage(user, "general.module.load.warnStart", false);
+								user.sendLocalizedMessage("general.module.load.warnStart");
 								String dependStr = depend.pollLast().getModuleName();
-								for (IModuleLoader mLoad = depend.pollLast(); mLoad != null; mLoad = depend.pollLast()) {
+								for (ModuleLoader mLoad = depend.pollLast(); mLoad != null; mLoad = depend.pollLast()) {
 									dependStr += ", " + mLoad.getModuleName();
 								}
 								user.getHandle().sendMessage(dependStr);
-								instance.locale.sendMessage(user, "general.module.load.warnEnd", false);
+								user.sendLocalizedMessage("general.module.load.warnEnd");
 								String cmd = commandLabel;
 								for (String arg : args)
 									cmd += " " + arg;
@@ -146,14 +144,14 @@ public class ModuleCommand implements CommandExecutor {
 							}
 						}
 						try {
-							if (!instance.enableModule(module, false)) {
-								instance.locale.sendMessage(user, "error.module.load.unknown", false, module.getModuleName());
+							if (!GoldenApple.getInstance().getModuleManager().enableModule(module.getModuleName(), false)) {
+								user.sendLocalizedMessage("error.module.load.unknown", module.getModuleName());
 								return true;
 							} else {
-								instance.locale.sendMessage(user, "general.module.load.success", false, module.getModuleName());
+								user.sendLocalizedMessage("general.module.load.success", module.getModuleName());
 							}
 						} catch (Throwable t) {
-							instance.locale.sendMessage(user, "error.module.load.unknown", false, module.getModuleName());
+							user.sendLocalizedMessage("error.module.load.unknown", module.getModuleName());
 							return true;
 						}
 					}
@@ -161,26 +159,26 @@ public class ModuleCommand implements CommandExecutor {
 					if (!user.hasPermission(PermissionManager.moduleUnloadPermission)) {
 						GoldenApple.logPermissionFail(user, commandLabel, args, true);
 					} else if (module.getCurrentState() != ModuleState.LOADED) {
-						instance.locale.sendMessage(user, "error.module.unload.notLoaded", false, module.getModuleName());
+						user.sendLocalizedMessage("error.module.unload.notLoaded", module.getModuleName());
 					} else if (!module.canPolicyUnload()) {
-						instance.locale.sendMessage(user, "error.module.unload.policy", false, module.getModuleName());
+						user.sendLocalizedMessage("error.module.unload.policy", module.getModuleName());
 					} else {
-						ArrayDeque<IModuleLoader> depend = new ArrayDeque<IModuleLoader>();
-						ArrayList<IModuleLoader> oldDepend = new ArrayList<IModuleLoader>();
+						ArrayDeque<ModuleLoader> depend = new ArrayDeque<ModuleLoader>();
+						ArrayList<ModuleLoader> oldDepend = new ArrayList<ModuleLoader>();
 						oldDepend.add(module);
 						while (!oldDepend.isEmpty()) {
-							ArrayList<IModuleLoader> newDepend = new ArrayList<IModuleLoader>();
-							for (Entry<String, IModuleLoader> m : GoldenApple.modules.entrySet()) {
-								if (m.getValue().getCurrentState() != ModuleState.LOADED) {
+							ArrayList<ModuleLoader> newDepend = new ArrayList<ModuleLoader>();
+							for (ModuleLoader m : GoldenApple.getInstance().getModuleManager().getModules()) {
+								if (m.getCurrentState() != ModuleState.LOADED) {
 									continue;
 								}
-								for (IModuleLoader dis : oldDepend) {
-									for (String d : m.getValue().getModuleDependencies()) {
+								for (ModuleLoader dis : oldDepend) {
+									for (String d : m.getModuleDependencies()) {
 										if (d.equals(dis.getModuleName())) {
-											newDepend.add(m.getValue());
-											depend.addFirst(m.getValue());
-											if (!m.getValue().canPolicyUnload()) {
-												instance.locale.sendMessage(user, "error.module.unload.dependFail", false, module.getModuleName(), m.getValue().getModuleName());
+											newDepend.add(m);
+											depend.addFirst(m);
+											if (!m.canPolicyUnload()) {
+												user.sendLocalizedMessage("error.module.unload.dependFail", module.getModuleName(), m.getModuleName());
 												return true;
 											}
 										}
@@ -192,27 +190,27 @@ public class ModuleCommand implements CommandExecutor {
 						}
 						if (!depend.isEmpty()) {
 							if (args.length != 2 && args[2].equalsIgnoreCase("-v")) {
-								for (IModuleLoader mUnload = depend.pollLast(); mUnload != null; mUnload = depend.pollLast()) {
+								for (ModuleLoader mUnload = depend.pollLast(); mUnload != null; mUnload = depend.pollLast()) {
 									try {
-										if (!instance.disableModule(mUnload, false)) {
-											instance.locale.sendMessage(user, "error.module.unload.dependFail", false, module.getModuleName(), mUnload.getModuleName());
+										if (!GoldenApple.getInstance().getModuleManager().disableModule(mUnload.getModuleName(), false)) {
+											user.sendLocalizedMessage("error.module.unload.dependFail", module.getModuleName(), mUnload.getModuleName());
 											return true;
 										} else {
-											instance.locale.sendMessage(user, "general.module.unload.success", false, mUnload.getModuleName());
+											user.sendLocalizedMessage("general.module.unload.success", mUnload.getModuleName());
 										}
 									} catch (Throwable t) {
-										instance.locale.sendMessage(user, "error.module.unload.dependFail", false, module.getModuleName(), mUnload.getModuleName());
+										user.sendLocalizedMessage("error.module.unload.dependFail", module.getModuleName(), mUnload.getModuleName());
 										return true;
 									}
 								}
 							} else {
-								instance.locale.sendMessage(user, "general.module.unload.warnStart", false);
+								user.sendLocalizedMessage("general.module.unload.warnStart");
 								String dependStr = depend.pollLast().getModuleName();
-								for (IModuleLoader mUnload = depend.pollLast(); mUnload != null; mUnload = depend.pollLast()) {
+								for (ModuleLoader mUnload = depend.pollLast(); mUnload != null; mUnload = depend.pollLast()) {
 									dependStr += ", " + mUnload.getModuleName();
 								}
 								user.getHandle().sendMessage(dependStr);
-								instance.locale.sendMessage(user, "general.module.unload.warnEnd", false);
+								user.sendLocalizedMessage("general.module.unload.warnEnd");
 								String cmd = commandLabel;
 								for (String arg : args)
 									cmd += " " + arg;
@@ -222,22 +220,22 @@ public class ModuleCommand implements CommandExecutor {
 							}
 						}
 						try {
-							if (!instance.disableModule(module, false)) {
-								instance.locale.sendMessage(user, "error.module.unload.unknown", false, module.getModuleName());
+							if (!GoldenApple.getInstance().getModuleManager().disableModule(module.getModuleName(), false)) {
+								user.sendLocalizedMessage("error.module.unload.unknown", module.getModuleName());
 								return true;
 							} else {
-								instance.locale.sendMessage(user, "general.module.unload.success", false, module.getModuleName());
+								user.sendLocalizedMessage("general.module.unload.success", module.getModuleName());
 							}
 						} catch (Throwable t) {
-							instance.locale.sendMessage(user, "error.module.unload.unknown", false, module.getModuleName());
+							user.sendLocalizedMessage("error.module.unload.unknown", module.getModuleName());
 							return true;
 						}
 					}
 				} else {
-					instance.locale.sendMessage(user, "shared.unknownOption", false, args[1]);
+					user.sendLocalizedMessage("shared.unknownOption", args[1]);
 				}
 			} else {
-				instance.locale.sendMessage(user, "error.module.notFound", false, args[0]);
+				user.sendLocalizedMessage("error.module.notFound", args[0]);
 			}
 		} else {
 			GoldenApple.logPermissionFail(user, commandLabel, args, true);

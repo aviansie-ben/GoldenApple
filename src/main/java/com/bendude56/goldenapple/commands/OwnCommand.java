@@ -6,11 +6,11 @@ import org.bukkit.command.CommandSender;
 
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
+import com.bendude56.goldenapple.permissions.PermissionManager;
 
 public class OwnCommand implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
-		GoldenApple instance = GoldenApple.getInstance();
 		User user = User.getUser(sender);
 		
 		if (!user.getHandle().isOp()) {
@@ -18,19 +18,19 @@ public class OwnCommand implements CommandExecutor {
 			return true;
 		}
 		
-		if (instance.mainConfig.getBoolean("securityPolicy.disableOwn")) {
-			instance.locale.sendMessage(user, "error.own.disabled", false);
+		if (GoldenApple.getInstanceMainConfig().getBoolean("securityPolicy.disableOwn")) {
+			user.sendLocalizedMessage("error.own.disabled");
 			GoldenApple.logPermissionFail(user, commandLabel, args, false);
 			return true;
 		}
 		
 		if (args.length == 0 || !args[0].equals("-v")) {
-			instance.locale.sendMessage(user, "general.own.warnBefore", false);
+			user.sendLocalizedMessage("general.own.warnBefore");
 			VerifyCommand.commands.put(user, "gaown -v");
 		} else {
-			user.addPermission(instance.permissions.rootStar);
-			instance.locale.sendMessage(user, "general.own.success", false);
-			instance.locale.sendMessage(user, "general.own.warnAfter", false);
+			user.addPermission(PermissionManager.getInstance().getRootStar());
+			user.sendLocalizedMessage("general.own.success");
+			user.sendLocalizedMessage("general.own.warnAfter");
 		}
 		
 		return true;

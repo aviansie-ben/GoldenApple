@@ -18,32 +18,9 @@ import com.bendude56.goldenapple.GoldenApple;
  * @author Deaboy
  * @author ben_dude56
  */
-public class PermissionManager {
+public class SimplePermissionManager extends PermissionManager {
 
-	// goldenapple
-	public static PermissionNode			goldenAppleNode;
-	public static Permission                importPermission;
-
-	// goldenapple.permissions
-	public static PermissionNode			permissionNode;
-
-	// goldenapple.permissions.user
-	public static PermissionNode			userNode;
-	public static Permission				userAddPermission;
-	public static Permission				userRemovePermission;
-	public static Permission				userEditPermission;
-
-	// goldenapple.permissions.group
-	public static PermissionNode			groupNode;
-	public static Permission				groupAddPermission;
-	public static Permission				groupRemovePermission;
-	public static Permission				groupEditPermission;
-
-	// goldenapple.module
-	public static PermissionNode			moduleNode;
-	public static Permission				moduleLoadPermission;
-	public static Permission				moduleUnloadPermission;
-	public static Permission				moduleQueryPermission;
+	
 
 	private int                             userCacheSize;
 	private HashMap<Long, PermissionUser>	userCache		= new HashMap<Long, PermissionUser>();
@@ -59,21 +36,21 @@ public class PermissionManager {
 	private PermissionNode					rootNode;
 	public Permission						rootStar;
 
-	public PermissionManager() {
+	public SimplePermissionManager() {
 		rootNode = new PermissionNode("", null);
 		nodes.add(rootNode);
 		rootStar = new Permission("*", rootNode);
 		permissions.add(rootStar);
 		
-		userCacheSize = Math.max(GoldenApple.getInstance().mainConfig.getInt("modules.permissions.userCacheSize", 20), 5);
-		groupCacheSize = Math.max(GoldenApple.getInstance().mainConfig.getInt("modules.permissions.groupCacheSize", 20), 5);
+		userCacheSize = Math.max(GoldenApple.getInstanceMainConfig().getInt("modules.permissions.userCacheSize", 20), 5);
+		groupCacheSize = Math.max(GoldenApple.getInstanceMainConfig().getInt("modules.permissions.groupCacheSize", 20), 5);
 
-		GoldenApple.getInstance().database.createOrUpdateTable("Users");
-		GoldenApple.getInstance().database.createOrUpdateTable("UserPermissions");
-		GoldenApple.getInstance().database.createOrUpdateTable("Groups");
-		GoldenApple.getInstance().database.createOrUpdateTable("GroupPermissions");
-		GoldenApple.getInstance().database.createOrUpdateTable("GroupGroupMembers");
-		GoldenApple.getInstance().database.createOrUpdateTable("GroupUserMembers");
+		GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("Users");
+		GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("UserPermissions");
+		GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("Groups");
+		GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("GroupPermissions");
+		GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("GroupGroupMembers");
+		GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("GroupUserMembers");
 
 		checkDefaultGroups();
 	}
@@ -89,15 +66,15 @@ public class PermissionManager {
 	}
 
 	private void checkDefaultGroups() {
-		if (!GoldenApple.getInstance().mainConfig.getString("modules.permissions.reqGroup").equals(""))
-			createGroup(GoldenApple.getInstance().mainConfig.getString("modules.permissions.reqGroup"));
-		for (String g : GoldenApple.getInstance().mainConfig.getStringList("modules.permissions.defaultGroups")) {
+		if (!GoldenApple.getInstanceMainConfig().getString("modules.permissions.reqGroup").equals(""))
+			createGroup(GoldenApple.getInstanceMainConfig().getString("modules.permissions.reqGroup"));
+		for (String g : GoldenApple.getInstanceMainConfig().getStringList("modules.permissions.defaultGroups")) {
 			createGroup(g);
 		}
-		for (String g : GoldenApple.getInstance().mainConfig.getStringList("modules.permissions.opGroups")) {
+		for (String g : GoldenApple.getInstanceMainConfig().getStringList("modules.permissions.opGroups")) {
 			createGroup(g);
 		}
-		for (String g : GoldenApple.getInstance().mainConfig.getStringList("modules.permissions.devGroups")) {
+		for (String g : GoldenApple.getInstanceMainConfig().getStringList("modules.permissions.devGroups")) {
 			createGroup(g);
 		}
 	}
@@ -171,14 +148,18 @@ public class PermissionManager {
 			return null;
 		}
 	}
+	
+	public Permission getRootStar() {
+		return rootStar;
+	}
 
 	/**
 	 * Gets a list of all users in the database that are currently in the user
 	 * cache.
 	 * <p>
 	 * <em><strong>Note:</strong> Does not return handles to users that are not currently in the
-	 * user cache. In order to find a specific user, use {@link PermissionManager#getUser(long id)}
-	 * or {@link PermissionManager#getUser(String name)}</em>
+	 * user cache. In order to find a specific user, use {@link SimplePermissionManager#getUser(long id)}
+	 * or {@link SimplePermissionManager#getUser(String name)}</em>
 	 */
 	public HashMap<Long, PermissionUser> getUserCache() {
 		return userCache;
@@ -189,8 +170,8 @@ public class PermissionManager {
 	 * cache.
 	 * <p>
 	 * <em><strong>Note:</strong> Does not return handles to groups that are not currently in the
-	 * group cache. In order to find a specific group, use {@link PermissionManager#getGroup(long id)}
-	 * or {@link PermissionManager#getGroup(String name)}</em>
+	 * group cache. In order to find a specific group, use {@link SimplePermissionManager#getGroup(long id)}
+	 * or {@link SimplePermissionManager#getGroup(String name)}</em>
 	 */
 	public HashMap<Long, PermissionGroup> getGroupCache() {
 		return groupCache;
@@ -199,7 +180,7 @@ public class PermissionManager {
 	/**
 	 * Gets a list of all currently registered permissions.
 	 */
-	public List<Permission> getPermissions() {
+	public List<Permission> getRegisteredPermissions() {
 		return permissions;
 	}
 
@@ -221,7 +202,7 @@ public class PermissionManager {
 	/**
 	 * Gets a list of all currently registered permission nodes
 	 */
-	public List<PermissionNode> getNodes() {
+	public List<PermissionNode> getRegisteredNodes() {
 		return nodes;
 	}
 
@@ -231,7 +212,7 @@ public class PermissionManager {
 	 * @param name The name of the permission node to get information on
 	 * @return Information about the requested permission node
 	 */
-	public PermissionNode getNode(String name) {
+	public PermissionNode getNodeByName(String name) {
 		String[] path = name.split(".");
 		PermissionNode node = rootNode;
 		pathSearch: for (int i = 0; i < path.length; i++) {
@@ -264,7 +245,7 @@ public class PermissionManager {
 	 */
 	public long getUserId(String name) {
 		try {
-			ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT ID FROM Users WHERE Name=?", new Object[] { name });
+			ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT ID FROM Users WHERE Name=?", new Object[] { name });
 			try {
 				if (r.next()) {
 					return r.getLong("ID");
@@ -272,7 +253,7 @@ public class PermissionManager {
 					return -1;
 				}
 			} finally {
-				GoldenApple.getInstance().database.closeResult(r);
+				GoldenApple.getInstanceDatabaseManager().closeResult(r);
 			}
 		} catch (SQLException e) {
 			GoldenApple.log(Level.WARNING, "Failed to retrieve ID for user '" + name + "':");
@@ -283,7 +264,7 @@ public class PermissionManager {
 
 	/**
 	 * Retrieves a user instance based off of their user ID. Without the use of
-	 * {@link PermissionManager#setSticky(long id, boolean sticky)}, the return
+	 * {@link SimplePermissionManager#setSticky(long id, boolean sticky)}, the return
 	 * value of this function should only be used for short-term use.
 	 * 
 	 * @param id The ID of the user instance that should be retrieved from the
@@ -296,7 +277,7 @@ public class PermissionManager {
 			return userCache.get(id);
 		} else {
 			try {
-				ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT * FROM Users WHERE ID=?", id);
+				ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT * FROM Users WHERE ID=?", id);
 				try {
 					if (r.next()) {
 						return new PermissionUser(r.getLong("ID"), r.getString("Name"), r.getString("Locale"), r.getBoolean("ComplexCommands"), r.getBoolean("AutoLock"));
@@ -304,7 +285,7 @@ public class PermissionManager {
 						return null;
 					}
 				} finally {
-					GoldenApple.getInstance().database.closeResult(r);
+					GoldenApple.getInstanceDatabaseManager().closeResult(r);
 				}
 			} catch (SQLException e) {
 				GoldenApple.log(Level.WARNING, "Failed to load user " + id + ":");
@@ -316,7 +297,7 @@ public class PermissionManager {
 
 	/**
 	 * Retrieves a user instance based off of their username. Without the use of
-	 * {@link PermissionManager#setSticky(long id, boolean sticky)}, the return
+	 * {@link SimplePermissionManager#setSticky(long id, boolean sticky)}, the return
 	 * value of this function should only be used for short-term use.
 	 * 
 	 * @param name The username of the user instance that should be retrieved
@@ -331,7 +312,7 @@ public class PermissionManager {
 			}
 		}
 		try {
-			ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT * FROM Users WHERE Name=?", name);
+			ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT * FROM Users WHERE Name=?", name);
 			try {
 				if (r.next()) {
 					PermissionUser u = new PermissionUser(r.getLong("ID"), r.getString("Name"), r.getString("Locale"), r.getBoolean("ComplexCommands"), r.getBoolean("AutoLock"));
@@ -343,7 +324,7 @@ public class PermissionManager {
 					return null;
 				}
 			} finally {
-				GoldenApple.getInstance().database.closeResult(r);
+				GoldenApple.getInstanceDatabaseManager().closeResult(r);
 			}
 		} catch (SQLException e) {
 			GoldenApple.log(Level.WARNING, "Failed to load user '" + name + "':");
@@ -381,7 +362,7 @@ public class PermissionManager {
 
 	/**
 	 * Checks whether or not a user with a given ID is currently marked as
-	 * sticky. (See {@link PermissionManager#setUserSticky(long id, boolean sticky)}
+	 * sticky. (See {@link SimplePermissionManager#setUserSticky(long id, boolean sticky)}
 	 * for info on stickyness)
 	 * 
 	 * @param id The ID of the user to check
@@ -403,7 +384,7 @@ public class PermissionManager {
 			return groupCache.get(id);
 		} else {
 			try {
-				ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT * FROM Groups WHERE ID=?", id);
+				ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT * FROM Groups WHERE ID=?", id);
 				try {
 					if (r.next()) {
 						return new PermissionGroup(r);
@@ -411,7 +392,7 @@ public class PermissionManager {
 						return null;
 					}
 				} finally {
-					GoldenApple.getInstance().database.closeResult(r);
+					GoldenApple.getInstanceDatabaseManager().closeResult(r);
 				}
 			} catch (SQLException e) {
 				GoldenApple.log(Level.WARNING, "Failed to load group " + id + ":");
@@ -436,7 +417,7 @@ public class PermissionManager {
 			}
 		}
 		try {
-			ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT * FROM Groups WHERE Name=?", name);
+			ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT * FROM Groups WHERE Name=?", name);
 			try {
 				if (r.next()) {
 					PermissionGroup g = new PermissionGroup(r);
@@ -448,7 +429,7 @@ public class PermissionManager {
 					return null;
 				}
 			} finally {
-				GoldenApple.getInstance().database.closeResult(r);
+				GoldenApple.getInstanceDatabaseManager().closeResult(r);
 			}
 		} catch (SQLException e) {
 			GoldenApple.log(Level.WARNING, "Failed to load group '" + name + "':");
@@ -463,11 +444,11 @@ public class PermissionManager {
 	 * @param name The name to check the database against
 	 */
 	public boolean userExists(String name) throws SQLException {
-		ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT NULL FROM Users WHERE Name=?", new Object[] { name });
+		ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT NULL FROM Users WHERE Name=?", new Object[] { name });
 		try {
 			return r.next();
 		} finally {
-			GoldenApple.getInstance().database.closeResult(r);
+			GoldenApple.getInstanceDatabaseManager().closeResult(r);
 		}
 	}
 
@@ -487,9 +468,9 @@ public class PermissionManager {
 				return getUser(name);
 		} catch (SQLException e) { }
 		try {
-			GoldenApple.getInstance().database.execute("INSERT INTO Users (Name, ComplexCommands, AutoLock) VALUES (?, ?, ?)", name,
-					GoldenApple.getInstance().mainConfig.getBoolean("modules.permissions.defaultComplexCommands", true),
-					GoldenApple.getInstance().mainConfig.getBoolean("modules.lock.autoLockDefault", true));
+			GoldenApple.getInstanceDatabaseManager().execute("INSERT INTO Users (Name, ComplexCommands, AutoLock) VALUES (?, ?, ?)", name,
+					GoldenApple.getInstanceMainConfig().getBoolean("modules.permissions.defaultComplexCommands", true),
+					GoldenApple.getInstanceMainConfig().getBoolean("modules.lock.autoLockDefault", true));
 			return getUser(name);
 		} catch (SQLException e) {
 			GoldenApple.log(Level.WARNING, "Failed to create user '" + name + "':");
@@ -504,11 +485,11 @@ public class PermissionManager {
 	 * @param name The name to check the database against
 	 */
 	public boolean groupExists(String name) throws SQLException {
-		ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT NULL FROM Groups WHERE Name=?", new Object[] { name });
+		ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT NULL FROM Groups WHERE Name=?", new Object[] { name });
 		try {
 			return r.next();
 		} finally {
-			GoldenApple.getInstance().database.closeResult(r);
+			GoldenApple.getInstanceDatabaseManager().closeResult(r);
 		}
 	}
 
@@ -527,7 +508,7 @@ public class PermissionManager {
 				return getGroup(name);
 		} catch (SQLException e) { }
 		try {
-			GoldenApple.getInstance().database.execute("INSERT INTO Groups (Name) VALUES (?)", name);
+			GoldenApple.getInstanceDatabaseManager().execute("INSERT INTO Groups (Name) VALUES (?)", name);
 			return getGroup(name);
 		} catch (SQLException e) {
 			GoldenApple.log(Level.WARNING, "Failed to create group '" + name + "':");
@@ -553,7 +534,7 @@ public class PermissionManager {
 		if (userCacheOut.contains(id))
 			userCacheOut.remove(id);
 		
-		GoldenApple.getInstance().database.execute("DELETE FROM Users WHERE ID=?", id);
+		GoldenApple.getInstanceDatabaseManager().execute("DELETE FROM Users WHERE ID=?", id);
 	}
 
 	/**
@@ -569,7 +550,7 @@ public class PermissionManager {
 		if (groupCache.containsKey(id))
 			groupCache.remove(id);
 		
-		GoldenApple.getInstance().database.execute("DELETE FROM Groups WHERE ID=?", id);
+		GoldenApple.getInstanceDatabaseManager().execute("DELETE FROM Groups WHERE ID=?", id);
 	}
 
 	/**
@@ -581,109 +562,5 @@ public class PermissionManager {
 		permissions = null;
 		nodes = null;
 		rootNode = null;
-	}
-
-	/**
-	 * Represents a specific permission in the GoldenApple permissions system
-	 * 
-	 * @author Deaboy
-	 */
-	public class Permission {
-		private String			name;
-		private PermissionNode	node;
-
-		private Permission(String name, PermissionNode node) {
-			this.name = name;
-			this.node = node;
-		}
-
-		/**
-		 * Gets the full name (including node name) of the permission
-		 * represented by this object
-		 */
-		public String getFullName() {
-			if (node == GoldenApple.getInstance().permissions.rootNode)
-				return name;
-			else
-				return node.getFullName() + "." + name;
-		}
-
-		/**
-		 * Gets the short name (excluding node name) of the permission
-		 * represented by this object
-		 */
-		public String getName() {
-			return name;
-		}
-
-		/**
-		 * Gets the parent node of this permission
-		 */
-		public PermissionNode getNode() {
-			return node;
-		}
-	}
-
-	/**
-	 * Represents a specific permission node in the GoldenApple permissions
-	 * system
-	 * 
-	 * @author Deaboy
-	 */
-	public class PermissionNode {
-		private String			name;
-		private PermissionNode	node;
-
-		private PermissionNode(String name) {
-			this.name = name;
-			this.node = this;
-		}
-
-		private PermissionNode(String name, PermissionNode parentNode) {
-			this.name = name;
-			this.node = parentNode;
-		}
-
-		/**
-		 * Gets the full name (including parent node) of the node represented by
-		 * this object
-		 */
-		public String getFullName() {
-			String path = name;
-			PermissionNode currentNode = node;
-			while (currentNode != GoldenApple.getInstance().permissions.rootNode) {
-				path = currentNode.getName() + "." + path;
-				currentNode = currentNode.getNode();
-			}
-			return path;
-		}
-
-		/**
-		 * Gets the short name (excluding parent node) of the node represented
-		 * by this object
-		 */
-		public String getName() {
-			return name;
-		}
-
-		/**
-		 * Gets the parent node above this node (Returns this node if root node)
-		 */
-		public PermissionNode getNode() {
-			return node;
-		}
-
-		/**
-		 * Gets a list of all permissions that are directly under this node
-		 * (does not search child nodes)
-		 */
-		public List<Permission> getPermissions() {
-			List<Permission> currentPermissions = new ArrayList<Permission>();
-			for (Permission p : permissions) {
-				if (p.node == this)
-					currentPermissions.add(p);
-			}
-			return currentPermissions;
-		}
 	}
 }

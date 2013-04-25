@@ -2,12 +2,12 @@ package com.bendude56.goldenapple.chat;
 
 import com.bendude56.goldenapple.CommandManager;
 import com.bendude56.goldenapple.GoldenApple;
-import com.bendude56.goldenapple.IModuleLoader;
+import com.bendude56.goldenapple.ModuleLoader;
 import com.bendude56.goldenapple.ModuleLoadException;
 import com.bendude56.goldenapple.listener.ChatListener;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 
-public class ChatModuleLoader implements IModuleLoader {
+public class ChatModuleLoader implements ModuleLoader {
 
 	private static ModuleState	state	= ModuleState.UNLOADED_USER;
 
@@ -15,23 +15,23 @@ public class ChatModuleLoader implements IModuleLoader {
 	public void loadModule(GoldenApple instance) throws ModuleLoadException {
 		state = ModuleState.LOADING;
 		try {
-			registerPermissions(instance.permissions);
+			registerPermissions(PermissionManager.getInstance());
 			
-			ChatCensor.loadCensors();
+			SimpleChatCensor.loadCensors();
 			
-			instance.chat = new ChatManager();
+			ChatManager.instance = new SimpleChatManager();
 			registerEvents();
-			registerCommands(instance.commands);
+			registerCommands(instance.getCommandManager());
 			
 			state = ModuleState.LOADED;
 		} catch (Throwable e) {
 			state = ModuleState.UNLOADED_ERROR;
 
-			instance.chat = null;
+			ChatManager.instance = null;
 			unregisterEvents();
-			unregisterCommands(instance.commands);
+			unregisterCommands(instance.getCommandManager());
 			
-			ChatCensor.unloadCensors();
+			SimpleChatCensor.unloadCensors();
 			
 			throw new ModuleLoadException("Chat", e);
 		}
@@ -70,10 +70,10 @@ public class ChatModuleLoader implements IModuleLoader {
 	@Override
 	public void unloadModule(GoldenApple instance) {
 		unregisterEvents();
-		unregisterCommands(instance.commands);
-		instance.chat = null;
+		unregisterCommands(instance.getCommandManager());
+		ChatManager.instance = null;
 		
-		ChatCensor.unloadCensors();
+		SimpleChatCensor.unloadCensors();
 
 		state = ModuleState.UNLOADED_USER;
 	}
@@ -100,17 +100,17 @@ public class ChatModuleLoader implements IModuleLoader {
 
 	@Override
 	public boolean canLoadAuto() {
-		return GoldenApple.getInstance().mainConfig.getBoolean("modules.chat.enabled", true);
+		return GoldenApple.getInstanceMainConfig().getBoolean("modules.chat.enabled", true);
 	}
 
 	@Override
 	public boolean canPolicyLoad() {
-		return !GoldenApple.getInstance().mainConfig.getBoolean("securityPolicy.blockModules.chat", false);
+		return !GoldenApple.getInstanceMainConfig().getBoolean("securityPolicy.blockModules.chat", false);
 	}
 	
 	@Override
 	public boolean canPolicyUnload() {
-		return !GoldenApple.getInstance().mainConfig.getBoolean("securityPolicy.blockManualUnload.chat", false);
+		return !GoldenApple.getInstanceMainConfig().getBoolean("securityPolicy.blockManualUnload.chat", false);
 	}
 
 }

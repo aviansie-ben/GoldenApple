@@ -9,7 +9,7 @@ public interface IPermissionObject {
 	 * Gets the ID associated with this instance.
 	 * <em>Where applicable, this value should be stored in place of the name.</em>
 	 */
-	long getId();
+	public long getId();
 
 	/**
 	 * Gets a list of permissions that have been granted to this permission
@@ -24,7 +24,7 @@ public interface IPermissionObject {
 	 *            If false, only permissions specifically given to this user
 	 *            will be returned.
 	 */
-	List<Permission> getPermissions(boolean inherited);
+	public List<Permission> getPermissions(boolean inherited);
 
 	/**
 	 * Checks whether this permission object has a given permission.
@@ -32,7 +32,7 @@ public interface IPermissionObject {
 	 * @param permission The permission to check for.
 	 * @return True if the user has the specified permission, false otherwise.
 	 */
-	boolean hasPermission(String permission);
+	public boolean hasPermission(String permission);
 
 	/**
 	 * Checks whether this permission object has a given permission.
@@ -41,21 +41,7 @@ public interface IPermissionObject {
 	 * @return True if the permission object has the specified permission, false
 	 *         otherwise.
 	 */
-	boolean hasPermission(Permission permission);
-
-	/**
-	 * Checks whether this permission object has a given permission.
-	 * 
-	 * @param permission The permission to check for.
-	 * @param specific Determines whether or not indirect permissions should be
-	 *            considered. If true, only permissions given specifically to
-	 *            this permission object will be checked. If false, all
-	 *            permissions (including indirect permissions) will be
-	 *            considered.
-	 * @return True if the permission object has the specified permission, false
-	 *         otherwise.
-	 */
-	boolean hasPermission(String permission, boolean specific);
+	public boolean hasPermission(Permission permission);
 
 	/**
 	 * Checks whether this permission object has a given permission.
@@ -69,7 +55,21 @@ public interface IPermissionObject {
 	 * @return True if the permission object has the specified permission, false
 	 *         otherwise.
 	 */
-	boolean hasPermission(Permission permission, boolean specific);
+	public boolean hasPermission(String permission, boolean specific);
+
+	/**
+	 * Checks whether this permission object has a given permission.
+	 * 
+	 * @param permission The permission to check for.
+	 * @param specific Determines whether or not indirect permissions should be
+	 *            considered. If true, only permissions given specifically to
+	 *            this permission object will be checked. If false, all
+	 *            permissions (including indirect permissions) will be
+	 *            considered.
+	 * @return True if the permission object has the specified permission, false
+	 *         otherwise.
+	 */
+	public boolean hasPermission(Permission permission, boolean specific);
 	
 	/**
 	 * Checks whether this permission object has been specifically granted a
@@ -79,7 +79,7 @@ public interface IPermissionObject {
 	 * @return True if the permission object has the specified permission
 	 *         specifically, false otherwise.
 	 */
-	boolean hasPermissionSpecific(Permission permission);
+	public boolean hasPermissionSpecific(Permission permission);
 
 	/**
 	 * Grants this permission object a given permission and saves the object's
@@ -88,7 +88,7 @@ public interface IPermissionObject {
 	 * 
 	 * @param permission The permission that the object should be granted
 	 */
-	void addPermission(Permission permission);
+	public void addPermission(Permission permission);
 
 	/**
 	 * Grants this permission object a given permission and saves the object's
@@ -97,7 +97,7 @@ public interface IPermissionObject {
 	 * 
 	 * @param permission The permission that the object should be granted
 	 */
-	void addPermission(String permission);
+	public void addPermission(String permission);
 
 	/**
 	 * Revokes a given permission from this permission object and save's the
@@ -106,7 +106,7 @@ public interface IPermissionObject {
 	 * 
 	 * @param permission The permission that should be revoked from this object
 	 */
-	void removePermission(Permission permission);
+	public void removePermission(Permission permission);
 
 	/**
 	 * Revokes a given permission from this permission object and save's the
@@ -115,7 +115,7 @@ public interface IPermissionObject {
 	 * 
 	 * @param permission The permission that should be revoked from this object
 	 */
-	void removePermission(String permission);
+	public void removePermission(String permission);
 	
 	/**
 	 * Gets a list of the IDs for all parent groups that contain this object.
@@ -124,6 +124,6 @@ public interface IPermissionObject {
 	 *                   groups of this object are included as well.
 	 * @return A list of the IDs of all parent groups
 	 */
-	List<Long> getParentGroups(boolean directOnly);
+	public List<Long> getParentGroups(boolean directOnly);
 
 }

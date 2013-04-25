@@ -1,13 +1,13 @@
 package com.bendude56.goldenapple.antigrief;
 
 import com.bendude56.goldenapple.GoldenApple;
-import com.bendude56.goldenapple.IModuleLoader;
+import com.bendude56.goldenapple.ModuleLoader;
 import com.bendude56.goldenapple.listener.AntigriefListener;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
 import com.bendude56.goldenapple.permissions.PermissionManager.PermissionNode;
 
-public class AntigriefModuleLoader implements IModuleLoader {
+public class AntigriefModuleLoader implements ModuleLoader {
 	
 	public static PermissionNode antigriefNode;
 	public static Permission tntPermission;
@@ -18,7 +18,7 @@ public class AntigriefModuleLoader implements IModuleLoader {
 	public void loadModule(GoldenApple instance) {
 		state = ModuleState.LOADING;
 		try {
-			registerPermissions(instance.permissions);
+			registerPermissions(PermissionManager.getInstance());
 			registerEvents();
 			registerCommands();
 		} catch (Throwable e) {
@@ -69,17 +69,17 @@ public class AntigriefModuleLoader implements IModuleLoader {
 
 	@Override
 	public boolean canLoadAuto() {
-		return GoldenApple.getInstance().mainConfig.getBoolean("modules.antigrief.enabled", true);
+		return GoldenApple.getInstanceMainConfig().getBoolean("modules.antigrief.enabled", true);
 	}
 
 	@Override
 	public boolean canPolicyLoad() {
-		return !GoldenApple.getInstance().mainConfig.getBoolean("securityPolicy.blockModules.antigrief", false);
+		return !GoldenApple.getInstanceMainConfig().getBoolean("securityPolicy.blockModules.antigrief", false);
 	}
 	
 	@Override
 	public boolean canPolicyUnload() {
-		return !GoldenApple.getInstance().mainConfig.getBoolean("securityPolicy.blockManualUnload.antigrief", false);
+		return !GoldenApple.getInstanceMainConfig().getBoolean("securityPolicy.blockManualUnload.antigrief", false);
 	}
 
 }

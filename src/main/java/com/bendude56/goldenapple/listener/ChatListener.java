@@ -15,6 +15,7 @@ import org.bukkit.plugin.RegisteredListener;
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.chat.ChatChannel;
+import com.bendude56.goldenapple.chat.ChatManager;
 
 public class ChatListener implements Listener, EventExecutor {
 	private static ChatListener listener = null;
@@ -58,9 +59,9 @@ public class ChatListener implements Listener, EventExecutor {
 	
 	private void asyncPlayerChat(AsyncPlayerChatEvent event) {
 		User u = User.getUser(event.getPlayer());
-		ChatChannel channel = GoldenApple.getInstance().chat.getActiveChannel(u);
+		ChatChannel channel = ChatManager.getInstance().getActiveChannel(u);
 		if (channel == null) {
-			GoldenApple.getInstance().locale.sendMessage(u, "error.channel.notInChannel", false);
+			u.sendLocalizedMessage("error.channel.notInChannel");
 		} else {
 			synchronized (channel) {
 				channel.sendMessage(u, event.getMessage());
@@ -72,10 +73,10 @@ public class ChatListener implements Listener, EventExecutor {
 	private void playerJoin(PlayerJoinEvent event) {
 		User user = User.getUser(event.getPlayer());
 		
-		GoldenApple.getInstance().chat.tryJoinChannel(user, GoldenApple.getInstance().chat.getDefaultChannel(), false);
+		ChatManager.getInstance().tryJoinChannel(user, ChatManager.getInstance().getDefaultChannel(), false);
 	}
 	
 	private void playerQuit(PlayerQuitEvent event) {
-		GoldenApple.getInstance().chat.leaveChannel(User.getUser(event.getPlayer()), false);
+		ChatManager.getInstance().leaveChannel(User.getUser(event.getPlayer()), false);
 	}
 }

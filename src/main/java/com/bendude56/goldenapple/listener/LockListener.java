@@ -18,8 +18,10 @@ import org.bukkit.plugin.RegisteredListener;
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.lock.LockManager;
+import com.bendude56.goldenapple.lock.SimpleLockManager;
 import com.bendude56.goldenapple.lock.LockedBlock;
 import com.bendude56.goldenapple.lock.LockedBlock.LockLevel;
+import com.bendude56.goldenapple.permissions.PermissionManager;
 
 public class LockListener implements Listener, EventExecutor {
 
@@ -64,37 +66,37 @@ public class LockListener implements Listener, EventExecutor {
 	}
 
 	private void playerInteract(PlayerInteractEvent event) {
-		LockedBlock lock = GoldenApple.getInstance().locks.getLock(event.getClickedBlock().getLocation());
+		LockedBlock lock = LockManager.getInstance().getLock(event.getClickedBlock().getLocation());
 		User u = User.getUser(event.getPlayer());
 		if (lock == null)
 			return;
 
 		if (!lock.canUse(u)) {
-			GoldenApple.getInstance().locale.sendMessage(u, "error.lock.noUse", false, GoldenApple.getInstance().permissions.getUser(lock.getOwner()).getName());
+			u.sendLocalizedMessage("error.lock.noUse", PermissionManager.getInstance().getUser(lock.getOwner()).getName());
 			event.setCancelled(true);
 			return;
 		}
 	}
 
 	private void blockBreak(BlockBreakEvent event) {
-		LockedBlock lock = GoldenApple.getInstance().locks.getLock(event.getBlock().getLocation());
+		LockedBlock lock = LockManager.getInstance().getLock(event.getBlock().getLocation());
 		User u = User.getUser(event.getPlayer());
 		if (lock == null)
 			return;
 
 		if (!lock.canModifyBlock(u)) {
-			GoldenApple.getInstance().locale.sendMessage(u, "error.lock.noEdit", false);
+			u.sendLocalizedMessage("error.lock.noEdit");
 			event.setCancelled(true);
 			return;
 		} else {
 			if (event.getBlock().getType() == Material.CHEST && chestDeleteCheck(lock, event.getBlock().getLocation()))
 				return;
 			try {
-				GoldenApple.getInstance().locks.deleteLock(lock.getLockId());
-				GoldenApple.getInstance().locale.sendMessage(u, "general.lock.delete.success", false);
+				LockManager.getInstance().deleteLock(lock.getLockId());
+				u.sendLocalizedMessage("general.lock.delete.success");
 			} catch (SQLException e) {
 				event.setCancelled(true);
-				GoldenApple.getInstance().locale.sendMessage(u, "error.lock.delete.ioError", false);
+				u.sendLocalizedMessage("error.lock.delete.ioError");
 			}
 		}
 	}
@@ -144,7 +146,7 @@ public class LockListener implements Listener, EventExecutor {
 	}
 
 	private boolean adjustChestLock(GoldenApple instance, Location l) throws SQLException {
-		LockedBlock lock = instance.locks.getLockSpecific(l);
+		LockedBlock lock = LockManager.getInstance().getLockSpecific(l);
 
 		if (lock != null) {
 			LockedBlock.correctLocation(l);
@@ -156,13 +158,12 @@ public class LockListener implements Listener, EventExecutor {
 	}
 
 	private void autoLock(BlockPlaceEvent event) {
-		GoldenApple instance = GoldenApple.getInstance();
 		User user = User.getUser(event.getPlayer());
 
-		if (user.isAutoLockEnabled() && user.hasPermission(LockManager.addPermission) && instance.mainConfig.getIntegerList("modules.lock.autoLockBlocks").contains(event.getBlock().getTypeId()) && instance.locks.getLock(event.getBlock().getLocation()) == null) {
+		if (user.isAutoLockEnabled() && user.hasPermission(SimpleLockManager.addPermission) && GoldenApple.getInstanceMainConfig().getIntegerList("modules.lock.autoLockBlocks").contains(event.getBlock().getTypeId()) && LockManager.getInstance().getLock(event.getBlock().getLocation()) == null) {
 			try {
-				instance.locks.createLock(event.getBlock().getLocation(), LockLevel.PRIVATE, user);
-				instance.locale.sendMessage(user, "general.lock.auto", false);
+				LockManager.getInstance().createLock(event.getBlock().getLocation(), LockLevel.PRIVATE, user);
+				user.sendLocalizedMessage("general.lock.auto");
 			} catch (Exception e) {
 			}
 		}

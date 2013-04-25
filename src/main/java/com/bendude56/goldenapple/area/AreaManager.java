@@ -7,8 +7,8 @@ import java.util.List;
 import org.bukkit.Location;
 
 import com.bendude56.goldenapple.permissions.IPermissionUser;
-import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
-import com.bendude56.goldenapple.permissions.PermissionManager.PermissionNode;
+import com.bendude56.goldenapple.permissions.SimplePermissionManager.Permission;
+import com.bendude56.goldenapple.permissions.SimplePermissionManager.PermissionNode;
 
 /**
  * This class manages ALL GoldenApple areas.

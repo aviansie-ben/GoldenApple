@@ -27,7 +27,7 @@ import org.sqlite.JDBC;
  * 
  * @author ben_dude56
  */
-public final class Database {
+public final class SimpleDatabaseManager implements DatabaseManager {
 	public static int DB_VERSION = 2;
 	
 	private Connection	connection;
@@ -35,20 +35,20 @@ public final class Database {
 	
 	private HashMap<ResultSet, PreparedStatement> toClose = new HashMap<ResultSet, PreparedStatement>();
 
-	protected Database() {
-		if (GoldenApple.getInstance().mainConfig.getBoolean("database.useMySQL", false)) {
+	protected SimpleDatabaseManager() {
+		if (GoldenApple.getInstanceMainConfig().getBoolean("database.useMySQL", false)) {
 			mySql = true;
 			try {
 				Class.forName("com.mysql.jdbc.Driver");
-				Connection c = DriverManager.getConnection("jdbc:mysql://" + GoldenApple.getInstance().mainConfig.getString("database.host", "localhost") + "/mysql?allowMultiQueries=true", GoldenApple.getInstance().mainConfig.getString("database.user", ""), GoldenApple.getInstance().mainConfig.getString("database.password", ""));
+				Connection c = DriverManager.getConnection("jdbc:mysql://" + GoldenApple.getInstanceMainConfig().getString("database.host", "localhost") + "/mysql?allowMultiQueries=true", GoldenApple.getInstanceMainConfig().getString("database.user", ""), GoldenApple.getInstanceMainConfig().getString("database.password", ""));
 				if (!c.isValid(1000)) {
 					GoldenApple.log(Level.SEVERE, "Failed to connect to MySQL database!");
 					return;
 				}
 				connection = c;
-				execute("CREATE DATABASE IF NOT EXISTS " + GoldenApple.getInstance().mainConfig.getString("database.database", "ga"));
-				execute("USE " + GoldenApple.getInstance().mainConfig.getString("database.database", "ga"));
-				GoldenApple.log("Successfully connected to MySQL database at \'" + GoldenApple.getInstance().mainConfig.getString("database.host") + "\'");
+				execute("CREATE DATABASE IF NOT EXISTS " + GoldenApple.getInstanceMainConfig().getString("database.database", "ga"));
+				execute("USE " + GoldenApple.getInstanceMainConfig().getString("database.database", "ga"));
+				GoldenApple.log("Successfully connected to MySQL database at \'" + GoldenApple.getInstanceMainConfig().getString("database.host") + "\'");
 			} catch (Exception e) {
 				GoldenApple.log(Level.SEVERE, "Failed to connect to MySQL database!");
 				GoldenApple.log(e);
@@ -60,8 +60,8 @@ public final class Database {
 				GoldenApple.log(Level.WARNING, "SQLite support has not yet been fully added. It is recommended that you use MySQL.");
 				Driver d = new JDBC();
 				GoldenApple.log("Loading database using SQLite v" + d.getMajorVersion() + "." + d.getMinorVersion());
-				connection = d.connect("jdbc:sqlite:" + GoldenApple.getInstance().mainConfig.getString("database.path"), new Properties());
-				GoldenApple.log("Successfully connected to SQLite database at \'" + GoldenApple.getInstance().mainConfig.getString("database.path") + "\'");
+				connection = d.connect("jdbc:sqlite:" + GoldenApple.getInstanceMainConfig().getString("database.path"), new Properties());
+				GoldenApple.log("Successfully connected to SQLite database at \'" + GoldenApple.getInstanceMainConfig().getString("database.path") + "\'");
 			} catch (Exception e) {
 				GoldenApple.log(Level.SEVERE, "Failed to connect to SQLite database!");
 				GoldenApple.log(e);
@@ -77,7 +77,7 @@ public final class Database {
 	/**
 	 * Executes an SQL command on the database. This should <strong>not</strong>
 	 * be used to execute a command with user data, because their data will not
-	 * be sanitized. {@link Database#execute(String command, Object[] parameters)}
+	 * be sanitized. {@link SimpleDatabaseManager#execute(String command, Object[] parameters)}
 	 * should be used instead when user-entered data will be used in the
 	 * command.
 	 * 
@@ -110,7 +110,7 @@ public final class Database {
 	 * Executes an SQL query on the database and returns the result. This should
 	 * <strong>not</strong> be used to execute a command with user data, because
 	 * their data will not be sanitized.
-	 * {@link Database#executeQuery(String command, Object[] parameters)} should
+	 * {@link SimpleDatabaseManager#executeQuery(String command, Object[] parameters)} should
 	 * be used instead when user-entered data will be used in the command.
 	 * 
 	 * @param command The command to execute
@@ -216,12 +216,12 @@ public final class Database {
 		int expectedDbVersion = DB_VERSION;
 		try {
 			tableName = tableName.toLowerCase();
-			int actualDbVersion = GoldenApple.getInstance().databaseVersion.getInt("tableVersions." + tableName, 0);
+			int actualDbVersion = GoldenApple.getInstance().getDatabaseVersionConfig().getInt("tableVersions." + tableName, 0);
 			
 			if (actualDbVersion == 0) {
 				executeFromResource(tableName + "_create");
-				GoldenApple.getInstance().databaseVersion.set("tableVersions." + tableName, expectedDbVersion);
-				((YamlConfiguration)GoldenApple.getInstance().databaseVersion).save(new File(GoldenApple.getInstance().getDataFolder() + "/dbversion.yml"));
+				GoldenApple.getInstance().getDatabaseVersionConfig().set("tableVersions." + tableName, expectedDbVersion);
+				((YamlConfiguration)GoldenApple.getInstance().getDatabaseVersionConfig()).save(new File(GoldenApple.getInstance().getDataFolder() + "/dbversion.yml"));
 				GoldenApple.log("Table " + tableName + " has been created at database version " + expectedDbVersion + "...");
 			} else if (actualDbVersion < expectedDbVersion) {
 				boolean executed = false;
@@ -231,8 +231,8 @@ public final class Database {
 						executed = true;
 					}
 				}
-				GoldenApple.getInstance().databaseVersion.set("tableVersions." + tableName, expectedDbVersion);
-				((YamlConfiguration)GoldenApple.getInstance().databaseVersion).save(new File(GoldenApple.getInstance().getDataFolder() + "/dbversion.yml"));
+				GoldenApple.getInstance().getDatabaseVersionConfig().set("tableVersions." + tableName, expectedDbVersion);
+				((YamlConfiguration)GoldenApple.getInstance().getDatabaseVersionConfig()).save(new File(GoldenApple.getInstance().getDataFolder() + "/dbversion.yml"));
 				if (executed)
 					GoldenApple.log("Table " + tableName + " has been updated from version " + actualDbVersion + " to version " + expectedDbVersion + "...");
 			} else if (actualDbVersion > expectedDbVersion) {

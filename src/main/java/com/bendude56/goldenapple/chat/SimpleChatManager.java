@@ -15,43 +15,30 @@ import org.bukkit.entity.Player;
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.chat.ChatChannel.ChatChannelUserLevel;
-import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
-import com.bendude56.goldenapple.permissions.PermissionManager.PermissionNode;
 
-public class ChatManager {
-
-	// goldenapple.chat
-	public static PermissionNode			chatNode;
-	public static Permission				tellPermission;
-
-	// goldenapple.chat.channel
-	public static PermissionNode			channelsNode;
-	public static Permission				channelAddPermission;
-	public static Permission				channelModPermission;
-	public static Permission				channelAdminPermission;
-
+public class SimpleChatManager extends ChatManager {
 	private HashMap<String, ChatChannel>	activeChannels	= new HashMap<String, ChatChannel>();
 	protected HashMap<User, String>			userChannels	= new HashMap<User, String>();
 
 	private ChatChannel						defaultChannel;
 	
-	public ChatManager() {
+	public SimpleChatManager() {
 		activeChannels = new HashMap<String, ChatChannel>();
 		userChannels = new HashMap<User, String>();
 		
-		GoldenApple.getInstance().database.createOrUpdateTable("channels");
-		GoldenApple.getInstance().database.createOrUpdateTable("channelusers");
-		GoldenApple.getInstance().database.createOrUpdateTable("channelgroups");
+		GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("channels");
+		GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("channelusers");
+		GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("channelgroups");
 		
 		try {
-			ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT * FROM Channels");
+			ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT * FROM Channels");
 			try {
 				while (r.next()) {
 					ChatChannel c = new DatabaseChatChannel(r);
 					activeChannels.put(c.getName(), c);
 				}
 			} finally {
-				GoldenApple.getInstance().database.closeResult(r);
+				GoldenApple.getInstanceDatabaseManager().closeResult(r);
 			}
 		} catch (SQLException e) {
 			GoldenApple.log(Level.SEVERE, "Failed to load channels:");
@@ -59,10 +46,10 @@ public class ChatManager {
 			throw new RuntimeException(e);
 		}
 		
-		if (!channelExists(GoldenApple.getInstance().mainConfig.getString("modules.chat.defaultChatChannel", "default"))) {
-			defaultChannel = createChannel(GoldenApple.getInstance().mainConfig.getString("modules.chat.defaultChatChannel", "default"));
+		if (!channelExists(GoldenApple.getInstanceMainConfig().getString("modules.chat.defaultChatChannel", "default"))) {
+			defaultChannel = createChannel(GoldenApple.getInstanceMainConfig().getString("modules.chat.defaultChatChannel", "default"));
 		} else {
-			defaultChannel = getChannel(GoldenApple.getInstance().mainConfig.getString("modules.chat.defaultChatChannel", "default"));
+			defaultChannel = getChannel(GoldenApple.getInstanceMainConfig().getString("modules.chat.defaultChatChannel", "default"));
 		}
 		
 		for (Player p : Bukkit.getOnlinePlayers()) {
@@ -120,9 +107,9 @@ public class ChatManager {
 	
 	public ChatChannel createChannel(String identifier) {
 		try {
-			GoldenApple.getInstance().database.execute("INSERT INTO Channels (Identifier, DisplayName, MOTD, StrictCensor, DefaultLevel) VALUES (?, ?, NULL, FALSE, 2)", identifier, ChatColor.WHITE + identifier);
+			GoldenApple.getInstanceDatabaseManager().execute("INSERT INTO Channels (Identifier, DisplayName, MOTD, StrictCensor, DefaultLevel) VALUES (?, ?, NULL, FALSE, 2)", identifier, ChatColor.WHITE + identifier);
 			
-			ResultSet r = GoldenApple.getInstance().database.executeQuery("SELECT * FROM Channels WHERE Identifier=?", identifier);
+			ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT * FROM Channels WHERE Identifier=?", identifier);
 			try {
 				if (r.next()) {
 					ChatChannel c = new DatabaseChatChannel(r);
@@ -132,7 +119,7 @@ public class ChatManager {
 					return null;
 				}
 			} finally {
-				GoldenApple.getInstance().database.closeResult(r);
+				GoldenApple.getInstanceDatabaseManager().closeResult(r);
 			}
 		} catch (SQLException e) {
 			GoldenApple.log(Level.SEVERE, "Failed to create channel '" + identifier + "':");
@@ -158,5 +145,20 @@ public class ChatManager {
 			activeChannels.get(identifier).delete();
 			activeChannels.remove(identifier);
 		}
+	}
+
+	@Override
+	protected void removeChannelAttachment(User user) {
+		userChannels.remove(user);
+	}
+
+	@Override
+	public ChatCensor getDefaultCensor() {
+		return SimpleChatCensor.defaultChatCensor;
+	}
+
+	@Override
+	public ChatCensor getStrictCensor() {
+		return SimpleChatCensor.strictChatCensor;
 	}
 }

@@ -55,7 +55,7 @@ public class ItemPotion extends net.minecraft.server.v1_5_R2.ItemPotion {
 	
 	public ItemStack b(ItemStack itemstack, World world, EntityHuman entityhuman) {
 		try {
-			if (!GoldenApple.getInstance().mainConfig.getBoolean("modules.antigrief.noDrinkPotion." + typeConfigName.get(Potion.fromItemStack(CraftItemStack.asBukkitCopy(itemstack)).getType()), true))
+			if (!GoldenApple.getInstanceMainConfig().getBoolean("modules.antigrief.noDrinkPotion." + typeConfigName.get(Potion.fromItemStack(CraftItemStack.asBukkitCopy(itemstack)).getType()), true))
 				return super.b(itemstack, world, entityhuman);
 		} catch (Exception e) { }
 		return itemstack;

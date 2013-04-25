@@ -2,12 +2,12 @@ package com.bendude56.goldenapple.permissions;
 
 import com.bendude56.goldenapple.CommandManager;
 import com.bendude56.goldenapple.GoldenApple;
-import com.bendude56.goldenapple.IModuleLoader;
+import com.bendude56.goldenapple.ModuleLoader;
 import com.bendude56.goldenapple.ModuleLoadException;
 import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.listener.PermissionListener;
 
-public class PermissionsModuleLoader implements IModuleLoader {
+public class PermissionsModuleLoader implements ModuleLoader {
 	
 	private static ModuleState state = ModuleState.UNLOADED_USER;
 
@@ -15,11 +15,11 @@ public class PermissionsModuleLoader implements IModuleLoader {
 	public void loadModule(GoldenApple instance) {
 		state = ModuleState.LOADING;
 		try {
-			instance.permissions = new PermissionManager();
+			PermissionManager.instance = new SimplePermissionManager();
 			User.clearCache();
-			registerPermissions(instance.permissions);
+			registerPermissions(PermissionManager.instance);
 			registerEvents();
-			registerCommands(instance.commands);
+			registerCommands(instance.getCommandManager());
 			state = ModuleState.LOADED;
 		} catch (Throwable e) {
 			// This module should NEVER fail to load! This is a major problem.
@@ -62,10 +62,10 @@ public class PermissionsModuleLoader implements IModuleLoader {
 	@Override
 	public void unloadModule(GoldenApple instance) {
 		unregisterEvents();
-		unregisterCommands(instance.commands);
+		unregisterCommands(instance.getCommandManager());
 		User.clearCache();
-		GoldenApple.getInstance().permissions.close();
-		GoldenApple.getInstance().permissions = null;
+		PermissionManager.getInstance().close();
+		PermissionManager.instance = null;
 		state = ModuleState.UNLOADED_USER;
 	}
 	
@@ -110,7 +110,7 @@ public class PermissionsModuleLoader implements IModuleLoader {
 	
 	@Override
 	public boolean canPolicyUnload() {
-		return !GoldenApple.getInstance().mainConfig.getBoolean("securityPolicy.blockManualUnload.permissions", true);
+		return !GoldenApple.getInstanceMainConfig().getBoolean("securityPolicy.blockManualUnload.permissions", true);
 	}
 
 }

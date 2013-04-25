@@ -3,7 +3,7 @@ package com.bendude56.goldenapple;
 import com.bendude56.goldenapple.audit.AuditLog;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 
-public class BaseModuleLoader implements IModuleLoader {
+public class BaseModuleLoader implements ModuleLoader {
 
 	private static ModuleState	state	= ModuleState.UNLOADED_USER;
 
@@ -12,7 +12,7 @@ public class BaseModuleLoader implements IModuleLoader {
 		state = ModuleState.LOADING;
 		try {
 			AuditLog.initAuditLog();
-			registerCommands(instance.commands);
+			registerCommands(instance.getCommandManager());
 			state = ModuleState.LOADED;
 		} catch (Throwable e) {
 			// This module should NEVER fail to load! This is a major problem.

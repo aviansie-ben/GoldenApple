@@ -2,7 +2,7 @@ package com.bendude56.goldenapple;
 
 import com.bendude56.goldenapple.permissions.PermissionManager;
 
-public interface IModuleLoader {
+public interface ModuleLoader {
 	/**
 	 * Loads the GoldenApple module into memory and prepares it for use. Should
 	 * register any and all necessary events, permissions, etc.
@@ -14,7 +14,7 @@ public interface IModuleLoader {
 
 	/**
 	 * Registers module permissions. This will get called without a call to
-	 * {@link IModuleLoader#loadModule(GoldenApple)} if the permissions system
+	 * {@link ModuleLoader#loadModule(GoldenApple)} if the permissions system
 	 * recovers from an error.
 	 * 
 	 * @param permissions The {@link PermissionManager} that is currently

@@ -6,8 +6,9 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import com.bendude56.goldenapple.GoldenApple;
-import com.bendude56.goldenapple.IModuleLoader.ModuleState;
+import com.bendude56.goldenapple.ModuleLoader.ModuleState;
 import com.bendude56.goldenapple.permissions.PermissionManager;
+import com.bendude56.goldenapple.warp.WarpManager;
 import com.bendude56.goldenapple.User;
 
 public class ImportCommand implements CommandExecutor {
@@ -19,7 +20,6 @@ public class ImportCommand implements CommandExecutor {
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
-		GoldenApple instance = GoldenApple.getInstance();
 		User user = User.getUser(sender);
 		
 		if (args.length < 2) {
@@ -29,10 +29,10 @@ public class ImportCommand implements CommandExecutor {
 		} else {
 			String type = args[0].toLowerCase();
 			if (!typeModules.containsKey(type)) {
-				instance.locale.sendMessage(user, "error.import.typeNotFound", false);
+				user.sendLocalizedMessage("error.import.typeNotFound");
 				return true;
-			} else if (GoldenApple.modules.get(typeModules.get(type)).getCurrentState() != ModuleState.LOADED) {
-				instance.locale.sendMessage(user, "error.import.moduleNotReady", false);
+			} else if (GoldenApple.getInstance().getModuleManager().getModule(typeModules.get(type)).getCurrentState() != ModuleState.LOADED) {
+				user.sendLocalizedMessage("error.import.moduleNotReady");
 				return true;
 			}
 			
@@ -40,16 +40,16 @@ public class ImportCommand implements CommandExecutor {
 			if (args[1].equalsIgnoreCase("Essentials")) {
 				pl = new EssentialsImporter();
 			} else {
-				instance.locale.sendMessage(user, "error.import.pluginNotFound", false);
+				user.sendLocalizedMessage("error.import.pluginNotFound");
 				return true;
 			}
 			
 			if (!pl.isImportTypeSupported(type)) {
-				instance.locale.sendMessage(user, "error.import.typeNotSupported", false, type, pl.getName());
+				user.sendLocalizedMessage("error.import.typeNotSupported", type, pl.getName());
 			} else if (args.length >= 3 && args[2].equals("-v")) {
 				pl.executeImport(type, user, args);
 			} else {
-				instance.locale.sendMessage(user, "general.import.warning", true, type, pl.getName());
+				user.sendLocalizedMultilineMessage("general.import.warning", type, pl.getName());
 				VerifyCommand.commands.put(user, "gaimport " + type + " " + pl.getName() + " -v");
 			}
 		}
@@ -83,8 +83,8 @@ public class ImportCommand implements CommandExecutor {
 		@Override
 		public void executeImport(String type, User u, String[] args) {
 			if (type.equalsIgnoreCase("homes")) {
-				GoldenApple.getInstance().locale.sendMessage(u, "general.import.started", false);
-				GoldenApple.getInstance().warps.importHomesFromEssentials(u);
+				u.sendLocalizedMessage("general.import.started");
+				WarpManager.getInstance().importHomesFromEssentials(u);
 			} else {
 				throw new UnsupportedOperationException();
 			}

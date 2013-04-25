@@ -33,7 +33,7 @@ public class PrivateArea extends ParentArea implements IArea
 	}
 	
 	public PermissionUser getOwner() {
-		return GoldenApple.getInstance().permissions.getUser(ownerID);
+		return PermissionManager.getInstance().getUser(ownerID);
 	}
 
 	public boolean isOwner(IPermissionUser user) {
@@ -46,7 +46,7 @@ public class PrivateArea extends ParentArea implements IArea
 	}
 	
 	public PermissionGroup getGroup() {
-		return GoldenApple.getInstance().permissions.getGroup(groupID);
+		return PermissionManager.getInstance().getGroup(groupID);
 	}
 
 	public boolean memberOfGroup(IPermissionUser user) {
@@ -73,8 +73,8 @@ public class PrivateArea extends ParentArea implements IArea
 	public List<PermissionUser> getGuests() {
 		List<PermissionUser> guests = new ArrayList<PermissionUser>();
 		for (Long guestID : guestIDs) {
-			if (GoldenApple.getInstance().permissions.getUser(guestID) != null) {
-				guests.add(GoldenApple.getInstance().permissions.getUser(guestID));
+			if (PermissionManager.getInstance().getUser(guestID) != null) {
+				guests.add(PermissionManager.getInstance().getUser(guestID));
 			}
 		}
 		return guests;

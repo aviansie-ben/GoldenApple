@@ -14,7 +14,6 @@ import com.bendude56.goldenapple.warp.WarpManager;
 public class DelHomeCommand implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
-		GoldenApple instance = GoldenApple.getInstance();
 		User user = User.getUser(sender);
 		
 		int homeNumber = 1;
@@ -34,27 +33,27 @@ public class DelHomeCommand implements CommandExecutor {
 			HomeWarp h;
 			
 			if (homeAlias == null) {
-				h = GoldenApple.getInstance().warps.getHome(user, homeNumber);
+				h = (HomeWarp)WarpManager.getInstance().getHome(user, homeNumber);
 				if (h == null) {
-					instance.locale.sendMessage(user, "error.home.notFoundIdSelf", false, homeNumber + "");
+					user.sendLocalizedMessage("error.home.notFoundIdSelf", homeNumber + "");
 				}
 			} else {
-				h = GoldenApple.getInstance().warps.getHome(user, homeAlias);
+				h = (HomeWarp)WarpManager.getInstance().getHome(user, homeAlias);
 				if (h == null) {
-					instance.locale.sendMessage(user, "error.home.notFoundAliasSelf", false, args[0]);
+					user.sendLocalizedMessage("error.home.notFoundAliasSelf", args[0]);
 				}
 			}
 			
 			try {
 				h.delete();
 				if (homeAlias == null)
-					instance.locale.sendMessage(user, "general.home.deleteId", false, homeNumber + "");
+					user.sendLocalizedMessage("general.home.deleteId", homeNumber + "");
 				else
-					instance.locale.sendMessage(user, "general.home.deleteAlias", false, homeNumber + "");
+					user.sendLocalizedMessage("general.home.deleteAlias", homeNumber + "");
 			} catch (SQLException e) {
 				GoldenApple.log(Level.SEVERE, "Failed to edit " + user.getName() + "'s home " + homeNumber + ":");
 				GoldenApple.log(Level.SEVERE, e);
-				instance.locale.sendMessage(user, "error.home.setFail", false);
+				user.sendLocalizedMessage("error.home.setFail");
 			}
 		}
 		

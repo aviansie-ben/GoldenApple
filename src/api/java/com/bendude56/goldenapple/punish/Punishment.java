@@ -3,7 +3,8 @@ package com.bendude56.goldenapple.punish;
 import java.sql.Timestamp;
 
 import com.bendude56.goldenapple.GoldenApple;
-import com.bendude56.goldenapple.permissions.PermissionUser;
+import com.bendude56.goldenapple.permissions.IPermissionUser;
+import com.bendude56.goldenapple.permissions.PermissionManager;
 
 public abstract class Punishment {
 	protected long id;
@@ -24,16 +25,16 @@ public abstract class Punishment {
 		return targetId;
 	}
 	
-	public PermissionUser getTarget() {
-		return GoldenApple.getInstance().permissions.getUser(targetId);
+	public IPermissionUser getTarget() {
+		return PermissionManager.getInstance().getUser(targetId);
 	}
 	
 	public long getAdminId() {
 		return adminId;
 	}
 	
-	public PermissionUser getAdmin() {
-		return GoldenApple.getInstance().permissions.getUser(adminId);
+	public IPermissionUser getAdmin() {
+		return PermissionManager.getInstance().getUser(adminId);
 	}
 	
 	public String getReason() {
@@ -109,16 +110,16 @@ public abstract class Punishment {
 			int days = getDays(), hours = getHours(), minutes = getMinutes(), seconds = getSeconds();
 			
 			if (days > 0)
-				result += GoldenApple.getInstance().locale.processMessageDefaultLocale("time.days", days + "") + ", ";
+				result += GoldenApple.getInstance().getLocalizationManager().processMessageDefaultLocale("time.days", days + "") + ", ";
 			
 			if (hours > 0)
-				result += GoldenApple.getInstance().locale.processMessageDefaultLocale("time.hours", hours + "") + ", ";
+				result += GoldenApple.getInstance().getLocalizationManager().processMessageDefaultLocale("time.hours", hours + "") + ", ";
 			
 			if (minutes > 0)
-				result += GoldenApple.getInstance().locale.processMessageDefaultLocale("time.minutes", minutes + "") + ", ";
+				result += GoldenApple.getInstance().getLocalizationManager().processMessageDefaultLocale("time.minutes", minutes + "") + ", ";
 			
 			if (seconds > 0)
-				result += GoldenApple.getInstance().locale.processMessageDefaultLocale("time.seconds", seconds + "") + ", ";
+				result += GoldenApple.getInstance().getLocalizationManager().processMessageDefaultLocale("time.seconds", seconds + "") + ", ";
 			
 			if (result.length() > 0) {
 				result = result.substring(0, result.length() - 2);

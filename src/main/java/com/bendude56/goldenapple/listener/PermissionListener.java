@@ -15,8 +15,9 @@ import org.bukkit.plugin.RegisteredListener;
 
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
-import com.bendude56.goldenapple.permissions.PermissionGroup;
-import com.bendude56.goldenapple.permissions.PermissionUser;
+import com.bendude56.goldenapple.permissions.IPermissionGroup;
+import com.bendude56.goldenapple.permissions.IPermissionUser;
+import com.bendude56.goldenapple.permissions.PermissionManager;
 
 public class PermissionListener implements Listener, EventExecutor {
 
@@ -56,11 +57,10 @@ public class PermissionListener implements Listener, EventExecutor {
 	}
 
 	private void playerLogin(PlayerLoginEvent event) {
-		GoldenApple instance = GoldenApple.getInstance();
-		PermissionUser u = GoldenApple.getInstance().permissions.createUser(event.getPlayer().getName());
+		IPermissionUser u = PermissionManager.getInstance().createUser(event.getPlayer().getName());
 		
-		for (String defaultGroup : instance.mainConfig.getStringList("modules.permissions.defaultGroups")) {
-			PermissionGroup g = instance.permissions.getGroup(defaultGroup);
+		for (String defaultGroup : GoldenApple.getInstanceMainConfig().getStringList("modules.permissions.defaultGroups")) {
+			IPermissionGroup g = PermissionManager.getInstance().getGroup(defaultGroup);
 			if (g == null)
 				continue;
 			
@@ -68,8 +68,8 @@ public class PermissionListener implements Listener, EventExecutor {
 		}
 		
 		if (event.getPlayer().isOp()) {
-			for (String defaultGroup : instance.mainConfig.getStringList("modules.permissions.opGroups")) {
-				PermissionGroup g = instance.permissions.getGroup(defaultGroup);
+			for (String defaultGroup : GoldenApple.getInstanceMainConfig().getStringList("modules.permissions.opGroups")) {
+				IPermissionGroup g = PermissionManager.getInstance().getGroup(defaultGroup);
 				if (g == null)
 					continue;
 				
@@ -79,10 +79,10 @@ public class PermissionListener implements Listener, EventExecutor {
 			}
 		}
 		
-		for (String dev : GoldenApple.devs) {
+		for (String dev : PermissionManager.devs) {
 			if (dev.equals(u.getName())) {
-				for (String defaultGroup : instance.mainConfig.getStringList("modules.permissions.devGroups")) {
-					PermissionGroup g = instance.permissions.getGroup(defaultGroup);
+				for (String defaultGroup : GoldenApple.getInstanceMainConfig().getStringList("modules.permissions.devGroups")) {
+					IPermissionGroup g = PermissionManager.getInstance().getGroup(defaultGroup);
 					if (g == null)
 						continue;
 					
@@ -94,10 +94,10 @@ public class PermissionListener implements Listener, EventExecutor {
 			}
 		}
 		
-		if (!instance.mainConfig.getString("modules.permissions.reqGroup").equals("")) {
-			PermissionGroup reqGroup = instance.permissions.getGroup(GoldenApple.getInstance().mainConfig.getString("modules.permissions.reqGroup"));
+		if (!GoldenApple.getInstanceMainConfig().getString("modules.permissions.reqGroup").equals("")) {
+			IPermissionGroup reqGroup = PermissionManager.getInstance().getGroup(GoldenApple.getInstanceMainConfig().getString("modules.permissions.reqGroup"));
 			if (reqGroup == null) {
-				GoldenApple.log(Level.WARNING, "Failed to find required group '" + instance.mainConfig.getString("modules.permissions.reqGroup") + "'. Only allowing ops to join...");
+				GoldenApple.log(Level.WARNING, "Failed to find required group '" + GoldenApple.getInstanceMainConfig().getString("modules.permissions.reqGroup") + "'. Only allowing ops to join...");
 				if (!Bukkit.getOfflinePlayer(u.getName()).isOp()) {
 					event.disallow(Result.KICK_WHITELIST, "You aren't allowed to connect. Contact an administrator for further details.");
 				}
