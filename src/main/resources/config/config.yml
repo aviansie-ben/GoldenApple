@@ -223,6 +223,10 @@ modules:
         # permissions can override this setting.
         noLightTnt: true
         
+        # Setting this to true causes dispensers to dispense TNT as
+        # an item rather than lighting it.
+        noDispenserTnt: true
+        
         # If there is an error replacing the TNT block data, this
         # setting will determine if any TNT explosions are allowed.
         blockTntOnLoadFail: true

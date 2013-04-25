@@ -6,6 +6,9 @@ import java.lang.reflect.Modifier;
 
 import org.bukkit.Material;
 
+import com.bendude56.goldenapple.GoldenApple;
+
+import net.minecraft.server.v1_5_R2.DispenseBehaviorItem;
 import net.minecraft.server.v1_5_R2.IDispenseBehavior;
 import net.minecraft.server.v1_5_R2.ItemStack;
 import net.minecraft.server.v1_5_R2.MinecraftServer;
@@ -75,6 +78,8 @@ public class BlockDispenser extends net.minecraft.server.v1_5_R2.BlockDispenser 
                 if (idispensebehavior != IDispenseBehavior.a) {
                 	if (itemstack.id == Material.POTION.getId())
                 		idispensebehavior = new DispenseBehaviorPotion(MinecraftServer.getServer());
+                	else if (itemstack.id == Material.TNT.getId() && GoldenApple.getInstanceMainConfig().getBoolean("modules.antigrief.noDispenserTnt", true))
+                		idispensebehavior = new DispenseBehaviorItem();
                 	
                     ItemStack itemstack1 = idispensebehavior.a(sourceblock, itemstack);
 
