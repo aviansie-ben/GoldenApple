@@ -205,6 +205,11 @@ public class ChannelCommand extends DualSyntaxCommand {
 				}
 			}
 		} else if (args[0].equals("-a")) {
+			if (!user.hasPermission(ChatManager.channelAddPermission)) {
+				GoldenApple.logPermissionFail(user, commandLabel, args, true);
+				return;
+			}
+			
 			user.sendLocalizedMessage("header.chat");
 			if (args.length < 2) {
 				user.sendLocalizedMessage("shared.parameterMissing", "-a");
@@ -371,6 +376,11 @@ public class ChannelCommand extends DualSyntaxCommand {
 				}
 			}
 		} else if (args[0].equals("add")) {
+			if (!user.hasPermission(ChatManager.channelAddPermission)) {
+				GoldenApple.logPermissionFail(user, commandLabel, args, true);
+				return;
+			}
+			
 			user.sendLocalizedMessage("header.chat");
 			if (args.length < 2) {
 				user.sendLocalizedMessage("shared.parameterMissing", "-a");
