@@ -169,6 +169,7 @@ public abstract class LockedBlock {
 	private long		ownerId;
 	private LockLevel	level;
 	private String		typeId;
+	private boolean     allowHopper;
 
 	protected LockedBlock(ResultSet r, String typeId) throws SQLException, ClassNotFoundException {
 		this.lockId = r.getLong("ID");
@@ -176,6 +177,7 @@ public abstract class LockedBlock {
 		this.ownerId = r.getLong("Owner");
 		this.level = LockLevel.getLevel(r.getInt("AccessLevel"));
 		this.typeId = typeId;
+		this.allowHopper = r.getBoolean("AllowHopper");
 	}
 
 	/**
@@ -365,6 +367,14 @@ public abstract class LockedBlock {
 	 */
 	public final String getTypeIdentifier() {
 		return typeId;
+	}
+	
+	public final boolean getAllowHopper() {
+		return allowHopper;
+	}
+	
+	public final void setAllowHopper(boolean allowHopper) {
+		this.allowHopper = allowHopper;
 	}
 
 	/**

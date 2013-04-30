@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS Locks (
 	Type VARCHAR(32) NOT NULL,
 	AccessLevel INT NOT NULL,
 	Owner BIGINT NULL,
+	AllowHopper BOOLEAN NOT NULL,
 	INDEX ind_locks_location (World ASC, X ASC, Y ASC, Z ASC),
 	INDEX ind_locks_owner (Owner ASC),
 	CONSTRAINT fk_locks_owner

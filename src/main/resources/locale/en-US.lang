@@ -131,10 +131,15 @@ general.lock.auto.on=&aAuto-lock has been turned on
 general.lock.delete.success=&aThe lock on that block has been deleted successfully!
 general.lock.guest.add.success=&aLock shared with '%1' successfully.
 general.lock.guest.remove.success=&aLock unshared from '%1' successfully.
+general.lock.hopper.off=&aHopper access to this block has been disabled.
+general.lock.hopper.on=&aHopper access to this block has been enabled.
 general.lock.info.1=&7Lock ID: &f%1
 general.lock.info.2=&7Owner: &f%2
 general.lock.info.3=&7Lock Access: %3
 general.lock.info.4=&7Lock Type: &f%4
+general.lock.info.5=&7Hopper Access: %5
+general.lock.info.enabled=&aENABLED
+general.lock.info.disabled=&4DISABLED
 general.lock.info.private=&8Private
 general.lock.info.public=&fPublic
 

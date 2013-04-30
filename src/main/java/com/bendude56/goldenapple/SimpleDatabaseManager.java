@@ -28,7 +28,7 @@ import org.sqlite.JDBC;
  * @author ben_dude56
  */
 public final class SimpleDatabaseManager implements DatabaseManager {
-	public static int DB_VERSION = 2;
+	public static int DB_VERSION = 3;
 	
 	private Connection	connection;
 	private boolean		mySql;

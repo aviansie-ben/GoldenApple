@@ -12,20 +12,6 @@ import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
 import com.bendude56.goldenapple.permissions.PermissionManager.PermissionNode;
 
-/**
- * Represents a user in the GoldenApple permissions database.
- * <p>
- * <em><strong>Note 1:</strong> Do not store direct references to this class. Store the
- * ID of the instance instead! This instance is simply a cached image, and thus may not
- * update correctly if the cache is cleared.</em>
- * <p>
- * <em><strong>Note 2:</strong> It is recommended that you refrain from accepting this
- * class as an argument to a function. Use {@link IPermissionUser} instead in order to
- * support the use of {@link com.bendude56.goldenapple.User} objects.</em>
- * 
- * @author Deaboy
- * @author ben_dude56
- */
 public class PermissionUser implements IPermissionUser {
 	private long				id;
 	private String				name;
@@ -41,9 +27,6 @@ public class PermissionUser implements IPermissionUser {
 		this.autoLock = autoLock;
 	}
 
-	/**
-	 * Pushes any changes made to this user to the SQL database
-	 */
 	public void save() {
 		try {
 			GoldenApple.getInstanceDatabaseManager().execute("UPDATE Users SET Locale=?, ComplexCommands=?, AutoLock=? WHERE ID=?", new Object[] { preferredLocale, complexCommands, autoLock, id });

@@ -171,6 +171,22 @@ public class LockCommand extends DualSyntaxCommand {
 			} else if (args[arg].equalsIgnoreCase("-i")) {
 				getInfo(instance, user, lock);
 				arg++;
+			} else if (args[arg].equalsIgnoreCase("-h:on")) {
+				if (!lock.canModifyBlock(user)) {
+					GoldenApple.logPermissionFail(user, commandLabel, args, true);
+					return;
+				} else {
+					setHopperAllow(user, lock, true);
+					arg++;
+				}
+			} else if (args[arg].equalsIgnoreCase("-h:off")) {
+				if (!lock.canModifyBlock(user)) {
+					GoldenApple.logPermissionFail(user, commandLabel, args, true);
+					return;
+				} else {
+					setHopperAllow(user, lock, false);
+					arg++;
+				}
 			} else {
 				user.sendLocalizedMessage("shared.unknownOption", args[arg]);
 				arg++;
@@ -254,6 +270,17 @@ public class LockCommand extends DualSyntaxCommand {
 				} else {
 					changeAccess(instance, user, lock, args[1]);
 				}
+			} else if (args[0].equalsIgnoreCase("hopper")) {
+				if (args.length == 1) {
+					user.sendLocalizedMessage("shared.parameterMissing", "hopper");
+				} else if (args.length > 2) {
+					user.sendLocalizedMessage("shared.unknownOption", args[2]);
+				} else if (!lock.canModifyBlock(user)) {
+					GoldenApple.logPermissionFail(user, commandLabel, args, true);
+					return;
+				} else {
+					setHopperAllow(user, lock, args[1].equalsIgnoreCase("on"));
+				}
 			} else if (args[0].equalsIgnoreCase("info")) {
 				getInfo(instance, user, lock);
 			} else {
@@ -332,6 +359,8 @@ public class LockCommand extends DualSyntaxCommand {
 
 	private void getInfo(GoldenApple instance, User user, LockedBlock b) {
 		String access = ChatColor.RED + "???";
+		String hopper;
+		
 		switch (b.getLevel()) {
 			case PUBLIC:
 				access = GoldenApple.getInstance().getLocalizationManager().getMessage(user, "general.lock.info.public");
@@ -342,7 +371,15 @@ public class LockCommand extends DualSyntaxCommand {
 			default:
 				break;
 		}
-		user.sendLocalizedMultilineMessage("general.lock.info", String.valueOf(b.getLockId()), PermissionManager.getInstance().getUser(b.getOwner()).getName(), access, b.getTypeIdentifier());
+		
+		hopper = GoldenApple.getInstance().getLocalizationManager().getMessage(user, (b.getAllowHopper()) ? "general.lock.info.enabled" : "general.lock.info.disabled");
+		
+		user.sendLocalizedMultilineMessage("general.lock.info", String.valueOf(b.getLockId()), PermissionManager.getInstance().getUser(b.getOwner()).getName(), access, b.getTypeIdentifier(), hopper);
+	}
+	
+	private void setHopperAllow(User user, LockedBlock lock, boolean allow) {
+		lock.setAllowHopper(allow);
+		user.sendLocalizedMessage((allow) ? "general.lock.hopper.on" : "general.lock.hopper.off");
 	}
 
 	private void sendHelp(User user, String commandLabel, boolean complex) {

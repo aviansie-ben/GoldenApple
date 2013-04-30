@@ -5,12 +5,15 @@ import java.util.logging.Level;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Hopper;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventException;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.EventExecutor;
 import org.bukkit.plugin.RegisteredListener;
@@ -43,12 +46,14 @@ public class LockListener implements Listener, EventExecutor {
 		PlayerInteractEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
 		BlockBreakEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
 		BlockPlaceEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.MONITOR, GoldenApple.getInstance(), true));
+		InventoryMoveItemEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.MONITOR, GoldenApple.getInstance(), true));
 	}
 
 	private void unregisterEvents() {
 		PlayerInteractEvent.getHandlerList().unregister(this);
 		BlockBreakEvent.getHandlerList().unregister(this);
 		BlockPlaceEvent.getHandlerList().unregister(this);
+		InventoryMoveItemEvent.getHandlerList().unregister(this);
 	}
 
 	@Override
@@ -60,6 +65,8 @@ public class LockListener implements Listener, EventExecutor {
 		} else if (event instanceof BlockPlaceEvent) {
 			chestMove((BlockPlaceEvent)event);
 			autoLock((BlockPlaceEvent)event);
+		} else if (event instanceof InventoryMoveItemEvent) {
+			hopperMove((InventoryMoveItemEvent)event);
 		} else {
 			GoldenApple.log(Level.WARNING, "Unrecognized event in LockListener: " + event.getClass().getName());
 		}
@@ -167,5 +174,20 @@ public class LockListener implements Listener, EventExecutor {
 			} catch (Exception e) {
 			}
 		}
+	}
+	
+	private void hopperMove(InventoryMoveItemEvent event) {
+		LockedBlock lock;
+		
+		if (event.getSource().getHolder() instanceof Hopper && event.getDestination().getHolder() instanceof BlockState) {
+			lock = LockManager.getInstance().getLock(((BlockState) event.getDestination().getHolder()).getLocation());
+		} else if (event.getDestination().getHolder() instanceof Hopper && event.getSource().getHolder() instanceof BlockState) {
+			lock = LockManager.getInstance().getLock(((BlockState) event.getSource().getHolder()).getLocation());
+		} else {
+			return;
+		}
+		
+		if (lock != null && !lock.getAllowHopper())
+			event.setCancelled(true);
 	}
 }

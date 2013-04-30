@@ -133,7 +133,7 @@ public class SimpleLockManager extends LockManager {
 		if (r == null)
 			throw new UnsupportedOperationException();
 
-		GoldenApple.getInstanceDatabaseManager().execute("INSERT INTO Locks (X, Y, Z, World, Type, AccessLevel, Owner) VALUES (?, ?, ?, ?, ?, ?, ?)",
+		GoldenApple.getInstanceDatabaseManager().execute("INSERT INTO Locks (X, Y, Z, World, Type, AccessLevel, Owner, AllowHopper) VALUES (?, ?, ?, ?, ?, ?, ?, 0)",
 				loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), loc.getWorld().getName(), r.identifier, access.levelId, (owner == null) ? 0 : owner.getId());
 		return getLockSpecific(loc);
 	}
