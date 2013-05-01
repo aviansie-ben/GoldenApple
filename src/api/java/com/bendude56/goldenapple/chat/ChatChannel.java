@@ -137,7 +137,7 @@ public abstract class ChatChannel {
 	public void sendMessage(User user, String message) {
 		if (connectedUsers.get(user).id < ChatChannelUserLevel.CHAT.id) {
 			user.sendLocalizedMessage("error.channel.noTalk");
-		} else if (PunishmentManager.getInstance().isMuted(user, this)) {
+		} else if (PunishmentManager.getInstance() != null && PunishmentManager.getInstance().isMuted(user, this)) {
 			PunishmentMute m = PunishmentManager.getInstance().getActiveMute(user, this);
 			if (m.isPermanent()) {
 				user.sendLocalizedMessage("error.channel.muted.perma");
@@ -153,7 +153,7 @@ public abstract class ChatChannel {
 	public void sendMeMessage(User user, String message) {
 		if (connectedUsers.get(user).id < ChatChannelUserLevel.CHAT.id) {
 			user.sendLocalizedMessage("error.channel.noTalk");
-		} else if (PunishmentManager.getInstance().isMuted(user, this)) {
+		} else if (PunishmentManager.getInstance() != null && PunishmentManager.getInstance().isMuted(user, this)) {
 			PunishmentMute m = PunishmentManager.getInstance().getActiveMute(user, this);
 			if (m.isPermanent()) {
 				user.sendLocalizedMessage("error.channel.muted.perma");
