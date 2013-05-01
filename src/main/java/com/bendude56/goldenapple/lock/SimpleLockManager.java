@@ -20,10 +20,12 @@ import com.bendude56.goldenapple.permissions.IPermissionUser;
 public class SimpleLockManager extends LockManager {
 	static {
 		LockedBlock.registerBlock("GA_CHEST", GoldenApple.getInstance(), Material.CHEST, LockedChest.class);
+		LockedBlock.registerBlock("GA_DOOR", GoldenApple.getInstance(), Material.WOODEN_DOOR, LockedDoor.class);
 		LockedBlock.registerBlock("GA_FURNACE", GoldenApple.getInstance(), Material.FURNACE, LockedFurnace.class);
 		LockedBlock.registerBlock("GA_REDSTONE", GoldenApple.getInstance(), Material.LEVER, LockedRedstoneTrigger.class);
 		LockedBlock.registerBlock("GA_REDSTONE", GoldenApple.getInstance(), Material.STONE_BUTTON, LockedRedstoneTrigger.class);
 		LockedBlock.registerCorrector(DoubleChestLocationCorrector.class);
+		LockedBlock.registerCorrector(DoorLocationCorrector.class);
 	}
 	
 	private HashMap<Long, LockedBlock>	lockCache;
@@ -133,7 +135,7 @@ public class SimpleLockManager extends LockManager {
 		if (r == null)
 			throw new UnsupportedOperationException();
 
-		GoldenApple.getInstanceDatabaseManager().execute("INSERT INTO Locks (X, Y, Z, World, Type, AccessLevel, Owner, AllowHopper) VALUES (?, ?, ?, ?, ?, ?, ?, 0)",
+		GoldenApple.getInstanceDatabaseManager().execute("INSERT INTO Locks (X, Y, Z, World, Type, AccessLevel, Owner, AllowExternal) VALUES (?, ?, ?, ?, ?, ?, ?, 0)",
 				loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), loc.getWorld().getName(), r.identifier, access.levelId, (owner == null) ? 0 : owner.getId());
 		return getLockSpecific(loc);
 	}

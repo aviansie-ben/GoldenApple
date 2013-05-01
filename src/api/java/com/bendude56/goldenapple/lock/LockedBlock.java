@@ -169,7 +169,7 @@ public abstract class LockedBlock {
 	private long		ownerId;
 	private LockLevel	level;
 	private String		typeId;
-	private boolean     allowHopper;
+	private boolean     allowExternal;
 
 	protected LockedBlock(ResultSet r, String typeId) throws SQLException, ClassNotFoundException {
 		this.lockId = r.getLong("ID");
@@ -177,8 +177,10 @@ public abstract class LockedBlock {
 		this.ownerId = r.getLong("Owner");
 		this.level = LockLevel.getLevel(r.getInt("AccessLevel"));
 		this.typeId = typeId;
-		this.allowHopper = r.getBoolean("AllowHopper");
+		this.allowExternal = r.getBoolean("AllowExternal");
 	}
+	
+	public abstract boolean isRedstoneAccessApplicable();
 
 	/**
 	 * Saves the lock into the SQL database
@@ -369,12 +371,12 @@ public abstract class LockedBlock {
 		return typeId;
 	}
 	
-	public final boolean getAllowHopper() {
-		return allowHopper;
+	public final boolean getAllowExternal() {
+		return allowExternal;
 	}
 	
-	public final void setAllowHopper(boolean allowHopper) {
-		this.allowHopper = allowHopper;
+	public final void setAllowExternal(boolean allowExternal) {
+		this.allowExternal = allowExternal;
 	}
 
 	/**

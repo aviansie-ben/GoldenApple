@@ -10,4 +10,9 @@ public final class LockedRedstoneTrigger extends LockedBlock {
 		super(r, "GA_REDSTONE");
 	}
 
+	@Override
+	public boolean isRedstoneAccessApplicable() {
+		return false;
+	}
+
 }

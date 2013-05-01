@@ -86,7 +86,7 @@ securityPolicy:
         warp: false
         chat: false
         antigrief: false
-        punsih: false
+        punish: false
 
 # Options for GoldenApple modules
 modules:

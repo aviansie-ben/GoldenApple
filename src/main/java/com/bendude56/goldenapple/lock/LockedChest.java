@@ -10,4 +10,9 @@ public final class LockedChest extends LockedBlock {
 		super(r, "GA_CHEST");
 	}
 
+	@Override
+	public boolean isRedstoneAccessApplicable() {
+		return true;
+	}
+
 }

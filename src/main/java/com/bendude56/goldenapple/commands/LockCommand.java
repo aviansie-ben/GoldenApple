@@ -171,7 +171,7 @@ public class LockCommand extends DualSyntaxCommand {
 			} else if (args[arg].equalsIgnoreCase("-i")) {
 				getInfo(instance, user, lock);
 				arg++;
-			} else if (args[arg].equalsIgnoreCase("-h:on")) {
+			} else if (args[arg].equalsIgnoreCase("-r:on")) {
 				if (!lock.canModifyBlock(user)) {
 					GoldenApple.logPermissionFail(user, commandLabel, args, true);
 					return;
@@ -179,7 +179,7 @@ public class LockCommand extends DualSyntaxCommand {
 					setHopperAllow(user, lock, true);
 					arg++;
 				}
-			} else if (args[arg].equalsIgnoreCase("-h:off")) {
+			} else if (args[arg].equalsIgnoreCase("-r:off")) {
 				if (!lock.canModifyBlock(user)) {
 					GoldenApple.logPermissionFail(user, commandLabel, args, true);
 					return;
@@ -270,9 +270,9 @@ public class LockCommand extends DualSyntaxCommand {
 				} else {
 					changeAccess(instance, user, lock, args[1]);
 				}
-			} else if (args[0].equalsIgnoreCase("hopper")) {
+			} else if (args[0].equalsIgnoreCase("redstone")) {
 				if (args.length == 1) {
-					user.sendLocalizedMessage("shared.parameterMissing", "hopper");
+					user.sendLocalizedMessage("shared.parameterMissing", "redstone");
 				} else if (args.length > 2) {
 					user.sendLocalizedMessage("shared.unknownOption", args[2]);
 				} else if (!lock.canModifyBlock(user)) {
@@ -359,7 +359,7 @@ public class LockCommand extends DualSyntaxCommand {
 
 	private void getInfo(GoldenApple instance, User user, LockedBlock b) {
 		String access = ChatColor.RED + "???";
-		String hopper;
+		String redstone;
 		
 		switch (b.getLevel()) {
 			case PUBLIC:
@@ -372,14 +372,17 @@ public class LockCommand extends DualSyntaxCommand {
 				break;
 		}
 		
-		hopper = GoldenApple.getInstance().getLocalizationManager().getMessage(user, (b.getAllowHopper()) ? "general.lock.info.enabled" : "general.lock.info.disabled");
+		if (b.isRedstoneAccessApplicable())
+			redstone = GoldenApple.getInstance().getLocalizationManager().getMessage(user, (b.getAllowExternal()) ? "general.lock.info.enabled" : "general.lock.info.disabled");
+		else
+			redstone = GoldenApple.getInstance().getLocalizationManager().getMessage(user, "general.lock.info.na");
 		
-		user.sendLocalizedMultilineMessage("general.lock.info", String.valueOf(b.getLockId()), PermissionManager.getInstance().getUser(b.getOwner()).getName(), access, b.getTypeIdentifier(), hopper);
+		user.sendLocalizedMultilineMessage("general.lock.info", String.valueOf(b.getLockId()), PermissionManager.getInstance().getUser(b.getOwner()).getName(), access, b.getTypeIdentifier(), redstone);
 	}
 	
 	private void setHopperAllow(User user, LockedBlock lock, boolean allow) {
-		lock.setAllowHopper(allow);
-		user.sendLocalizedMessage((allow) ? "general.lock.hopper.on" : "general.lock.hopper.off");
+		lock.setAllowExternal(allow);
+		user.sendLocalizedMessage((allow) ? "general.lock.redstone.on" : "general.lock.redstone.off");
 	}
 
 	private void sendHelp(User user, String commandLabel, boolean complex) {
