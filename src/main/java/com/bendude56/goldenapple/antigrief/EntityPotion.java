@@ -12,17 +12,17 @@ import org.bukkit.potion.Potion;
 
 import com.bendude56.goldenapple.GoldenApple;
 
-import net.minecraft.server.v1_5_R2.AxisAlignedBB;
-import net.minecraft.server.v1_5_R2.EntityPlayer;
-import net.minecraft.server.v1_5_R2.Item;
-import net.minecraft.server.v1_5_R2.MobEffect;
-import net.minecraft.server.v1_5_R2.MobEffectList;
-import net.minecraft.server.v1_5_R2.MovingObjectPosition;
-import net.minecraft.server.v1_5_R2.EntityLiving;
-import net.minecraft.server.v1_5_R2.ItemStack;
-import net.minecraft.server.v1_5_R2.World;
+import net.minecraft.server.v1_5_R3.AxisAlignedBB;
+import net.minecraft.server.v1_5_R3.EntityPlayer;
+import net.minecraft.server.v1_5_R3.Item;
+import net.minecraft.server.v1_5_R3.MobEffect;
+import net.minecraft.server.v1_5_R3.MobEffectList;
+import net.minecraft.server.v1_5_R3.MovingObjectPosition;
+import net.minecraft.server.v1_5_R3.EntityLiving;
+import net.minecraft.server.v1_5_R3.ItemStack;
+import net.minecraft.server.v1_5_R3.World;
 
-public class EntityPotion extends net.minecraft.server.v1_5_R2.EntityPotion {
+public class EntityPotion extends net.minecraft.server.v1_5_R3.EntityPotion {
 
 	public EntityPotion(World world, EntityLiving entityliving, ItemStack itemstack) {
 		super(world, entityliving, itemstack);
@@ -46,7 +46,7 @@ public class EntityPotion extends net.minecraft.server.v1_5_R2.EntityPotion {
         	List list;
         	ItemStack item;
         	try {
-	        	Field c = net.minecraft.server.v1_5_R2.EntityPotion.class.getDeclaredField("c");
+	        	Field c = net.minecraft.server.v1_5_R3.EntityPotion.class.getDeclaredField("c");
 	        	c.setAccessible(true);
 	        	
 	            list = Item.POTION.g(item = (ItemStack)c.get(this));

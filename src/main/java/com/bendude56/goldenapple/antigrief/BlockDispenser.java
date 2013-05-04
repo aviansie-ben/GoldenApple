@@ -8,17 +8,17 @@ import org.bukkit.Material;
 
 import com.bendude56.goldenapple.GoldenApple;
 
-import net.minecraft.server.v1_5_R2.DispenseBehaviorItem;
-import net.minecraft.server.v1_5_R2.IDispenseBehavior;
-import net.minecraft.server.v1_5_R2.ItemStack;
-import net.minecraft.server.v1_5_R2.MinecraftServer;
-import net.minecraft.server.v1_5_R2.SourceBlock;
-import net.minecraft.server.v1_5_R2.StepSound;
-import net.minecraft.server.v1_5_R2.TileEntityDispenser;
-import net.minecraft.server.v1_5_R2.World;
-import net.minecraft.server.v1_5_R2.Block;
+import net.minecraft.server.v1_5_R3.DispenseBehaviorItem;
+import net.minecraft.server.v1_5_R3.IDispenseBehavior;
+import net.minecraft.server.v1_5_R3.ItemStack;
+import net.minecraft.server.v1_5_R3.MinecraftServer;
+import net.minecraft.server.v1_5_R3.SourceBlock;
+import net.minecraft.server.v1_5_R3.StepSound;
+import net.minecraft.server.v1_5_R3.TileEntityDispenser;
+import net.minecraft.server.v1_5_R3.World;
+import net.minecraft.server.v1_5_R3.Block;
 
-public class BlockDispenser extends net.minecraft.server.v1_5_R2.BlockDispenser {
+public class BlockDispenser extends net.minecraft.server.v1_5_R3.BlockDispenser {
 
 	public static void registerBlock() throws Exception {
 		Block.byId[Material.DISPENSER.getId()] = null;
@@ -34,7 +34,7 @@ public class BlockDispenser extends net.minecraft.server.v1_5_R2.BlockDispenser 
 	
 	public static void unregisterBlock() throws Exception {
 		Block.byId[Material.DISPENSER.getId()] = null;
-		Block disp = prepClass((Block)net.minecraft.server.v1_5_R2.BlockDispenser.class.getConstructors()[0].newInstance(23));
+		Block disp = prepClass((Block)net.minecraft.server.v1_5_R3.BlockDispenser.class.getConstructors()[0].newInstance(23));
 		
 		Field f = Block.class.getField("DISPENSER");
 		Field mod = Field.class.getDeclaredField("modifiers");
@@ -73,7 +73,7 @@ public class BlockDispenser extends net.minecraft.server.v1_5_R2.BlockDispenser 
                 world.triggerEffect(1001, i, j, k, 0);
             } else {
                 ItemStack itemstack = tileentitydispenser.getItem(l);
-                IDispenseBehavior idispensebehavior = (IDispenseBehavior) net.minecraft.server.v1_5_R2.BlockDispenser.a.a(itemstack.getItem());
+                IDispenseBehavior idispensebehavior = (IDispenseBehavior) net.minecraft.server.v1_5_R3.BlockDispenser.a.a(itemstack.getItem());
 
                 if (idispensebehavior != IDispenseBehavior.a) {
                 	if (itemstack.id == Material.POTION.getId())

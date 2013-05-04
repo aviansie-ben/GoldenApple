@@ -1,10 +1,10 @@
 package com.bendude56.goldenapple.antigrief;
 
-import net.minecraft.server.v1_5_R2.DispenseBehaviorItem;
-import net.minecraft.server.v1_5_R2.IDispenseBehavior;
-import net.minecraft.server.v1_5_R2.ISourceBlock;
-import net.minecraft.server.v1_5_R2.ItemStack;
-import net.minecraft.server.v1_5_R2.MinecraftServer;
+import net.minecraft.server.v1_5_R3.DispenseBehaviorItem;
+import net.minecraft.server.v1_5_R3.IDispenseBehavior;
+import net.minecraft.server.v1_5_R3.ISourceBlock;
+import net.minecraft.server.v1_5_R3.ItemStack;
+import net.minecraft.server.v1_5_R3.MinecraftServer;
 
 public class DispenseBehaviorPotion implements IDispenseBehavior {
 

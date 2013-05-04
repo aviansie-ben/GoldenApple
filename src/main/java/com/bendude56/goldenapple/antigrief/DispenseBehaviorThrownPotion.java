@@ -1,10 +1,10 @@
 package com.bendude56.goldenapple.antigrief;
 
-import net.minecraft.server.v1_5_R2.DispenseBehaviorProjectile;
-import net.minecraft.server.v1_5_R2.IPosition;
-import net.minecraft.server.v1_5_R2.IProjectile;
-import net.minecraft.server.v1_5_R2.ItemStack;
-import net.minecraft.server.v1_5_R2.World;
+import net.minecraft.server.v1_5_R3.DispenseBehaviorProjectile;
+import net.minecraft.server.v1_5_R3.IPosition;
+import net.minecraft.server.v1_5_R3.IProjectile;
+import net.minecraft.server.v1_5_R3.ItemStack;
+import net.minecraft.server.v1_5_R3.World;
 
 class DispenseBehaviorThrownPotion extends DispenseBehaviorProjectile {
 
