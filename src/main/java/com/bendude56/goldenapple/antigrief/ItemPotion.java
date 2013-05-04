@@ -2,7 +2,7 @@ package com.bendude56.goldenapple.antigrief;
 
 import java.util.HashMap;
 
-import org.bukkit.craftbukkit.v1_5_R2.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_5_R3.inventory.CraftItemStack;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionType;
 
