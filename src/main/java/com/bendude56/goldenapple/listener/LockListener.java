@@ -12,6 +12,7 @@ import org.bukkit.event.EventException;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockExpEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
@@ -69,9 +70,10 @@ public class LockListener implements Listener, EventExecutor {
 			chestMove((BlockPlaceEvent)event);
 			autoLock((BlockPlaceEvent)event);
 		} else if (event instanceof InventoryMoveItemEvent) {
-			hopperMove((InventoryMoveItemEvent)event);
+			itemMove((InventoryMoveItemEvent)event);
 		} else if (event instanceof BlockRedstoneEvent) {
 			lockRedstone((BlockRedstoneEvent)event);
+		} else if (event instanceof BlockExpEvent) {
 		} else {
 			GoldenApple.log(Level.WARNING, "Unrecognized event in LockListener: " + event.getClass().getName());
 		}
@@ -181,19 +183,20 @@ public class LockListener implements Listener, EventExecutor {
 		}
 	}
 	
-	private void hopperMove(InventoryMoveItemEvent event) {
+	private void itemMove(InventoryMoveItemEvent event) {
 		LockedBlock lock;
 		
-		if (event.getSource().getHolder() instanceof Hopper && event.getDestination().getHolder() instanceof BlockState) {
+		if (event.getDestination().getHolder() instanceof BlockState) {
 			lock = LockManager.getInstance().getLock(((BlockState) event.getDestination().getHolder()).getLocation());
-		} else if (event.getDestination().getHolder() instanceof Hopper && event.getSource().getHolder() instanceof BlockState) {
-			lock = LockManager.getInstance().getLock(((BlockState) event.getSource().getHolder()).getLocation());
-		} else {
-			return;
+			if (lock != null && !lock.getAllowExternal())
+				event.setCancelled(true);
 		}
 		
-		if (lock != null && !lock.getAllowExternal())
-			event.setCancelled(true);
+		if (event.getSource().getHolder() instanceof BlockState) {
+			lock = LockManager.getInstance().getLock(((BlockState) event.getSource().getHolder()).getLocation());
+			if (lock != null && !lock.getAllowExternal())
+				event.setCancelled(true);
+		}
 	}
 	
 	private void lockRedstone(BlockRedstoneEvent event) {

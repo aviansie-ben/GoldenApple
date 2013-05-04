@@ -22,6 +22,7 @@ public class SimpleLockManager extends LockManager {
 		LockedBlock.registerBlock("GA_CHEST", GoldenApple.getInstance(), Material.CHEST, LockedChest.class);
 		LockedBlock.registerBlock("GA_DOOR", GoldenApple.getInstance(), Material.WOODEN_DOOR, LockedDoor.class);
 		LockedBlock.registerBlock("GA_FURNACE", GoldenApple.getInstance(), Material.FURNACE, LockedFurnace.class);
+		LockedBlock.registerBlock("GA_FURNACE", GoldenApple.getInstance(), Material.BURNING_FURNACE, LockedFurnace.class);
 		LockedBlock.registerBlock("GA_REDSTONE", GoldenApple.getInstance(), Material.LEVER, LockedRedstoneTrigger.class);
 		LockedBlock.registerBlock("GA_REDSTONE", GoldenApple.getInstance(), Material.STONE_BUTTON, LockedRedstoneTrigger.class);
 		LockedBlock.registerCorrector(DoubleChestLocationCorrector.class);
