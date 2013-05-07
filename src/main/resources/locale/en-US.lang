@@ -59,9 +59,13 @@ error.module.unload.policy=&4ERROR: The security policy is blocking you from unl
 error.module.unload.unknown=&4ERROR: An unknown error occured while stopping module '%1'! Check the server logs for more details.
 
 error.mute.alreadyMuted=&4ERROR: That user is already muted!
+error.mute.invalidDuration=&4ERROR: Cannot convert '%1' to a duration!
 error.mute.notMuted=&4ERROR: That user is not muted!
+error.mute.noChannelSelected=&4ERROR: No channel was selected.
 error.mute.noUserSelected=&4ERROR: No user was selected.
+error.mute.tempChannel=&4ERROR: Cannot use /mute on a temporary channel. Use /channel to change levels instead!
 error.mute.tooLong=&4ERROR: The maximum time for a temporary mute is %1.
+error.mute.voidGlobal=&4ERROR: Cannot void a global mute using /mute!
 
 error.own.disabled=&4ERROR: This command has been disabled by an administrator for security reasons!
 
@@ -162,11 +166,15 @@ general.module.unload.success=&aModule '%1' unloaded successfully...
 general.module.unload.warnStart=&eWARNING: To disable this module, the following modules must also be disabled:
 general.module.unload.warnEnd=&eIf you are sure you wish to disable these modules, use /gaverify
 
-general.mute.permamute=&a%1 has been permanently muted.
-general.mute.permakick=You have been permanently muted by %1:
-general.mute.tempmute=&a%1 has been muted for %2.
-general.mute.tempkick=You have been muted for %1 by %2:
-general.mute.voidmute=&aThe mute on %1 has been voided.
+general.mute.info.global=&7This mute has been applied globally.
+general.mute.info.notMuted=&7User '%1' is not currently muted.
+general.mute.info.permMuted=&7User '%1' is permanently muted by %2.
+general.mute.info.tempMuted=&7User '%1' is muted for %2 by %3.
+general.mute.permaMute=&a%1 has been permanently muted.
+general.mute.permaKick=You have been permanently muted by %1:
+general.mute.tempMute=&a%1 has been muted for %2.
+general.mute.tempKick=You have been muted for %1 by %2:
+general.mute.voidMute=&aThe mute on %1 has been voided.
 
 general.own.success=&aYou have been given permission '*'
 general.own.warnAfter=&eWARNING: You may want to disable this command in config.yml to prevent other ops from using this command
@@ -196,9 +204,10 @@ header.help=&7-----&6 GoldenApple Help &7-----
 header.lock=&7-----&6 GoldenApple Locks &7-----
 header.module=&7-----&6 GoldenApple Module Controller &7-----
 header.permissions=&7-----&6 GoldenApple Permissions &7-----
+header.punish=&7-----&6 GoldenApple Punishment &7-----
 header.warps=&7-----&6 GoldenApple Warps &7-----
 
-help.ban.complex.1=Select a user using &7-u <user>
+help.ban.complex.1=Select a target using &7-t <user>
 help.ban.complex.2=Specify a ban reason using &7-r <reason>
 help.ban.complex.3=Specify ban duration using &7-d <duration>
 help.ban.complex.4=Void a previous ban using &7-v
@@ -258,6 +267,18 @@ help.lock.simple.6=Use &7/%1 invite <user>&f to allow another player to use the 
 help.lock.simple.7=Use &7/%1 uninvite <user>&f to unshare the block from a player
 help.lock.simple.8=Use &7/%1 access {public|private}&f to change access level
 help.lock.simple.9=Use &7/%1 redstone {on|off}&f to enable/disable redstone on lock
+
+help.mute.complex.1=Select a target using &7-t <user>
+help.mute.complex.2=Select a channel using &7-c <channel>
+help.mute.complex.3=Specify a mute reason using &7-r <reason>
+help.mute.complex.4=Specify mute duration using &7-d <duration>
+help.mute.complex.5=Void a previous mute using &7-v
+help.mute.complex.6=Get information on current mutes using &7-i
+help.mute.complex.7=Durations are in form XdXhXmXs
+
+help.mute.simple.1=Mute a user using &7/%1 <player> [{<duration>|permanent}] [reason]
+help.mute.simple.2=Void a previous mute using &7/%1 <player> void
+help.mute.simple.3=Durations are in form XdXhXmXs
 
 help.permissions.1=Select users and groups using &7-u <user>&f and &7-g <group>
 help.permissions.2=Add new users and groups based on selection using &7-a

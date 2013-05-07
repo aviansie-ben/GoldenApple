@@ -15,6 +15,7 @@ import com.bendude56.goldenapple.commands.LemonPledgeCommand;
 import com.bendude56.goldenapple.commands.LockCommand;
 import com.bendude56.goldenapple.commands.MeCommand;
 import com.bendude56.goldenapple.commands.ModuleCommand;
+import com.bendude56.goldenapple.commands.MuteCommand;
 import com.bendude56.goldenapple.commands.OwnCommand;
 import com.bendude56.goldenapple.commands.PermissionsCommand;
 import com.bendude56.goldenapple.commands.SetHomeCommand;
@@ -60,7 +61,7 @@ public class SimpleCommandManager extends CommandManager {
 		
 		// Module - Punish
 		insertCommand("gaban", "Punish", new BanCommand());
-		insertCommand("gamute", "Punish", null);
+		insertCommand("gamute", "Punish", new MuteCommand());
 		insertCommand("gaglobalmute", "Punish", null);
 		insertCommand("gawhois", "Punish", null);
 	}

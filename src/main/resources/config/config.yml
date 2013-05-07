@@ -316,10 +316,6 @@ modules:
         # set to true, players can be muted in specific channels.
         channelMute: true
         
-        # When set to true, channel administrators and moderators are
-        # not permitted to mute players.
-        ignoreChannelLevel: false
-        
         # The maximum amount of time (in seconds) that a temporary
         # ban can last for. This can be overriden with the correct
         # permissions. Permanent bans are also exempt. 0 for no

@@ -59,7 +59,7 @@ public class SimplePunishmentMute extends PunishmentMute {
 	@Override
 	public boolean insert() {
 		try {
-			ResultSet r = GoldenApple.getInstanceDatabaseManager().executeReturnGenKeys("INSERT INTO Bans (Target, Admin, Reason, StartTime, Duration, Voided, Channel) VALUES (?, ?, ?, ?, ?, ?, ?)",
+			ResultSet r = GoldenApple.getInstanceDatabaseManager().executeReturnGenKeys("INSERT INTO Mutes (Target, Admin, Reason, StartTime, Duration, Voided, Channel) VALUES (?, ?, ?, ?, ?, ?, ?)",
 					targetId, (adminId <= 0) ? null : adminId, reason, startTime, (permanent) ? null : length.getTotalSeconds(), voided, channel);
 			try {
 				if (r.next()) {

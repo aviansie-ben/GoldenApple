@@ -142,7 +142,7 @@ public abstract class ChatChannel {
 			if (m.isPermanent()) {
 				user.sendLocalizedMessage("error.channel.muted.perma");
 			} else {
-				user.sendLocalizedMessage("error.channel.muted.temp", m.getDuration().toString());
+				user.sendLocalizedMessage("error.channel.muted.temp", m.getRemainingDuration().toString());
 			}
 		} else {
 			message = censor.censorMessage(message);
@@ -158,7 +158,7 @@ public abstract class ChatChannel {
 			if (m.isPermanent()) {
 				user.sendLocalizedMessage("error.channel.muted.perma");
 			} else {
-				user.sendLocalizedMessage("error.channel.muted.temp", m.getDuration().toString());
+				user.sendLocalizedMessage("error.channel.muted.temp", m.getRemainingDuration().toString());
 			}
 		} else {
 			message = censor.censorMessage(message);

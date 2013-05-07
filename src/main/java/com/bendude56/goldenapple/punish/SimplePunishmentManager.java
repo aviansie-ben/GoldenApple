@@ -19,6 +19,8 @@ public class SimplePunishmentManager extends PunishmentManager {
 
 	public SimplePunishmentManager() {
 		GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("bans");
+		GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("mutes");
+		
 		cache = new HashMap<Long, ArrayList<Punishment>>();
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			loadIntoCache(User.getUser(p));
@@ -81,9 +83,11 @@ public class SimplePunishmentManager extends PunishmentManager {
 		for (Punishment p : getPunishments(u, SimplePunishmentMute.class)) {
 			SimplePunishmentMute m = (SimplePunishmentMute)p;
 			
+			if (m.isExpired()) continue;
+			
 			if (channel == null && m.isGlobal()) {
 				return m;
-			} else if (channel != null && m.getChannelIdentifier().equals(channel.getName())) {
+			} else if (channel != null && (m.isGlobal() || m.getChannelIdentifier().equals(channel.getName()))) {
 				return m;
 			}
 		}
