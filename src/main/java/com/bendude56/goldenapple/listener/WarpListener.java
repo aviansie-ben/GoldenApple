@@ -12,6 +12,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.plugin.EventExecutor;
 import org.bukkit.plugin.RegisteredListener;
 
@@ -63,7 +64,8 @@ public class WarpListener implements Listener, EventExecutor {
 	}
 
 	private void playerTeleport(PlayerTeleportEvent event) {
-		backLocation.put(User.getUser(event.getPlayer()), event.getFrom());
+		if (event.getCause() != TeleportCause.UNKNOWN)
+			backLocation.put(User.getUser(event.getPlayer()), event.getFrom());
 	}
 	
 	private void playerDeath(PlayerDeathEvent event) {
