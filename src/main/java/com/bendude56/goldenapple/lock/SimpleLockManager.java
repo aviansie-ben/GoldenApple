@@ -20,6 +20,7 @@ import com.bendude56.goldenapple.permissions.IPermissionUser;
 public class SimpleLockManager extends LockManager {
 	static {
 		LockedBlock.registerBlock("GA_CHEST", GoldenApple.getInstance(), Material.CHEST, LockedChest.class);
+		LockedBlock.registerBlock("GA_CHEST", GoldenApple.getInstance(), Material.TRAPPED_CHEST, LockedChest.class);
 		LockedBlock.registerBlock("GA_DOOR", GoldenApple.getInstance(), Material.WOODEN_DOOR, LockedDoor.class);
 		LockedBlock.registerBlock("GA_FURNACE", GoldenApple.getInstance(), Material.FURNACE, LockedFurnace.class);
 		LockedBlock.registerBlock("GA_FURNACE", GoldenApple.getInstance(), Material.BURNING_FURNACE, LockedFurnace.class);
