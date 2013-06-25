@@ -508,7 +508,7 @@ public class SimplePermissionManager extends PermissionManager {
 				return getGroup(name);
 		} catch (SQLException e) { }
 		try {
-			GoldenApple.getInstanceDatabaseManager().execute("INSERT INTO Groups (Name) VALUES (?)", name);
+			GoldenApple.getInstanceDatabaseManager().execute("INSERT INTO Groups (Name, Priority) VALUES (?, 1)", name);
 			return getGroup(name);
 		} catch (SQLException e) {
 			GoldenApple.log(Level.WARNING, "Failed to create group '" + name + "':");
