@@ -9,6 +9,7 @@ import com.bendude56.goldenapple.util.Constants;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Creeper;
+import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -208,7 +209,7 @@ public class EntityHandler {
 		for (Entity mob : mobs) {
 			if (types.contains(mob.getType())) {
 				if (mob instanceof LivingEntity && killer != null)
-					((LivingEntity)mob).damage(((LivingEntity)mob).getHealth(), killer);
+					((LivingEntity)mob).damage(((Damageable) mob).getHealth(), killer);
 				else
 					mob.remove();
 				counter++;
