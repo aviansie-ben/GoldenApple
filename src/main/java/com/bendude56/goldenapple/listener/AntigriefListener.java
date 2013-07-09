@@ -92,12 +92,10 @@ public class AntigriefListener implements Listener, EventExecutor {
 	
 	private void registerPotionItem() throws Throwable {
 		Class.forName("com.bendude56.goldenapple.antigrief.ItemPotion").getMethod("registerItem", new Class<?>[0]).invoke(null, new Object[0]);
-		Class.forName("com.bendude56.goldenapple.antigrief.BlockDispenser").getMethod("registerBlock", new Class<?>[0]).invoke(null, new Object[0]);
 	}
 	
 	private void unregisterPotionItem() throws Throwable {
 		Class.forName("com.bendude56.goldenapple.antigrief.ItemPotion").getMethod("unregisterItem", new Class<?>[0]).invoke(null, new Object[0]);
-		Class.forName("com.bendude56.goldenapple.antigrief.BlockDispenser").getMethod("unregisterBlock", new Class<?>[0]).invoke(null, new Object[0]);
 	}
 
 	@Override
