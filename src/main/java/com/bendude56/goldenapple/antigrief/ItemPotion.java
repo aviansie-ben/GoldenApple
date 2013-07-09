@@ -2,18 +2,18 @@ package com.bendude56.goldenapple.antigrief;
 
 import java.util.HashMap;
 
-import org.bukkit.craftbukkit.v1_6_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_6_R2.inventory.CraftItemStack;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionType;
 
 import com.bendude56.goldenapple.GoldenApple;
 
-import net.minecraft.server.v1_6_R1.EntityHuman;
-import net.minecraft.server.v1_6_R1.Item;
-import net.minecraft.server.v1_6_R1.ItemStack;
-import net.minecraft.server.v1_6_R1.World;
+import net.minecraft.server.v1_6_R2.EntityHuman;
+import net.minecraft.server.v1_6_R2.Item;
+import net.minecraft.server.v1_6_R2.ItemStack;
+import net.minecraft.server.v1_6_R2.World;
 
-public class ItemPotion extends net.minecraft.server.v1_6_R1.ItemPotion {
+public class ItemPotion extends net.minecraft.server.v1_6_R2.ItemPotion {
 	
 	public static HashMap<PotionType, String> typeConfigName = new HashMap<PotionType, String>();
 	
@@ -40,7 +40,7 @@ public class ItemPotion extends net.minecraft.server.v1_6_R1.ItemPotion {
 	
 	public static void unregisterItem() throws Exception {
 		Item.byId[Item.POTION.id] = null;
-		Item potion = prepClass((Item)net.minecraft.server.v1_6_R1.ItemPotion.class.getConstructors()[0].newInstance(117));
+		Item potion = prepClass((Item)net.minecraft.server.v1_6_R2.ItemPotion.class.getConstructors()[0].newInstance(117));
 		
 		Item.POTION = (ItemPotion)potion;
 	}
