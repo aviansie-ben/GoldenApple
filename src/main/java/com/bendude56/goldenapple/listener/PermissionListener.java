@@ -107,6 +107,10 @@ public class PermissionListener implements Listener, EventExecutor {
 				}
 			}
 		}
+		
+		// Flush the user permissions to the Bukkit permissions interface
+		if (event.getResult() == Result.ALLOWED)
+			User.getUser(event.getPlayer());
 	}
 	
 	private void playerQuit(PlayerQuitEvent event) {
