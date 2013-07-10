@@ -2,16 +2,13 @@ package com.bendude56.goldenapple.commands;
 
 import java.util.HashMap;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.ModuleLoader.ModuleState;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 import com.bendude56.goldenapple.warp.WarpManager;
 import com.bendude56.goldenapple.User;
 
-public class ImportCommand implements CommandExecutor {
+public class ImportCommand extends GoldenAppleCommand {
 	private static HashMap<String, String> typeModules = new HashMap<String, String>();
 	
 	static {
@@ -19,9 +16,7 @@ public class ImportCommand implements CommandExecutor {
 	}
 	
 	@Override
-	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
-		User user = User.getUser(sender);
-		
+	public boolean onExecute(GoldenApple instance, User user, String commandLabel, String[] args) {
 		if (args.length < 2) {
 			return false;
 		} else if (!user.hasPermission(PermissionManager.importPermission)) {

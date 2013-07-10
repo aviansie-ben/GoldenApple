@@ -20,7 +20,7 @@ import com.bendude56.goldenapple.permissions.PermissionManager;
 
 public class LockCommand extends DualSyntaxCommand {
 	@Override
-	public void onCommandComplex(GoldenApple instance, User user, String commandLabel, String[] args) {
+	public void onExecuteComplex(GoldenApple instance, User user, String commandLabel, String[] args) {
 		Location lockLocation = null;
 		long selectedId = -1;
 		if (user.getHandle() instanceof Player)
@@ -194,7 +194,8 @@ public class LockCommand extends DualSyntaxCommand {
 		}
 	}
 
-	public void onCommandSimple(GoldenApple instance, User user, String commandLabel, String[] args) {
+	@Override
+	public void onExecuteSimple(GoldenApple instance, User user, String commandLabel, String[] args) {
 		if (!(user.getHandle() instanceof Player))
 			user.sendLocalizedMessage("shared.noConsole");
 

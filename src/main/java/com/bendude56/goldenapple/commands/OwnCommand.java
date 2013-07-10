@@ -1,18 +1,12 @@
 package com.bendude56.goldenapple.commands;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 
-public class OwnCommand implements CommandExecutor {
+public class OwnCommand extends GoldenAppleCommand {
 	@Override
-	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
-		User user = User.getUser(sender);
-		
+	public boolean onExecute(GoldenApple instance, User user, String commandLabel, String[] args) {
 		if (!user.getHandle().isOp()) {
 			GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			return true;

@@ -1,17 +1,13 @@
 package com.bendude56.goldenapple.commands;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
 
-public class ComplexCommand implements CommandExecutor {
+public class ComplexCommand extends GoldenAppleCommand {
 	@Override
-	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
-		User user = User.getUser(sender);
-		
+	public boolean onExecute(GoldenApple instance, User user, String commandLabel, String[] args) {
 		if (user.getHandle() instanceof Player) {
 			if (args.length == 1 && args[0].equals("-v")) {
 				user.setUsingComplexCommands(!user.isUsingComplexCommands());

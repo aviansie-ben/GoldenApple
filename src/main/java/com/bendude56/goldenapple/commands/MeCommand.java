@@ -1,17 +1,13 @@
 package com.bendude56.goldenapple.commands;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
+import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.chat.ChatChannel;
 import com.bendude56.goldenapple.chat.ChatManager;
 
-public class MeCommand implements CommandExecutor {
+public class MeCommand extends GoldenAppleCommand {
 	@Override
-	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
-		User user = User.getUser(sender);
-		
+	public boolean onExecute(GoldenApple instance, User user, String commandLabel, String[] args) {
 		ChatChannel channel = ChatManager.getInstance().getActiveChannel(user);
 		if (channel == null) {
 			user.sendLocalizedMessage("error.channel.notInChannel");

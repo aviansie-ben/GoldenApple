@@ -13,7 +13,7 @@ import com.bendude56.goldenapple.permissions.PermissionManager;
 
 public class ChannelCommand extends DualSyntaxCommand {
 	@Override
-	public void onCommandComplex(GoldenApple instance, User user, String commandLabel, String[] args) {
+	public void onExecuteComplex(GoldenApple instance, User user, String commandLabel, String[] args) {
 		if (args.length == 0 || args[0].equals("-?") || args[0].equals("help")) {
 			sendHelp(user, commandLabel, true, ChatManager.getInstance().getActiveChannelLevel(user));
 		} else if (args[0].equals("-l")) {
@@ -224,7 +224,8 @@ public class ChannelCommand extends DualSyntaxCommand {
 		}
 	}
 
-	public void onCommandSimple(GoldenApple instance, User user, String commandLabel, String[] args) {
+	@Override
+	public void onExecuteSimple(GoldenApple instance, User user, String commandLabel, String[] args) {
 		if (args.length == 0 || args[0].equals("-?") || args[0].equals("help")) {
 			sendHelp(user, commandLabel, false, ChatManager.getInstance().getActiveChannelLevel(user));
 		} else if (args[0].equals("leave")) {

@@ -12,7 +12,7 @@ import com.bendude56.goldenapple.punish.PunishmentBan;
 public class BanCommand extends DualSyntaxCommand {
 
 	@Override
-	public void onCommandComplex(GoldenApple instance, User user, String commandLabel, String[] args) {
+	public void onExecuteComplex(GoldenApple instance, User user, String commandLabel, String[] args) {
 		if (args.length == 0 || args[0].equalsIgnoreCase("-?") || args[0].equalsIgnoreCase("help")) {
 			sendHelp(user, commandLabel, true);
 		} else {
@@ -112,7 +112,7 @@ public class BanCommand extends DualSyntaxCommand {
 	}
 
 	@Override
-	public void onCommandSimple(GoldenApple instance, User user, String commandLabel, String[] args) {
+	public void onExecuteSimple(GoldenApple instance, User user, String commandLabel, String[] args) {
 		if (args.length == 0 || args[0].equalsIgnoreCase("-?") || args[0].equalsIgnoreCase("help")) {
 			sendHelp(user, commandLabel, false);
 		} else {

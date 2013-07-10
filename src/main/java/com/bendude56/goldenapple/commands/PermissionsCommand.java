@@ -5,10 +5,6 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.permissions.IPermissionGroup;
@@ -16,12 +12,9 @@ import com.bendude56.goldenapple.permissions.PermissionManager;
 import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
 
-public class PermissionsCommand implements CommandExecutor {
+public class PermissionsCommand extends GoldenAppleCommand {
 	@Override
-	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
-		GoldenApple instance = GoldenApple.getInstance();
-		User user = User.getUser(sender);
-
+	public boolean onExecute(GoldenApple instance, User user, String commandLabel, String[] args) {
 		if (args.length == 0 || args[0].equalsIgnoreCase("-?")) {
 			sendHelp(user, commandLabel);
 			return true;
