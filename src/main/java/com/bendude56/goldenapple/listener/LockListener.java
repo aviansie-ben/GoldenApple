@@ -45,7 +45,7 @@ public class LockListener implements Listener, EventExecutor {
 
 	private void registerEvents() {
 		PlayerInteractEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
-		BlockBreakEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
+		BlockExpEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
 		BlockPlaceEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.MONITOR, GoldenApple.getInstance(), true));
 		InventoryMoveItemEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
 		BlockRedstoneEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
@@ -53,7 +53,7 @@ public class LockListener implements Listener, EventExecutor {
 
 	private void unregisterEvents() {
 		PlayerInteractEvent.getHandlerList().unregister(this);
-		BlockBreakEvent.getHandlerList().unregister(this);
+		BlockExpEvent.getHandlerList().unregister(this);
 		BlockPlaceEvent.getHandlerList().unregister(this);
 		InventoryMoveItemEvent.getHandlerList().unregister(this);
 		BlockRedstoneEvent.getHandlerList().unregister(this);
@@ -173,7 +173,7 @@ public class LockListener implements Listener, EventExecutor {
 	private void autoLock(BlockPlaceEvent event) {
 		User user = User.getUser(event.getPlayer());
 
-		if (user.isAutoLockEnabled() && user.hasPermission(SimpleLockManager.addPermission) && GoldenApple.getInstanceMainConfig().getIntegerList("modules.lock.autoLockBlocks").contains(event.getBlock().getTypeId()) && LockManager.getInstance().getLock(event.getBlock().getLocation()) == null) {
+		if (user.isAutoLockEnabled() && user.hasPermission(LockManager.addPermission) && GoldenApple.getInstanceMainConfig().getIntegerList("modules.lock.autoLockBlocks").contains(event.getBlock().getTypeId()) && LockManager.getInstance().getLock(event.getBlock().getLocation()) == null) {
 			try {
 				LockManager.getInstance().createLock(event.getBlock().getLocation(), LockLevel.PRIVATE, user);
 				user.sendLocalizedMessage("general.lock.auto");

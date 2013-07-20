@@ -35,10 +35,12 @@ public class SimplePunishmentMute extends PunishmentMute {
 		this.channel = channel;
 	}
 	
+	@Override
 	public boolean isGlobal() {
 		return channel == null;
 	}
 	
+	@Override
 	public String getChannelIdentifier() {
 		return channel;
 	}

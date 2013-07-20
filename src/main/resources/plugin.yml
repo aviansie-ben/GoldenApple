@@ -3,7 +3,7 @@ version: 1.0.2
 main: com.bendude56.goldenapple.GoldenApplePlugin
 website: https://www.github.com/bendude56/GoldenApple
 authors: [ben_dude56, Deaboy]
-softdepend: [Spout, WorldEdit]
+softdepend: [Spout, WorldEdit, WorldGuard]
 commands:
     gapermissions:
         usage: Use /<command> -? for help

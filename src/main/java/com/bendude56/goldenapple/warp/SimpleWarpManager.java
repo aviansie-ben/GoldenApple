@@ -28,14 +28,17 @@ public class SimpleWarpManager extends WarpManager {
 		maxHomes = GoldenApple.getInstanceMainConfig().getInt("modules.warps.maxHomes", 5);
 	}
 	
+	@Override
 	public int getMaxHomes() {
 		return maxHomes;
 	}
 	
+	@Override
 	public boolean isHomeBusy() {
 		return homeBusy;
 	}
 	
+	@Override
 	public boolean isWarpBusy() {
 		return warpBusy;
 	}
@@ -44,7 +47,8 @@ public class SimpleWarpManager extends WarpManager {
 		 GoldenApple.getInstance().getModuleManager().getModule("Warp").setState((homeBusy || warpBusy) ? ModuleState.BUSY : ModuleState.LOADED);
 	}
 	
-	public BaseWarp getHome(IPermissionUser user, int homeNum) {
+	@Override
+	public PlayerBoundWarp getHome(IPermissionUser user, int homeNum) {
 		try {
 			ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT * FROM Homes WHERE UserID=? AND Home=?", user.getId(), homeNum);
 			try {
@@ -63,7 +67,8 @@ public class SimpleWarpManager extends WarpManager {
 		}
 	}
 	
-	public BaseWarp getHome(IPermissionUser user, String alias) {
+	@Override
+	public PlayerBoundWarp getHome(IPermissionUser user, String alias) {
 		try {
 			ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT * FROM Homes WHERE UserID=? AND Alias=?", user.getId(), alias);
 			try {
@@ -82,6 +87,50 @@ public class SimpleWarpManager extends WarpManager {
 		}
 	}
 	
+	@Override
+	public PlayerBoundWarp setHome(IPermissionUser user, int homeNumber, Location loc) throws SQLException {
+		return setHome(user, homeNumber, loc, null, false);
+	}
+	
+	@Override
+	public PlayerBoundWarp setHome(IPermissionUser user, int homeNumber, Location loc, String alias, boolean isPublic) throws SQLException {
+		HomeWarp h = new HomeWarp(user.getId(), homeNumber, loc, alias, isPublic);
+		h.delete();
+		h.insert();
+		
+		return h;
+	}
+	
+	@Override
+	public PermissibleWarp getNamedWarp(String name) {
+		try {
+			ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT * FROM Warps WHERE Name=?", name);
+			try {
+				if (r.next()) {
+					return new NamedWarp(r);
+				} else {
+					return null;
+				}
+			} finally {
+				GoldenApple.getInstanceDatabaseManager().closeResult(r);
+			}
+		} catch (SQLException e) {
+			GoldenApple.log(Level.WARNING, "Error while attempting to retrieve a warp from the database:");
+			GoldenApple.log(Level.WARNING, e);
+			return null;
+		}
+	}
+	
+	@Override
+	public PermissibleWarp setNamedWarp(String name, Location loc) throws SQLException {
+		NamedWarp w = new NamedWarp(name, loc);
+		w.delete();
+		w.insert();
+		
+		return w;
+	}
+	
+	@Override
 	public void importHomesFromEssentials(User sender) {
 		Bukkit.getScheduler().runTaskAsynchronously(GoldenApple.getInstance(), new EssentialsImportHomes(sender));
 	}

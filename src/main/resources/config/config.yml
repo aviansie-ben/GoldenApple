@@ -13,6 +13,10 @@ database:
     # if using MySQL)
     database: 'ga'
     
+    # If you set this to true, GoldenApple will never try to create
+    # the MySQL database. Useful if you don't have full MySQL perms.
+    doNotCreate: false
+    
     # The username to be given when authenticating for access to the
     # database. (Only applicable if using MySQL)
     user: ''

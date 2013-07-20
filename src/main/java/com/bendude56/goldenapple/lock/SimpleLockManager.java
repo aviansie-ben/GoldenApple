@@ -87,6 +87,7 @@ public class SimpleLockManager extends LockManager {
 		}
 	}
 
+	@Override
 	public LockedBlock getLock(long id) {
 		LockedBlock b = checkCache(id);
 		if (b != null)
@@ -106,11 +107,13 @@ public class SimpleLockManager extends LockManager {
 		}
 	}
 
+	@Override
 	public LockedBlock getLock(Location l) {
 		LockedBlock.correctLocation(l);
 		return getLockSpecific(l);
 	}
 
+	@Override
 	public LockedBlock getLockSpecific(Location l) {
 		LockedBlock b = checkCache(l);
 		if (b != null)
@@ -130,6 +133,7 @@ public class SimpleLockManager extends LockManager {
 		}
 	}
 
+	@Override
 	public LockedBlock createLock(Location loc, LockLevel access, IPermissionUser owner) throws SQLException, InvocationTargetException {
 		LockedBlock.correctLocation(loc);
 
@@ -142,6 +146,7 @@ public class SimpleLockManager extends LockManager {
 		return getLockSpecific(loc);
 	}
 
+	@Override
 	public void deleteLock(long id) throws SQLException {
 		if (cacheOut.contains(id))
 			cacheOut.remove(id);
@@ -151,6 +156,7 @@ public class SimpleLockManager extends LockManager {
 		GoldenApple.getInstanceDatabaseManager().execute("DELETE FROM Locks WHERE ID=?", String.valueOf(id));
 	}
 
+	@Override
 	public boolean lockExists(long id) throws SQLException {
 		ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT NULL FROM Locks WHERE ID=?", String.valueOf(id));
 		try {

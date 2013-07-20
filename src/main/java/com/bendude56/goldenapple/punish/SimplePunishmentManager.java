@@ -27,6 +27,7 @@ public class SimplePunishmentManager extends PunishmentManager {
 		}
 	}
 	
+	@Override
 	public void loadIntoCache(IPermissionUser u) {
 		if (cache.containsKey(u.getId())) {
 			cache.get(u.getId()).clear();
@@ -55,10 +56,12 @@ public class SimplePunishmentManager extends PunishmentManager {
 		}
 	}
 	
+	@Override
 	public void unloadFromCache(IPermissionUser u) {
 		cache.remove(u.getId());
 	}
 	
+	@Override
 	public void addPunishment(Punishment p, IPermissionUser u) {
 		if (cache.containsKey(u.getId())) {
 			cache.get(u.getId()).add(p);
@@ -67,18 +70,22 @@ public class SimplePunishmentManager extends PunishmentManager {
 		p.insert();
 	}
 	
+	@Override
 	public void addMute(IPermissionUser target, IPermissionUser admin, String reason, RemainingTime duration, String channel) {
 		addPunishment(new SimplePunishmentMute(target, admin, reason, duration, channel), target);
 	}
 	
+	@Override
 	public void addBan(IPermissionUser target, IPermissionUser admin, String reason, RemainingTime duration) {
 		addPunishment(new SimplePunishmentBan(target, admin, reason, duration), target);
 	}
 	
+	@Override
 	public boolean isMuted(IPermissionUser u, ChatChannel channel) {
 		return (getActiveMute(u, null) != null) || (getActiveMute(u, channel) != null);
 	}
 	
+	@Override
 	public PunishmentMute getActiveMute(IPermissionUser u, ChatChannel channel) {
 		for (Punishment p : getPunishments(u, SimplePunishmentMute.class)) {
 			SimplePunishmentMute m = (SimplePunishmentMute)p;
@@ -94,6 +101,7 @@ public class SimplePunishmentManager extends PunishmentManager {
 		return null;
 	}
 	
+	@Override
 	public Punishment getActivePunishment(IPermissionUser u, Class<? extends Punishment> punishmentType) {
 		ArrayList<Punishment> punish = getPunishments(u, punishmentType);
 		
@@ -104,10 +112,12 @@ public class SimplePunishmentManager extends PunishmentManager {
 		return null;
 	}
 	
+	@Override
 	public boolean hasActivePunishment(IPermissionUser u, Class<? extends Punishment> punishmentType) {
 		return getActivePunishment(u, punishmentType) != null;
 	}
 	
+	@Override
 	public ArrayList<Punishment> getPunishments(IPermissionUser u, Class<? extends Punishment> punishmentType) {
 		boolean unloadCache = !cache.containsKey(u.getId());
 		

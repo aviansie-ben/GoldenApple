@@ -66,10 +66,12 @@ public class SimpleCommandManager extends CommandManager {
 		insertCommand("gawhois", "Punish", null);
 	}
 	
+	@Override
 	public void insertCommand(String commandName, String module, CommandExecutor executor) {
 		commands.put(commandName, new CommandInformation(Bukkit.getPluginCommand(commandName), module, executor));
 	}
 	
+	@Override
 	public CommandInformation getCommand(String command) {
 		return commands.get(command);
 	}

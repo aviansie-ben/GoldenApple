@@ -48,8 +48,8 @@ public class SimpleModuleManager implements ModuleManager {
 						}
 					}
 				} catch (Exception e) {
-					GoldenApplePlugin.log(Level.SEVERE, "An error occured while loading module " + m + ":");
-					GoldenApplePlugin.log(Level.SEVERE, e);
+					GoldenApple.log(Level.SEVERE, "An error occured while loading module " + m + ":");
+					GoldenApple.log(Level.SEVERE, e);
 					if (GoldenApple.getInstanceMainConfig().getBoolean("securityPolicy.shutdownOnFailedModuleLoad", true)) {
 						return false;
 					}

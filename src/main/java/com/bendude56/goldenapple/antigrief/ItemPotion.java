@@ -53,6 +53,7 @@ public class ItemPotion extends net.minecraft.server.v1_6_R2.ItemPotion {
 		super(i);
 	}
 	
+	@Override
 	public ItemStack b(ItemStack itemstack, World world, EntityHuman entityhuman) {
 		try {
 			if (!GoldenApple.getInstanceMainConfig().getBoolean("modules.antigrief.noDrinkPotion." + typeConfigName.get(Potion.fromItemStack(CraftItemStack.asBukkitCopy(itemstack)).getType()), true))

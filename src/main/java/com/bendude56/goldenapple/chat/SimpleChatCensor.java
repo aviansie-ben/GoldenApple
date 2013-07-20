@@ -33,6 +33,7 @@ public class SimpleChatCensor implements ChatCensor {
 		this.censorString = censorString;
 	}
 	
+	@Override
 	public String censorMessage(String message) {
 		for (String regex : censoredRegex) {
 			message = Pattern.compile(regex, Pattern.CASE_INSENSITIVE).matcher(message).replaceAll(censorString);

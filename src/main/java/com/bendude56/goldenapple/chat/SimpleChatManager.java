@@ -58,6 +58,7 @@ public class SimpleChatManager extends ChatManager {
 		}
 	}
 	
+	@Override
 	public void tryJoinChannel(User user, ChatChannel channel, boolean broadcast) {
 		if (userChannels.containsKey(user))
 			leaveChannel(user, broadcast);
@@ -67,6 +68,7 @@ public class SimpleChatManager extends ChatManager {
 		}
 	}
 	
+	@Override
 	public void leaveChannel(User user, boolean broadcast) {
 		if (userChannels.containsKey(user)) {
 			activeChannels.get(userChannels.get(user)).leave(user, broadcast);
@@ -74,6 +76,7 @@ public class SimpleChatManager extends ChatManager {
 		}
 	}
 	
+	@Override
 	public void kickFromChannel(User user) {
 		if (userChannels.containsKey(user)) {
 			activeChannels.get(userChannels.get(user)).kick(user);
@@ -81,10 +84,12 @@ public class SimpleChatManager extends ChatManager {
 		}
 	}
 	
+	@Override
 	public ChatChannelUserLevel getActiveChannelLevel(User user) {
 		return (userChannels.containsKey(user)) ? activeChannels.get(userChannels.get(user)).connectedUsers.get(user) : ChatChannelUserLevel.UNKNOWN;
 	}
 	
+	@Override
 	public ChatChannel getActiveChannel(User user) {
 		if (userChannels.containsKey(user))
 			return activeChannels.get(userChannels.get(user));
@@ -92,19 +97,23 @@ public class SimpleChatManager extends ChatManager {
 			return null;
 	}
 	
+	@Override
 	public List<ChatChannel> getActiveChannels() {
 		return Collections.unmodifiableList(new ArrayList<ChatChannel>(activeChannels.values()));
 	}
 
+	@Override
 	public ChatChannel getDefaultChannel() {
 		return defaultChannel;
 	}
 
+	@Override
 	public ChatChannel createTemporaryChannel(String identifier) {
 		// TODO Temporary chat channel creation
 		return null;
 	}
 	
+	@Override
 	public ChatChannel createChannel(String identifier) {
 		try {
 			GoldenApple.getInstanceDatabaseManager().execute("INSERT INTO Channels (Identifier, DisplayName, MOTD, StrictCensor, DefaultLevel) VALUES (?, ?, NULL, FALSE, 2)", identifier, ChatColor.WHITE + identifier);
@@ -128,10 +137,12 @@ public class SimpleChatManager extends ChatManager {
 		}
 	}
 	
+	@Override
 	public boolean channelExists(String identifier) {
 		return activeChannels.containsKey(identifier);
 	}
 
+	@Override
 	public ChatChannel getChannel(String identifier) {
 		if (activeChannels.containsKey(identifier)) {
 			return activeChannels.get(identifier);
@@ -140,6 +151,7 @@ public class SimpleChatManager extends ChatManager {
 		}
 	}
 
+	@Override
 	public void deleteChannel(String identifier) {
 		if (activeChannels.containsKey(identifier)) {
 			activeChannels.get(identifier).delete();

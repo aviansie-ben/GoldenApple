@@ -41,6 +41,7 @@ public class SimpleLocalizationManager implements LocalizationManager {
 		}
 	}
 
+	@Override
 	public String getMessage(User user, String message) {
 		String lang = user.getPreferredLocale();
 		if (!secondaryMessages.containsKey(lang))
@@ -48,6 +49,7 @@ public class SimpleLocalizationManager implements LocalizationManager {
 		return secondaryMessages.get(lang).get(message);
 	}
 	
+	@Override
 	public String processMessageDefaultLocale(String message, String... args) {
 		String msg = messages.get(message);
 		for (int i = 0; i < args.length; i++) {
@@ -59,6 +61,7 @@ public class SimpleLocalizationManager implements LocalizationManager {
 		return msg;
 	}
 	
+	@Override
 	public String processMessage(String locale, String message, String... args) {
 		String msg = secondaryMessages.get(locale).get(message);
 		for (int i = 0; i < args.length; i++) {
@@ -70,10 +73,12 @@ public class SimpleLocalizationManager implements LocalizationManager {
 		return msg;
 	}
 
+	@Override
 	public void sendMessage(User user, String message, boolean multiline) {
 		sendMessage(user, message, multiline, new String[0]);
 	}
 
+	@Override
 	public void sendMessage(User user, String message, boolean multiline, String... args) {
 		String lang = user.getPreferredLocale();
 		if (!secondaryMessages.containsKey(lang))

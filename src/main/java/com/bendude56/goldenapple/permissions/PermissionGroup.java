@@ -59,35 +59,43 @@ public class PermissionGroup implements IPermissionGroup {
 	/**
 	 * Gets the name of the group represented by this instance.
 	 */
+	@Override
 	public String getName() {
 		return name;
 	}
 	
+	@Override
 	public int getPriority() {
 		return priority;
 	}
 	
+	@Override
 	public boolean isChatColorSet() {
 		return chatColorSelected;
 	}
 	
+	@Override
 	public ChatColor getChatColor() {
 		return chatColor;
 	}
 	
+	@Override
 	public String getPrefix() {
 		return prefix;
 	}
 	
+	@Override
 	public void setPriority(int priority) {
 		this.priority = priority;
 	}
 	
+	@Override
 	public void setChatColor(boolean isSet, ChatColor color) {
 		chatColor = (isSet) ? color : ChatColor.WHITE;
 		chatColorSelected = isSet;
 	}
 	
+	@Override
 	public void setPrefix(String prefix) {
 		this.prefix = prefix;
 	}
@@ -95,6 +103,7 @@ public class PermissionGroup implements IPermissionGroup {
 	/**
 	 * Gets a list of user IDs for users that inherit this group's permissions.
 	 */
+	@Override
 	public List<Long> getUsers() {
 		try {
 			List<Long> users = new ArrayList<Long>();
@@ -115,6 +124,7 @@ public class PermissionGroup implements IPermissionGroup {
 		}
 	}
 
+	@Override
 	public List<Long> getAllUsers() {
 		try {
 			List<Long> users = getUsers();
@@ -135,6 +145,7 @@ public class PermissionGroup implements IPermissionGroup {
 		}
 	}
 
+	@Override
 	public void addUser(IPermissionUser user) {
 		if (!isMember(user, true)) {
 			try {
@@ -148,6 +159,7 @@ public class PermissionGroup implements IPermissionGroup {
 		}
 	}
 
+	@Override
 	public void removeUser(IPermissionUser user) {
 		if (isMember(user, true)) {
 			try {
@@ -161,6 +173,7 @@ public class PermissionGroup implements IPermissionGroup {
 		}
 	}
 
+	@Override
 	public boolean isMember(IPermissionUser user, boolean directOnly) {
 		try {
 			ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT NULL FROM GroupUserMembers WHERE GroupID=? AND MemberID=?", id, user.getId());
@@ -196,6 +209,7 @@ public class PermissionGroup implements IPermissionGroup {
 	 * Gets a list of group IDs for groups that inherit this group's
 	 * permissions.
 	 */
+	@Override
 	public List<Long> getGroups() {
 		try {
 			List<Long> groups = new ArrayList<Long>();
@@ -216,6 +230,7 @@ public class PermissionGroup implements IPermissionGroup {
 		}
 	}
 
+	@Override
 	public List<Long> getAllGroups() {
 		try {
 			List<Long> groups = getGroups();
@@ -236,6 +251,7 @@ public class PermissionGroup implements IPermissionGroup {
 		}
 	}
 
+	@Override
 	public void addGroup(IPermissionGroup group) {
 		if (!isMember(group, true)) {
 			try {
@@ -249,6 +265,7 @@ public class PermissionGroup implements IPermissionGroup {
 		}
 	}
 
+	@Override
 	public void removeGroup(IPermissionGroup group) {
 		if (isMember(group, true)) {
 			try {
@@ -262,6 +279,7 @@ public class PermissionGroup implements IPermissionGroup {
 		}
 	}
 
+	@Override
 	public boolean isMember(IPermissionGroup group, boolean directOnly) {
 		try {
 			ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT NULL FROM GroupGroupMembers WHERE GroupID=? AND MemberID=?", id, group.getId());
@@ -378,6 +396,7 @@ public class PermissionGroup implements IPermissionGroup {
 	 * @param permission The permission to check for.
 	 * @return True if the group has the specified permission, false otherwise.
 	 */
+	@Override
 	public boolean hasPermission(String permission) {
 		return hasPermission(permission, false);
 	}
@@ -388,6 +407,7 @@ public class PermissionGroup implements IPermissionGroup {
 	 * @param permission The permission to check for.
 	 * @return True if the group has the specified permission, false otherwise.
 	 */
+	@Override
 	public boolean hasPermission(Permission permission) {
 		return hasPermission(permission, false);
 	}
@@ -402,6 +422,7 @@ public class PermissionGroup implements IPermissionGroup {
 	 *            (including indirect permissions) will be considered.
 	 * @return True if the group has the specified permission, false otherwise.
 	 */
+	@Override
 	public boolean hasPermission(String permission, boolean specific) {
 		return hasPermission(PermissionManager.getInstance().registerPermission(permission), specific);
 	}
@@ -416,6 +437,7 @@ public class PermissionGroup implements IPermissionGroup {
 	 *            (including indirect permissions) will be considered.
 	 * @return True if the group has the specified permission, false otherwise.
 	 */
+	@Override
 	public boolean hasPermission(Permission permission, boolean inherited) {
 		List<Long> parentGroups = getParentGroups(true);
 		if (hasPermissionSpecificInheritance(permission, parentGroups, inherited))

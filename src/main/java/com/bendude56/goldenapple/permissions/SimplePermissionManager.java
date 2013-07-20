@@ -88,6 +88,7 @@ public class SimplePermissionManager extends PermissionManager {
 	 * @return The permission that has been registered. If the permission
 	 *         already exists, the existing one will be returned.
 	 */
+	@Override
 	public Permission registerPermission(String name, PermissionNode node) {
 		if (nodes.contains(node)) {
 			for (Permission p : this.permissions) {
@@ -111,6 +112,7 @@ public class SimplePermissionManager extends PermissionManager {
 	 * @return The permission that has been registered. If the permission
 	 *         already exists, the existing one will be returned.
 	 */
+	@Override
 	public Permission registerPermission(String fullName) {
 		String[] name = fullName.split("\\.");
 		PermissionNode node = rootNode;
@@ -133,6 +135,7 @@ public class SimplePermissionManager extends PermissionManager {
 	 * @return The node that has been registered. If the node already exists,
 	 *         the existing one will be returned.
 	 */
+	@Override
 	public PermissionNode registerNode(String name, PermissionNode node) {
 		if (nodes.contains(node)) {
 			for (PermissionNode n : nodes) {
@@ -149,6 +152,7 @@ public class SimplePermissionManager extends PermissionManager {
 		}
 	}
 	
+	@Override
 	public Permission getRootStar() {
 		return rootStar;
 	}
@@ -180,6 +184,7 @@ public class SimplePermissionManager extends PermissionManager {
 	/**
 	 * Gets a list of all currently registered permissions.
 	 */
+	@Override
 	public List<Permission> getRegisteredPermissions() {
 		return permissions;
 	}
@@ -190,6 +195,7 @@ public class SimplePermissionManager extends PermissionManager {
 	 * @param name The name of the permission to get information on
 	 * @return Information about the requested permission
 	 */
+	@Override
 	public Permission getPermissionByName(String name) {
 		for (Permission perm : permissions) {
 			if (perm.getFullName().equalsIgnoreCase(name)) {
@@ -202,6 +208,7 @@ public class SimplePermissionManager extends PermissionManager {
 	/**
 	 * Gets a list of all currently registered permission nodes
 	 */
+	@Override
 	public List<PermissionNode> getRegisteredNodes() {
 		return nodes;
 	}
@@ -212,6 +219,7 @@ public class SimplePermissionManager extends PermissionManager {
 	 * @param name The name of the permission node to get information on
 	 * @return Information about the requested permission node
 	 */
+	@Override
 	public PermissionNode getNodeByName(String name) {
 		String[] path = name.split(".");
 		PermissionNode node = rootNode;
@@ -230,6 +238,7 @@ public class SimplePermissionManager extends PermissionManager {
 	/**
 	 * Gets the root node of the permissions system
 	 */
+	@Override
 	public PermissionNode getRootNode() {
 		return rootNode;
 	}
@@ -243,6 +252,7 @@ public class SimplePermissionManager extends PermissionManager {
 	 * @return If the user was found, their ID will be returned. If the user was
 	 *         not found or an error occurred, -1 will be returned.
 	 */
+	@Override
 	public long getUserId(String name) {
 		try {
 			ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT ID FROM Users WHERE Name=?", new Object[] { name });
@@ -272,6 +282,7 @@ public class SimplePermissionManager extends PermissionManager {
 	 * @return If the user was found successfully, their instance will be
 	 *         cached, then returned. Otherwise, null will be returned.
 	 */
+	@Override
 	public PermissionUser getUser(long id) {
 		if (userCache.containsKey(id)) {
 			return userCache.get(id);
@@ -305,6 +316,7 @@ public class SimplePermissionManager extends PermissionManager {
 	 * @return If the user was found successfully, their instance will be
 	 *         cached, then returned. Otherwise, null will be returned.
 	 */
+	@Override
 	public PermissionUser getUser(String name) {
 		for (Map.Entry<Long, PermissionUser> entry : userCache.entrySet()) {
 			if (entry.getValue().getName().equalsIgnoreCase(name)) {
@@ -342,6 +354,7 @@ public class SimplePermissionManager extends PermissionManager {
 	 * @param sticky True to never unload this user from the cache, false to
 	 *            unload them when space is needed in the cache
 	 */
+	@Override
 	public void setUserSticky(long id, boolean sticky) {
 		if (userCache.containsKey(id)) {
 			if (sticky && userCacheOut.contains(id)) {
@@ -367,6 +380,7 @@ public class SimplePermissionManager extends PermissionManager {
 	 * 
 	 * @param id The ID of the user to check
 	 */
+	@Override
 	public boolean isUserSticky(long id) {
 		return userCache.containsKey(id) && !userCacheOut.contains(id);
 	}
@@ -379,6 +393,7 @@ public class SimplePermissionManager extends PermissionManager {
 	 * @return If the group was found successfully, their instance will be
 	 *         cached, then returned. Otherwise, null will be returned.
 	 */
+	@Override
 	public PermissionGroup getGroup(long id) {
 		if (groupCache.containsKey(id)) {
 			return groupCache.get(id);
@@ -410,6 +425,7 @@ public class SimplePermissionManager extends PermissionManager {
 	 * @return If the group was found successfully, their instance will be
 	 *         cached, then returned. Otherwise, null will be returned.
 	 */
+	@Override
 	public PermissionGroup getGroup(String name) {
 		for (Map.Entry<Long, PermissionGroup> entry : groupCache.entrySet()) {
 			if (entry.getValue().getName().equalsIgnoreCase(name)) {
@@ -443,6 +459,7 @@ public class SimplePermissionManager extends PermissionManager {
 	 * 
 	 * @param name The name to check the database against
 	 */
+	@Override
 	public boolean userExists(String name) throws SQLException {
 		ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT NULL FROM Users WHERE Name=?", new Object[] { name });
 		try {
@@ -462,6 +479,7 @@ public class SimplePermissionManager extends PermissionManager {
 	 *         user was created successfully, the new user is returned. If an
 	 *         error occurred, null is returned.
 	 */
+	@Override
 	public PermissionUser createUser(String name) {
 		try {
 			if (userExists(name))
@@ -484,6 +502,7 @@ public class SimplePermissionManager extends PermissionManager {
 	 * 
 	 * @param name The name to check the database against
 	 */
+	@Override
 	public boolean groupExists(String name) throws SQLException {
 		ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT NULL FROM Groups WHERE Name=?", new Object[] { name });
 		try {
@@ -502,6 +521,7 @@ public class SimplePermissionManager extends PermissionManager {
 	 *         the group was created successfully, the new group is returned. If
 	 *         an error occurred, null is returned.
 	 */
+	@Override
 	public PermissionGroup createGroup(String name) {
 		try {
 			if (groupExists(name))
@@ -522,6 +542,7 @@ public class SimplePermissionManager extends PermissionManager {
 	 * 
 	 * @param id The ID of the user that should be deleted
 	 */
+	@Override
 	public void deleteUser(long id) throws SQLException {
 		if (id < 0) {
 			throw new IllegalArgumentException("id cannot be < 0");
@@ -542,6 +563,7 @@ public class SimplePermissionManager extends PermissionManager {
 	 * 
 	 * @param id The ID of the user that should be deleted
 	 */
+	@Override
 	public void deleteGroup(long id) throws SQLException {
 		if (id < 0) {
 			throw new IllegalArgumentException("id cannot be < 0");
@@ -556,6 +578,7 @@ public class SimplePermissionManager extends PermissionManager {
 	/**
 	 * Closes the database connection and flushes the cache
 	 */
+	@Override
 	public void close() {
 		userCache = null;
 		groupCache = null;

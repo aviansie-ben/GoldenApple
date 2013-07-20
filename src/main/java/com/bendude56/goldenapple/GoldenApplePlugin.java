@@ -70,8 +70,8 @@ public class GoldenApplePlugin extends GoldenApple {
 				i.close();
 				o.close();
 			} catch (IOException e) {
-				GoldenApplePlugin.log(Level.SEVERE, "Failed to load default configuration!");
-				GoldenApplePlugin.log(e);
+				GoldenApple.log(Level.SEVERE, "Failed to load default configuration!");
+				GoldenApple.log(e);
 				getServer().getPluginManager().disablePlugin(this);
 			}
 		}
@@ -85,8 +85,8 @@ public class GoldenApplePlugin extends GoldenApple {
 				((YamlConfiguration)databaseVersion).save(new File(this.getDataFolder() + "/dbversion.yml"));
 			}
 		} catch (IOException e) {
-			GoldenApplePlugin.log(Level.SEVERE, "Failed to load database version!");
-			GoldenApplePlugin.log(e);
+			GoldenApple.log(Level.SEVERE, "Failed to load database version!");
+			GoldenApple.log(e);
 			getServer().getPluginManager().disablePlugin(this);
 		}
 		commands = new SimpleCommandManager();
@@ -95,7 +95,7 @@ public class GoldenApplePlugin extends GoldenApple {
 		modules = new SimpleModuleManager();
 		
 		if (!modules.loadDefaults()) {
-			GoldenApplePlugin.log(Level.SEVERE, "Server shutting down due to failed module load...");
+			GoldenApple.log(Level.SEVERE, "Server shutting down due to failed module load...");
 			Bukkit.getServer().shutdown();
 			return;
 		}

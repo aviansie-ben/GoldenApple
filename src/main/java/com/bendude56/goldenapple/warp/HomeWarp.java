@@ -7,43 +7,32 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 import com.bendude56.goldenapple.GoldenApple;
-import com.bendude56.goldenapple.User;
-import com.bendude56.goldenapple.permissions.IPermissionUser;
-import com.bendude56.goldenapple.permissions.PermissionManager;
 
-public class HomeWarp extends BaseWarp {
-	private long userId;
+public class HomeWarp extends PlayerBoundWarp {
 	private int homeNum;
 	private String alias;
-	private boolean isPublic;
 	
 	public HomeWarp(ResultSet r) throws SQLException {
-		userId = r.getLong("UserID");
+		super(r.getLong("UserID"), r.getBoolean("Public"), new Location(Bukkit.getWorld(r.getString("World")), r.getDouble("X"), r.getDouble("Y"), r.getDouble("Z"), r.getFloat("Yaw"), r.getFloat("Pitch")));
+		
 		homeNum = r.getInt("Home");
 		alias = r.getString("Alias");
-		isPublic = r.getBoolean("Public");
-		loc = new Location(Bukkit.getWorld(r.getString("World")), r.getDouble("X"), r.getDouble("Y"), r.getDouble("Z"), r.getFloat("Yaw"), r.getFloat("Pitch"));
 	}
 	
-	public HomeWarp(long userId, int homeNum, Location loc) {
-		this(userId, homeNum, loc, null, false);
+	public HomeWarp(long owner, int homeNum, Location loc) {
+		this(owner, homeNum, loc, null, false);
 	}
 	
-	public HomeWarp(long userId, int homeNum, Location loc, String alias, boolean isPublic) {
-		this.userId = userId;
+	public HomeWarp(long owner, int homeNum, Location loc, String alias, boolean isPublic) {
+		super(owner, isPublic, loc);
+		
 		this.homeNum = homeNum;
-		this.loc = loc;
 		this.alias = alias;
-		this.isPublic = isPublic;
 	}
 
 	@Override
 	public String getDisplayName() {
 		return (alias == null) ? ("Home #" + homeNum) : alias;
-	}
-	
-	public IPermissionUser getUser() {
-		return PermissionManager.getInstance().getUser(userId);
 	}
 	
 	public int getHomeNumber() {
@@ -58,51 +47,19 @@ public class HomeWarp extends BaseWarp {
 		this.alias = alias;
 	}
 	
-	public boolean isPublic() {
-		return isPublic;
-	}
-	
-	public void setPublic(boolean isPublic) {
-		this.isPublic = isPublic;
-	}
-
-	@Override
-	public boolean canTeleport(User u) {
-		if (u.getId() == userId && u.hasPermission(SimpleWarpManager.homeTpOwn))
-			return true;
-		else if (isPublic && u.hasPermission(SimpleWarpManager.homeTpPublic))
-			return true;
-		else if (u.hasPermission(SimpleWarpManager.homeTpAll))
-			return true;
-		else
-			return false;
-	}
-
-	@Override
-	public boolean canEdit(User u) {
-		if (u.getId() == userId && u.hasPermission(SimpleWarpManager.homeEditOwn))
-			return true;
-		else if (isPublic && u.hasPermission(SimpleWarpManager.homeEditPublic))
-			return true;
-		else if (u.hasPermission(SimpleWarpManager.homeEditAll))
-			return true;
-		else
-			return false;
-	}
-	
 	@Override
 	public void update() throws SQLException {
-		GoldenApple.getInstanceDatabaseManager().execute("UPDATE Homes SET Alias=?, X=?, Y=?, Z=?, Yaw=?, Pitch=?, World=?, Public=? WHERE UserID=? AND Home=?", alias, loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch(), loc.getWorld().getName(), isPublic, userId, homeNum);
+		GoldenApple.getInstanceDatabaseManager().execute("UPDATE Homes SET Alias=?, X=?, Y=?, Z=?, Yaw=?, Pitch=?, World=?, Public=? WHERE UserID=? AND Home=?", alias, loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch(), loc.getWorld().getName(), isPublic(), owner, homeNum);
 	}
 	
 	@Override
 	public void insert() throws SQLException {
-		GoldenApple.getInstanceDatabaseManager().execute("INSERT INTO Homes (UserID, Home, Alias, X, Y, Z, Yaw, Pitch, World, Public) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", userId, homeNum, alias, loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch(), loc.getWorld().getName(), isPublic);
+		GoldenApple.getInstanceDatabaseManager().execute("INSERT INTO Homes (UserID, Home, Alias, X, Y, Z, Yaw, Pitch, World, Public) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", owner, homeNum, alias, loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch(), loc.getWorld().getName(), isPublic());
 	}
 	
 	@Override
 	public void delete() throws SQLException {
-		GoldenApple.getInstanceDatabaseManager().execute("DELETE FROM Homes WHERE UserID=? AND Home=?", userId, homeNum);
+		GoldenApple.getInstanceDatabaseManager().execute("DELETE FROM Homes WHERE UserID=? AND Home=?", owner, homeNum);
 	}
 
 }

@@ -1,5 +1,9 @@
 package com.bendude56.goldenapple.warp;
 
+import java.sql.SQLException;
+
+import org.bukkit.Location;
+
 import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
 import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
@@ -9,6 +13,7 @@ public abstract class WarpManager {
 	// goldenapple.warp
 	public static PermissionNode warpNode;
 	public static Permission backPermission;
+	public static Permission editPermission;
 	
 	// goldenapple.warp.tp
 	public static PermissionNode tpNode;
@@ -46,8 +51,15 @@ public abstract class WarpManager {
 	public abstract boolean isHomeBusy();
 	public abstract boolean isWarpBusy();
 	
-	public abstract BaseWarp getHome(IPermissionUser user, int homeNum);
-	public abstract BaseWarp getHome(IPermissionUser user, String alias);
+	public abstract PlayerBoundWarp getHome(IPermissionUser user, int homeNum);
+	public abstract PlayerBoundWarp getHome(IPermissionUser user, String alias);
+	
+	public abstract PlayerBoundWarp setHome(IPermissionUser user, int nomeNumber, Location loc) throws SQLException;
+	public abstract PlayerBoundWarp setHome(IPermissionUser user, int homeNumber, Location loc, String alias, boolean isPublic) throws SQLException;
+	
+	public abstract PermissibleWarp getNamedWarp(String name);
+	
+	public abstract PermissibleWarp setNamedWarp(String name, Location loc) throws SQLException;
 	
 	public abstract void importHomesFromEssentials(User sender);
 }

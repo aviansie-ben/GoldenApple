@@ -40,13 +40,16 @@ public final class SimpleDatabaseManager implements DatabaseManager {
 			mySql = true;
 			try {
 				Class.forName("com.mysql.jdbc.Driver");
-				Connection c = DriverManager.getConnection("jdbc:mysql://" + GoldenApple.getInstanceMainConfig().getString("database.host", "localhost") + "/mysql?allowMultiQueries=true", GoldenApple.getInstanceMainConfig().getString("database.user", ""), GoldenApple.getInstanceMainConfig().getString("database.password", ""));
+				Connection c = DriverManager.getConnection("jdbc:mysql://" + GoldenApple.getInstanceMainConfig().getString("database.host", "localhost") + "/?allowMultiQueries=true", GoldenApple.getInstanceMainConfig().getString("database.user", ""), GoldenApple.getInstanceMainConfig().getString("database.password", ""));
 				if (!c.isValid(1000)) {
 					GoldenApple.log(Level.SEVERE, "Failed to connect to MySQL database!");
 					return;
 				}
 				connection = c;
-				execute("CREATE DATABASE IF NOT EXISTS " + GoldenApple.getInstanceMainConfig().getString("database.database", "ga"));
+				
+				if (!GoldenApple.getInstanceMainConfig().getBoolean("database.doNotCreate", false))
+					execute("CREATE DATABASE IF NOT EXISTS " + GoldenApple.getInstanceMainConfig().getString("database.database", "ga"));
+				
 				execute("USE " + GoldenApple.getInstanceMainConfig().getString("database.database", "ga"));
 				GoldenApple.log("Successfully connected to MySQL database at \'" + GoldenApple.getInstanceMainConfig().getString("database.host") + "\'");
 			} catch (Exception e) {
@@ -70,6 +73,7 @@ public final class SimpleDatabaseManager implements DatabaseManager {
 		}
 	}
 
+	@Override
 	public boolean usingMySql() {
 		return mySql;
 	}
@@ -83,6 +87,7 @@ public final class SimpleDatabaseManager implements DatabaseManager {
 	 * 
 	 * @param command The command to execute
 	 */
+	@Override
 	public void execute(String command) throws SQLException {
 		execute(command, new Object[0]);
 	}
@@ -94,6 +99,7 @@ public final class SimpleDatabaseManager implements DatabaseManager {
 	 * @param parameters The arguments that should be added in place of ?s in
 	 *            the statement before it is executed
 	 */
+	@Override
 	public void execute(String command, Object... parameters) throws SQLException {
 		PreparedStatement s = connection.prepareStatement(command);
 		try {
@@ -115,6 +121,7 @@ public final class SimpleDatabaseManager implements DatabaseManager {
 	 * 
 	 * @param command The command to execute
 	 */
+	@Override
 	public ResultSet executeQuery(String command) throws SQLException {
 		return executeQuery(command, new Object[0]);
 	}
@@ -126,6 +133,7 @@ public final class SimpleDatabaseManager implements DatabaseManager {
 	 * @param parameters The arguments that should be added in place of ?s in
 	 *            the statement before it is executed
 	 */
+	@Override
 	public ResultSet executeQuery(String command, Object... parameters) throws SQLException {
 		PreparedStatement s = connection.prepareStatement(command);
 		try {
@@ -144,18 +152,22 @@ public final class SimpleDatabaseManager implements DatabaseManager {
 		}
 	}
 	
+	@Override
 	public void executeFromResource(String resourceName) throws SQLException, IOException {
 		executeFromResource(resourceName, new Object[0]);
 	}
 	
+	@Override
 	public void executeFromResource(String resourceName, Object... parameters) throws SQLException, IOException {
 		execute(readResource("sql/" + ((mySql) ? "mysql" : "sqlite") + "/" + resourceName + ".sql"), parameters);
 	}
 	
+	@Override
 	public ResultSet executeQueryFromResource(String resourceName) throws SQLException, IOException {
 		return executeQueryFromResource(resourceName, new Object[0]);
 	}
 	
+	@Override
 	public ResultSet executeQueryFromResource(String resourceName, Object... parameters) throws SQLException, IOException {
 		return executeQuery(readResource("sql/" + ((mySql) ? "mysql" : "sqlite") + "/" + resourceName + ".sql"), parameters);
 	}
@@ -164,6 +176,7 @@ public final class SimpleDatabaseManager implements DatabaseManager {
 		return executeReturnGenKeys(command, new Object[0]);
 	}
 	
+	@Override
 	public ResultSet executeReturnGenKeys(String command, Object... parameters) throws SQLException {
 		PreparedStatement s = connection.prepareStatement(command, Statement.RETURN_GENERATED_KEYS);
 		try {
@@ -207,11 +220,13 @@ public final class SimpleDatabaseManager implements DatabaseManager {
 		return getClass().getClassLoader().getResource(resource) != null;
 	}
 	
+	@Override
 	public void closeResult(ResultSet r) throws SQLException {
 		toClose.get(r).close();
 		toClose.remove(r);
 	}
 	
+	@Override
 	public void createOrUpdateTable(String tableName) {
 		int expectedDbVersion = DB_VERSION;
 		try {
@@ -247,6 +262,7 @@ public final class SimpleDatabaseManager implements DatabaseManager {
 	/**
 	 * Closes the connection to the database
 	 */
+	@Override
 	public void close() {
 		try {
 			if (connection == null || connection.isClosed())
