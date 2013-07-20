@@ -25,6 +25,8 @@ public class SimpleWarpManager extends WarpManager {
 	
 	public SimpleWarpManager() {
 		GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("homes");
+		GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("warps");
+		GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("warpgroups");
 		maxHomes = GoldenApple.getInstanceMainConfig().getInt("modules.warps.maxHomes", 5);
 	}
 	

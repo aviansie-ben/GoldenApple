@@ -93,3 +93,15 @@ commands:
         usage: /<command> <Player>
         description: Gets ban/mute information about a player
         aliases: [whois]
+    gawarp:
+        usage: /<command> <Warp>
+        description: Warps you to a named warp
+        aliases: [warp]
+    gasetwarp:
+        usage: /<command> <Warp>
+        description: Sets a named warp
+        aliases: [setwarp]
+    gadelwarp:
+        usage: /<command> <Warp>
+        description: Deletes a named warp
+        aliases: [delwarp]

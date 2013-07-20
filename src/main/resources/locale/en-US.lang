@@ -85,6 +85,9 @@ error.permissions.remove.userUnknown=&4ERROR: Failed to remove user '%1': Unknow
 
 error.verify.noCommand=&4ERROR: No command to verify!
 
+error.warp.notFound=&4ERROR: Warp '%1' was not found!
+error.warp.setFail=&4ERROR: An error was encountered while setting the warp!
+
 error.warps.noBack=&4ERROR: You have nowhere to go back to!
 error.warps.pluginCancel=&4ERROR: Teleport was cancelled by another plugin!
 
@@ -194,6 +197,9 @@ general.permissions.remove.warnStart=&eWARNING: You are about to permanently rem
 general.permissions.remove.warnUser=&e   User: %1
 general.permissions.remove.warnGroup=&e   Group: %1
 general.permissions.remove.warnEnd=&eIf you are sure you wish to permanently remove these groups and users, use /gaverify.
+
+general.warp.delete=&aWarp '%1' has been deleted.
+general.warp.set=&aWarp '%1' has been set here.
 
 general.warps.teleportBy=&aYou have been teleported by %1&a.
 general.warps.teleportSpawn=&aYou have been teleported to spawn.

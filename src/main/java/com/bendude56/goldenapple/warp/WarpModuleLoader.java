@@ -33,12 +33,16 @@ public class WarpModuleLoader implements ModuleLoader {
 		commands.getCommand("gahome").register();
 		commands.getCommand("gasethome").register();
 		commands.getCommand("gadelhome").register();
+		commands.getCommand("gawarp").register();
+		commands.getCommand("gasetwarp").register();
+		commands.getCommand("gadelwarp").register();
 	}
 
 	@Override
 	public void registerPermissions(PermissionManager permissions) {
 		WarpManager.warpNode = permissions.registerNode("warp", PermissionManager.goldenAppleNode);
 		WarpManager.backPermission = permissions.registerPermission("back", WarpManager.warpNode);
+		WarpManager.editPermission = permissions.registerPermission("edit", WarpManager.warpNode);
 		
 		WarpManager.tpNode = permissions.registerNode("tp", WarpManager.warpNode);
 		WarpManager.tpSelfToOtherPermission = permissions.registerPermission("selfToOther", WarpManager.tpNode);
@@ -78,6 +82,9 @@ public class WarpModuleLoader implements ModuleLoader {
 		commands.getCommand("gahome").unregister();
 		commands.getCommand("gasethome").unregister();
 		commands.getCommand("gadelhome").unregister();
+		commands.getCommand("gawarp").unregister();
+		commands.getCommand("gasetwarp").unregister();
+		commands.getCommand("gadelwarp").unregister();
 	}
 
 	@Override

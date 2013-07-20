@@ -233,6 +233,10 @@ public class User implements IPermissionUser {
 	public CommandSender getHandle() {
 		return handle;
 	}
+	
+	public void setHandle(CommandSender handle) {
+		this.handle = handle;
+	}
 
 	/**
 	 * Gets the {@link org.bukkit.entity.Player} that is represented by this
