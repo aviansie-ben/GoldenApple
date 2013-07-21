@@ -44,7 +44,7 @@ public class PermissionGroup implements IPermissionGroup {
 	 */
 	public void save() {
 		try {
-			GoldenApple.getInstanceDatabaseManager().execute("UPDATE Groups SET Name=?, Priority=?, ChatColor=?, Prefix=? WHERE ID=?", name, priority, (chatColorSelected) ? chatColor.getChar() : null, prefix, id);
+			GoldenApple.getInstanceDatabaseManager().execute("UPDATE Groups SET Name=?, Priority=?, ChatColor=?, Prefix=? WHERE ID=?", name, priority, (chatColorSelected) ? String.valueOf(chatColor.getChar()) : null, prefix, id);
 		} catch (SQLException e) {
 			GoldenApple.log(Level.SEVERE, "Failed to save changes to group '" + name + "':");
 			GoldenApple.log(Level.SEVERE, e);

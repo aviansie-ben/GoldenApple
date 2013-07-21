@@ -5,9 +5,12 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.permissions.IPermissionGroup;
+import com.bendude56.goldenapple.permissions.PermissionGroup;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
@@ -31,6 +34,9 @@ public class PermissionsCommand extends GoldenAppleCommand {
 		ArrayList<String> remUsers = new ArrayList<String>();
 		ArrayList<String> addGroups = new ArrayList<String>();
 		ArrayList<String> remGroups = new ArrayList<String>();
+		
+		String chatPrefix = null;
+		Character chatColor = null;
 
 		boolean add = false;
 		boolean remove = false;
@@ -97,13 +103,27 @@ public class PermissionsCommand extends GoldenAppleCommand {
 					remGroups.add(args[i + 1]);
 					i++;
 				}
+			} else if (args[i].equalsIgnoreCase("-cp")) {
+				if (i == args.length - 1 || args[i + 1].startsWith("-")) {
+					user.sendLocalizedMessage("shared.parameterMissing", args[i]);
+				} else {
+					chatPrefix = args[i + 1];
+					i++;
+				}
+			} else if (args[i].equalsIgnoreCase("-cc")) {
+				if (i == args.length - 1 || args[i + 1].startsWith("-")) {
+					user.sendLocalizedMessage("shared.parameterMissing", args[i]);
+				} else {
+					chatColor = args[i + 1].charAt(0);
+					i++;
+				}
 			} else if (args[i].equalsIgnoreCase("-v")) {
 				verified = true;
 			} else {
 				user.sendLocalizedMessage("shared.unknownOption", args[i]);
 			}
 		}
-		if (!remove && !add && addPermissions.isEmpty() && remPermissions.isEmpty() && addUsers.isEmpty() && remUsers.isEmpty() && addGroups.isEmpty() && remGroups.isEmpty()) {
+		if (chatPrefix == null && chatColor == null && !remove && !add && addPermissions.isEmpty() && remPermissions.isEmpty() && addUsers.isEmpty() && remUsers.isEmpty() && addGroups.isEmpty() && remGroups.isEmpty()) {
 			user.sendLocalizedMessage("error.permissions.noAction");
 			return true;
 		}
@@ -287,6 +307,30 @@ public class PermissionsCommand extends GoldenAppleCommand {
 				}
 				for (IPermissionGroup g : gl) {
 					updatePermissions(instance, user, g, addPerm, remPerm);
+				}
+			}
+			
+			if (chatColor != null) {
+				if (gl.isEmpty()) {
+					user.sendLocalizedMessage("error.permissions.noTarget", "-cc");
+					return true;
+				}
+				
+				for (IPermissionGroup g : gl) {
+					g.setChatColor(chatColor != null, (chatColor == null) ? ChatColor.WHITE : ChatColor.getByChar(chatColor));
+					((PermissionGroup)g).save();
+				}
+			}
+			
+			if (chatPrefix != null) {
+				if (gl.isEmpty()) {
+					user.sendLocalizedMessage("error.permissions.noTarget", "-cp");
+					return true;
+				}
+				
+				for (IPermissionGroup g : gl) {
+					g.setPrefix(chatPrefix);
+					((PermissionGroup)g).save();
 				}
 			}
 		}
