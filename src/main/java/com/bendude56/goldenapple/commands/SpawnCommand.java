@@ -16,10 +16,17 @@ public class SpawnCommand extends GoldenAppleCommand {
 			if (args.length == 0) {
 				if (!user.hasPermission(WarpManager.spawnCurrentPermission)) {
 					GoldenApple.logPermissionFail(user, commandLabel, args, true);
-				} else if (user.getPlayerHandle().teleport(user.getPlayerHandle().getWorld().getSpawnLocation(), TeleportCause.COMMAND)) {
-					user.sendLocalizedMessage("general.warps.teleportSpawn");
 				} else {
-					user.sendLocalizedMessage("error.warps.pluginCancel");
+					String w = GoldenApple.getInstanceMainConfig().getString("modules.warps.defaultSpawn", "current");
+					World world = (w == "current") ? user.getPlayerHandle().getWorld() : Bukkit.getWorld(w);
+					
+					if (world == null) {
+						user.sendLocalizedMessage("shared.worldNotFoundError", w);
+					} else if (user.getPlayerHandle().teleport(world.getSpawnLocation(), TeleportCause.COMMAND)) {
+						user.sendLocalizedMessage("general.warps.teleportSpawn");
+					} else {
+						user.sendLocalizedMessage("error.warps.pluginCancel");
+					}
 				}
 			} else {
 				World w = Bukkit.getWorld(args[0]);

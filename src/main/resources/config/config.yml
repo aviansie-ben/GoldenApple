@@ -310,6 +310,11 @@ modules:
         # one time.
         maxHomes: 5
         
+        # When players use /spawn, they will be teleported to the
+        # spawn point of this world. Leaving this as 'current' causes
+        # players to spawn to their current world by default.
+        defaultSpawn: 'current'
+        
     punish:
     
         # Determines whether or not the GoldenApple punishment module
