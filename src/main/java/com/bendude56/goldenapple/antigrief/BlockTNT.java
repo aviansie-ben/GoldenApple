@@ -8,17 +8,20 @@ import org.bukkit.Material;
 
 import com.bendude56.goldenapple.GoldenApple;
 
-import net.minecraft.server.v1_6_R2.Block;
-import net.minecraft.server.v1_6_R2.Entity;
-import net.minecraft.server.v1_6_R2.EntityArrow;
-import net.minecraft.server.v1_6_R2.EntityLiving;
-import net.minecraft.server.v1_6_R2.EntityTNTPrimed;
-import net.minecraft.server.v1_6_R2.Explosion;
-import net.minecraft.server.v1_6_R2.StepSound;
-import net.minecraft.server.v1_6_R2.World;
+import net.minecraft.server.v1_6_R3.Block;
+import net.minecraft.server.v1_6_R3.Entity;
+import net.minecraft.server.v1_6_R3.EntityArrow;
+import net.minecraft.server.v1_6_R3.EntityLiving;
+import net.minecraft.server.v1_6_R3.EntityTNTPrimed;
+import net.minecraft.server.v1_6_R3.Explosion;
+import net.minecraft.server.v1_6_R3.StepSound;
+import net.minecraft.server.v1_6_R3.World;
 
-public class BlockTNT extends net.minecraft.server.v1_6_R2.BlockTNT {
+public class BlockTNT extends net.minecraft.server.v1_6_R3.BlockTNT {
 	
+	// TODO Take a look at registration and unregistration now that getId() is deprecated
+	
+	@SuppressWarnings("deprecation")
 	public static void registerBlock() throws Exception {
 		Block.byId[Material.TNT.getId()] = null;
 		Block tnt = prepClass((Block)BlockTNT.class.getConstructors()[0].newInstance(46));
@@ -31,9 +34,10 @@ public class BlockTNT extends net.minecraft.server.v1_6_R2.BlockTNT {
 		f.set(null, tnt);
 	}
 	
+	@SuppressWarnings("deprecation")
 	public static void unregisterBlock() throws Exception {
 		Block.byId[Material.TNT.getId()] = null;
-		Block tnt = prepClass((Block)net.minecraft.server.v1_6_R2.BlockTNT.class.getConstructors()[0].newInstance(46, 8));
+		Block tnt = prepClass((Block)net.minecraft.server.v1_6_R3.BlockTNT.class.getConstructors()[0].newInstance(46, 8));
 		
 		Field f = Block.class.getField("TNT");
 		Field mod = Field.class.getDeclaredField("modifiers");

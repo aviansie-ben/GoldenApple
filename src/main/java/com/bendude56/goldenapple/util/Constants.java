@@ -34,7 +34,10 @@ public class Constants {
 		initPassiveMobs();
 	}
 	
+	@SuppressWarnings("deprecation")
 	private static void initTransparentBlocks() {
+		// TODO Replace this, since getId() is now deprecated
+		
 		transparentBlocks.add(((Integer) Material.AIR.getId()).byteValue());
 		transparentBlocks.add(((Integer) Material.BREWING_STAND.getId()).byteValue());
 		transparentBlocks.add(((Integer) Material.BROWN_MUSHROOM.getId()).byteValue());

@@ -19,6 +19,7 @@ import com.bendude56.goldenapple.permissions.IPermissionUser;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 
 public class LockCommand extends DualSyntaxCommand {
+	@SuppressWarnings("deprecation") // TODO Remove this when an alternative to getTargetBlock is released
 	@Override
 	public void onExecuteComplex(GoldenApple instance, User user, String commandLabel, String[] args) {
 		Location lockLocation = null;
@@ -194,6 +195,7 @@ public class LockCommand extends DualSyntaxCommand {
 		}
 	}
 
+	@SuppressWarnings("deprecation") // TODO Remove this when an alternative to getTargetBlock is released
 	@Override
 	public void onExecuteSimple(GoldenApple instance, User user, String commandLabel, String[] args) {
 		if (!(user.getHandle() instanceof Player))

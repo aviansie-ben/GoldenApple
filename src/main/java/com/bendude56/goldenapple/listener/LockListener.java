@@ -22,7 +22,6 @@ import org.bukkit.plugin.RegisteredListener;
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.lock.LockManager;
-import com.bendude56.goldenapple.lock.SimpleLockManager;
 import com.bendude56.goldenapple.lock.LockedBlock;
 import com.bendude56.goldenapple.lock.LockedBlock.LockLevel;
 import com.bendude56.goldenapple.permissions.PermissionManager;
@@ -170,9 +169,11 @@ public class LockListener implements Listener, EventExecutor {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	private void autoLock(BlockPlaceEvent event) {
 		User user = User.getUser(event.getPlayer());
 
+		// TODO getTypeId() is deprecated. Look at alternatives.
 		if (user.isAutoLockEnabled() && user.hasPermission(LockManager.addPermission) && GoldenApple.getInstanceMainConfig().getIntegerList("modules.lock.autoLockBlocks").contains(event.getBlock().getTypeId()) && LockManager.getInstance().getLock(event.getBlock().getLocation()) == null) {
 			try {
 				LockManager.getInstance().createLock(event.getBlock().getLocation(), LockLevel.PRIVATE, user);
