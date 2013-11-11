@@ -83,7 +83,7 @@ public abstract class CommandManager {
 		}
 		
 		public void unregister() {
-			setAliases(new ArrayList<String>());			
+			setAliases(new ArrayList<String>());
 			command.setExecutor(getDefaultCommand());
 		}
 	}

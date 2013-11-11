@@ -39,17 +39,22 @@ public final class SimpleDatabaseManager implements DatabaseManager {
 		if (GoldenApple.getInstanceMainConfig().getBoolean("database.useMySQL", false)) {
 			mySql = true;
 			try {
+				// Open a JDBC connection to the database server
 				Class.forName("com.mysql.jdbc.Driver");
 				Connection c = DriverManager.getConnection("jdbc:mysql://" + GoldenApple.getInstanceMainConfig().getString("database.host", "localhost") + "/?allowMultiQueries=true", GoldenApple.getInstanceMainConfig().getString("database.user", ""), GoldenApple.getInstanceMainConfig().getString("database.password", ""));
+				
+				// Ensure that the connection was successful
 				if (!c.isValid(1000)) {
 					GoldenApple.log(Level.SEVERE, "Failed to connect to MySQL database!");
 					return;
 				}
 				connection = c;
 				
+				// Create the database if it doesn't already exist
 				if (!GoldenApple.getInstanceMainConfig().getBoolean("database.doNotCreate", false))
 					execute("CREATE DATABASE IF NOT EXISTS " + GoldenApple.getInstanceMainConfig().getString("database.database", "ga"));
 				
+				// Select the database for use
 				execute("USE " + GoldenApple.getInstanceMainConfig().getString("database.database", "ga"));
 				GoldenApple.log("Successfully connected to MySQL database at \'" + GoldenApple.getInstanceMainConfig().getString("database.host") + "\'");
 			} catch (Exception e) {
@@ -234,18 +239,25 @@ public final class SimpleDatabaseManager implements DatabaseManager {
 			int actualDbVersion = GoldenApple.getInstance().getDatabaseVersionConfig().getInt("tableVersions." + tableName, 0);
 			
 			if (actualDbVersion == 0) {
+				// The table doesn't yet exist. Execute the creation query
 				executeFromResource(tableName + "_create");
+				
+				// Change the version id
 				GoldenApple.getInstance().getDatabaseVersionConfig().set("tableVersions." + tableName, expectedDbVersion);
 				((YamlConfiguration)GoldenApple.getInstance().getDatabaseVersionConfig()).save(new File(GoldenApple.getInstance().getDataFolder() + "/dbversion.yml"));
 				GoldenApple.log("Table " + tableName + " has been created at database version " + expectedDbVersion + "...");
 			} else if (actualDbVersion < expectedDbVersion) {
 				boolean executed = false;
+				
+				// The table is a version less than expected. Update it sequentially until it is up-to-date
 				for (int i = actualDbVersion + 1; i <= expectedDbVersion; i++) {
 					if (resourceExists("sql/" + ((mySql) ? "mysql" : "sqlite") + "/update/" + i + "/" + tableName + "_update.sql")) {
 						executeFromResource("update/" + i + "/" + tableName + "_update");
 						executed = true;
 					}
 				}
+				
+				// Change the version id
 				GoldenApple.getInstance().getDatabaseVersionConfig().set("tableVersions." + tableName, expectedDbVersion);
 				((YamlConfiguration)GoldenApple.getInstance().getDatabaseVersionConfig()).save(new File(GoldenApple.getInstance().getDataFolder() + "/dbversion.yml"));
 				if (executed)
