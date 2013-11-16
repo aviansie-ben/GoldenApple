@@ -83,27 +83,11 @@ public final class SimpleDatabaseManager implements DatabaseManager {
 		return mySql;
 	}
 
-	/**
-	 * Executes an SQL command on the database. This should <strong>not</strong>
-	 * be used to execute a command with user data, because their data will not
-	 * be sanitized. {@link SimpleDatabaseManager#execute(String command, Object[] parameters)}
-	 * should be used instead when user-entered data will be used in the
-	 * command.
-	 * 
-	 * @param command The command to execute
-	 */
 	@Override
 	public void execute(String command) throws SQLException {
 		execute(command, new Object[0]);
 	}
 
-	/**
-	 * Executes an SQL command on the database
-	 * 
-	 * @param command The command to execute
-	 * @param parameters The arguments that should be added in place of ?s in
-	 *            the statement before it is executed
-	 */
 	@Override
 	public void execute(String command, Object... parameters) throws SQLException {
 		PreparedStatement s = connection.prepareStatement(command);
@@ -117,27 +101,11 @@ public final class SimpleDatabaseManager implements DatabaseManager {
 		}
 	}
 
-	/**
-	 * Executes an SQL query on the database and returns the result. This should
-	 * <strong>not</strong> be used to execute a command with user data, because
-	 * their data will not be sanitized.
-	 * {@link SimpleDatabaseManager#executeQuery(String command, Object[] parameters)} should
-	 * be used instead when user-entered data will be used in the command.
-	 * 
-	 * @param command The command to execute
-	 */
 	@Override
 	public ResultSet executeQuery(String command) throws SQLException {
 		return executeQuery(command, new Object[0]);
 	}
 
-	/**
-	 * Executes an SQL query on the database and returns the result.
-	 * 
-	 * @param command The command to execute
-	 * @param parameters The arguments that should be added in place of ?s in
-	 *            the statement before it is executed
-	 */
 	@Override
 	public ResultSet executeQuery(String command, Object... parameters) throws SQLException {
 		PreparedStatement s = connection.prepareStatement(command);
@@ -232,7 +200,7 @@ public final class SimpleDatabaseManager implements DatabaseManager {
 	}
 	
 	@Override
-	public void createOrUpdateTable(String tableName) {
+	public boolean createOrUpdateTable(String tableName) {
 		int expectedDbVersion = DB_VERSION;
 		try {
 			tableName = tableName.toLowerCase();
@@ -246,6 +214,8 @@ public final class SimpleDatabaseManager implements DatabaseManager {
 				GoldenApple.getInstance().getDatabaseVersionConfig().set("tableVersions." + tableName, expectedDbVersion);
 				((YamlConfiguration)GoldenApple.getInstance().getDatabaseVersionConfig()).save(new File(GoldenApple.getInstance().getDataFolder() + "/dbversion.yml"));
 				GoldenApple.log("Table " + tableName + " has been created at database version " + expectedDbVersion + "...");
+				
+				return true;
 			} else if (actualDbVersion < expectedDbVersion) {
 				boolean executed = false;
 				
@@ -262,18 +232,22 @@ public final class SimpleDatabaseManager implements DatabaseManager {
 				((YamlConfiguration)GoldenApple.getInstance().getDatabaseVersionConfig()).save(new File(GoldenApple.getInstance().getDataFolder() + "/dbversion.yml"));
 				if (executed)
 					GoldenApple.log("Table " + tableName + " has been updated from version " + actualDbVersion + " to version " + expectedDbVersion + "...");
+				
+				return true;
 			} else if (actualDbVersion > expectedDbVersion) {
-				GoldenApple.log(Level.SEVERE, "Table " + tableName + " has a newer database revision than this version of GoldenApple. Unexpected behaviour may result...");
+				GoldenApple.log(Level.SEVERE, "Table " + tableName + " has a newer database revision than this version of GoldenApple and cannot be used.");
+				return false;
+			} else {
+				// The table is up to date
+				return true;
 			}
 		} catch (Throwable e) {
-			GoldenApple.log(Level.SEVERE, "Failed to create or update table " + tableName + ". More errors might occur as a result.");
+			GoldenApple.log(Level.SEVERE, "Failed to create or update table " + tableName + ":");
 			GoldenApple.log(Level.SEVERE, e);
+			return false;
 		}
 	}
 
-	/**
-	 * Closes the connection to the database
-	 */
 	@Override
 	public void close() {
 		try {
