@@ -59,11 +59,57 @@ public abstract class GoldenApple extends JavaPlugin {
 		return instance.getMainConfig();
 	}
 
+	/**
+	 * Retrieves the active localization manager for this instance of GoldenApple.
+	 * The localization manager handles sending localized messages to users and
+	 * should be used wherever possible in place of sending hardcoded messages.
+	 * 
+	 * @return The active localization manager
+	 */
 	public abstract LocalizationManager getLocalizationManager();
+	
+	/**
+	 * Retrieves the active database manager for this instance of GoldenApple.
+	 * The database manager handles executing queries on the database and ensuring
+	 * that all tables are up-to-date before they are used.
+	 * 
+	 * @return The active database manager
+	 */
 	public abstract DatabaseManager getDatabaseManager();
+	
+	/**
+	 * Retrieves the active command manager for this instance of GoldenApple.
+	 * The command manager handles registration and unregistration of command
+	 * aliases with the Bukkit interfaces.
+	 * 
+	 * @return The active command manager
+	 */
 	public abstract CommandManager getCommandManager();
+	
+	/**
+	 * Retrieves the active module manager for this instance of GoldenApple.
+	 * The module manager handles loading and unloading modules as well as
+	 * managing any loaded modules.
+	 * 
+	 * @return The active module manager
+	 */
 	public abstract ModuleManager getModuleManager();
 
+	/**
+	 * Retrieves an active reference to the main configuration file located
+	 * at "plugins/GoldenApple/config.yml"
+	 * 
+	 * @return A reference to the main configuration file
+	 */
 	public abstract Configuration getMainConfig();
+	
+	/**
+	 * Retrieves an active reference to the database version configuration file
+	 * located at "plugins/GoldenApple/dbversion.yml". This should not be used
+	 * by modules, as the {@link DatabaseManager} is capable of handling
+	 * versioning.
+	 * 
+	 * @return A reference to the database version configuration file
+	 */
 	public abstract Configuration getDatabaseVersionConfig();
 }
