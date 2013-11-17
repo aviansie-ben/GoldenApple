@@ -2,6 +2,13 @@ package com.bendude56.goldenapple;
 
 import com.bendude56.goldenapple.permissions.PermissionManager;
 
+/**
+ * Interface for module loaders, which are classes designed to load GoldenApple
+ * modules into memory, register permissions and commands, and perform
+ * other module start-up tasks.
+ * 
+ * @author ben_dude56
+ */
 public interface ModuleLoader {
 	/**
 	 * Loads the GoldenApple module into memory and prepares it for use. Should
@@ -31,36 +38,53 @@ public interface ModuleLoader {
 	/**
 	 * Gets the name of the module that this loader is designed to load into
 	 * memory.
+	 * 
+	 * @return The name of the module.
 	 */
 	public String getModuleName();
 
 	/**
 	 * Gets a {@link ModuleState} representing the current state of the module
 	 * loaded by this loader.
+	 * 
+	 * @return The current {@link ModuleState} of the module.
 	 */
 	public ModuleState getCurrentState();
 
 	/**
 	 * Sets the module's current state. Used when loading a module to report
 	 * errors to administrators using /gamodule.
+	 * 
+	 * @param	state The new {@link ModuleState} representing the module's
+	 * 			current state.
 	 */
 	public void setState(ModuleState state);
 
 	/**
 	 * Gets a list of modules that this module depends on. The module will not
-	 * be started if one or more of these modules has not been enabled.
+	 * be started if one or more of its dependencies have not been enabled.
+	 * 
+	 * @return	String array containing names of other modules that this one
+	 * 			depends on.
 	 */
 	public String[] getModuleDependencies();
 
 	/**
 	 * Gets a value indicating whether this module is set to be loaded
 	 * automatically.
+	 * 
+	 * @return	True if the module will be automatically loaded, false
+	 * 			if the module must be manually loaded.
 	 */
 	public boolean canLoadAuto();
 
 	/**
 	 * Gets a value indicating whether the security policy allows this module to
 	 * be loaded.
+	 * 
+	 * @return	True if GoldenApple's current security policy will allow this
+	 * 			module to load, false if the security policy prevents this
+	 * 			module from loading. 
 	 */
 	public boolean canPolicyLoad();
 
