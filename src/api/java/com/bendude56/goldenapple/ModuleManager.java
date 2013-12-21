@@ -56,7 +56,8 @@ public interface ModuleManager {
 	 *			did not load successfully, or if no module with the given name
 	 *			is registered with the ModuleManager.
 	 */
-	boolean enableModule(String moduleName, boolean loadDependencies);
+	boolean enableModule(String moduleName, boolean loadDependencies, String authorizingUser);
+	
 	/**
 	 * Disables a currently running module and unloads it from memory. Includes
 	 * the option to force unload a module even if any other modules depend on
@@ -69,6 +70,39 @@ public interface ModuleManager {
 	 * @return	True if the module was successfully disabled, false if it wasn't
 	 * 			successfully disabled or no registered module matches the given
 	 * 			name.
+	 */
+	boolean disableModule(String moduleName, boolean forceUnload, String authorizingUser);
+	
+	/**
+	 * Enables a registered module with the option to include any dependencies
+	 * that module may have.
+	 * 
+	 * @param	moduleName The name of the module to load.
+	 * @param	loadDependencies Whether or not to load dependencies as well.
+	 * 			True will load any of the module's unloaded dependencies, false
+	 * 			will ignore any dependencies and only load the module.
+	 * @return	True if the module was enabled successfully, false if the module
+	 *			did not load successfully, or if no module with the given name
+	 *			is registered with the ModuleManager.
+	 *
+	 * @deprecated An authorizing user should be specified when enabling/disabling a module
+	 */
+	boolean enableModule(String moduleName, boolean loadDependencies);
+	
+	/**
+	 * Disables a currently running module and unloads it from memory. Includes
+	 * the option to force unload a module even if any other modules depend on
+	 * it or if the module is not ready.
+	 * 
+	 * @param 	moduleName The name of the module to disable.
+	 * @param	forceUnload Disables the module regardless of any other
+	 * 			dependent modules. True will ignore dependent modules , false
+	 * 			will only disable the modules of no other modules depend on it. 
+	 * @return	True if the module was successfully disabled, false if it wasn't
+	 * 			successfully disabled or no registered module matches the given
+	 * 			name.
+	 * 
+	 * @deprecated An authorizing user should be specified when enabling/disabling a module
 	 */
 	boolean disableModule(String moduleName, boolean forceUnload);
 }

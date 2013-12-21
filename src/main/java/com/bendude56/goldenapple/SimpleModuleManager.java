@@ -72,7 +72,7 @@ public class SimpleModuleManager implements ModuleManager {
 			if (module != null && module.canLoadAuto() && module.canPolicyLoad() && module.getCurrentState() == ModuleState.UNLOADED_USER) {
 				try {
 					// Try to enable the module
-					if (!enableModule(m, true)) {
+					if (!enableModule(m, true, "GoldenApple Startup Automation")) {
 						if (GoldenApple.getInstanceMainConfig().getBoolean("securityPolicy.shutdownOnFailedModuleLoad", true)) {
 							return false;
 						}
@@ -97,7 +97,7 @@ public class SimpleModuleManager implements ModuleManager {
 	public void unloadAll() {
 		for (Map.Entry<String, ModuleLoader> module : modules.entrySet()) {
 			if (module.getValue().getCurrentState() == ModuleState.LOADED) {
-				disableModule(module.getKey(), true);
+				disableModule(module.getKey(), true, "GoldenApple Shutdown Automation");
 			}
 		}
 	}
@@ -180,9 +180,19 @@ public class SimpleModuleManager implements ModuleManager {
 			}
 		}
 	}
+	
+	@Override @Deprecated
+	public boolean enableModule(String moduleName, boolean loadDependencies) {
+		return enableModule(moduleName, loadDependencies, "Unknown");
+	}
+	
+	@Override @Deprecated
+	public boolean disableModule(String moduleName, boolean forceUnload) {
+		return disableModule(moduleName, forceUnload, "Unknown");
+	}
 
 	@Override
-	public boolean enableModule(String moduleName, boolean loadDependencies) {
+	public boolean enableModule(String moduleName, boolean loadDependencies, String authorizingUser) {
 		// Fetch the actual ModuleLoader object
 		ModuleLoader module = modules.get(moduleName);
 		
@@ -191,7 +201,7 @@ public class SimpleModuleManager implements ModuleManager {
 		try {
 			// Load the module and initialize the audit log
 			module.loadModule(GoldenApple.getInstance());
-			AuditLog.logEvent(new ModuleEnableEvent(module.getModuleName()));
+			AuditLog.logEvent(new ModuleEnableEvent(module.getModuleName(), authorizingUser));
 			return true;
 		} catch (Throwable e) {
 			// Handle any exceptions
@@ -243,7 +253,7 @@ public class SimpleModuleManager implements ModuleManager {
 	}
 
 	@Override
-	public boolean disableModule(String moduleName, boolean forceUnload) {
+	public boolean disableModule(String moduleName, boolean forceUnload, String authorizingUser) {
 		// Get the module's {@link ModuleLoader} object
 		ModuleLoader module = modules.get(moduleName);
 		
@@ -256,7 +266,7 @@ public class SimpleModuleManager implements ModuleManager {
 				continue;
 			for (String depend : checkDepend.getValue().getModuleDependencies()) {
 				if (depend.equals(module.getModuleName())) {
-					disableModule(checkDepend.getKey(), forceUnload);
+					disableModule(checkDepend.getKey(), forceUnload, authorizingUser);
 				}
 			}
 		}
@@ -278,7 +288,7 @@ public class SimpleModuleManager implements ModuleManager {
 			}
 		}
 		// Log the event
-		AuditLog.logEvent(new ModuleDisableEvent(module.getModuleName()));
+		AuditLog.logEvent(new ModuleDisableEvent(module.getModuleName(), authorizingUser));
 		return true;
 	}
 
