@@ -105,6 +105,9 @@ public class SimpleModuleManager implements ModuleManager {
 	@Override
 	public void registerModule(ModuleLoader module) {
 		modules.put(module.getModuleName(), module);
+		
+		// Pre-register the module's commands
+		module.preregisterCommands(GoldenApple.getInstance().getCommandManager());
 	}
 
 	@Override
@@ -268,7 +271,7 @@ public class SimpleModuleManager implements ModuleManager {
 		if (module.getCurrentState() != ModuleState.UNLOADED_USER) {
 			if (forceUnload) {
 				GoldenApple.log(Level.SEVERE, "Module '" + module.getModuleName() + "' is not in an expected state after unloading. Forcing shutdown...");
-				module.setState(ModuleState.UNLOADED_USER);
+				module.forceSetState(ModuleState.UNLOADED_USER);
 			} else {
 				GoldenApple.log(Level.SEVERE, "Module '" + module.getModuleName() + "' is not in an expected state after unloading.");
 				return false;

@@ -13,7 +13,6 @@ import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import com.bendude56.goldenapple.GoldenApple;
-import com.bendude56.goldenapple.ModuleLoader.ModuleState;
 import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
 import com.bendude56.goldenapple.permissions.PermissionManager;
@@ -46,7 +45,7 @@ public class SimpleWarpManager extends WarpManager {
 	}
 	
 	private void updateBusy() {
-		 GoldenApple.getInstance().getModuleManager().getModule("Warp").setState((homeBusy || warpBusy) ? ModuleState.BUSY : ModuleState.LOADED);
+		 GoldenApple.getInstance().getModuleManager().getModule("Warp").setBusy(homeBusy || warpBusy);
 	}
 	
 	@Override

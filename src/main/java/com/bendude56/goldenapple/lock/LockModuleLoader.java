@@ -1,32 +1,26 @@
 package com.bendude56.goldenapple.lock;
 
 import com.bendude56.goldenapple.CommandManager;
-import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.ModuleLoader;
+import com.bendude56.goldenapple.commands.AutoLockCommand;
+import com.bendude56.goldenapple.commands.LockCommand;
 import com.bendude56.goldenapple.listener.LockListener;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 
-public class LockModuleLoader implements ModuleLoader {
-
-	private static ModuleState state = ModuleState.UNLOADED_USER;
-
-	@Override
-	public void loadModule(GoldenApple instance) {
-		state = ModuleState.LOADING;
-		try {
-			LockManager.instance = new SimpleLockManager();
-			registerPermissions(PermissionManager.getInstance());
-			registerEvents();
-			registerCommands(instance.getCommandManager());
-			state = ModuleState.LOADED;
-		} catch (Throwable e) {
-			state = ModuleState.UNLOADED_ERROR;
-			unregisterCommands(instance.getCommandManager());
-		}
+public class LockModuleLoader extends ModuleLoader {
+	
+	public LockModuleLoader() {
+		super("Lock", new String[] { "Permissions" }, "modules.lock.enabled", "securityPolicy.blockModules.lock", "securityPolicy.blockManualUnload.lock");
 	}
 	
 	@Override
-	public void registerPermissions(PermissionManager permissions) {
+	protected void preregisterCommands(CommandManager commands) {
+		commands.insertCommand("galock", "Lock", new LockCommand());
+		commands.insertCommand("gaautolock", "Lock", new AutoLockCommand());
+	}
+	
+	@Override
+	protected void registerPermissions(PermissionManager permissions) {
 		LockManager.lockNode = permissions.registerNode("lock", PermissionManager.goldenAppleNode);
 		LockManager.addPermission = permissions.registerPermission("add", LockManager.lockNode);
 		LockManager.usePermission = permissions.registerPermission("use", LockManager.lockNode);
@@ -35,65 +29,46 @@ public class LockModuleLoader implements ModuleLoader {
 		LockManager.fullPermission = permissions.registerPermission("full", LockManager.lockNode);
 	}
 	
-	private void registerEvents() {
-		LockListener.startListening();
-	}
-	
-	private void registerCommands(CommandManager commands) {
+	@Override
+	protected void registerCommands(CommandManager commands) {
 		commands.getCommand("galock").register();
 		commands.getCommand("gaautolock").register();
 	}
-
+	
 	@Override
-	public void unloadModule(GoldenApple instance) {
-		unregisterEvents();
-		unregisterCommands(instance.getCommandManager());
-		LockManager.instance = null;
-		state = ModuleState.UNLOADED_USER;
+	protected void registerListener() {
+		LockListener.startListening();
 	}
 	
-	private void unregisterCommands(CommandManager commands) {
+	@Override
+	protected void initializeManager() {
+		LockManager.instance = new SimpleLockManager();
+	}
+	
+	@Override
+	protected void unregisterPermissions(PermissionManager permissions) {
+		LockManager.lockNode = null;
+		LockManager.addPermission = null;
+		LockManager.usePermission = null;
+		LockManager.invitePermission = null;
+		LockManager.modifyBlockPermission = null;
+		LockManager.fullPermission = null;
+	}
+	
+	@Override
+	protected void unregisterCommands(CommandManager commands) {
 		commands.getCommand("galock").unregister();
 		commands.getCommand("gaautolock").unregister();
 	}
 	
-	private void unregisterEvents() {
+	@Override
+	protected void unregisterListener() {
 		LockListener.stopListening();
 	}
-
-	@Override
-	public String getModuleName() {
-		return "Lock";
-	}
-
-	@Override
-	public ModuleState getCurrentState() {
-		return state;
-	}
 	
 	@Override
-	public void setState(ModuleState state) {
-		LockModuleLoader.state = state;
-	}
-
-	@Override
-	public String[] getModuleDependencies() {
-		return new String[] { "Permissions" };
-	}
-
-	@Override
-	public boolean canLoadAuto() {
-		return GoldenApple.getInstanceMainConfig().getBoolean("modules.lock.enabled", true);
-	}
-
-	@Override
-	public boolean canPolicyLoad() {
-		return !GoldenApple.getInstanceMainConfig().getBoolean("securityPolicy.blockModules.lock", false);
-	}
-	
-	@Override
-	public boolean canPolicyUnload() {
-		return !GoldenApple.getInstanceMainConfig().getBoolean("securityPolicy.blockManualUnload.lock", false);
+	protected void destroyManager() {
+		LockManager.instance = null;
 	}
 
 }

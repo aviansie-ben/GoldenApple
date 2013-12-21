@@ -1,34 +1,26 @@
 package com.bendude56.goldenapple.permissions;
 
 import com.bendude56.goldenapple.CommandManager;
-import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.ModuleLoader;
-import com.bendude56.goldenapple.ModuleLoadException;
 import com.bendude56.goldenapple.User;
+import com.bendude56.goldenapple.commands.OwnCommand;
+import com.bendude56.goldenapple.commands.PermissionsCommand;
 import com.bendude56.goldenapple.listener.PermissionListener;
 
-public class PermissionsModuleLoader implements ModuleLoader {
+public class PermissionsModuleLoader extends ModuleLoader {
 	
-	private static ModuleState state = ModuleState.UNLOADED_USER;
-
-	@Override
-	public void loadModule(GoldenApple instance) {
-		state = ModuleState.LOADING;
-		try {
-			PermissionManager.instance = new SimplePermissionManager();
-			User.clearCache();
-			registerPermissions(PermissionManager.instance);
-			registerEvents();
-			registerCommands(instance.getCommandManager());
-			state = ModuleState.LOADED;
-		} catch (Throwable e) {
-			// This module should NEVER fail to load! This is a major problem.
-			throw new ModuleLoadException("Permissions", e);
-		}
+	public PermissionsModuleLoader() {
+		super("Permissions", new String[] { "Base" }, null, null, "securityPolicy.blockManualUnload.permissions");
 	}
 	
 	@Override
-	public void registerPermissions(PermissionManager permissions) {
+	protected void preregisterCommands(CommandManager commands) {
+		commands.insertCommand("gapermissions", "Permissions", new PermissionsCommand());
+		commands.insertCommand("gaown", "Permissions", new OwnCommand());
+	}
+	
+	@Override
+	protected void registerPermissions(PermissionManager permissions) {
 		PermissionManager.goldenAppleNode = permissions.registerNode("goldenapple", permissions.getRootNode());
 		PermissionManager.importPermission = permissions.registerPermission("import", PermissionManager.goldenAppleNode);
 		
@@ -50,67 +42,62 @@ public class PermissionsModuleLoader implements ModuleLoader {
 		PermissionManager.moduleQueryPermission = permissions.registerPermission("query", PermissionManager.moduleNode);
 	}
 	
-	private void registerEvents() {
-		PermissionListener.startListening();
-	}
-	
-	private void registerCommands(CommandManager commands) {
+	@Override
+	protected void registerCommands(CommandManager commands) {
 		commands.getCommand("gapermissions").register();
 		commands.getCommand("gaown").register();
 	}
-
+	
 	@Override
-	public void unloadModule(GoldenApple instance) {
-		unregisterEvents();
-		unregisterCommands(instance.getCommandManager());
+	protected void registerListener() {
+		PermissionListener.startListening();
+	}
+	
+	@Override
+	protected void initializeManager() {
+		PermissionManager.instance = new SimplePermissionManager();
 		User.clearCache();
-		PermissionManager.getInstance().close();
-		PermissionManager.instance = null;
-		state = ModuleState.UNLOADED_USER;
 	}
 	
-	private void unregisterEvents() {
-		PermissionListener.stopListening();
+	@Override
+	protected void unregisterPermissions(PermissionManager permissions) {
+		PermissionManager.goldenAppleNode = null;
+		PermissionManager.importPermission = null;
+		
+		PermissionManager.permissionNode = null;
+		
+		PermissionManager.userNode = null;
+		PermissionManager.userAddPermission = null;
+		PermissionManager.userRemovePermission = null;
+		PermissionManager.userEditPermission = null;
+		
+		PermissionManager.groupNode = null;
+		PermissionManager.groupAddPermission = null;
+		PermissionManager.groupRemovePermission = null;
+		PermissionManager.groupEditPermission = null;
+		
+		PermissionManager.moduleNode = null;
+		PermissionManager.moduleLoadPermission = null;
+		PermissionManager.moduleUnloadPermission = null;
+		PermissionManager.moduleQueryPermission = null;
 	}
 	
-	private void unregisterCommands(CommandManager commands) {
+	@Override
+	protected void unregisterCommands(CommandManager commands) {
 		commands.getCommand("gapermissions").unregister();
 		commands.getCommand("gaown").unregister();
 	}
-
+	
 	@Override
-	public String getModuleName() {
-		return "Permissions";
-	}
-
-	@Override
-	public ModuleState getCurrentState() {
-		return state;
+	protected void unregisterListener() {
+		PermissionListener.stopListening();
 	}
 	
 	@Override
-	public void setState(ModuleState state) {
-		PermissionsModuleLoader.state = state;
-	}
-
-	@Override
-	public String[] getModuleDependencies() {
-		return new String[] { "Base" };
-	}
-
-	@Override
-	public boolean canLoadAuto() {
-		return true;
-	}
-
-	@Override
-	public boolean canPolicyLoad() {
-		return true;
-	}
-	
-	@Override
-	public boolean canPolicyUnload() {
-		return !GoldenApple.getInstanceMainConfig().getBoolean("securityPolicy.blockManualUnload.permissions", true);
+	protected void destroyManager() {
+		User.clearCache();
+		PermissionManager.getInstance().close();
+		PermissionManager.instance = null;
 	}
 
 }

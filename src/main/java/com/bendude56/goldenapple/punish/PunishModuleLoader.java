@@ -1,32 +1,28 @@
 package com.bendude56.goldenapple.punish;
 
 import com.bendude56.goldenapple.CommandManager;
-import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.ModuleLoader;
+import com.bendude56.goldenapple.commands.BanCommand;
+import com.bendude56.goldenapple.commands.MuteCommand;
 import com.bendude56.goldenapple.listener.PunishmentListener;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 
-public class PunishModuleLoader implements ModuleLoader {
+public class PunishModuleLoader extends ModuleLoader {
 
-	private static ModuleState state = ModuleState.UNLOADED_USER;
-
-	@Override
-	public void loadModule(GoldenApple instance) {
-		state = ModuleState.LOADING;
-		try {
-			PunishmentManager.instance = new SimplePunishmentManager();
-			registerPermissions(PermissionManager.getInstance());
-			registerEvents();
-			registerCommands(instance.getCommandManager());
-			state = ModuleState.LOADED;
-		} catch (Throwable e) {
-			state = ModuleState.UNLOADED_ERROR;
-			unregisterCommands(instance.getCommandManager());
-		}
+	public PunishModuleLoader() {
+		super("Punish", new String[] { "Permissions" }, "modules.punish.enable", "securityPolicy.blockModules.punish", "securityPolicy.blockManualUnload.punish");
 	}
 	
 	@Override
-	public void registerPermissions(PermissionManager permissions) {
+	protected void preregisterCommands(CommandManager commands) {
+		commands.insertCommand("gaban", "Punish", new BanCommand());
+		commands.insertCommand("gamute", "Punish", new MuteCommand());
+		commands.insertCommand("gaglobalmute", "Punish", null);
+		commands.insertCommand("gawhois", "Punish", null);
+	}
+	
+	@Override
+	protected void registerPermissions(PermissionManager permissions) {
 		PunishmentManager.punishNode = permissions.registerNode("punish", PermissionManager.goldenAppleNode);
 		
 		PunishmentManager.banNode = permissions.registerNode("ban", PunishmentManager.punishNode);
@@ -37,69 +33,52 @@ public class PunishModuleLoader implements ModuleLoader {
 		PunishmentManager.banVoidAllPermission = permissions.registerPermission("voidAll", PunishmentManager.banNode);
 	}
 	
-	private void registerEvents() {
+	@Override
+	protected void registerListener() {
 		PunishmentListener.startListening();
 	}
 	
-	private void registerCommands(CommandManager commands) {
+	@Override
+	protected void registerCommands(CommandManager commands) {
 		commands.getCommand("gaban").register();
 		commands.getCommand("gamute").register();
 		commands.getCommand("gaglobalmute").register();
 		commands.getCommand("gawhois").register();
 	}
-
+	
 	@Override
-	public void unloadModule(GoldenApple instance) {
-		unregisterEvents();
-		unregisterCommands(instance.getCommandManager());
-		PunishmentManager.instance = null;
-		state = ModuleState.UNLOADED_USER;
+	protected void initializeManager() {
+		PunishmentManager.instance = new SimplePunishmentManager();
 	}
 	
-	private void unregisterCommands(CommandManager commands) {
+	@Override
+	protected void unregisterPermissions(PermissionManager permissions) {
+		PunishmentManager.punishNode = null;
+		
+		PunishmentManager.banNode = null;
+		PunishmentManager.banTempPermission = null;
+		PunishmentManager.banTempOverridePermission = null;
+		PunishmentManager.banPermPermission = null;
+		PunishmentManager.banVoidPermission = null;
+		PunishmentManager.banVoidAllPermission = null;
+	}
+	
+	@Override
+	protected void unregisterCommands(CommandManager commands) {
 		commands.getCommand("gaban").unregister();
 		commands.getCommand("gamute").unregister();
 		commands.getCommand("gaglobalmute").unregister();
 		commands.getCommand("gawhois").unregister();
 	}
 	
-	private void unregisterEvents() {
+	@Override
+	protected void unregisterListener() {
 		PunishmentListener.stopListening();
 	}
-
-	@Override
-	public String getModuleName() {
-		return "Punish";
-	}
-
-	@Override
-	public ModuleState getCurrentState() {
-		return state;
-	}
 	
 	@Override
-	public void setState(ModuleState state) {
-		PunishModuleLoader.state = state;
-	}
-
-	@Override
-	public String[] getModuleDependencies() {
-		return new String[] { "Permissions" };
-	}
-
-	@Override
-	public boolean canLoadAuto() {
-		return GoldenApple.getInstanceMainConfig().getBoolean("modules.punish.enabled", true);
-	}
-
-	@Override
-	public boolean canPolicyLoad() {
-		return !GoldenApple.getInstanceMainConfig().getBoolean("securityPolicy.blockModules.punish", false);
-	}
-	
-	@Override
-	public boolean canPolicyUnload() {
-		return !GoldenApple.getInstanceMainConfig().getBoolean("securityPolicy.blockManualUnload.punish", false);
+	protected void destroyManager() {
+		PunishmentManager.instance = null;
 	}
 
 }
