@@ -18,7 +18,7 @@ import com.bendude56.goldenapple.permissions.PermissionManager;
 public class WarpModuleLoader extends ModuleLoader {
 	
 	public WarpModuleLoader() {
-		super("Warp", new String[] { "Permissions" }, "modules.warp.enabled", "securityPolicy.blockModules.warp", "securityPolicy.blockManualUnload.warp");
+		super("Warp", new String[] { "Permissions" }, "modules.warps.enabled", "securityPolicy.blockModules.warp", "securityPolicy.blockManualUnload.warp");
 	}
 	
 	@Override
