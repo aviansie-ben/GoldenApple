@@ -17,6 +17,7 @@ import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
+import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.EventExecutor;
 import org.bukkit.plugin.RegisteredListener;
@@ -110,6 +111,8 @@ public class AntigriefListener implements Listener, EventExecutor {
 			entityTarget((EntityTargetEvent)event);
 		} else if (event instanceof EntityChangeBlockEvent) {
 			entityChangeBlock((EntityChangeBlockEvent)event);
+		} else if (event instanceof PotionSplashEvent) {
+			potionSplash((PotionSplashEvent)event);
 		} else {
 			GoldenApple.log(Level.WARNING, "Unrecognized event in AntigriefListener: " + event.getClass().getName());
 		}
@@ -165,5 +168,9 @@ public class AntigriefListener implements Listener, EventExecutor {
 		if (event.getEntityType() == EntityType.ENDERMAN && GoldenApple.getInstanceMainConfig().getBoolean("modules.antigrief.noEndermanMoveBlock", true)) {
 			event.setCancelled(true);
 		}
+	}
+	
+	private void potionSplash(PotionSplashEvent event) {
+		// TODO Implement this later
 	}
 }

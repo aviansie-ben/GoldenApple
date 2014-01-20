@@ -2,67 +2,77 @@ package com.bendude56.goldenapple.antigrief;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-
-import org.bukkit.Material;
+import java.util.Map;
 
 import com.bendude56.goldenapple.GoldenApple;
 
-import net.minecraft.server.v1_6_R3.Block;
-import net.minecraft.server.v1_6_R3.Entity;
-import net.minecraft.server.v1_6_R3.EntityArrow;
-import net.minecraft.server.v1_6_R3.EntityLiving;
-import net.minecraft.server.v1_6_R3.EntityTNTPrimed;
-import net.minecraft.server.v1_6_R3.Explosion;
-import net.minecraft.server.v1_6_R3.StepSound;
-import net.minecraft.server.v1_6_R3.World;
+import net.minecraft.server.v1_7_R1.Block;
+import net.minecraft.server.v1_7_R1.Entity;
+import net.minecraft.server.v1_7_R1.EntityArrow;
+import net.minecraft.server.v1_7_R1.EntityLiving;
+import net.minecraft.server.v1_7_R1.EntityTNTPrimed;
+import net.minecraft.server.v1_7_R1.Explosion;
+import net.minecraft.server.v1_7_R1.RegistrySimple;
+import net.minecraft.server.v1_7_R1.StepSound;
+import net.minecraft.server.v1_7_R1.World;
 
-public class BlockTNT extends net.minecraft.server.v1_6_R3.BlockTNT {
+public class BlockTNT extends net.minecraft.server.v1_7_R1.BlockTNT {
 	
-	// TODO Take a look at registration and unregistration now that getId() is deprecated
+	private static void removeRegistration() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+		Map<Object, Object> registryMap;
+		
+		Field f = RegistrySimple.class.getDeclaredField("c");
+		f.setAccessible(true);
+		registryMap = (Map<Object, Object>) f.get(Block.REGISTRY);
+		
+		registryMap.remove("minecraft:tnt");
+	}
 	
-	@SuppressWarnings("deprecation")
 	public static void registerBlock() throws Exception {
-		Block.byId[Material.TNT.getId()] = null;
-		Block tnt = prepClass((Block)BlockTNT.class.getConstructors()[0].newInstance(46));
+		// Create a new TNT block
+		Block tnt = prepClass((Block)BlockTNT.class.getConstructors()[0].newInstance());
 		
-		Field f = Block.class.getField("TNT");
-		Field mod = Field.class.getDeclaredField("modifiers");
-		mod.setAccessible(true);
-		mod.setInt(f, mod.getInt(f)  & ~Modifier.FINAL);
+		// Unregister the old block (Suppresses warning messages)
+		removeRegistration();
 		
-		f.set(null, tnt);
+		// Add the new block definition to the registry
+		Block.REGISTRY.a(46, "tnt", tnt);
 	}
 	
 	@SuppressWarnings("deprecation")
 	public static void unregisterBlock() throws Exception {
-		Block.byId[Material.TNT.getId()] = null;
-		Block tnt = prepClass((Block)net.minecraft.server.v1_6_R3.BlockTNT.class.getConstructors()[0].newInstance(46, 8));
+		// Create a new TNT block
+		Block tnt = prepClass((Block)net.minecraft.server.v1_7_R1.BlockTNT.class.getConstructors()[0].newInstance());
 		
-		Field f = Block.class.getField("TNT");
-		Field mod = Field.class.getDeclaredField("modifiers");
-		mod.setAccessible(true);
-		mod.setInt(f, mod.getInt(f)  & ~Modifier.FINAL);
+		// Unregister the old block (Suppresses warning messages)
+		removeRegistration();
 		
-		f.set(null, tnt);
+		// Add the new block definition to the registry
+		Block.REGISTRY.a(46, "tnt", tnt);
 	}
 	
 	private static Block prepClass(Block b) throws Exception {
-		Method m = Block.class.getDeclaredMethod("c", new Class<?>[] { float.class });
+		Method m;
+		
+		m = Block.class.getDeclaredMethod("c", new Class<?>[] { float.class });
 		m.setAccessible(true);
 		m.invoke(b, 0.0F);
 		
 		m = Block.class.getDeclaredMethod("a", new Class<?>[] { StepSound.class });
 		m.setAccessible(true);
-		m.invoke(b, Block.g);
+		m.invoke(b, Block.h);
 		
 		b.c("tnt");
+		
+		m = Block.class.getDeclaredMethod("d", new Class<?>[] { String.class });
+		m.setAccessible(true);
+		m.invoke(b, "tnt");
 		
 		return b;
 	}
 
-	public BlockTNT(int i) {
-		super(i);
+	public BlockTNT() {
+		super();
 	}
 	
 	@Override
@@ -74,7 +84,7 @@ public class BlockTNT extends net.minecraft.server.v1_6_R3.BlockTNT {
     }
 	
 	@Override
-	public void doPhysics(World world, int i, int j, int k, int l) {
+	public void doPhysics(World world, int i, int j, int k, Block block) {
         if (world.isBlockIndirectlyPowered(i, j, k) && !GoldenApple.getInstanceMainConfig().getBoolean("modules.antigrief.noRedstoneTnt", true)) {
             this.postBreak(world, i, j, k, 1);
             world.setAir(i, j, k);

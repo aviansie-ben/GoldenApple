@@ -1,19 +1,23 @@
 package com.bendude56.goldenapple.antigrief;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.Map;
 
-import org.bukkit.craftbukkit.v1_6_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_7_R1.inventory.CraftItemStack;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionType;
 
 import com.bendude56.goldenapple.GoldenApple;
 
-import net.minecraft.server.v1_6_R3.EntityHuman;
-import net.minecraft.server.v1_6_R3.Item;
-import net.minecraft.server.v1_6_R3.ItemStack;
-import net.minecraft.server.v1_6_R3.World;
+import net.minecraft.server.v1_7_R1.EntityHuman;
+import net.minecraft.server.v1_7_R1.Item;
+import net.minecraft.server.v1_7_R1.ItemStack;
+import net.minecraft.server.v1_7_R1.RegistrySimple;
+import net.minecraft.server.v1_7_R1.World;
 
-public class ItemPotion extends net.minecraft.server.v1_6_R3.ItemPotion {
+public class ItemPotion extends net.minecraft.server.v1_7_R1.ItemPotion {
 	
 	public static HashMap<PotionType, String> typeConfigName = new HashMap<PotionType, String>();
 	
@@ -31,26 +35,52 @@ public class ItemPotion extends net.minecraft.server.v1_6_R3.ItemPotion {
 		typeConfigName.put(PotionType.INSTANT_DAMAGE, "harming");
 	}
 	
-	public static void registerItem() throws Exception {
-		Item.byId[Item.POTION.id] = null;
-		Item potion = prepClass((Item)ItemPotion.class.getConstructors()[0].newInstance(117));
+	private static void removeRegistration() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+		Map<Object, Object> registryMap;
 		
-		Item.POTION = (ItemPotion)potion;
+		Field f = RegistrySimple.class.getDeclaredField("c");
+		f.setAccessible(true);
+		registryMap = (Map<Object, Object>) f.get(Item.REGISTRY);
+		
+		registryMap.remove("minecraft:potion");
+	}
+	
+	public static void registerItem() throws Exception {
+		// Create a new potion item
+		Item potion = prepClass((Item)ItemPotion.class.getConstructors()[0].newInstance());
+		
+		// Unregister the old item (Suppresses warning messages)
+		removeRegistration();
+		
+		// Add the new item definition to the registry
+		Item.REGISTRY.a(373, "potion", potion);
 	}
 	
 	public static void unregisterItem() throws Exception {
-		Item.byId[Item.POTION.id] = null;
-		Item potion = prepClass((Item)net.minecraft.server.v1_6_R3.ItemPotion.class.getConstructors()[0].newInstance(117));
+		// Create a new potion item
+		Item potion = prepClass((Item)net.minecraft.server.v1_7_R1.ItemPotion.class.getConstructors()[0].newInstance());
 		
-		Item.POTION = (ItemPotion)potion;
+		// Unregister the old item (Suppresses warning messages)
+		removeRegistration();
+		
+		// Add the new item definition to the registry
+		Item.REGISTRY.a(373, "potion", potion);
 	}
 	
 	private static Item prepClass(Item i) throws Exception {
-		return i.b("potion");
+		Method m;
+		
+		i.c("potion");
+		
+		m = Item.class.getDeclaredMethod("f", new Class<?>[] { String.class });
+		m.setAccessible(true);
+		m.invoke(i, "potion");
+		
+		return i;
 	}
 
-	public ItemPotion(int i) {
-		super(i);
+	public ItemPotion() {
+		super();
 	}
 	
 	@Override
