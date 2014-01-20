@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Properties;
 import java.util.logging.Level;
 
+import org.bukkit.ChatColor;
+
 /**
  * A simple localization manager for GoldenApple that implements
  * {@link LocalizationManager}. Designed to load localization files from a
@@ -58,7 +60,7 @@ public class SimpleLocalizationManager implements LocalizationManager {
 			
 			// Start storing each localization string in memory
 			for (String entry : p.stringPropertyNames()) {
-				secondaryMessages.get(locale).put(entry, p.getProperty(entry).replace('&', '§'));
+				secondaryMessages.get(locale).put(entry, p.getProperty(entry).replace('&', ChatColor.COLOR_CHAR));
 			}
 		}
 		
