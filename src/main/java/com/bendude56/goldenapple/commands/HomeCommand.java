@@ -57,7 +57,16 @@ public class HomeCommand extends GoldenAppleCommand {
 		}
 		
 		if (h.canTeleport(user)) {
-			h.teleport(user);
+			int deathCooldown = WarpManager.getInstance().getDeathCooldown(user), teleportCooldown = WarpManager.getInstance().getTeleportCooldown(user);
+			
+			if (deathCooldown > 0) {
+				user.sendLocalizedMessage("error.warps.cooldownDeath", deathCooldown + "");
+			} else if (teleportCooldown > 0) {
+				user.sendLocalizedMessage("error.warps.cooldown", teleportCooldown + "");
+			} else {
+				h.teleport(user);
+				WarpManager.getInstance().startTeleportCooldown(user);
+			}
 		} else {
 			GoldenApple.logPermissionFail(user, commandLabel, args, true);
 		}

@@ -61,5 +61,16 @@ public abstract class WarpManager {
 	
 	public abstract PermissibleWarp setNamedWarp(String name, Location loc) throws SQLException;
 	
+	public abstract int getTeleportCooldown(IPermissionUser user);
+	public abstract int getDeathCooldown(IPermissionUser user);
+	
+	public abstract int startTeleportCooldown(IPermissionUser user);
+	public abstract int startDeathCooldown(IPermissionUser user);
+	
+	public abstract void clearCooldownTimer(IPermissionUser user);
+	
+	public abstract void startCooldownTimer();
+	public abstract void stopCooldownTimer();
+	
 	public abstract void importHomesFromEssentials(User sender);
 }

@@ -315,6 +315,20 @@ modules:
         # players to spawn to their current world by default.
         defaultSpawn: 'current'
         
+        # The number of seconds that teleport cooldown should last.
+        # Use of /spawn, /home, /warp, and /back will activate this
+        # cooldown when used. For the next n seconds, these commands
+        # will be disabled. Set to 0 for no cooldown. This setting
+        # does not affect admin commands such as /tp.
+        teleportCooldown: 60
+        
+        # The number of seconds that teleports should be disabled for
+        # after a player dies. Use of /spawn, /home, /warp, and /back
+        # will be disabled for n seconds after dying. Set to 0 for no
+        # cooldown. This setting does not affect admin commands such
+        # as /tp.
+        deathCooldown: 120
+        
     punish:
     
         # Determines whether or not the GoldenApple punishment module

@@ -88,6 +88,8 @@ error.verify.noCommand=&4ERROR: No command to verify!
 error.warp.notFound=&4ERROR: Warp '%1' was not found!
 error.warp.setFail=&4ERROR: An error was encountered while setting the warp!
 
+error.warps.cooldown=&4ERROR: You have just teleported! You will be able to teleport again in %1 seconds!
+error.warps.cooldownDeath=&4ERROR: You have recently died! You will be able to teleport again in %1 seconds!
 error.warps.noBack=&4ERROR: You have nowhere to go back to!
 error.warps.pluginCancel=&4ERROR: Teleport was cancelled by another plugin!
 
@@ -201,6 +203,7 @@ general.permissions.remove.warnEnd=&eIf you are sure you wish to permanently rem
 general.warp.delete=&aWarp '%1' has been deleted.
 general.warp.set=&aWarp '%1' has been set here.
 
+general.warps.death=&4You have died and teleportation will be unavailable for %1 seconds!
 general.warps.teleportBy=&aYou have been teleported by %1&a.
 general.warps.teleportSpawn=&aYou have been teleported to spawn.
 general.warps.teleportSpawnWorld=&aYou have been teleported to the spawn of world %1.

@@ -18,6 +18,7 @@ import org.bukkit.plugin.RegisteredListener;
 
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
+import com.bendude56.goldenapple.warp.WarpManager;
 
 public class WarpListener implements Listener, EventExecutor {
 	public static HashMap<User, Location> backLocation = new HashMap<User, Location>();
@@ -69,6 +70,14 @@ public class WarpListener implements Listener, EventExecutor {
 	}
 	
 	private void playerDeath(PlayerDeathEvent event) {
-		backLocation.put(User.getUser(event.getEntity()), event.getEntity().getLocation());
+		User user = User.getUser(event.getEntity());
+		
+		backLocation.put(user, event.getEntity().getLocation());
+		
+		int deathCooldown = WarpManager.getInstance().startDeathCooldown(user);
+		
+		if (deathCooldown > 0) {
+			user.sendLocalizedMessage("general.warps.death", deathCooldown + "");
+		}
 	}
 }

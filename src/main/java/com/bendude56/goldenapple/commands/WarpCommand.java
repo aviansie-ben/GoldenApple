@@ -10,14 +10,20 @@ public class WarpCommand extends GoldenAppleCommand {
 	public boolean onExecute(GoldenApple instance, User user, String commandLabel, String[] args) {
 		if (args.length != 1) return false;
 		
+		int deathCooldown = WarpManager.getInstance().getDeathCooldown(user), teleportCooldown = WarpManager.getInstance().getTeleportCooldown(user);
 		PermissibleWarp w = WarpManager.getInstance().getNamedWarp(args[0]);
 		
 		if (w == null) {
 			user.sendLocalizedMessage("error.warp.notFound", args[0]);
-		} else if (w.canTeleport(user)) {
-			w.teleport(user);
-		} else {
+		} else if (!w.canTeleport(user)) {
 			GoldenApple.logPermissionFail(user, commandLabel, args, true);
+		} else if (deathCooldown > 0) {
+			user.sendLocalizedMessage("error.warps.cooldownDeath", deathCooldown + "");
+		} else if (teleportCooldown > 0) {
+			user.sendLocalizedMessage("error.warps.cooldown", teleportCooldown + "");
+		} else {
+			w.teleport(user);
+			WarpManager.getInstance().startTeleportCooldown(user);
 		}
 		
 		return true;
