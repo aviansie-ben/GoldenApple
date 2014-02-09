@@ -165,6 +165,18 @@ public class SimpleLocalizationManager implements LocalizationManager {
 		// Get the specified message from the specified locale
 		String msg = secondaryMessages.get(lang).get(message);
 		
+		if (msg == null) {
+			if (message.equalsIgnoreCase("error.localization.contactAuthor")) {
+				user.getHandle().sendMessage(ChatColor.RED + "Please contact the author of the '" + lang + "' locale to report this error");
+			} else if (message.equalsIgnoreCase("error.localization.missingMessage")) {
+				user.getHandle().sendMessage(ChatColor.RED + "Localized message missing: " + args[0]);
+			} else {
+				sendMessage(user, lang, "error.localization.missingMessage", message);
+				sendMessage(user, lang, "error.localization.contactAuthor", lang);
+			}
+			return;
+		}
+		
 		// Replace placeholders with given 
 		for (int i = 0; i < args.length; i++) {
 			if (args[i] == null)
