@@ -56,7 +56,7 @@ public class PunishmentListener implements Listener, EventExecutor {
 		} else if (event instanceof PlayerQuitEvent) {
 			playerQuit((PlayerQuitEvent)event);
 		} else {
-			GoldenApple.log(Level.WARNING, "Unrecognized event in WarpListener: " + event.getClass().getName());
+			GoldenApple.log(Level.WARNING, "Unrecognized event in PunishmentListener: " + event.getClass().getName());
 		}
 	}
 
@@ -69,13 +69,13 @@ public class PunishmentListener implements Listener, EventExecutor {
 		
 		if (ban != null) {
 			if (ban.isPermanent()) {
-				String msg = instance.getLocalizationManager().processMessageDefaultLocale("general.ban.permakick", (ban.getAdminId() <= 0) ? "???" : ban.getAdmin().getName());
+				String msg = instance.getLocalizationManager().processMessageDefaultLocale("general.ban.permaKick", (ban.getAdminId() <= 0) ? "???" : ban.getAdmin().getName());
 				msg += "\n" + ban.getReason();
 				msg += "\n" + GoldenApple.getInstanceMainConfig().getString("banAppealMessage", "Contact an administrator to dispute this ban.");
 				event.setResult(Result.KICK_BANNED);
 				event.setKickMessage(msg);
 			} else {
-				String msg = instance.getLocalizationManager().processMessageDefaultLocale("general.ban.tempkick", ban.getRemainingDuration().toString(), (ban.getAdminId() <= 0) ? "???" : ban.getAdmin().getName());
+				String msg = instance.getLocalizationManager().processMessageDefaultLocale("general.ban.tempKick", ban.getRemainingDuration().toString(), (ban.getAdminId() <= 0) ? "???" : ban.getAdmin().getName());
 				msg += "\n" + ban.getReason();
 				msg += "\n" + GoldenApple.getInstanceMainConfig().getString("banAppealMessage", "Contact an administrator to dispute this ban.");
 				event.setResult(Result.KICK_BANNED);

@@ -1,22 +1,24 @@
 package com.bendude56.goldenapple.commands;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 
 import com.bendude56.goldenapple.SimpleCommandManager;
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.ModuleLoader.ModuleState;
 import com.bendude56.goldenapple.User;
+import com.bendude56.goldenapple.audit.AuditLog;
 import com.bendude56.goldenapple.chat.ChatChannel;
 import com.bendude56.goldenapple.chat.ChatChannel.ChatChannelUserLevel;
 import com.bendude56.goldenapple.chat.ChatManager;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
-import com.bendude56.goldenapple.permissions.PermissionManager;
 import com.bendude56.goldenapple.punish.PunishmentManager;
 import com.bendude56.goldenapple.punish.PunishmentMute;
 import com.bendude56.goldenapple.punish.Punishment.RemainingTime;
+import com.bendude56.goldenapple.punish.audit.MuteEvent;
+import com.bendude56.goldenapple.punish.audit.MuteVoidEvent;
 import com.bendude56.goldenapple.util.ComplexArgumentParser;
 import com.bendude56.goldenapple.util.ComplexArgumentParser.ArgumentInfo;
-import com.bendude56.goldenapple.util.ComplexArgumentParser.ArgumentInfo.ArgumentType;
 
 public class MuteCommand extends DualSyntaxCommand {
 
@@ -28,12 +30,12 @@ public class MuteCommand extends DualSyntaxCommand {
 			sendHelp(user, commandLabel, true);
 		} else {
 			ComplexArgumentParser arg = new ComplexArgumentParser(new ArgumentInfo[] {
-				new ArgumentInfo("target", "t", "target", ArgumentType.USER, false, true),
-				new ArgumentInfo("duration", "d", "duration", ArgumentType.STRING, false, false),
-				new ArgumentInfo("channel", "c", "channel", ArgumentType.STRING, false, false),
-				new ArgumentInfo("reason", "r", "reason", ArgumentType.STRING_WITH_SPACES, false, false),
-				new ArgumentInfo("void", "v", "void", ArgumentType.SWITCH, false, false),
-				new ArgumentInfo("info", "i", "info", ArgumentType.SWITCH, false, false)
+				ArgumentInfo.newUser("target", "u", "user", true, false),
+				ArgumentInfo.newString("duration", "t", "time", false),
+				ArgumentInfo.newString("channel", "c", "channel", false),
+				ArgumentInfo.newString("reason", "r", "reason", true),
+				ArgumentInfo.newSwitch("void", "v", "void"),
+				ArgumentInfo.newSwitch("info", "i", "info")
 			});
 			
 			user.sendLocalizedMessage("header.punish");
@@ -65,80 +67,114 @@ public class MuteCommand extends DualSyntaxCommand {
 			if (c.isTemporary()) {
 				user.sendLocalizedMessage("error.mute.tempChannel");
 				return;
-			} else if (c.getActiveLevel(user).id < ChatChannelUserLevel.MODERATOR.id) {
-				GoldenApple.logPermissionFail(user, commandLabel, args, true);
-				return;
 			}
 			
 			if (arg.isDefined("info")) {
-				PunishmentMute m = PunishmentManager.getInstance().getActiveMute(target, c);
-				
-				if (m == null) {
-					user.sendLocalizedMessage("general.mute.info.notMuted", target.getName());
-				} else if (m.isPermanent()) {
-					user.sendLocalizedMessage("general.mute.info.permMuted", target.getName(), m.getAdmin().getName());
-					if (m.isGlobal())
-						user.sendLocalizedMessage("general.mute.info.global");
-				} else {
-					user.sendLocalizedMessage("general.mute.info.tempMuted", target.getName(), m.getRemainingDuration().toString(), m.getAdmin().getName());
-					if (m.isGlobal())
-						user.sendLocalizedMessage("general.mute.info.global");
-				}
+				muteInfo(target, c, user, commandLabel, args);
 			} else if (arg.isDefined("void")) {
-				PunishmentMute m = PunishmentManager.getInstance().getActiveMute(target, c);
-				
-				if (m == null) {
-					user.sendLocalizedMessage("error.mute.notMuted");
-				} else if (m.isGlobal()) {
-					user.sendLocalizedMessage("error.mute.voidGlobal");
-				} else {
-					m.voidPunishment();
-					user.sendLocalizedMessage("general.mute.voidMute", target.getName());
-				}
+				muteVoid(target, c, user, commandLabel, args);
 			} else {
-				PunishmentMute m = PunishmentManager.getInstance().getActiveMute(target, c);
-				
-				if (m == null) {
-					try {
-						User tUser;
-						RemainingTime t = (arg.isDefined("duration")) ? RemainingTime.parseTime(arg.getString("duration")) : null;
-						
-						if (c.calculateLevel(user).id < ChatChannelUserLevel.SUPER_MODERATOR.id &&
-								GoldenApple.getInstanceMainConfig().getInt("modules.punish.maxTempChannelMuteTime") > 0 &&
-								t != null && t.getTotalSeconds() > GoldenApple.getInstanceMainConfig().getInt("modules.punish.maxTempChannelMuteTime")) {
-							user.sendLocalizedMessage("error.mute.tooLong");
-						} else {
-							String reason = (arg.isDefined("reason")) ? arg.getString("reason") : null;
-							
-							if (reason == null)
-								reason = (t == null) ? GoldenApple.getInstanceMainConfig().getString("modules.punish.defaultPermaChannelMuteReason", "You have been silenced from this channel.") :
-									GoldenApple.getInstanceMainConfig().getString("modules.punish.defaultTempChannelMuteReason", "You have been temporarily silenced from this channel.");
-							
-							PunishmentManager.getInstance().addMute(target, user, reason, t, c.getName());
-							
-							if (t == null) {
-								user.sendLocalizedMessage("general.mute.permaMute", target.getName());
-							} else {
-								user.sendLocalizedMessage("general.mute.tempMute", target.getName(), t.toString());
-							}
-							
-							if ((tUser = User.getUser(target.getId())) != null && ChatManager.getInstance().getActiveChannel(tUser) == c) {
-								if (t == null) {
-									user.sendLocalizedMessage("general.mute.permaKick", user.getName());
-									user.getHandle().sendMessage(reason);
-								} else {
-									user.sendLocalizedMessage("general.mute.tempKick", target.getName(), t.toString());
-									user.getHandle().sendMessage(reason);
-								}
-							}
-						}
-					} catch (NumberFormatException e) {
-						user.sendLocalizedMessage("error.mute.invalidDuration", arg.getString("duration"));
-					}
-				} else {
-					user.sendLocalizedMessage("error.mute.alreadyMuted");
-				}
+				muteAdd(target, c, (arg.isDefined("duration")) ? arg.getString("duration") : null, (arg.isDefined("reason")) ? arg.getString("reason") : null, user, commandLabel, args);
 			}
+		}
+	}
+	
+	public void muteInfo(IPermissionUser target, ChatChannel c, User user, String commandLabel, String[] args) {
+		if (c.calculateLevel(user).id < ChatChannelUserLevel.MODERATOR.id) {
+			GoldenApple.logPermissionFail(user, commandLabel, args, true);
+			return;
+		}
+		
+		PunishmentMute m = PunishmentManager.getInstance().getActiveMute(target, c);
+		
+		if (m == null) {
+			user.sendLocalizedMessage("general.mute.info.notMuted", target.getName());
+		} else if (m.isPermanent()) {
+			user.sendLocalizedMessage("general.mute.info.permMuted", target.getName(), m.getAdmin().getName());
+			user.sendLocalizedMessage(ChatColor.GRAY + m.getReason());
+			if (m.isGlobal())
+				user.sendLocalizedMessage("general.mute.info.global");
+		} else {
+			user.sendLocalizedMessage("general.mute.info.tempMuted", target.getName(), m.getRemainingDuration().toString(), m.getAdmin().getName());
+			user.sendLocalizedMessage(ChatColor.GRAY + m.getReason());
+			if (m.isGlobal())
+				user.sendLocalizedMessage("general.mute.info.global");
+		}
+	}
+	
+	public void muteVoid(IPermissionUser target, ChatChannel c, User user, String commandLabel, String[] args) {
+		if (c.calculateLevel(user).id < ChatChannelUserLevel.MODERATOR.id) {
+			GoldenApple.logPermissionFail(user, commandLabel, args, true);
+			return;
+		}
+		
+		PunishmentMute m = PunishmentManager.getInstance().getActiveMute(target, c);
+		
+		if (m == null) {
+			user.sendLocalizedMessage("error.mute.notMuted");
+		} else if (m.isGlobal()) {
+			user.sendLocalizedMessage("error.mute.voidGlobal");
+		} else {
+			if (m.getAdminId() != user.getId() && c.calculateLevel(user).id < ChatChannelUserLevel.SUPER_MODERATOR.id) {
+				GoldenApple.logPermissionFail(user, commandLabel, args, true);
+				return;
+			} else {
+				m.voidPunishment();
+				m.update();
+				
+				AuditLog.logEvent(new MuteVoidEvent(user.getName(), target.getName(), c.getName()));
+				
+				user.sendLocalizedMessage("general.mute.voidMute", target.getName());
+			}
+		}
+	}
+	
+	public void muteAdd(IPermissionUser target, ChatChannel c, String duration, String reason, User user, String commandLabel, String[] args) {
+		if (c.calculateLevel(user).id < ChatChannelUserLevel.MODERATOR.id) {
+			GoldenApple.logPermissionFail(user, commandLabel, args, true);
+			return;
+		}
+		
+		PunishmentMute m = PunishmentManager.getInstance().getActiveMute(target, c);
+		
+		if (m == null) {
+			try {
+				User tUser;
+				RemainingTime t = (duration == null) ? RemainingTime.parseTime(duration) : null;
+				
+				if (c.calculateLevel(user).id < ChatChannelUserLevel.SUPER_MODERATOR.id &&
+						GoldenApple.getInstanceMainConfig().getInt("modules.punish.maxTempChannelMuteTime") > 0 &&
+						t != null && t.getTotalSeconds() > GoldenApple.getInstanceMainConfig().getInt("modules.punish.maxTempChannelMuteTime")) {
+					user.sendLocalizedMessage("error.mute.tooLong");
+				} else {
+					if (reason == null)
+						reason = (t == null) ? GoldenApple.getInstanceMainConfig().getString("modules.punish.defaultPermaChannelMuteReason", "You have been silenced from this channel.") :
+							GoldenApple.getInstanceMainConfig().getString("modules.punish.defaultTempChannelMuteReason", "You have been temporarily silenced from this channel.");
+					
+					PunishmentManager.getInstance().addMute(target, user, reason, t, c.getName());
+					AuditLog.logEvent(new MuteEvent(user.getName(), target.getName(), (t == null) ? "PERMANENT" : t.toString(), reason, c.getName()));
+					
+					if (t == null) {
+						user.sendLocalizedMessage("general.mute.permaMute", target.getName());
+					} else {
+						user.sendLocalizedMessage("general.mute.tempMute", target.getName(), t.toString());
+					}
+					
+					if ((tUser = User.getUser(target.getId())) != null && ChatManager.getInstance().getActiveChannel(tUser) == c) {
+						if (t == null) {
+							user.sendLocalizedMessage("general.mute.permaKick", user.getName());
+							user.getHandle().sendMessage(reason);
+						} else {
+							user.sendLocalizedMessage("general.mute.tempKick", target.getName(), t.toString());
+							user.getHandle().sendMessage(reason);
+						}
+					}
+				}
+			} catch (NumberFormatException e) {
+				user.sendLocalizedMessage("error.mute.invalidDuration", duration);
+			}
+		} else {
+			user.sendLocalizedMessage("error.mute.alreadyMuted");
 		}
 	}
 
@@ -147,59 +183,7 @@ public class MuteCommand extends DualSyntaxCommand {
 		if (args.length == 0 || args[0].equalsIgnoreCase("-?") || args[0].equalsIgnoreCase("help")) {
 			sendHelp(user, commandLabel, false);
 		} else {
-			ChatChannel c;
-			
-			user.sendLocalizedMessage("header.punish");
-			
-			if ((c = ChatManager.getInstance().getActiveChannel(user)) == null) {
-				user.sendLocalizedMessage("error.channel.notInChannelCommand");
-			} else if (c.getActiveLevel(user).id < ChatChannelUserLevel.MODERATOR.id) {
-				
-			} else {
-				IPermissionUser target = PermissionManager.getInstance().getUser(args[0]);
-				User tUser;
-				
-				if (target == null) {
-					user.sendLocalizedMessage("shared.userNotFoundError", args[0]);
-				} else {
-					String reason = null;
-					
-					if (args.length > 2) {
-						reason = "";
-						for (int i = 2; i < args.length; i++) {
-							reason += (reason.equals("")) ? args[i] : (" " + args[i]);
-						}
-					}
-					
-					if (args.length < 2 || args[1].equalsIgnoreCase("permanent")) {
-						if (reason == null) reason = GoldenApple.getInstanceMainConfig().getString("modules.punish.defaultPermaChannelMuteReason", "You have been silenced from this channel.");
-						
-						user.sendLocalizedMessage("general.mute.permaMute", target.getName());
-						
-						if ((tUser = User.getUser(target.getId())) != null && ChatManager.getInstance().getActiveChannel(tUser) == c) {
-							user.sendLocalizedMessage("general.mute.permaKick", user.getName());
-							user.getHandle().sendMessage(reason);
-						}
-					} else if (args[1].equalsIgnoreCase("void")) {
-						
-					} else {
-						if (reason == null) reason = GoldenApple.getInstanceMainConfig().getString("modules.punish.defaultTempChannelMuteReason", "You have been temporarily silenced from this channel.");
-						
-						try {
-							RemainingTime t = RemainingTime.parseTime(args[1]);
-							
-							user.sendLocalizedMessage("general.mute.tempMute", target.getName(), t.toString());
-							
-							if ((tUser = User.getUser(target.getId())) != null && ChatManager.getInstance().getActiveChannel(tUser) == c) {
-								user.sendLocalizedMessage("general.mute.tempKick", t.toString(), user.getName());
-								user.getHandle().sendMessage(reason);
-							}
-						} catch (NumberFormatException e) {
-							user.sendLocalizedMessage("error.mute.invalidDuration", args[1]);
-						}
-					}
-				}
-			}
+			// TODO Implement this
 		}
 	}
 	

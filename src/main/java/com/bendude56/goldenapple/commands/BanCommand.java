@@ -1,113 +1,149 @@
 package com.bendude56.goldenapple.commands;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+
 import com.bendude56.goldenapple.GoldenApple;
+import com.bendude56.goldenapple.SimpleCommandManager;
 import com.bendude56.goldenapple.User;
+import com.bendude56.goldenapple.ModuleLoader.ModuleState;
+import com.bendude56.goldenapple.audit.AuditLog;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
-import com.bendude56.goldenapple.permissions.PermissionManager;
-import com.bendude56.goldenapple.punish.Punishment;
 import com.bendude56.goldenapple.punish.Punishment.RemainingTime;
+import com.bendude56.goldenapple.punish.audit.BanEvent;
+import com.bendude56.goldenapple.punish.audit.BanVoidEvent;
 import com.bendude56.goldenapple.punish.PunishmentManager;
 import com.bendude56.goldenapple.punish.PunishmentBan;
+import com.bendude56.goldenapple.util.ComplexArgumentParser;
+import com.bendude56.goldenapple.util.ComplexArgumentParser.ArgumentInfo;
 
 public class BanCommand extends DualSyntaxCommand {
 
 	@Override
 	public void onExecuteComplex(GoldenApple instance, User user, String commandLabel, String[] args) {
-		if (args.length == 0 || args[0].equalsIgnoreCase("-?") || args[0].equalsIgnoreCase("help")) {
+		if (GoldenApple.getInstance().getModuleManager().getModule("Chat").getCurrentState() != ModuleState.LOADED) {
+			SimpleCommandManager.defaultCommand.onCommand(user.getHandle(), Bukkit.getPluginCommand("gamute"), commandLabel, args);
+		} else if (args.length == 0 || args[0].equalsIgnoreCase("-?") || args[0].equalsIgnoreCase("help")) {
 			sendHelp(user, commandLabel, true);
 		} else {
-			boolean addToReason = false;
-			boolean toVoid = false;
-			String reason = null;
-			IPermissionUser toBanish = null;
-			RemainingTime duration = null;
-			for (int i = 0; i < args.length; i++) {
-				if (args[i].equals("-u")) {
-					addToReason = false;
-					
-					if (i == args.length - 1) {
-						user.sendLocalizedMessage("shared.parameterMissing", "-u");
-						return;
-					} else {
-						toBanish = PermissionManager.getInstance().getUser(args[++i]);
-						
-						if (toBanish == null) {
-							user.sendLocalizedMessage("shared.userNotFoundError", args[i]);
-							return;
-						}
-					}
-				} else if (args[i].equals("-r")) {
-					if (i == args.length - 1) {
-						user.sendLocalizedMessage("shared.parameterMissing", "-r");
-						return;
-					} else {
-						addToReason = true;
-						reason = "";
-					}
-				} else if (args[i].equals("-t")) {
-					addToReason = false;
-					if (i == args.length - 1) {
-						user.sendLocalizedMessage("shared.parameterMissing", "-t");
-						return;
-					} else {
-						duration = RemainingTime.parseTime(args[++i]);
-					}
-				} else if (args[i].equals("-v")) {
-					addToReason = false;
-					toVoid = true;
-				} else if (addToReason) {
-					reason += args[i] + " ";
-				} else {
-					user.sendLocalizedMessage("shared.unknownOption", args[i]);
-					return;
-				}
-			}
+			ComplexArgumentParser arg = new ComplexArgumentParser(new ArgumentInfo[] {
+				ArgumentInfo.newUser("target", "u", "user", true, false),
+				ArgumentInfo.newString("duration", "t", "time", false),
+				ArgumentInfo.newString("reason", "r", "reason", true),
+				ArgumentInfo.newSwitch("void", "v", "void"),
+				ArgumentInfo.newSwitch("info", "i", "info")
+			});
 			
-			if (toBanish == null) {
-				user.sendLocalizedMessage("error.ban.noUserSelected");
-			} else if (duration == null && !user.hasPermission(PunishmentManager.banPermPermission)) {
-				GoldenApple.logPermissionFail(user, commandLabel, args, true);
-			} else if (duration != null && !user.hasPermission(PunishmentManager.banTempPermission)) {
-				GoldenApple.logPermissionFail(user, commandLabel, args, true);
-			} else if (duration != null && duration.getTotalSeconds() > GoldenApple.getInstanceMainConfig().getLong("modules.punish.maxTempBanTime") &&
-					!user.hasPermission(PunishmentManager.banTempOverridePermission)) {
-				user.sendLocalizedMessage("error.ban.tooLong", new RemainingTime(GoldenApple.getInstanceMainConfig().getLong("modules.punish.maxTempBanTime")).toString());
+			user.sendLocalizedMessage("header.punish");
+			
+			if (!arg.parse(user, args)) return;
+			
+			IPermissionUser target = arg.getUser("target");
+			
+			if (arg.isDefined("info")) {
+				banInfo(target, user, commandLabel, args);
+			} else if (arg.isDefined("void")) {
+				banVoid(target, user, commandLabel, args);
 			} else {
-				if (reason == null) reason = GoldenApple.getInstanceMainConfig().getString((duration == null) ? "modules.punish.defaultPermaBanReason" : "modules.punish.defaultTempBanReason", "");
+				banAdd(target, (arg.isDefined("duration")) ? arg.getString("duration") : null, (arg.isDefined("reason")) ? arg.getString("reason") : null, user, commandLabel, args);
+			}
+		}
+	}
+	
+	public void banInfo(IPermissionUser target, User user, String commandLabel, String[] args) {
+		if (!user.hasPermission(PunishmentManager.banInfoPermission)) {
+			GoldenApple.logPermissionFail(user, commandLabel, args, true);
+			return;
+		}
+		
+		PunishmentBan b = (PunishmentBan)PunishmentManager.getInstance().getActivePunishment(target, PunishmentBan.class);
+		
+		if (b == null) {
+			user.sendLocalizedMessage("general.ban.info.notBanned", target.getName());
+		} else if (b.isPermanent()) {
+			user.sendLocalizedMessage("general.ban.info.permBanned", target.getName(), b.getAdmin().getName());
+			user.sendLocalizedMessage(ChatColor.GRAY + b.getReason());
+		} else {
+			user.sendLocalizedMessage("general.ban.info.tempBanned", target.getName(), b.getRemainingDuration().toString(), b.getAdmin().getName());
+			user.sendLocalizedMessage(ChatColor.GRAY + b.getReason());
+		}
+	}
+	
+	public void banVoid(IPermissionUser target, User user, String commandLabel, String[] args) {
+		if (!user.hasPermission(PunishmentManager.banVoidPermission)) {
+			GoldenApple.logPermissionFail(user, commandLabel, args, true);
+			return;
+		}
+		
+		PunishmentBan b = (PunishmentBan)PunishmentManager.getInstance().getActivePunishment(target, PunishmentBan.class);
+		
+		if (b == null) {
+			user.sendLocalizedMessage("error.ban.notBanned");
+		} else {
+			if (b.getAdminId() != user.getId() && !user.hasPermission(PunishmentManager.banVoidAllPermission)) {
+				GoldenApple.logPermissionFail(user, commandLabel, args, true);
+				return;
+			} else {
+				b.voidPunishment();
+				b.update();
 				
-				if (toVoid) {
-					Punishment p = PunishmentManager.getInstance().getActivePunishment(toBanish, PunishmentBan.class);
-					if (p == null) {
-						user.sendLocalizedMessage("error.ban.notBanned");
-					} else {
-						p.voidPunishment();
-						p.update();
-						user.sendLocalizedMessage("general.ban.voidban", toBanish.getName());
-					}
+				AuditLog.logEvent(new BanVoidEvent(user.getName(), target.getName()));
+				
+				user.sendLocalizedMessage("general.ban.voidBan", target.getName());
+			}
+		}
+	}
+	
+	public void banAdd(IPermissionUser target, String duration, String reason, User user, String commandLabel, String[] args) {
+		if (!user.hasPermission(PunishmentManager.banTempPermission)) {
+			GoldenApple.logPermissionFail(user, commandLabel, args, true);
+			return;
+		}
+		
+		PunishmentBan b = (PunishmentBan)PunishmentManager.getInstance().getActivePunishment(target, PunishmentBan.class);
+		
+		if (b == null) {
+			try {
+				User tUser;
+				RemainingTime t = (duration != null) ? RemainingTime.parseTime(duration) : null;
+				
+				if (!user.hasPermission(PunishmentManager.banTempOverridePermission) &&
+						GoldenApple.getInstanceMainConfig().getInt("modules.punish.maxTempBanTime") > 0 &&
+						t != null && t.getTotalSeconds() > GoldenApple.getInstanceMainConfig().getInt("modules.punish.maxTempBanTime")) {
+					user.sendLocalizedMessage("error.ban.tooLong");
+				} else if (!user.hasPermission(PunishmentManager.banPermPermission) && t == null) {
+					GoldenApple.logPermissionFail(user, commandLabel, args, true);
 				} else {
-					if (PunishmentManager.getInstance().hasActivePunishment(toBanish, PunishmentBan.class)) {
-						user.sendLocalizedMessage("error.ban.alreadyBanned");
+					if (reason == null)
+						reason = (t == null) ? GoldenApple.getInstanceMainConfig().getString("modules.punish.defaultPermaBanReason", "You have been banished from this server!") :
+							GoldenApple.getInstanceMainConfig().getString("modules.punish.defaultTempBanReason", "You have been temporarily banished from this server!");
+					
+					PunishmentManager.getInstance().addBan(target, user, reason, t);
+					AuditLog.logEvent(new BanEvent(user.getName(), target.getName(), (t == null) ? "PERMANENT" : t.toString(), reason));
+					
+					if (t == null) {
+						user.sendLocalizedMessage("general.ban.permaBan", target.getName());
 					} else {
-						PunishmentManager.getInstance().addBan(toBanish, user, reason, duration);
-						if (duration == null)
-							user.sendLocalizedMessage("general.ban.permaban", toBanish.getName());
-						else
-							user.sendLocalizedMessage("general.ban.tempban", toBanish.getName(), duration.toString());
-						
-						User u = User.getUser(toBanish.getId());
-						
-						if (u != null && duration == null) {
-							u.getPlayerHandle().kickPlayer(GoldenApple.getInstance().getLocalizationManager().processMessageDefaultLocale("general.ban.permakick", user.getName()) +
+						user.sendLocalizedMessage("general.ban.tempBan", target.getName(), t.toString());
+					}
+					
+					if ((tUser = User.getUser(target.getId())) != null) {
+						if (t == null) {
+							tUser.getPlayerHandle().kickPlayer(GoldenApple.getInstance().getLocalizationManager().processMessageDefaultLocale("general.ban.permaKick", user.getName()) +
 									"\n" + reason +
 									"\n" + GoldenApple.getInstanceMainConfig().getString("banAppealMessage", "Contact an administrator to dispute this ban."));
-						} else if (u != null) {
-							u.getPlayerHandle().kickPlayer(GoldenApple.getInstance().getLocalizationManager().processMessageDefaultLocale("general.ban.tempkick", duration.toString(), user.getName()) +
+						} else {
+							tUser.getPlayerHandle().kickPlayer(GoldenApple.getInstance().getLocalizationManager().processMessageDefaultLocale("general.ban.tempKick", t.toString(), user.getName()) +
 									"\n" + reason +
 									"\n" + GoldenApple.getInstanceMainConfig().getString("banAppealMessage", "Contact an administrator to dispute this ban."));
 						}
 					}
 				}
+			} catch (NumberFormatException e) {
+				user.sendLocalizedMessage("error.ban.invalidDuration", duration);
 			}
+		} else {
+			user.sendLocalizedMessage("error.ban.alreadyBanned");
 		}
 	}
 
@@ -116,7 +152,7 @@ public class BanCommand extends DualSyntaxCommand {
 		if (args.length == 0 || args[0].equalsIgnoreCase("-?") || args[0].equalsIgnoreCase("help")) {
 			sendHelp(user, commandLabel, false);
 		} else {
-			
+			// TODO Implement this
 		}
 	}
 	

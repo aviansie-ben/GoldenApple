@@ -10,7 +10,7 @@ import com.bendude56.goldenapple.permissions.PermissionManager;
 public class PunishModuleLoader extends ModuleLoader {
 
 	public PunishModuleLoader() {
-		super("Punish", new String[] { "Permissions" }, "modules.punish.enable", "securityPolicy.blockModules.punish", "securityPolicy.blockManualUnload.punish");
+		super("Punish", new String[] { "Permissions" }, "modules.punish.enabled", "securityPolicy.blockModules.punish", "securityPolicy.blockManualUnload.punish");
 	}
 	
 	@Override
@@ -26,6 +26,7 @@ public class PunishModuleLoader extends ModuleLoader {
 		PunishmentManager.punishNode = permissions.registerNode("punish", PermissionManager.goldenAppleNode);
 		
 		PunishmentManager.banNode = permissions.registerNode("ban", PunishmentManager.punishNode);
+		PunishmentManager.banInfoPermission = permissions.registerPermission("info", PunishmentManager.banNode);
 		PunishmentManager.banTempPermission = permissions.registerPermission("temp", PunishmentManager.banNode);
 		PunishmentManager.banTempOverridePermission = permissions.registerPermission("tempOverride", PunishmentManager.banNode);
 		PunishmentManager.banPermPermission = permissions.registerPermission("perm", PunishmentManager.banNode);

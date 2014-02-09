@@ -6,6 +6,7 @@ import java.util.logging.Level;
 
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
+import com.bendude56.goldenapple.permissions.IPermissionUser;
 
 public class DatabaseChatChannel extends ChatChannel {
 	
@@ -44,7 +45,7 @@ public class DatabaseChatChannel extends ChatChannel {
 	}
 
 	@Override
-	public ChatChannelUserLevel getSpecificLevel(User user) {
+	public ChatChannelUserLevel getSpecificLevel(IPermissionUser user) {
 		try {
 			ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT AccessLevel FROM ChannelUsers WHERE Channel=? AND UserID=?", this.name, user.getId());
 			try {

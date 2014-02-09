@@ -22,6 +22,7 @@ public abstract class PunishmentManager {
 	
 	// goldenapple.punish.ban
 	public static PermissionNode        banNode;
+	public static Permission            banInfoPermission;
 	public static Permission            banTempPermission;
 	public static Permission            banTempOverridePermission;
 	public static Permission            banPermPermission;

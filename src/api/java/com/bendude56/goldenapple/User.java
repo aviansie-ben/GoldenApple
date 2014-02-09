@@ -349,6 +349,10 @@ public class User implements IPermissionUser {
 			return permissions.getPrefix();
 	}
 	
+	public boolean isServer() {
+		return permissions == null;
+	}
+	
 	public void sendLocalizedMessage(String message) {
 		GoldenApple.getInstance().getLocalizationManager().sendMessage(this, message, false);
 	}

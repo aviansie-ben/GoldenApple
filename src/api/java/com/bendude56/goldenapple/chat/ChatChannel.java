@@ -7,6 +7,7 @@ import org.bukkit.ChatColor;
 
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
+import com.bendude56.goldenapple.permissions.IPermissionUser;
 import com.bendude56.goldenapple.punish.PunishmentManager;
 import com.bendude56.goldenapple.punish.PunishmentMute;
 
@@ -92,7 +93,9 @@ public abstract class ChatChannel {
 		return connectedUsers.get(user);
 	}
 	
-	public final ChatChannelUserLevel calculateLevel(User user) {
+	public final ChatChannelUserLevel calculateLevel(IPermissionUser user) {
+		if (user instanceof User && ((User)user).isServer()) return ChatChannelUserLevel.ADMINISTRATOR;
+		
 		ChatChannelUserLevel level = getSpecificLevel(user);
 		
 		if (level == ChatChannelUserLevel.UNKNOWN) {
@@ -120,7 +123,7 @@ public abstract class ChatChannel {
 			return ChatChannelDisplayLevel.GRAYED_OUT;
 	}
 	
-	public abstract ChatChannelUserLevel getSpecificLevel(User user);
+	public abstract ChatChannelUserLevel getSpecificLevel(IPermissionUser user);
 	public abstract ChatChannelUserLevel getGroupLevel(long group);
 	
 	public abstract void setUserLevel(long user, ChatChannelUserLevel level);

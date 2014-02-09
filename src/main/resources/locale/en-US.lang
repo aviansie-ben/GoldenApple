@@ -2,8 +2,9 @@ error.antigrief.potionBlock=&4ERROR: The potion you are attempting to use has be
 error.antigrief.potionCheckFail=&4ERROR: Internal error while checking for blocked potion.
 error.antigrief.tnt=&4ERROR: You are not allowed to ignite TNT! This attempt has been logged.
 
-error.ban.alreadyBanned=&4ERROR: That user is already banned!
-error.ban.notBanned=&4ERROR: That user is not banned!
+error.ban.alreadyBanned=&4ERROR: That user is already muted!
+error.ban.invalidDuration=&4ERROR: Cannot convert '%1' to a duration!
+error.ban.notBanned=&4ERROR: That user is not muted!
 error.ban.noUserSelected=&4ERROR: No user was selected.
 error.ban.tooLong=&4ERROR: The maximum time for a temporary ban is %1.
 
@@ -93,11 +94,14 @@ error.warps.cooldownDeath=&4ERROR: You have recently died! You will be able to t
 error.warps.noBack=&4ERROR: You have nowhere to go back to!
 error.warps.pluginCancel=&4ERROR: Teleport was cancelled by another plugin!
 
-general.ban.permaban=&a%1 has been banned permanently.
-general.ban.permakick=You have been permanently banned by %1:
-general.ban.tempban=&a%1 has been banned for %2.
-general.ban.tempkick=You have been banned for %1 by %2:
-general.ban.voidban=&aThe ban on %1 has been voided.
+general.ban.info.notBanned=&7User '%1' is not currently banned.
+general.ban.info.permBanned=&7User '%1' is permanently banned by %2.
+general.ban.info.tempBanned=&7User '%1' is banned for %2 by %3.
+general.ban.permaBan=&a%1 has been permanently banned.
+general.ban.permaKick=You have been permanently banned by %1:
+general.ban.tempBan=&a%1 has been banned for %2.
+general.ban.tempKick=You have been banned for %1 by %2:
+general.ban.voidBan=&aThe ban on %1 has been voided.
 
 general.channel.deleteBroadcast=&eChannel %1&e is being deleted. Everybody will now be kicked from this channel.
 general.channel.deleteWarn=&eWARNING: You are about to permanently delete this chat channel! If you are sure you wish to do this, type /gaverify.
