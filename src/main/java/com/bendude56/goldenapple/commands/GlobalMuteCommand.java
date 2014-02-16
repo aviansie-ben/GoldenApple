@@ -115,7 +115,7 @@ public class GlobalMuteCommand extends DualSyntaxCommand {
 				if (!user.hasPermission(PunishmentManager.globalMuteTempOverridePermission) &&
 						GoldenApple.getInstanceMainConfig().getInt("modules.punish.maxTempChannelMuteTime") > 0 &&
 						t != null && t.getTotalSeconds() > GoldenApple.getInstanceMainConfig().getInt("modules.punish.maxTempGlobalMuteTime")) {
-					user.sendLocalizedMessage("error.globalmute.tooLong");
+					user.sendLocalizedMessage("error.globalmute.tooLong", new RemainingTime(GoldenApple.getInstanceMainConfig().getInt("modules.punish.maxTempGlobalMuteTime")).toString());
 				} else {
 					if (reason == null)
 						reason = (t == null) ? GoldenApple.getInstanceMainConfig().getString("modules.punish.defaultPermaGlobalMuteReason", "You have been silenced!") :
@@ -150,10 +150,38 @@ public class GlobalMuteCommand extends DualSyntaxCommand {
 
 	@Override
 	public void onExecuteSimple(GoldenApple instance, User user, String commandLabel, String[] args) {
-		if (args.length == 0 || args[0].equalsIgnoreCase("-?") || args[0].equalsIgnoreCase("help")) {
+		if (GoldenApple.getInstance().getModuleManager().getModule("Chat").getCurrentState() != ModuleState.LOADED) {
+			SimpleCommandManager.defaultCommand.onCommand(user.getHandle(), Bukkit.getPluginCommand("gamute"), commandLabel, args);
+		} else if (args.length == 0 || args[0].equalsIgnoreCase("-?") || args[0].equalsIgnoreCase("help")) {
 			sendHelp(user, commandLabel, false);
 		} else {
-			// TODO Implement this
+			user.sendLocalizedMessage("header.punish");
+			
+			IPermissionUser target = User.getUser(args[0]);
+			
+			if (target == null) {
+				user.sendLocalizedMessage("shared.userNotFoundError", args[0]);
+				return;
+			}
+			
+			if (args.length == 1) {
+				muteAdd(target, null, null, user, commandLabel, args);
+			} else if (args[1].equalsIgnoreCase("info")) {
+				muteInfo(target, user, commandLabel, args);
+			} else if (args[1].equalsIgnoreCase("void")) {
+				muteVoid(target, user, commandLabel, args);
+			} else {
+				String reason = null;
+				
+				if (args.length > 2) {
+					reason = args[2];
+					for (int i = 3; i < args.length; i++) {
+						reason += " " + args[i];
+					}
+				}
+				
+				muteAdd(target, (args[1].equalsIgnoreCase("permanent")) ? null : args[1], reason, user, commandLabel, args);
+			}
 		}
 	}
 	

@@ -4,7 +4,7 @@ error.antigrief.tnt=&4ERROR: You are not allowed to ignite TNT! This attempt has
 
 error.ban.alreadyBanned=&4ERROR: That user is already muted!
 error.ban.invalidDuration=&4ERROR: Cannot convert '%1' to a duration!
-error.ban.notBanned=&4ERROR: That user is not muted!
+error.ban.notBanned=&4ERROR: That user is not banned!
 error.ban.noUserSelected=&4ERROR: No user was selected.
 error.ban.tooLong=&4ERROR: The maximum time for a temporary ban is %1.
 

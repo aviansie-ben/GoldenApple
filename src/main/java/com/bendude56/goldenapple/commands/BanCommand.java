@@ -110,7 +110,7 @@ public class BanCommand extends DualSyntaxCommand {
 				if (!user.hasPermission(PunishmentManager.banTempOverridePermission) &&
 						GoldenApple.getInstanceMainConfig().getInt("modules.punish.maxTempBanTime") > 0 &&
 						t != null && t.getTotalSeconds() > GoldenApple.getInstanceMainConfig().getInt("modules.punish.maxTempBanTime")) {
-					user.sendLocalizedMessage("error.ban.tooLong");
+					user.sendLocalizedMessage("error.ban.tooLong", new RemainingTime(GoldenApple.getInstanceMainConfig().getInt("modules.punish.maxTempBanTime")).toString());
 				} else if (!user.hasPermission(PunishmentManager.banPermPermission) && t == null) {
 					GoldenApple.logPermissionFail(user, commandLabel, args, true);
 				} else {
@@ -152,7 +152,33 @@ public class BanCommand extends DualSyntaxCommand {
 		if (args.length == 0 || args[0].equalsIgnoreCase("-?") || args[0].equalsIgnoreCase("help")) {
 			sendHelp(user, commandLabel, false);
 		} else {
-			// TODO Implement this
+			user.sendLocalizedMessage("header.punish");
+			
+			IPermissionUser target = User.getUser(args[0]);
+			
+			if (target == null) {
+				user.sendLocalizedMessage("shared.userNotFoundError", args[0]);
+				return;
+			}
+			
+			if (args.length == 1) {
+				banAdd(target, null, null, user, commandLabel, args);
+			} else if (args[1].equalsIgnoreCase("info")) {
+				banInfo(target, user, commandLabel, args);
+			} else if (args[1].equalsIgnoreCase("void")) {
+				banVoid(target, user, commandLabel, args);
+			} else {
+				String reason = null;
+				
+				if (args.length > 2) {
+					reason = args[2];
+					for (int i = 3; i < args.length; i++) {
+						reason += " " + args[i];
+					}
+				}
+				
+				banAdd(target, (args[1].equalsIgnoreCase("permanent")) ? null : args[1], reason, user, commandLabel, args);
+			}
 		}
 	}
 	
