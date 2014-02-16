@@ -20,6 +20,12 @@ error.channel.notFound=&4ERROR: Cannot find a channel with identifier '%1'.
 error.channel.notInChannel=&4ERROR: You must join a chat channel to talk.
 error.channel.notInChannelCommand=&4ERROR: You must be in a chat channel to use that command.
 
+error.globalmute.alreadyMuted=&4ERROR: That user is already globally muted!
+error.globalmute.invalidDuration=&4ERROR: Cannot convert '%1' to a duration!
+error.globalmute.notMuted=&4ERROR: That user is not globally muted!
+error.globalmute.noUserSelected=&4ERROR: No user was selected.
+error.globalmute.tooLong=&4ERROR: The maximum time for a temporary global mute is %1.
+
 error.home.notFoundAliasOther=&4ERROR: Player '%1' doesn't have a home with name '%2'.
 error.home.notFoundAliasSelf=&4ERROR: You don't have a home with name '%1'.
 error.home.notFoundIdOther=&4ERROR: Player '%1' doesn't have a home with ID %2.
@@ -128,6 +134,15 @@ general.complex.successOn=&aNow using complex command syntax
 general.complex.warnOff=&eWARNING: You are about to disable complex commands! Some commands will be simplified. If you are sure you want to proceed, use /gaverify!
 general.complex.warnOn=&eWARNING: You are about to enable complex commands! Some commands will be given complex syntax. If you are sure you want to proceed, use /gaverify!
 
+general.globalmute.info.notMuted=&7User '%1' is not currently globally muted.
+general.globalmute.info.permMuted=&7User '%1' is permanently globally muted by %2.
+general.globalmute.info.tempMuted=&7User '%1' is globally muted for %2 by %3.
+general.globalmute.permaMute=&a%1 has been permanently globally muted.
+general.globalmute.permaKick=You have been permanently globally muted by %1:
+general.globalmute.tempMute=&a%1 has been globally muted for %2.
+general.globalmute.tempKick=You have been globally muted for %1 by %2:
+general.globalmute.voidMute=&aThe global mute on %1 has been voided.
+
 general.home.deleteAlias=&aYour home '%1' has been deleted.
 general.home.deleteId=&aYour home #%1 has been deleted.
 general.home.set=&aYour home #%1 has been set here.
@@ -220,13 +235,18 @@ header.permissions=&7-----&6 GoldenApple Permissions &7-----
 header.punish=&7-----&6 GoldenApple Punishment &7-----
 header.warps=&7-----&6 GoldenApple Warps &7-----
 
-help.ban.complex.1=Select a target using &7-t <user>
-help.ban.complex.2=Specify a ban reason using &7-r <reason>
-help.ban.complex.3=Specify ban duration using &7-d <duration>
-help.ban.complex.4=Void a previous ban using &7-v
+help.ban.complex.1=Select a target using &7-u <user>
+help.ban.complex.2=Select a channel using &7-c <channel>
+help.ban.complex.3=Specify a ban reason using &7-r <reason>
+help.ban.complex.4=Specify ban duration using &7-t <duration>
+help.ban.complex.5=Void a previous ban using &7-v
+help.ban.complex.6=Get information on current bans using &7-i
+help.ban.complex.7=Durations are in form XdXhXmXs
 
 help.ban.simple.1=Ban a user using &7/%1 <player> [{<duration>|permanent}] [reason]
 help.ban.simple.2=Void a previous ban using &7/%1 <player> void
+help.ban.simple.3=Get information on current bans using &7/%1 <player> info
+help.ban.simple.4=Durations are in form XdXhXmXs
 
 help.channel.inNormal.complex.1=Leave the channel using &7-l
 
@@ -261,6 +281,18 @@ help.channel.out.simple.1=List available channels using &7/%1 list
 help.channel.out.simple.2=Join a channel using &7/%1 join <name>
 help.channel.out.simple.3=Add a channel using &7/%1 add <name>
 
+help.globalmute.complex.1=Select a target using &7-u <user>
+help.globalmute.complex.2=Specify a mute reason using &7-r <reason>
+help.globalmute.complex.3=Specify mute duration using &7-t <duration>
+help.globalmute.complex.4=Void a previous global mute using &7-v
+help.globalmute.complex.5=Get information on current global mutes using &7-i
+help.globalmute.complex.6=Durations are in form XdXhXmXs
+
+help.globalmute.simple.1=Globally mute a user using &7/%1 <player> [{<duration>|permanent}] [reason]
+help.globalmute.simple.2=Void a previous global mute using &7/%1 <player> void
+help.globalmute.simple.3=Get information on current global mutes using &7/%1 <player> info
+help.globalmute.simple.4=Durations are in form XdXhXmXs
+
 help.lock.complex.1=Select a block by pointing at it or use &7-s <id>
 help.lock.complex.2=Get lock info using &7-i
 help.lock.complex.3=Create a new lock using &7-c
@@ -281,17 +313,18 @@ help.lock.simple.7=Use &7/%1 uninvite <user>&f to unshare the block from a playe
 help.lock.simple.8=Use &7/%1 access {public|private}&f to change access level
 help.lock.simple.9=Use &7/%1 redstone {on|off}&f to enable/disable redstone on lock
 
-help.mute.complex.1=Select a target using &7-t <user>
+help.mute.complex.1=Select a target using &7-u <user>
 help.mute.complex.2=Select a channel using &7-c <channel>
 help.mute.complex.3=Specify a mute reason using &7-r <reason>
-help.mute.complex.4=Specify mute duration using &7-d <duration>
+help.mute.complex.4=Specify mute duration using &7-t <duration>
 help.mute.complex.5=Void a previous mute using &7-v
 help.mute.complex.6=Get information on current mutes using &7-i
 help.mute.complex.7=Durations are in form XdXhXmXs
 
 help.mute.simple.1=Mute a user using &7/%1 <player> [{<duration>|permanent}] [reason]
 help.mute.simple.2=Void a previous mute using &7/%1 <player> void
-help.mute.simple.3=Durations are in form XdXhXmXs
+help.mute.simple.3=Get information on current mutes using &7/%1 <player> info
+help.mute.simple.4=Durations are in form XdXhXmXs
 
 help.permissions.1=Select users and groups using &7-u <user>&f and &7-g <group>
 help.permissions.2=Add new users and groups based on selection using &7-a

@@ -91,12 +91,12 @@ public class MuteCommand extends DualSyntaxCommand {
 			user.sendLocalizedMessage("general.mute.info.notMuted", target.getName());
 		} else if (m.isPermanent()) {
 			user.sendLocalizedMessage("general.mute.info.permMuted", target.getName(), m.getAdmin().getName());
-			user.sendLocalizedMessage(ChatColor.GRAY + m.getReason());
+			user.getHandle().sendMessage(ChatColor.GRAY + m.getReason());
 			if (m.isGlobal())
 				user.sendLocalizedMessage("general.mute.info.global");
 		} else {
 			user.sendLocalizedMessage("general.mute.info.tempMuted", target.getName(), m.getRemainingDuration().toString(), m.getAdmin().getName());
-			user.sendLocalizedMessage(ChatColor.GRAY + m.getReason());
+			user.getHandle().sendMessage(ChatColor.GRAY + m.getReason());
 			if (m.isGlobal())
 				user.sendLocalizedMessage("general.mute.info.global");
 		}
@@ -140,7 +140,7 @@ public class MuteCommand extends DualSyntaxCommand {
 		if (m == null) {
 			try {
 				User tUser;
-				RemainingTime t = (duration == null) ? RemainingTime.parseTime(duration) : null;
+				RemainingTime t = (duration != null) ? RemainingTime.parseTime(duration) : null;
 				
 				if (c.calculateLevel(user).id < ChatChannelUserLevel.SUPER_MODERATOR.id &&
 						GoldenApple.getInstanceMainConfig().getInt("modules.punish.maxTempChannelMuteTime") > 0 &&
@@ -162,11 +162,11 @@ public class MuteCommand extends DualSyntaxCommand {
 					
 					if ((tUser = User.getUser(target.getId())) != null && ChatManager.getInstance().getActiveChannel(tUser) == c) {
 						if (t == null) {
-							user.sendLocalizedMessage("general.mute.permaKick", user.getName());
-							user.getHandle().sendMessage(reason);
+							tUser.sendLocalizedMessage("general.mute.permaKick", user.getName());
+							tUser.getHandle().sendMessage(reason);
 						} else {
-							user.sendLocalizedMessage("general.mute.tempKick", target.getName(), t.toString());
-							user.getHandle().sendMessage(reason);
+							tUser.sendLocalizedMessage("general.mute.tempKick", target.getName(), t.toString());
+							tUser.getHandle().sendMessage(reason);
 						}
 					}
 				}

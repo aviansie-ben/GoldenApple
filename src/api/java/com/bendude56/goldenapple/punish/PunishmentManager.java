@@ -11,9 +11,11 @@ import com.bendude56.goldenapple.punish.Punishment.RemainingTime;
 public abstract class PunishmentManager {
 	// goldenapple.punish
 	public static PermissionNode		punishNode;
+	public static Permission            whoisNode;
 	
 	// goldenapple.punish.globalmute
 	public static PermissionNode        globalMuteNode;
+	public static Permission            globalMuteInfoPermission;
 	public static Permission            globalMuteTempPermission;
 	public static Permission            globalMuteTempOverridePermission;
 	public static Permission            globalMutePermPermission;

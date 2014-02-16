@@ -3,6 +3,7 @@ package com.bendude56.goldenapple.punish;
 import com.bendude56.goldenapple.CommandManager;
 import com.bendude56.goldenapple.ModuleLoader;
 import com.bendude56.goldenapple.commands.BanCommand;
+import com.bendude56.goldenapple.commands.GlobalMuteCommand;
 import com.bendude56.goldenapple.commands.MuteCommand;
 import com.bendude56.goldenapple.listener.PunishmentListener;
 import com.bendude56.goldenapple.permissions.PermissionManager;
@@ -17,13 +18,21 @@ public class PunishModuleLoader extends ModuleLoader {
 	protected void preregisterCommands(CommandManager commands) {
 		commands.insertCommand("gaban", "Punish", new BanCommand());
 		commands.insertCommand("gamute", "Punish", new MuteCommand());
-		commands.insertCommand("gaglobalmute", "Punish", null);
+		commands.insertCommand("gaglobalmute", "Punish", new GlobalMuteCommand());
 		commands.insertCommand("gawhois", "Punish", null);
 	}
 	
 	@Override
 	protected void registerPermissions(PermissionManager permissions) {
 		PunishmentManager.punishNode = permissions.registerNode("punish", PermissionManager.goldenAppleNode);
+		
+		PunishmentManager.globalMuteNode = permissions.registerNode("globalmute", PunishmentManager.punishNode);
+		PunishmentManager.globalMuteInfoPermission = permissions.registerPermission("info", PunishmentManager.globalMuteNode);
+		PunishmentManager.globalMuteTempPermission = permissions.registerPermission("temp", PunishmentManager.globalMuteNode);
+		PunishmentManager.globalMuteTempOverridePermission = permissions.registerPermission("tempOverride", PunishmentManager.globalMuteNode);
+		PunishmentManager.globalMutePermPermission = permissions.registerPermission("perm", PunishmentManager.globalMuteNode);
+		PunishmentManager.globalMuteVoidPermission = permissions.registerPermission("void", PunishmentManager.globalMuteNode);
+		PunishmentManager.globalMuteVoidAllPermission = permissions.registerPermission("voidAll", PunishmentManager.globalMuteNode);
 		
 		PunishmentManager.banNode = permissions.registerNode("ban", PunishmentManager.punishNode);
 		PunishmentManager.banInfoPermission = permissions.registerPermission("info", PunishmentManager.banNode);

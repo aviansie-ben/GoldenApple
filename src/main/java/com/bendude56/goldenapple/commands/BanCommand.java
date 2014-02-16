@@ -62,10 +62,10 @@ public class BanCommand extends DualSyntaxCommand {
 			user.sendLocalizedMessage("general.ban.info.notBanned", target.getName());
 		} else if (b.isPermanent()) {
 			user.sendLocalizedMessage("general.ban.info.permBanned", target.getName(), b.getAdmin().getName());
-			user.sendLocalizedMessage(ChatColor.GRAY + b.getReason());
+			user.getHandle().sendMessage(ChatColor.GRAY + b.getReason());
 		} else {
 			user.sendLocalizedMessage("general.ban.info.tempBanned", target.getName(), b.getRemainingDuration().toString(), b.getAdmin().getName());
-			user.sendLocalizedMessage(ChatColor.GRAY + b.getReason());
+			user.getHandle().sendMessage(ChatColor.GRAY + b.getReason());
 		}
 	}
 	
