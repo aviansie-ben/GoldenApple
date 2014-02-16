@@ -247,6 +247,15 @@ public final class SimpleDatabaseManager implements DatabaseManager {
 			return false;
 		}
 	}
+	
+	@Override
+	public boolean isConnected() {
+		try {
+			return connection != null && connection.isValid(1000);
+		} catch (SQLException e) {
+			return false;
+		}
+	}
 
 	@Override
 	public void close() {

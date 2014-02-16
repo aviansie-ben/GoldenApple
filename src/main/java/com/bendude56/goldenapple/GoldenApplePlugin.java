@@ -111,6 +111,14 @@ public class GoldenApplePlugin extends GoldenApple {
 		locale = new SimpleLocalizationManager(getClassLoader());
 		modules = new SimpleModuleManager();
 		
+		// Verify that the database connected successfully
+		if (!database.isConnected()) {
+			// If the database could not be contacted, stop the server gracefully
+			GoldenApple.log(Level.SEVERE, "Server shutting down due to failed database connection...");
+			Bukkit.getServer().shutdown();
+			return;
+		}
+		
 		// Tell the module loader to load all default modules
 		if (!modules.loadDefaults()) {
 			// If a module load failed in a fatal manner, stop the server
@@ -123,7 +131,10 @@ public class GoldenApplePlugin extends GoldenApple {
 	@Override
 	public void onDisable() {
 		// Unload all modules
-		modules.unloadAll();
+		if (modules != null) {
+			modules.unloadAll();
+			modules = null;
+		}
 
 		// Unload the database
 		if (database != null) {

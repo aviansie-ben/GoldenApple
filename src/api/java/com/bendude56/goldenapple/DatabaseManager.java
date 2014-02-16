@@ -131,6 +131,14 @@ public interface DatabaseManager {
 	public boolean createOrUpdateTable(String tableName);
 	
 	/**
+	 * Checks that the database is successfully connected and that the connection is
+	 * valid.
+	 * 
+	 * @return True if the database can be reached, false otherwise.
+	 */
+	boolean isConnected();
+	
+	/**
 	 * Closes the connection to the database
 	 */
 	public void close();
