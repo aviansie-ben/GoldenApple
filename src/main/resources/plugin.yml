@@ -81,14 +81,26 @@ commands:
         usage: Use /<command> -? for help
         description: Controls banned players
         aliases: [ban, banish, banhammer]
+    gaunban:
+        usage: /<command> <Player>
+        description: Shortcut for unbanning players
+        aliases: [unban, pardon]
     gamute:
         usage: Use /<command> -? for help
         description: Controls muted players
         aliases: [mute, silence]
+    gaunmute:
+        usage: /<command> <Player>
+        description: Shortcut for unmuting players
+        aliases: [unmute, unsilence]
     gaglobalmute:
         usage: Use /<command> -? for help
         description: Controls globally muted players
         aliases: [globalmute, gmute, globalsilence, gsilence]
+    gaunglobalmute:
+        usage: /<command> <Player>
+        description: Shortcut for un-global muting players
+        aliases: [unglobalmute, ungmute, unglobalsilence, ungsilence]
     gawhois:
         usage: /<command> <Player>
         description: Gets ban/mute information about a player

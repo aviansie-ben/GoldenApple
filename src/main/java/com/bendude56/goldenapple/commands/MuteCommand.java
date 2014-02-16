@@ -12,6 +12,7 @@ import com.bendude56.goldenapple.chat.ChatChannel;
 import com.bendude56.goldenapple.chat.ChatChannel.ChatChannelUserLevel;
 import com.bendude56.goldenapple.chat.ChatManager;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
+import com.bendude56.goldenapple.permissions.PermissionManager;
 import com.bendude56.goldenapple.punish.PunishmentManager;
 import com.bendude56.goldenapple.punish.PunishmentMute;
 import com.bendude56.goldenapple.punish.Punishment.RemainingTime;
@@ -79,7 +80,7 @@ public class MuteCommand extends DualSyntaxCommand {
 		}
 	}
 	
-	public void muteInfo(IPermissionUser target, ChatChannel c, User user, String commandLabel, String[] args) {
+	public static void muteInfo(IPermissionUser target, ChatChannel c, User user, String commandLabel, String[] args) {
 		if (c.calculateLevel(user).id < ChatChannelUserLevel.MODERATOR.id) {
 			GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			return;
@@ -102,7 +103,7 @@ public class MuteCommand extends DualSyntaxCommand {
 		}
 	}
 	
-	public void muteVoid(IPermissionUser target, ChatChannel c, User user, String commandLabel, String[] args) {
+	public static void muteVoid(IPermissionUser target, ChatChannel c, User user, String commandLabel, String[] args) {
 		if (c.calculateLevel(user).id < ChatChannelUserLevel.MODERATOR.id) {
 			GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			return;
@@ -129,7 +130,7 @@ public class MuteCommand extends DualSyntaxCommand {
 		}
 	}
 	
-	public void muteAdd(IPermissionUser target, ChatChannel c, String duration, String reason, User user, String commandLabel, String[] args) {
+	public static void muteAdd(IPermissionUser target, ChatChannel c, String duration, String reason, User user, String commandLabel, String[] args) {
 		if (c.calculateLevel(user).id < ChatChannelUserLevel.MODERATOR.id) {
 			GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			return;
@@ -187,7 +188,7 @@ public class MuteCommand extends DualSyntaxCommand {
 		} else {
 			user.sendLocalizedMessage("header.punish");
 			
-			IPermissionUser target = User.getUser(args[0]);
+			IPermissionUser target = PermissionManager.getInstance().getUser(args[0]);
 			ChatChannel c;
 			
 			if (target == null) {

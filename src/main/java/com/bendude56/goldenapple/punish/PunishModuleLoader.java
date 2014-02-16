@@ -5,6 +5,9 @@ import com.bendude56.goldenapple.ModuleLoader;
 import com.bendude56.goldenapple.commands.BanCommand;
 import com.bendude56.goldenapple.commands.GlobalMuteCommand;
 import com.bendude56.goldenapple.commands.MuteCommand;
+import com.bendude56.goldenapple.commands.UnBanCommand;
+import com.bendude56.goldenapple.commands.UnGlobalMuteCommand;
+import com.bendude56.goldenapple.commands.UnMuteCommand;
 import com.bendude56.goldenapple.listener.PunishmentListener;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 
@@ -17,8 +20,11 @@ public class PunishModuleLoader extends ModuleLoader {
 	@Override
 	protected void preregisterCommands(CommandManager commands) {
 		commands.insertCommand("gaban", "Punish", new BanCommand());
+		commands.insertCommand("gaunban", "Punish", new UnBanCommand());
 		commands.insertCommand("gamute", "Punish", new MuteCommand());
+		commands.insertCommand("gaunmute", "Punish", new UnMuteCommand());
 		commands.insertCommand("gaglobalmute", "Punish", new GlobalMuteCommand());
+		commands.insertCommand("gaunglobalmute", "Punish", new UnGlobalMuteCommand());
 		commands.insertCommand("gawhois", "Punish", null);
 	}
 	
@@ -51,8 +57,11 @@ public class PunishModuleLoader extends ModuleLoader {
 	@Override
 	protected void registerCommands(CommandManager commands) {
 		commands.getCommand("gaban").register();
+		commands.getCommand("gaunban").register();
 		commands.getCommand("gamute").register();
+		commands.getCommand("gaunmute").register();
 		commands.getCommand("gaglobalmute").register();
+		commands.getCommand("gaunglobalmute").register();
 		commands.getCommand("gawhois").register();
 	}
 	
@@ -76,8 +85,11 @@ public class PunishModuleLoader extends ModuleLoader {
 	@Override
 	protected void unregisterCommands(CommandManager commands) {
 		commands.getCommand("gaban").unregister();
+		commands.getCommand("gaunban").unregister();
 		commands.getCommand("gamute").unregister();
+		commands.getCommand("gaunmute").unregister();
 		commands.getCommand("gaglobalmute").unregister();
+		commands.getCommand("gaunglobalmute").unregister();
 		commands.getCommand("gawhois").unregister();
 	}
 	

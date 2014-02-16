@@ -9,6 +9,7 @@ import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.ModuleLoader.ModuleState;
 import com.bendude56.goldenapple.audit.AuditLog;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
+import com.bendude56.goldenapple.permissions.PermissionManager;
 import com.bendude56.goldenapple.punish.Punishment.RemainingTime;
 import com.bendude56.goldenapple.punish.audit.BanEvent;
 import com.bendude56.goldenapple.punish.audit.BanVoidEvent;
@@ -50,7 +51,7 @@ public class BanCommand extends DualSyntaxCommand {
 		}
 	}
 	
-	public void banInfo(IPermissionUser target, User user, String commandLabel, String[] args) {
+	public static void banInfo(IPermissionUser target, User user, String commandLabel, String[] args) {
 		if (!user.hasPermission(PunishmentManager.banInfoPermission)) {
 			GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			return;
@@ -69,7 +70,7 @@ public class BanCommand extends DualSyntaxCommand {
 		}
 	}
 	
-	public void banVoid(IPermissionUser target, User user, String commandLabel, String[] args) {
+	public static void banVoid(IPermissionUser target, User user, String commandLabel, String[] args) {
 		if (!user.hasPermission(PunishmentManager.banVoidPermission)) {
 			GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			return;
@@ -94,7 +95,7 @@ public class BanCommand extends DualSyntaxCommand {
 		}
 	}
 	
-	public void banAdd(IPermissionUser target, String duration, String reason, User user, String commandLabel, String[] args) {
+	public static void banAdd(IPermissionUser target, String duration, String reason, User user, String commandLabel, String[] args) {
 		if (!user.hasPermission(PunishmentManager.banTempPermission)) {
 			GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			return;
@@ -154,7 +155,7 @@ public class BanCommand extends DualSyntaxCommand {
 		} else {
 			user.sendLocalizedMessage("header.punish");
 			
-			IPermissionUser target = User.getUser(args[0]);
+			IPermissionUser target = PermissionManager.getInstance().getUser(args[0]);
 			
 			if (target == null) {
 				user.sendLocalizedMessage("shared.userNotFoundError", args[0]);

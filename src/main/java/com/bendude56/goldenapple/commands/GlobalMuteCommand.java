@@ -9,6 +9,7 @@ import com.bendude56.goldenapple.ModuleLoader.ModuleState;
 import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.audit.AuditLog;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
+import com.bendude56.goldenapple.permissions.PermissionManager;
 import com.bendude56.goldenapple.punish.PunishmentManager;
 import com.bendude56.goldenapple.punish.PunishmentMute;
 import com.bendude56.goldenapple.punish.Punishment.RemainingTime;
@@ -22,7 +23,7 @@ public class GlobalMuteCommand extends DualSyntaxCommand {
 	@Override
 	public void onExecuteComplex(GoldenApple instance, User user, String commandLabel, String[] args) {
 		if (GoldenApple.getInstance().getModuleManager().getModule("Chat").getCurrentState() != ModuleState.LOADED) {
-			SimpleCommandManager.defaultCommand.onCommand(user.getHandle(), Bukkit.getPluginCommand("gamute"), commandLabel, args);
+			SimpleCommandManager.defaultCommand.onCommand(user.getHandle(), Bukkit.getPluginCommand("gaglobalmute"), commandLabel, args);
 		} else if (args.length == 0 || args[0].equalsIgnoreCase("-?") || args[0].equalsIgnoreCase("help")) {
 			sendHelp(user, commandLabel, true);
 		} else {
@@ -55,7 +56,7 @@ public class GlobalMuteCommand extends DualSyntaxCommand {
 		}
 	}
 	
-	public void muteInfo(IPermissionUser target, User user, String commandLabel, String[] args) {
+	public static void muteInfo(IPermissionUser target, User user, String commandLabel, String[] args) {
 		if (!user.hasPermission(PunishmentManager.globalMuteInfoPermission)) {
 			GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			return;
@@ -74,7 +75,7 @@ public class GlobalMuteCommand extends DualSyntaxCommand {
 		}
 	}
 	
-	public void muteVoid(IPermissionUser target, User user, String commandLabel, String[] args) {
+	public static void muteVoid(IPermissionUser target, User user, String commandLabel, String[] args) {
 		if (!user.hasPermission(PunishmentManager.globalMuteVoidPermission)) {
 			GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			return;
@@ -99,7 +100,7 @@ public class GlobalMuteCommand extends DualSyntaxCommand {
 		}
 	}
 	
-	public void muteAdd(IPermissionUser target, String duration, String reason, User user, String commandLabel, String[] args) {
+	public static void muteAdd(IPermissionUser target, String duration, String reason, User user, String commandLabel, String[] args) {
 		if (!user.hasPermission(PunishmentManager.globalMuteTempPermission)) {
 			GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			return;
@@ -157,7 +158,7 @@ public class GlobalMuteCommand extends DualSyntaxCommand {
 		} else {
 			user.sendLocalizedMessage("header.punish");
 			
-			IPermissionUser target = User.getUser(args[0]);
+			IPermissionUser target = PermissionManager.getInstance().getUser(args[0]);
 			
 			if (target == null) {
 				user.sendLocalizedMessage("shared.userNotFoundError", args[0]);
