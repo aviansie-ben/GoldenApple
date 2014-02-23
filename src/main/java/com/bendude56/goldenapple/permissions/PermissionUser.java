@@ -3,6 +3,7 @@ package com.bendude56.goldenapple.permissions;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -18,6 +19,9 @@ public class PermissionUser implements IPermissionUser {
 	private String				preferredLocale;
 	private boolean				complexCommands;
 	private boolean				autoLock;
+	
+	private ArrayList<Long> groups;
+	private ArrayList<Permission> permissions;
 
 	protected PermissionUser(long id, String name, String preferredLocale, boolean complexCommands, boolean autoLock) {
 		this.id = id;
@@ -25,6 +29,41 @@ public class PermissionUser implements IPermissionUser {
 		this.preferredLocale = preferredLocale;
 		this.complexCommands = complexCommands;
 		this.autoLock = autoLock;
+		
+		this.loadGroups();
+		this.loadPermissions();
+	}
+	
+	private void loadGroups() {
+		try {
+			groups = new ArrayList<Long>();
+			ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT GroupID FROM GroupUserMembers WHERE MemberID=?", id);
+			try {
+				while (r.next())
+					groups.add(r.getLong("GroupID"));
+			} finally {
+				GoldenApple.getInstanceDatabaseManager().closeResult(r);
+			}
+		} catch (SQLException e) {
+			GoldenApple.log(Level.SEVERE, "An error occurred while calculating group inheritance for user '" + name + "':");
+			GoldenApple.log(Level.SEVERE, e);
+		}
+	}
+	
+	private void loadPermissions() {
+		try {
+			permissions = new ArrayList<Permission>();
+			ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT Permission FROM UserPermissions WHERE UserID=?", id);
+			try {
+				while (r.next())
+					permissions.add(PermissionManager.getInstance().registerPermission(r.getString("Permission")));
+			} finally {
+				GoldenApple.getInstanceDatabaseManager().closeResult(r);
+			}
+		} catch (SQLException e) {
+			GoldenApple.log(Level.SEVERE, "An error occurred while calculating permissions for user '" + name + "':");
+			GoldenApple.log(Level.SEVERE, e);
+		}
 	}
 
 	public void save() {
@@ -48,36 +87,17 @@ public class PermissionUser implements IPermissionUser {
 	
 	@Override
 	public List<Permission> getPermissions(boolean inherited) {
-		try {
-			List<Long> gr = getParentGroups(inherited);
-			List<Permission> permissions = new ArrayList<Permission>();
-			ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT Permission FROM UserPermissions WHERE UserID=?", id);
-			try {
-				while (r.next()) {
-					permissions.add(PermissionManager.getInstance().registerPermission(r.getString("Permission")));
-				}
-			} finally {
-				GoldenApple.getInstanceDatabaseManager().closeResult(r);
-			}
+		if (inherited) {
+			ArrayList<Permission> permissions = new ArrayList<Permission>();
+			permissions.addAll(getPermissions(false));
 			
-			if (inherited) {
-				for (Long g : gr) {
-					r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT Permission FROM GroupPermissions WHERE GroupID=?", g);
-					try {
-						while (r.next()) {
-							permissions.add(PermissionManager.getInstance().registerPermission(r.getString("Permission")));
-						}
-					} finally {
-						GoldenApple.getInstanceDatabaseManager().closeResult(r);
-					}
-				}
+			for (Long g : groups) {
+				permissions.addAll(PermissionManager.getInstance().getGroup(g).getPermissions(true));
 			}
 			
 			return permissions;
-		} catch (SQLException e) {
-			GoldenApple.log(Level.SEVERE, "Failed to calculate permissions for user '" + name + "':");
-			GoldenApple.log(Level.SEVERE, e);
-			return null;
+		} else {
+			return Collections.unmodifiableList(permissions);
 		}
 	}
 
@@ -130,17 +150,7 @@ public class PermissionUser implements IPermissionUser {
 	
 	@Override
 	public boolean hasPermissionSpecific(Permission permission) {
-		
-		try {
-			ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT NULL FROM UserPermissions WHERE UserID=? AND Permission=?", id, permission.getFullName());
-			try {
-				return r.next();
-			} finally {
-				GoldenApple.getInstanceDatabaseManager().closeResult(r);
-			}
-		} catch (SQLException e) {
-			return false;
-		}
+		return permissions.contains(permission);
 	}
 
 	@Override
@@ -153,6 +163,7 @@ public class PermissionUser implements IPermissionUser {
 		if (!hasPermissionSpecific(permission)) {
 			try {
 				GoldenApple.getInstanceDatabaseManager().execute("INSERT INTO UserPermissions (UserID, Permission) VALUES (?, ?)", id, permission.getFullName());
+				permissions.add(permission);
 			} catch (SQLException e) {
 				GoldenApple.log(Level.SEVERE, "Error while adding permission '" + permission.getFullName() + "' to user '" + name + "':");
 				GoldenApple.log(Level.SEVERE, e);
@@ -170,6 +181,7 @@ public class PermissionUser implements IPermissionUser {
 		if (hasPermissionSpecific(permission)) {
 			try {
 				GoldenApple.getInstanceDatabaseManager().execute("DELETE FROM UserPermissions WHERE UserID=? AND Permission=?", id, permission.getFullName());
+				permissions.remove(permission);
 			} catch (SQLException e) {
 				GoldenApple.log(Level.SEVERE, "Error while removing permission '" + permission.getFullName() + "' from user '" + name + "':");
 				GoldenApple.log(Level.SEVERE, e);
@@ -184,33 +196,17 @@ public class PermissionUser implements IPermissionUser {
 	
 	@Override
 	public List<Long> getParentGroups(boolean directOnly) {
-		try {
-			List<Long> gr = new ArrayList<Long>();
-			ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT GroupID FROM GroupUserMembers WHERE MemberID=?", id);
-			try {
-				while (r.next())
-					gr.add(r.getLong("GroupID"));
-			} finally {
-				GoldenApple.getInstanceDatabaseManager().closeResult(r);
+		if (directOnly) {
+			return Collections.unmodifiableList(groups);
+		} else {
+			ArrayList<Long> parents = new ArrayList<Long>();
+			parents.addAll(groups);
+			
+			for (Long g : groups) {
+				parents.addAll(PermissionManager.getInstance().getGroup(g).getParentGroups(false));
 			}
 			
-			if (!directOnly) {
-				for (int i = 0; i < gr.size(); i++) {
-					r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT GroupID FROM GroupGroupMembers WHERE MemberID=?", gr.get(i));
-					try {
-						while (r.next())
-							gr.add(r.getLong("GroupID"));
-					} finally {
-						GoldenApple.getInstanceDatabaseManager().closeResult(r);
-					}
-				}
-			}
-			
-			return gr;
-		} catch (SQLException e) {
-			GoldenApple.log(Level.SEVERE, "An error occurred while calculating group inheritance for user '" + name + "':");
-			GoldenApple.log(Level.SEVERE, e);
-			return null;
+			return parents;
 		}
 	}
 
@@ -266,5 +262,11 @@ public class PermissionUser implements IPermissionUser {
 		}
 		
 		return prefix;
+	}
+
+	@Override
+	public void reloadFromDatabase() {
+		this.loadGroups();
+		this.loadPermissions();
 	}
 }

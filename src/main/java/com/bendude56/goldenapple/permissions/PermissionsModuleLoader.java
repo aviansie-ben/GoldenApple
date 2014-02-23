@@ -56,6 +56,10 @@ public class PermissionsModuleLoader extends ModuleLoader {
 	@Override
 	protected void initializeManager() {
 		PermissionManager.instance = new SimplePermissionManager();
+		
+		((SimplePermissionManager)PermissionManager.instance).loadGroups();
+		((SimplePermissionManager)PermissionManager.instance).checkDefaultGroups();
+		
 		User.clearCache();
 	}
 	

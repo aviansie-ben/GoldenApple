@@ -19,16 +19,11 @@ import com.bendude56.goldenapple.GoldenApple;
  * @author ben_dude56
  */
 public class SimplePermissionManager extends PermissionManager {
-
-	
-
 	private int                             userCacheSize;
 	private HashMap<Long, PermissionUser>	userCache		= new HashMap<Long, PermissionUser>();
 	private Deque<Long>						userCacheOut	= new ArrayDeque<Long>();
 	
-	private int                             groupCacheSize;
-	private HashMap<Long, PermissionGroup>	groupCache		= new HashMap<Long, PermissionGroup>();
-	private Deque<Long>						groupCacheOut   = new ArrayDeque<Long>();
+	private HashMap<Long, PermissionGroup>	groups		= new HashMap<Long, PermissionGroup>();
 	
 	private List<Permission>				permissions		= new ArrayList<Permission>();
 	private List<PermissionNode>			nodes			= new ArrayList<PermissionNode>();
@@ -43,7 +38,6 @@ public class SimplePermissionManager extends PermissionManager {
 		permissions.add(rootStar);
 		
 		userCacheSize = Math.max(GoldenApple.getInstanceMainConfig().getInt("modules.permissions.userCacheSize", 20), 5);
-		groupCacheSize = Math.max(GoldenApple.getInstanceMainConfig().getInt("modules.permissions.groupCacheSize", 20), 5);
 
 		GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("Users");
 		GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("UserPermissions");
@@ -51,21 +45,29 @@ public class SimplePermissionManager extends PermissionManager {
 		GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("GroupPermissions");
 		GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("GroupGroupMembers");
 		GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("GroupUserMembers");
-
-		checkDefaultGroups();
 	}
 	
 	private void popCache() {
 		while (userCacheOut.size() > userCacheSize) {
 			userCache.remove(userCacheOut.pop());
 		}
-		
-		while (groupCacheOut.size() > groupCacheSize) {
-			groupCache.remove(groupCacheOut.pop());
+	}
+	
+	public void loadGroups() {
+		try {
+			ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT * FROM Groups");
+			try {
+				while (r.next())
+					groups.put(r.getLong("ID"), new PermissionGroup(r));
+			} finally {
+				GoldenApple.getInstanceDatabaseManager().closeResult(r);
+			}
+		} catch (SQLException e) {
+			
 		}
 	}
 
-	private void checkDefaultGroups() {
+	public void checkDefaultGroups() {
 		if (!GoldenApple.getInstanceMainConfig().getString("modules.permissions.reqGroup").equals(""))
 			createGroup(GoldenApple.getInstanceMainConfig().getString("modules.permissions.reqGroup"));
 		for (String g : GoldenApple.getInstanceMainConfig().getStringList("modules.permissions.defaultGroups")) {
@@ -167,18 +169,6 @@ public class SimplePermissionManager extends PermissionManager {
 	 */
 	public HashMap<Long, PermissionUser> getUserCache() {
 		return userCache;
-	}
-
-	/**
-	 * Gets a list of all groups in the database that are currently in the group
-	 * cache.
-	 * <p>
-	 * <em><strong>Note:</strong> Does not return handles to groups that are not currently in the
-	 * group cache. In order to find a specific group, use {@link SimplePermissionManager#getGroup(long id)}
-	 * or {@link SimplePermissionManager#getGroup(String name)}</em>
-	 */
-	public HashMap<Long, PermissionGroup> getGroupCache() {
-		return groupCache;
 	}
 
 	/**
@@ -395,26 +385,7 @@ public class SimplePermissionManager extends PermissionManager {
 	 */
 	@Override
 	public PermissionGroup getGroup(long id) {
-		if (groupCache.containsKey(id)) {
-			return groupCache.get(id);
-		} else {
-			try {
-				ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT * FROM Groups WHERE ID=?", id);
-				try {
-					if (r.next()) {
-						return new PermissionGroup(r);
-					} else {
-						return null;
-					}
-				} finally {
-					GoldenApple.getInstanceDatabaseManager().closeResult(r);
-				}
-			} catch (SQLException e) {
-				GoldenApple.log(Level.WARNING, "Failed to load group " + id + ":");
-				GoldenApple.log(Level.WARNING, e);
-				return null;
-			}
-		}
+		return groups.get(id);
 	}
 
 	/**
@@ -427,31 +398,13 @@ public class SimplePermissionManager extends PermissionManager {
 	 */
 	@Override
 	public PermissionGroup getGroup(String name) {
-		for (Map.Entry<Long, PermissionGroup> entry : groupCache.entrySet()) {
+		for (Map.Entry<Long, PermissionGroup> entry : groups.entrySet()) {
 			if (entry.getValue().getName().equalsIgnoreCase(name)) {
 				return entry.getValue();
 			}
 		}
-		try {
-			ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT * FROM Groups WHERE Name=?", name);
-			try {
-				if (r.next()) {
-					PermissionGroup g = new PermissionGroup(r);
-					groupCache.put(g.getId(), g);
-					groupCacheOut.addLast(g.getId());
-					popCache();
-					return g;
-				} else {
-					return null;
-				}
-			} finally {
-				GoldenApple.getInstanceDatabaseManager().closeResult(r);
-			}
-		} catch (SQLException e) {
-			GoldenApple.log(Level.WARNING, "Failed to load group '" + name + "':");
-			GoldenApple.log(Level.WARNING, e);
-			return null;
-		}
+		
+		return null;
 	}
 
 	/**
@@ -503,13 +456,14 @@ public class SimplePermissionManager extends PermissionManager {
 	 * @param name The name to check the database against
 	 */
 	@Override
-	public boolean groupExists(String name) throws SQLException {
-		ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT NULL FROM Groups WHERE Name=?", new Object[] { name });
-		try {
-			return r.next();
-		} finally {
-			GoldenApple.getInstanceDatabaseManager().closeResult(r);
+	public boolean groupExists(String name) {
+		for (Map.Entry<Long, PermissionGroup> entry : groups.entrySet()) {
+			if (entry.getValue().getName().equalsIgnoreCase(name)) {
+				return true;
+			}
 		}
+		
+		return false;
 	}
 
 	/**
@@ -523,13 +477,19 @@ public class SimplePermissionManager extends PermissionManager {
 	 */
 	@Override
 	public PermissionGroup createGroup(String name) {
-		try {
-			if (groupExists(name))
-				return getGroup(name);
-		} catch (SQLException e) { }
-		try {
-			GoldenApple.getInstanceDatabaseManager().execute("INSERT INTO Groups (Name, Priority) VALUES (?, 1)", name);
+		if (groupExists(name))
 			return getGroup(name);
+		try {
+			ResultSet r = GoldenApple.getInstanceDatabaseManager().executeReturnGenKeys("INSERT INTO Groups (Name, Priority) VALUES (?, 1)", name);
+			try {
+				 if (r.next()) {
+					 return groups.put(r.getLong(1), new PermissionGroup(r.getLong(1), name, 1));
+				 } else {
+					 return null;
+				 }
+			} finally {
+				GoldenApple.getInstanceDatabaseManager().closeResult(r);
+			}
 		} catch (SQLException e) {
 			GoldenApple.log(Level.WARNING, "Failed to create group '" + name + "':");
 			GoldenApple.log(Level.WARNING, e);
@@ -569,8 +529,8 @@ public class SimplePermissionManager extends PermissionManager {
 			throw new IllegalArgumentException("id cannot be < 0");
 		}
 		
-		if (groupCache.containsKey(id))
-			groupCache.remove(id);
+		if (groups.containsKey(id))
+			groups.remove(id);
 		
 		GoldenApple.getInstanceDatabaseManager().execute("DELETE FROM Groups WHERE ID=?", id);
 	}
@@ -581,7 +541,7 @@ public class SimplePermissionManager extends PermissionManager {
 	@Override
 	public void close() {
 		userCache = null;
-		groupCache = null;
+		groups = null;
 		permissions = null;
 		nodes = null;
 		rootNode = null;

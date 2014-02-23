@@ -230,16 +230,12 @@ public class PermissionsCommand extends GoldenAppleCommand {
 				}
 			}
 			for (String g : changeGroups) {
-				try {
-					if (PermissionManager.getInstance().groupExists(g)) {
-						user.sendLocalizedMessage("error.permissions.add.groupExists", g);
-					} else {
-						IPermissionGroup newGroup = PermissionManager.getInstance().createGroup(g);
-						GoldenApple.log(Level.INFO, "Group " + newGroup.getName() + " (PG" + newGroup.getId() + ") has been created by " + user.getName());
-						user.sendLocalizedMessage("general.permissions.add.group", g);
-					}
-				} catch (SQLException e) {
-					user.sendLocalizedMessage("error.permissions.add.groupUnknown", g);
+				if (PermissionManager.getInstance().groupExists(g)) {
+					user.sendLocalizedMessage("error.permissions.add.groupExists", g);
+				} else {
+					IPermissionGroup newGroup = PermissionManager.getInstance().createGroup(g);
+					GoldenApple.log(Level.INFO, "Group " + newGroup.getName() + " (PG" + newGroup.getId() + ") has been created by " + user.getName());
+					user.sendLocalizedMessage("general.permissions.add.group", g);
 				}
 			}
 		} else {

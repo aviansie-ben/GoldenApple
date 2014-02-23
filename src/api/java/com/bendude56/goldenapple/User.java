@@ -368,4 +368,12 @@ public class User implements IPermissionUser {
 	public void sendLocalizedMultilineMessage(String message, String... args) {
 		GoldenApple.getInstance().getLocalizationManager().sendMessage(this, message, true, args);
 	}
+
+	@Override
+	public void reloadFromDatabase() {
+		if (permissions == null)
+			throw new UnsupportedOperationException();
+		else
+			permissions.reloadFromDatabase();
+	}
 }

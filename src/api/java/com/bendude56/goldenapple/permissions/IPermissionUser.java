@@ -71,4 +71,6 @@ public interface IPermissionUser extends IPermissionObject {
 	 * Gets the prefix that should preceed this user's name in chat.
 	 */
 	public String getPrefix();
+	
+	public void reloadFromDatabase();
 }

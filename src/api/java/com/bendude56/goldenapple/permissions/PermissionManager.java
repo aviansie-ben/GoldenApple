@@ -63,7 +63,7 @@ public abstract class PermissionManager {
 
 	public abstract IPermissionGroup getGroup(String name);
 	public abstract IPermissionGroup getGroup(long id);
-	public abstract boolean groupExists(String name) throws SQLException;
+	public abstract boolean groupExists(String name);
 	
 	public abstract IPermissionGroup createGroup(String name);
 	public abstract void deleteGroup(long id) throws SQLException;

@@ -90,4 +90,6 @@ public interface IPermissionGroup extends IPermissionObject {
 	public void removeGroup(IPermissionGroup group);
 
 	public boolean isMember(IPermissionGroup group, boolean directOnly);
+	
+	public void reloadFromDatabase();
 }
