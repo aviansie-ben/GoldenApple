@@ -79,6 +79,7 @@ securityPolicy:
         chat: false
         antigrief: false
         punish: false
+        market: false
     
     # Determines whether or not a module can be manually unloaded
     # using /gamodule. These modules will still be unloaded if a
@@ -91,6 +92,7 @@ securityPolicy:
         chat: false
         antigrief: false
         punish: false
+        market: false
 
 # Options for GoldenApple modules
 modules:
@@ -384,3 +386,59 @@ modules:
         # A message that should be shown to banned users directing
         # them on how to appeal a wrongful ban.
         banAppealMessage: 'Contact an administrator to dispute this ban.'
+    
+    market:
+        
+        # Determines whether or not the GoldenApple market module will be
+        # loaded when the server is started
+        enabled: true
+        
+        # A list of currencies and their corresponding values. Values are
+        # arbitrary, but will be used during transactions. These objects should
+        # be directly convertible in-game to ensure that their values with
+        # respect to each other remain constant.
+        currencies:
+            'minecraft:gold_nugget': 1
+            'minecraft:gold_ingot': 9
+            'minecraft:gold_block': 81
+        
+        # The amount of time after which an offer will expire. This should be
+        # in the form 'XXdXXhXXmXXs'. After expiring, an offer will no longer
+        # be fulfilled and will not be shown in the main offer list. Set to 0d
+        # for no expiry.
+        expiryDuration: '7d'
+        
+        # The maximum number of offers that a player can have listed at any
+        # one time. 0 for unlimited.
+        maxConcurrentOffers: 5
+        
+        # Determines whether or not offers are displayed publicly. Offers can
+        # still be fulfilled by creating another offer
+        listOffers: true
+        
+        # Determines whether or not players will be notified when one or more
+        # of their offers is partially completed when they are online.
+        notifyOfferPartialComplete: true
+        
+        # Determines whether or not players will be notified when one or more
+        # of their offers is completed when they are online.
+        notifyOfferComplete: true
+        
+        # Determines whether or not players will be notified when one or more
+        # of their offers expires when they are online.
+        notifyOfferExpire: true
+        
+        # Determines whether or not players will be notified of expired or
+        # completed offers when they log in.
+        notifyOnLogin: true
+        
+        # If true, average prices of items will be tracked and players will
+        # be able to list these average prices. Turning this off will
+        # COMPLETELY STOP average price tracking.
+        trackAveragePrices: true
+        
+        # The hour (24-hour format) that average prices will be updated. At
+        # this time, all prices will be recalculated. Market functions may be
+        # unavailable for a couple minutes while prices are calculated. Only
+        # applicable if trackAveragePrices is true.
+        priceUpdateHour: 0
