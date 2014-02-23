@@ -3,6 +3,7 @@ package com.bendude56.goldenapple.lock;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -170,6 +171,9 @@ public abstract class LockedBlock {
 	private LockLevel	level;
 	private String		typeId;
 	private boolean     allowExternal;
+	
+	private HashMap<Long, GuestLevel> userLevel;
+	private HashMap<Long, GuestLevel> groupLevel;
 
 	protected LockedBlock(ResultSet r, String typeId) throws SQLException, ClassNotFoundException {
 		this.lockId = r.getLong("ID");
@@ -178,9 +182,43 @@ public abstract class LockedBlock {
 		this.level = LockLevel.getLevel(r.getInt("AccessLevel"));
 		this.typeId = typeId;
 		this.allowExternal = r.getBoolean("AllowExternal");
+		
+		this.loadGroupsAndUsers();
 	}
 	
 	public abstract boolean isRedstoneAccessApplicable();
+	
+	private final void loadGroupsAndUsers() {
+		userLevel = new HashMap<Long, GuestLevel>();
+		try {
+			ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT GuestID, AccessLevel FROM LockUsers WHERE LockID=?", lockId);
+			try {
+				while (r.next()) {
+					userLevel.put(r.getLong("GuestID"), GuestLevel.getLevel(r.getInt("AccessLevel")));
+				}
+			} finally {
+				GoldenApple.getInstanceDatabaseManager().closeResult(r);
+			}
+		} catch (SQLException e) {
+			GoldenApple.log(Level.SEVERE, "Error while determining user guests for lock " + lockId + ":");
+			GoldenApple.log(Level.SEVERE, e);
+		}
+		
+		groupLevel = new HashMap<Long, GuestLevel>();
+		try {
+			ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT GuestID, AccessLevel FROM LockGroups WHERE LockID=?", lockId);
+			try {
+				while (r.next()) {
+					groupLevel.put(r.getLong("GuestID"), GuestLevel.getLevel(r.getInt("AccessLevel")));
+				}
+			} finally {
+				GoldenApple.getInstanceDatabaseManager().closeResult(r);
+			}
+		} catch (SQLException e) {
+			GoldenApple.log(Level.SEVERE, "Error while determining guests for lock " + lockId + ":");
+			GoldenApple.log(Level.SEVERE, e);
+		}
+	}
 
 	/**
 	 * Saves the lock into the SQL database
@@ -232,46 +270,16 @@ public abstract class LockedBlock {
 	 * Gets a <em>read-only</em> list of users and their access levels
 	 * associated with this lock.
 	 */
-	public final HashMap<Long, GuestLevel> getUsers() {
-		HashMap<Long, GuestLevel> guests = new HashMap<Long, GuestLevel>();
-		try {
-			ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT GuestID, AccessLevel FROM LockUsers WHERE LockID=?", lockId);
-			try {
-				while (r.next()) {
-					guests.put(r.getLong("GuestID"), GuestLevel.getLevel(r.getInt("AccessLevel")));
-				}
-				return guests;
-			} finally {
-				GoldenApple.getInstanceDatabaseManager().closeResult(r);
-			}
-		} catch (SQLException e) {
-			GoldenApple.log(Level.SEVERE, "Error while determining guests for lock " + lockId + ":");
-			GoldenApple.log(Level.SEVERE, e);
-			return null;
-		}
+	public final Map<Long, GuestLevel> getUsers() {
+		return Collections.unmodifiableMap(userLevel);
 	}
 
 	/**
 	 * Gets a <em>read-only</em> list of groups and their access levels
 	 * associated with this lock.
 	 */
-	public final HashMap<Long, GuestLevel> getGroups() {
-		HashMap<Long, GuestLevel> guests = new HashMap<Long, GuestLevel>();
-		try {
-			ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT GuestID, AccessLevel FROM LockGroups WHERE LockID=?", lockId);
-			try {
-				while (r.next()) {
-					guests.put(r.getLong("GuestID"), GuestLevel.getLevel(r.getInt("AccessLevel")));
-				}
-				return guests;
-			} finally {
-				GoldenApple.getInstanceDatabaseManager().closeResult(r);
-			}
-		} catch (SQLException e) {
-			GoldenApple.log(Level.SEVERE, "Error while determining guests for lock " + lockId + ":");
-			GoldenApple.log(Level.SEVERE, e);
-			return null;
-		}
+	public final Map<Long, GuestLevel> getGroups() {
+		return Collections.unmodifiableMap(groupLevel);
 	}
 
 	/**
@@ -283,16 +291,13 @@ public abstract class LockedBlock {
 	 */
 	public void addUser(IPermissionUser user, GuestLevel level) {
 		try {
-			ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT NULL FROM LockUsers WHERE LockID=? AND GuestID=?", lockId, user.getId());
-			try {
-				if (r.next()) {
-					GoldenApple.getInstanceDatabaseManager().execute("UPDATE LockUsers SET AccessLevel=? WHERE LockID=? AND GuestID=?", level.levelId, lockId, user.getId());
-				} else {
-					GoldenApple.getInstanceDatabaseManager().execute("INSERT INTO LockUsers (LockID, GuestID, AccessLevel) VALUES (?, ?, ?)", lockId, user.getId(), level.levelId);
-				}
-			} finally {
-				GoldenApple.getInstanceDatabaseManager().closeResult(r);
+			if (userLevel.containsKey(user.getId())) {
+				GoldenApple.getInstanceDatabaseManager().execute("UPDATE LockUsers SET AccessLevel=? WHERE LockID=? AND GuestID=?", level.levelId, lockId, user.getId());
+			} else {
+				GoldenApple.getInstanceDatabaseManager().execute("INSERT INTO LockUsers (LockID, GuestID, AccessLevel) VALUES (?, ?, ?)", lockId, user.getId(), level.levelId);
 			}
+			
+			userLevel.put(user.getId(), level);
 		} catch (SQLException e) {
 			GoldenApple.log(Level.SEVERE, "Error while adding user '" + user.getName() + "' to the guestlist for lock " + lockId + ":");
 			GoldenApple.log(Level.SEVERE, e);
@@ -306,6 +311,7 @@ public abstract class LockedBlock {
 	 */
 	public void remUser(IPermissionUser user) {
 		try {
+			userLevel.remove(user.getId());
 			GoldenApple.getInstanceDatabaseManager().execute("DELETE FROM LockUsers WHERE LockID=? AND GuestID=?", lockId, user.getId());
 		} catch (SQLException e) {
 			GoldenApple.log(Level.SEVERE, "Error while removing user '" + user.getName() + "' from the guestlist for lock " + lockId + ":");
@@ -324,19 +330,11 @@ public abstract class LockedBlock {
 			l = GuestLevel.ALLOW_INVITE;
 		else if (level != LockLevel.PUBLIC && user.hasPermission(LockManager.usePermission))
 			l = GuestLevel.USE;
+		
+		if (userLevel.containsKey(user.getId()) && userLevel.get(user.getId()).levelId > l.levelId)
+			l = userLevel.get(user.getId());
 
-		try {
-			ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT AccessLevel FROM LockUsers WHERE LockID=? AND GuestID=?", lockId, user.getId());
-			try {
-				if (r.next()) {
-					l = (l.levelId < r.getInt("AccessLevel")) ? GuestLevel.getLevel(r.getInt("AccessLevel")) : l;
-				}
-			} finally {
-				GoldenApple.getInstanceDatabaseManager().closeResult(r);
-			}
-		} catch (SQLException e) {}
-
-		for (Map.Entry<Long, GuestLevel> group : getGroups().entrySet()) {
+		for (Map.Entry<Long, GuestLevel> group : groupLevel.entrySet()) {
 			IPermissionGroup g = PermissionManager.getInstance().getGroup(group.getKey());
 
 			if (g.isMember(user, false) && group.getValue().levelId > l.levelId) {
