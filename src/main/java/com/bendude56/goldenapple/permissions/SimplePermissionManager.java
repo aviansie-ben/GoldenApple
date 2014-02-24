@@ -483,7 +483,9 @@ public class SimplePermissionManager extends PermissionManager {
 			ResultSet r = GoldenApple.getInstanceDatabaseManager().executeReturnGenKeys("INSERT INTO Groups (Name, Priority) VALUES (?, 1)", name);
 			try {
 				 if (r.next()) {
-					 return groups.put(r.getLong(1), new PermissionGroup(r.getLong(1), name, 1));
+					 PermissionGroup g = new PermissionGroup(r.getLong(1), name, 1);
+					 groups.put(r.getLong(1), g);
+					 return g;
 				 } else {
 					 return null;
 				 }

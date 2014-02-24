@@ -1,5 +1,6 @@
 package com.bendude56.goldenapple.listener;
 
+import java.sql.SQLException;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -16,9 +17,11 @@ import org.bukkit.plugin.RegisteredListener;
 
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
+import com.bendude56.goldenapple.audit.AuditLog;
 import com.bendude56.goldenapple.permissions.IPermissionGroup;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
 import com.bendude56.goldenapple.permissions.PermissionManager;
+import com.bendude56.goldenapple.permissions.audit.ObjectCreateEvent;
 
 public class PermissionListener implements Listener, EventExecutor {
 
@@ -65,7 +68,20 @@ public class PermissionListener implements Listener, EventExecutor {
 	}
 
 	private void playerLogin(PlayerLoginEvent event) {
-		IPermissionUser u = PermissionManager.getInstance().createUser(event.getPlayer().getName());
+		IPermissionUser u;
+		
+		try {
+			if (PermissionManager.getInstance().userExists(event.getPlayer().getName())) {
+				u = PermissionManager.getInstance().getUser(event.getPlayer().getName());
+			} else {
+				u = PermissionManager.getInstance().createUser(event.getPlayer().getName());
+				AuditLog.logEvent(new ObjectCreateEvent("[FIRST LOGIN]", u));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			event.disallow(Result.KICK_OTHER, "Failed to create user profile! Contact an administrator!");
+			return;
+		}
 		
 		for (String defaultGroup : GoldenApple.getInstanceMainConfig().getStringList("modules.permissions.defaultGroups")) {
 			IPermissionGroup g = PermissionManager.getInstance().getGroup(defaultGroup);

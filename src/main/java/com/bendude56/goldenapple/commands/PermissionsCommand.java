@@ -9,11 +9,18 @@ import org.bukkit.ChatColor;
 
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
+import com.bendude56.goldenapple.audit.AuditLog;
 import com.bendude56.goldenapple.permissions.IPermissionGroup;
 import com.bendude56.goldenapple.permissions.PermissionGroup;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
+import com.bendude56.goldenapple.permissions.audit.GroupAddMemberEvent;
+import com.bendude56.goldenapple.permissions.audit.GroupRemoveMemberEvent;
+import com.bendude56.goldenapple.permissions.audit.ObjectCreateEvent;
+import com.bendude56.goldenapple.permissions.audit.ObjectDeleteEvent;
+import com.bendude56.goldenapple.permissions.audit.PermissionGrantEvent;
+import com.bendude56.goldenapple.permissions.audit.PermissionRevokeEvent;
 
 public class PermissionsCommand extends GoldenAppleCommand {
 	@Override
@@ -165,24 +172,26 @@ public class PermissionsCommand extends GoldenAppleCommand {
 					if (PermissionManager.getInstance().isUserSticky(id)) {
 						user.sendLocalizedMessage("error.permissions.remove.userOnline", PermissionManager.getInstance().getUser(id).getName());
 					} else {
-						String name = PermissionManager.getInstance().getUser(id).getName();
+						IPermissionUser u = PermissionManager.getInstance().getUser(id);
 						try {
+							AuditLog.logEvent(new ObjectDeleteEvent(user.getName(), u));
 							PermissionManager.getInstance().deleteUser(id);
-							GoldenApple.log(Level.INFO, "User " + name + " (PU" + id + ") has been deleted by " + user.getName());
-							user.sendLocalizedMessage("general.permissions.remove.user", name);
+							GoldenApple.log(Level.INFO, "User " + u.getName() + " (PU" + id + ") has been deleted by " + user.getName());
+							user.sendLocalizedMessage("general.permissions.remove.user", u.getName());
 						} catch (SQLException e) {
-							user.sendLocalizedMessage("error.permissions.remove.userUnknown", name);
+							user.sendLocalizedMessage("error.permissions.remove.userUnknown", u.getName());
 						}
 					}
 				}
 				for (long id : groups) {
-					String name = PermissionManager.getInstance().getGroup(id).getName();
+					IPermissionGroup g = PermissionManager.getInstance().getGroup(id);
 					try {
+						AuditLog.logEvent(new ObjectDeleteEvent(user.getName(), g));
 						PermissionManager.getInstance().deleteGroup(id);
-						GoldenApple.log(Level.INFO, "Group " + name + " (PG" + id + ") has been deleted by " + user.getName());
-						user.sendLocalizedMessage("general.permissions.remove.group", name);
+						GoldenApple.log(Level.INFO, "Group " + g.getName() + " (PG" + id + ") has been deleted by " + user.getName());
+						user.sendLocalizedMessage("general.permissions.remove.group", g.getName());
 					} catch (SQLException e) {
-						user.sendLocalizedMessage("error.permissions.remove.groupUnknown", name);
+						user.sendLocalizedMessage("error.permissions.remove.groupUnknown", g.getName());
 					}
 				}
 			} else {
@@ -222,6 +231,7 @@ public class PermissionsCommand extends GoldenAppleCommand {
 						user.sendLocalizedMessage("error.permissions.add.userExists", u);
 					} else {
 						IPermissionUser newUser = PermissionManager.getInstance().createUser(u);
+						AuditLog.logEvent(new ObjectCreateEvent(user.getName(), newUser));
 						GoldenApple.log(Level.INFO, "User " + newUser.getName() + " (PU" + newUser.getId() + ") has been created by " + user.getName());
 						user.sendLocalizedMessage("general.permissions.add.user", u);
 					}
@@ -234,6 +244,7 @@ public class PermissionsCommand extends GoldenAppleCommand {
 					user.sendLocalizedMessage("error.permissions.add.groupExists", g);
 				} else {
 					IPermissionGroup newGroup = PermissionManager.getInstance().createGroup(g);
+					AuditLog.logEvent(new ObjectCreateEvent(user.getName(), newGroup));
 					GoldenApple.log(Level.INFO, "Group " + newGroup.getName() + " (PG" + newGroup.getId() + ") has been created by " + user.getName());
 					user.sendLocalizedMessage("general.permissions.add.group", g);
 				}
@@ -384,6 +395,7 @@ public class PermissionsCommand extends GoldenAppleCommand {
 			for (IPermissionUser u : addUsers) {
 				for (IPermissionGroup ch : groups) {
 					ch.addUser(u);
+					AuditLog.logEvent(new GroupAddMemberEvent(user.getName(), u, ch));
 					GoldenApple.log(Level.INFO, "User " + u.getName() + " (PU" + u.getId() + ") has been added to group " + ch.getName() + " (PG" + ch.getId() + ") by " + user.getName());
 					user.sendLocalizedMessage("general.permissions.member.addUser", u.getName(), ch.getName());
 				}
@@ -391,6 +403,7 @@ public class PermissionsCommand extends GoldenAppleCommand {
 			for (IPermissionUser u : remUsers) {
 				for (IPermissionGroup ch : groups) {
 					ch.removeUser(u);
+					AuditLog.logEvent(new GroupRemoveMemberEvent(user.getName(), u, ch));
 					GoldenApple.log(Level.INFO, "User " + u.getName() + " (PU" + u.getId() + ") has been removed from group " + ch.getName() + " (PG" + ch.getId() + ") by " + user.getName());
 					user.sendLocalizedMessage("general.permissions.member.remUser", u.getName(), ch.getName());
 				}
@@ -405,6 +418,7 @@ public class PermissionsCommand extends GoldenAppleCommand {
 			for (IPermissionGroup g : addGroups) {
 				for (IPermissionGroup ch : groups) {
 					ch.addGroup(g);
+					AuditLog.logEvent(new GroupAddMemberEvent(user.getName(), g, ch));
 					GoldenApple.log(Level.INFO, "Group " + g.getName() + " (PG" + g.getId() + ") has been added to group " + ch.getName() + " (PG" + ch.getId() + ") by " + user.getName());
 					user.sendLocalizedMessage("general.permissions.member.addGroup", g.getName(), ch.getName());
 				}
@@ -412,6 +426,7 @@ public class PermissionsCommand extends GoldenAppleCommand {
 			for (IPermissionGroup g : remGroups) {
 				for (IPermissionGroup ch : groups) {
 					ch.removeGroup(g);
+					AuditLog.logEvent(new GroupRemoveMemberEvent(user.getName(), g, ch));
 					GoldenApple.log(Level.INFO, "Group " + g.getName() + " (PG" + g.getId() + ") has been removed from group " + ch.getName() + " (PG" + ch.getId() + ") by " + user.getName());
 					user.sendLocalizedMessage("general.permissions.member.remUser", g.getName(), ch.getName());
 				}
@@ -425,6 +440,7 @@ public class PermissionsCommand extends GoldenAppleCommand {
 		for (Permission p : add) {
 			if (!u.hasPermissionSpecific(p)) {
 				u.addPermission(p);
+				AuditLog.logEvent(new PermissionGrantEvent(user.getName(), u, p.getFullName()));
 				GoldenApple.log(Level.INFO, "User " + u.getName() + " (PU" + u.getId() + ") has been granted permission '" + p.getFullName() + "' by " + user.getName());
 				user.sendLocalizedMessage("general.permissions.perm.add", p.getFullName(), u.getName());
 			}
@@ -432,6 +448,7 @@ public class PermissionsCommand extends GoldenAppleCommand {
 		for (Permission p : remove) {
 			if (u.hasPermissionSpecific(p)) {
 				u.removePermission(p);
+				AuditLog.logEvent(new PermissionRevokeEvent(user.getName(), u, p.getFullName()));
 				GoldenApple.log(Level.INFO, "User " + u.getName() + " (PU" + u.getId() + ") has had permission '" + p.getFullName() + "' revoked by " + user.getName());
 				user.sendLocalizedMessage("general.permissions.perm.rem", p.getFullName(), u.getName());
 			}
@@ -442,6 +459,7 @@ public class PermissionsCommand extends GoldenAppleCommand {
 		for (Permission p : add) {
 			if (!g.hasPermission(p, false)) {
 				g.addPermission(p);
+				AuditLog.logEvent(new PermissionGrantEvent(user.getName(), g, p.getFullName()));
 				GoldenApple.log(Level.INFO, "Group " + g.getName() + " (PG" + g.getId() + ") has been granted permission '" + p.getFullName() + "' by " + user.getName());
 				user.sendLocalizedMessage("general.permissions.perm.add", p.getFullName(), g.getName());
 			}
@@ -449,6 +467,7 @@ public class PermissionsCommand extends GoldenAppleCommand {
 		for (Permission p : remove) {
 			if (g.hasPermission(p, false)) {
 				g.removePermission(p);
+				AuditLog.logEvent(new PermissionRevokeEvent(user.getName(), g, p.getFullName()));
 				GoldenApple.log(Level.INFO, "Group " + g.getName() + " (PG" + g.getId() + ") has had permission '" + p.getFullName() + "' revoked by " + user.getName());
 				user.sendLocalizedMessage("general.permissions.perm.rem", p.getFullName(), g.getName());
 			}
