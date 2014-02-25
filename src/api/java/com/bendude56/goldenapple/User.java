@@ -236,6 +236,7 @@ public class User implements IPermissionUser {
 	
 	public void setHandle(CommandSender handle) {
 		this.handle = handle;
+		this.registerBukkitPermissions();
 	}
 
 	/**
