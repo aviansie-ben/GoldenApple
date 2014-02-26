@@ -11,6 +11,7 @@ import org.bukkit.event.EventException;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.block.BlockExpEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockRedstoneEvent;
@@ -48,6 +49,7 @@ public class LockListener implements Listener, EventExecutor {
 		BlockPlaceEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.MONITOR, GoldenApple.getInstance(), true));
 		InventoryMoveItemEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
 		BlockRedstoneEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
+		BlockDispenseEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
 	}
 
 	private void unregisterEvents() {
@@ -56,6 +58,7 @@ public class LockListener implements Listener, EventExecutor {
 		BlockPlaceEvent.getHandlerList().unregister(this);
 		InventoryMoveItemEvent.getHandlerList().unregister(this);
 		BlockRedstoneEvent.getHandlerList().unregister(this);
+		BlockDispenseEvent.getHandlerList().unregister(this);
 	}
 
 	@Override
@@ -71,6 +74,8 @@ public class LockListener implements Listener, EventExecutor {
 			itemMove((InventoryMoveItemEvent)event);
 		} else if (event instanceof BlockRedstoneEvent) {
 			lockRedstone((BlockRedstoneEvent)event);
+		} else if (event instanceof BlockDispenseEvent) {
+			lockDispense((BlockDispenseEvent)event);
 		} else if (event instanceof BlockExpEvent) {
 		} else {
 			GoldenApple.log(Level.WARNING, "Unrecognized event in LockListener: " + event.getClass().getName());
@@ -184,18 +189,17 @@ public class LockListener implements Listener, EventExecutor {
 	}
 	
 	private void itemMove(InventoryMoveItemEvent event) {
-		LockedBlock lock;
+		LockedBlock lockSource, lockDestination;
 		
-		if (event.getDestination().getHolder() instanceof BlockState) {
-			lock = LockManager.getInstance().getLock(((BlockState) event.getDestination().getHolder()).getLocation());
-			if (lock != null && !lock.getAllowExternal())
+		if (event.getDestination().getHolder() instanceof BlockState && event.getSource().getHolder() instanceof BlockState) {
+			lockDestination = LockManager.getInstance().getLock(((BlockState) event.getDestination().getHolder()).getLocation());
+			lockSource = LockManager.getInstance().getLock(((BlockState) event.getSource().getHolder()).getLocation());
+			
+			if (lockDestination != null && !lockDestination.getAllowExternal() && (lockSource == null || lockSource.getOwner() != lockDestination.getOwner())) {
 				event.setCancelled(true);
-		}
-		
-		if (event.getSource().getHolder() instanceof BlockState) {
-			lock = LockManager.getInstance().getLock(((BlockState) event.getSource().getHolder()).getLocation());
-			if (lock != null && !lock.getAllowExternal())
+			} else if (lockSource != null && !lockSource.getAllowExternal() && (lockDestination == null || lockSource.getOwner() != lockDestination.getOwner())) {
 				event.setCancelled(true);
+			}
 		}
 	}
 	
@@ -204,5 +208,12 @@ public class LockListener implements Listener, EventExecutor {
 		
 		if (lock != null && !lock.getAllowExternal() && lock.isRedstoneAccessApplicable())
 			event.setNewCurrent(event.getOldCurrent());
+	}
+	
+	private void lockDispense(BlockDispenseEvent event) {
+		LockedBlock lock = LockManager.getInstance().getLock(event.getBlock().getLocation());
+		
+		if (lock != null && !lock.getAllowExternal() && lock.isRedstoneAccessApplicable())
+			event.setCancelled(true);
 	}
 }

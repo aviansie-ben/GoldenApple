@@ -375,7 +375,7 @@ public class LockCommand extends DualSyntaxCommand {
 				break;
 		}
 		
-		if (b.isRedstoneAccessApplicable())
+		if (b.isRedstoneAccessApplicable() || b.isHopperAccessApplicable())
 			redstone = GoldenApple.getInstance().getLocalizationManager().getMessage(user, (b.getAllowExternal()) ? "general.lock.info.enabled" : "general.lock.info.disabled");
 		else
 			redstone = GoldenApple.getInstance().getLocalizationManager().getMessage(user, "general.lock.info.na");

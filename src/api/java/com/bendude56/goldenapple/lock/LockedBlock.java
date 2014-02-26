@@ -187,6 +187,7 @@ public abstract class LockedBlock {
 	}
 	
 	public abstract boolean isRedstoneAccessApplicable();
+	public abstract boolean isHopperAccessApplicable();
 	
 	private final void loadGroupsAndUsers() {
 		userLevel = new HashMap<Long, GuestLevel>();

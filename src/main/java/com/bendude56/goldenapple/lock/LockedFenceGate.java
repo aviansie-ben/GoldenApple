@@ -8,6 +8,11 @@ public final class LockedFenceGate extends LockedBlock {
 	public LockedFenceGate(ResultSet r) throws SQLException, ClassNotFoundException {
 		super(r, "GA_FENCEGATE");
 	}
+	
+	@Override
+	public boolean isHopperAccessApplicable() {
+		return false;
+	}
 
 	@Override
 	public boolean isRedstoneAccessApplicable() {

@@ -8,6 +8,11 @@ public final class LockedTrapDoor extends LockedBlock {
 	public LockedTrapDoor(ResultSet r) throws SQLException, ClassNotFoundException {
 		super(r, "GA_TRAPDOOR");
 	}
+	
+	@Override
+	public boolean isHopperAccessApplicable() {
+		return false;
+	}
 
 	@Override
 	public boolean isRedstoneAccessApplicable() {

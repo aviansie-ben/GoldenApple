@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public final class LockedFurnace extends LockedBlock {
+public class LockedHopper extends LockedBlock {
 	
-	public LockedFurnace(ResultSet r) throws SQLException, ClassNotFoundException, IOException {
-		super(r, "GA_FURNACE");
+	public LockedHopper(ResultSet r) throws SQLException, ClassNotFoundException, IOException {
+		super(r, "GA_HOPPER");
 	}
 	
 	@Override
