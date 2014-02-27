@@ -34,6 +34,8 @@ public abstract class ModuleLoader {
 	protected abstract void registerCommands(CommandManager commands);
 	protected abstract void registerListener();
 	protected abstract void initializeManager();
+	
+	public abstract void clearCache();
 
 	protected abstract void destroyManager();
 	protected abstract void unregisterListener();

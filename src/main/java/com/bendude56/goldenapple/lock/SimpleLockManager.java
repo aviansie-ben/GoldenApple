@@ -171,4 +171,10 @@ public class SimpleLockManager extends LockManager {
 		}
 	}
 
+	@Override
+	public void clearCache() {
+		lockCache.clear();
+		cacheOut.clear();
+	}
+
 }

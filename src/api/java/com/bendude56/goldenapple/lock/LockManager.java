@@ -32,4 +32,6 @@ public abstract class LockManager {
 	
 	public abstract LockedBlock createLock(Location loc, LockLevel access, IPermissionUser owner) throws SQLException, InvocationTargetException;
 	public abstract void deleteLock(long id) throws SQLException;
+
+	public abstract void clearCache();
 }

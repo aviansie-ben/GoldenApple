@@ -51,4 +51,6 @@ public abstract class PunishmentManager {
 	public abstract boolean hasActivePunishment(IPermissionUser u, Class<? extends Punishment> punishmentType);
 	
 	public abstract ArrayList<Punishment> getPunishments(IPermissionUser u, Class<? extends Punishment> punishmentType);
+	
+	public abstract void clearCache();
 }

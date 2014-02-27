@@ -39,6 +39,7 @@ public class PermissionsModuleLoader extends ModuleLoader {
 		PermissionManager.moduleNode = permissions.registerNode("module", PermissionManager.goldenAppleNode);
 		PermissionManager.moduleLoadPermission = permissions.registerPermission("load", PermissionManager.moduleNode);
 		PermissionManager.moduleUnloadPermission = permissions.registerPermission("unload", PermissionManager.moduleNode);
+		PermissionManager.moduleClearCachePermission = permissions.registerPermission("clearCache", PermissionManager.moduleNode);
 		PermissionManager.moduleQueryPermission = permissions.registerPermission("query", PermissionManager.moduleNode);
 	}
 	
@@ -61,6 +62,11 @@ public class PermissionsModuleLoader extends ModuleLoader {
 		((SimplePermissionManager)PermissionManager.instance).checkDefaultGroups();
 		
 		User.clearCache();
+	}
+	
+	@Override
+	public void clearCache() {
+		PermissionManager.getInstance().clearCache();
 	}
 	
 	@Override

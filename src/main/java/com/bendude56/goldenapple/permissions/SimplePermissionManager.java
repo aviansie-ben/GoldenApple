@@ -548,4 +548,9 @@ public class SimplePermissionManager extends PermissionManager {
 		nodes = null;
 		rootNode = null;
 	}
+
+	@Override
+	public void clearCache() {
+		// TODO Clear group/user cache
+	}
 }

@@ -46,6 +46,11 @@ public class LockModuleLoader extends ModuleLoader {
 	}
 	
 	@Override
+	public void clearCache() {
+		LockManager.getInstance().clearCache();
+	}
+	
+	@Override
 	protected void unregisterPermissions(PermissionManager permissions) {
 		LockManager.lockNode = null;
 		LockManager.addPermission = null;

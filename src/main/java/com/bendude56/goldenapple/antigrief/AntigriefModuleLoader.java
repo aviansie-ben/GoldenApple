@@ -45,6 +45,10 @@ public class AntigriefModuleLoader extends ModuleLoader {
 	}
 	
 	@Override
+	public void clearCache() {
+	}
+	
+	@Override
 	protected void unregisterCommands(CommandManager commands) {
 	}
 	

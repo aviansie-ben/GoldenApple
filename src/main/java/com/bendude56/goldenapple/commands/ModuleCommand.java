@@ -226,6 +226,15 @@ public class ModuleCommand extends GoldenAppleCommand {
 							return true;
 						}
 					}
+				} else if (args[1].equalsIgnoreCase("-cc") || args[1].equalsIgnoreCase("--clear-cache")) {
+					if (!user.hasPermission(PermissionManager.moduleClearCachePermission)) {
+						GoldenApple.logPermissionFail(user, commandLabel, args, true);
+					} else if (module.getCurrentState() != ModuleState.LOADED) {
+						user.sendLocalizedMessage("error.module.clearCache.notLoaded", module.getModuleName());
+					} else {
+						module.clearCache();
+						user.sendLocalizedMessage("general.module.clearCache", module.getModuleName());
+					}
 				} else {
 					user.sendLocalizedMessage("shared.unknownOption", args[1]);
 				}

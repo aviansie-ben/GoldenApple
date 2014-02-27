@@ -71,6 +71,11 @@ public class PunishModuleLoader extends ModuleLoader {
 	}
 	
 	@Override
+	public void clearCache() {
+		PunishmentManager.getInstance().clearCache();
+	}
+	
+	@Override
 	protected void unregisterPermissions(PermissionManager permissions) {
 		PunishmentManager.punishNode = null;
 		

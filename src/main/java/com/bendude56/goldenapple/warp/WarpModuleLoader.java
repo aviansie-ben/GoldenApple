@@ -88,6 +88,10 @@ public class WarpModuleLoader extends ModuleLoader {
 	}
 	
 	@Override
+	public void clearCache() {
+	}
+	
+	@Override
 	protected void unregisterPermissions(PermissionManager permissions) {
 		WarpManager.warpNode = null;
 		WarpManager.backPermission = null;

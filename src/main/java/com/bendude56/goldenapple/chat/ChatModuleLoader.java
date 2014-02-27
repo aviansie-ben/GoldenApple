@@ -50,6 +50,11 @@ public class ChatModuleLoader extends ModuleLoader {
 	}
 	
 	@Override
+	public void clearCache() {
+		// TODO Reload chat channels from database
+	}
+	
+	@Override
 	protected void unregisterPermissions(PermissionManager permissions) {
 		ChatManager.chatNode = null;
 		

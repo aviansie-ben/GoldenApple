@@ -30,6 +30,7 @@ public abstract class PermissionManager {
 	public static PermissionNode		moduleNode;
 	public static Permission			moduleLoadPermission;
 	public static Permission			moduleUnloadPermission;
+	public static Permission            moduleClearCachePermission;
 	public static Permission			moduleQueryPermission;
 
 	protected static PermissionManager	instance;
@@ -69,6 +70,7 @@ public abstract class PermissionManager {
 	public abstract void deleteGroup(long id) throws SQLException;
 	
 	public abstract void close();
+	public abstract void clearCache();
 
 	/**
 	 * Represents a specific permission in the GoldenApple permissions system

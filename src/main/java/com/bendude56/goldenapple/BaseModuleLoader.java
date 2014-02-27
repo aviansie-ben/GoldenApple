@@ -45,6 +45,11 @@ public class BaseModuleLoader extends ModuleLoader {
 	}
 	
 	@Override
+	public void clearCache() {
+		// TODO Reload config
+	}
+	
+	@Override
 	protected void unregisterPermissions(PermissionManager permissions) {
 		// Do nothing since the base module has no permissions to unregister
 	}

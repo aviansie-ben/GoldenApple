@@ -138,4 +138,9 @@ public class SimplePunishmentManager extends PunishmentManager {
 				unloadFromCache(u);
 		}
 	}
+	
+	@Override
+	public void clearCache() {
+		cache.clear();
+	}
 }

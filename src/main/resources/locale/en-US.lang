@@ -54,6 +54,7 @@ error.lock.selectCreate=&4ERROR: Cannot use -s and -c together!
 error.lock.selectNoAction=&4ERROR: Cannot use -s without another action!
 error.lock.selectNotFound=&4ERROR: No lock found with ID %1!
 
+error.module.clearCache.notLoaded=&4ERROR: Module '%1' cannot have its cache cleared because it is disabled!
 error.module.load.alreadyLoaded=&4ERROR: Module '%1' is already enabled!
 error.module.load.dependFail=&4ERROR: Module '%1' cannot be enabled because dependency '%2' failed to load!
 error.module.load.policy=&4ERROR: The security policy is blocking you from loading module '%1'!
@@ -172,6 +173,7 @@ general.lock.info.na=&8N/A
 general.lock.info.private=&8Private
 general.lock.info.public=&fPublic
 
+general.module.clearCache=&aModule '%1' has successfully had its cache purged...
 general.module.list=&7The following modules can be queried:
 general.module.load.success=&aModule '%1' loaded successfully...
 general.module.load.warnStart=&eWARNING: To enable this module, the following dependencies must also be enabled:
