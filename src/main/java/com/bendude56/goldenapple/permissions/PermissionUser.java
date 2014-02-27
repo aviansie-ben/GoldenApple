@@ -157,6 +157,12 @@ public class PermissionUser implements IPermissionUser {
 	public String getPreferredLocale() {
 		return preferredLocale;
 	}
+	
+	@Override
+	public void setPreferredLocale(String locale) {
+		preferredLocale = locale;
+		save();
+	}
 
 	@Override
 	public void addPermission(Permission permission) {

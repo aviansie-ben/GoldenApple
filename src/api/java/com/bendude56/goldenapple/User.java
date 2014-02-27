@@ -225,6 +225,14 @@ public class User implements IPermissionUser {
 		else
 			return permissions.getPreferredLocale();
 	}
+	
+	@Override
+	public void setPreferredLocale(String locale) {
+		if (permissions == null)
+			throw new UnsupportedOperationException();
+		else
+			permissions.setPreferredLocale(locale);
+	}
 
 	/**
 	 * Gets the {@link org.bukkit.command.CommandSender} that is represented by

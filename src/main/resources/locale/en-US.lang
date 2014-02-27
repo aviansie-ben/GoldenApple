@@ -39,6 +39,8 @@ error.import.pluginNotFound=&4ERROR: GoldenApple cannot import from plugin '%1'
 error.import.typeNotFound=&4ERROR: Import type not found
 error.import.typeNotSupported=&4ERROR: Importing of type '%1' is not supported from plugin '%2'
 
+error.lang.notFound=&4ERROR: No locale with the name '%1' was found!
+
 error.lock.access.unknown=&4ERROR: There is no access level with name &f%1&4!
 error.lock.create.alreadyExists=&4ERROR: A protection already exists on that block!
 error.lock.create.invalidRegistered=&4ERROR: Plugin '%1' has an invalid &1RegisteredBlock&4! Contact an administrator!
@@ -152,6 +154,8 @@ general.import.homesSuccess=&aImport successful! %1 home(s) were imported from %
 general.import.started=&aImport started... Any associated modules are locked until the import is complete.
 general.import.warning.1=&eWARNING: You are about to import objects of type '%1' from plugin '%2'. Under some circumstances, existing objects may be replaced or deleted.
 general.import.warning.2=&eIf you are sure you wish to continue, type /gaverify to begin the import.
+
+general.lang.set=&aYour locale has been set to '%1'
 
 general.lock.access.success=&aLock access changed to %1&a successfully.
 general.lock.auto=&aThe block you placed has been automatically locked! Use /gaautolock to disable auto-lock.

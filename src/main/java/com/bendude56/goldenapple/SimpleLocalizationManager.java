@@ -117,6 +117,14 @@ public class SimpleLocalizationManager implements LocalizationManager {
 		// Gets the message from the specified locale based on the given key
 		String msg = secondaryMessages.get(locale).get(message);
 		
+		if (msg == null && locale.equals(defaultLocale)) {
+			if (secondaryMessages.get(locale).containsKey("LANGFALLBACK")) {
+				return processMessage(secondaryMessages.get(locale).get("LANGFALLBACK"), message, args);
+			} else {
+				return "???";
+			}
+		}
+		
 		// Replace all placeholder text with the text given in the array
 		for (int i = 0; i < args.length; i++) {
 			if (args[i] == null)
@@ -143,6 +151,9 @@ public class SimpleLocalizationManager implements LocalizationManager {
 		
 		// In case message spans multiple lines, send multiple messages 
 		if (multiline) {
+			if (!secondaryMessages.get(lang).containsKey(message + ".1") && secondaryMessages.get(lang).containsKey("LANGFALLBACK"))
+				lang = secondaryMessages.get(lang).get("LANGFALLBACK");
+			
 			for (int i = 1; secondaryMessages.get(lang).containsKey(message + "." + i); i++) {
 				sendMessage(user, lang, message + "." + i, args);
 			}
@@ -166,13 +177,17 @@ public class SimpleLocalizationManager implements LocalizationManager {
 		String msg = secondaryMessages.get(lang).get(message);
 		
 		if (msg == null) {
-			if (message.equalsIgnoreCase("error.localization.contactAuthor")) {
-				user.getHandle().sendMessage(ChatColor.RED + "Please contact the author of the '" + lang + "' locale to report this error");
-			} else if (message.equalsIgnoreCase("error.localization.missingMessage")) {
-				user.getHandle().sendMessage(ChatColor.RED + "Localized message missing: " + args[0]);
+			if (secondaryMessages.get(lang).containsKey("LANGFALLBACK")) {
+				sendMessage(user, secondaryMessages.get(lang).get("LANGFALLBACK"), message, args);
 			} else {
-				sendMessage(user, lang, "error.localization.missingMessage", message);
-				sendMessage(user, lang, "error.localization.contactAuthor", lang);
+				if (message.equalsIgnoreCase("error.localization.contactAuthor")) {
+					user.getHandle().sendMessage(ChatColor.RED + "Please contact the author of the '" + lang + "' locale to report this error");
+				} else if (message.equalsIgnoreCase("error.localization.missingMessage")) {
+					user.getHandle().sendMessage(ChatColor.RED + "Localized message missing: " + args[0]);
+				} else {
+					sendMessage(user, lang, "error.localization.missingMessage", message);
+					sendMessage(user, lang, "error.localization.contactAuthor", lang);
+				}
 			}
 			return;
 		}

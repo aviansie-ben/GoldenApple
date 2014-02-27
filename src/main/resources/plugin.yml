@@ -129,6 +129,7 @@ commands:
         usage: /<command> [item]
         description: Gets the average price of the currently held or specified item
         aliases: [price]
-    gamarket:
-        usage: Use /<command> -? for help
-        description: 
+    galang:
+        usage: /<command> <locale>
+        description: Sets your GoldenApple locale
+        aliases: [lang, locale]

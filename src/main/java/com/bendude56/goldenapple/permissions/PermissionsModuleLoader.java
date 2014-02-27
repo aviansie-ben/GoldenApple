@@ -3,6 +3,7 @@ package com.bendude56.goldenapple.permissions;
 import com.bendude56.goldenapple.CommandManager;
 import com.bendude56.goldenapple.ModuleLoader;
 import com.bendude56.goldenapple.User;
+import com.bendude56.goldenapple.commands.LangCommand;
 import com.bendude56.goldenapple.commands.OwnCommand;
 import com.bendude56.goldenapple.commands.PermissionsCommand;
 import com.bendude56.goldenapple.listener.PermissionListener;
@@ -17,6 +18,7 @@ public class PermissionsModuleLoader extends ModuleLoader {
 	protected void preregisterCommands(CommandManager commands) {
 		commands.insertCommand("gapermissions", "Permissions", new PermissionsCommand());
 		commands.insertCommand("gaown", "Permissions", new OwnCommand());
+		commands.insertCommand("galang", "Permissions", new LangCommand());
 	}
 	
 	@Override
@@ -47,6 +49,7 @@ public class PermissionsModuleLoader extends ModuleLoader {
 	protected void registerCommands(CommandManager commands) {
 		commands.getCommand("gapermissions").register();
 		commands.getCommand("gaown").register();
+		commands.getCommand("galang").register();
 	}
 	
 	@Override
@@ -96,6 +99,7 @@ public class PermissionsModuleLoader extends ModuleLoader {
 	protected void unregisterCommands(CommandManager commands) {
 		commands.getCommand("gapermissions").unregister();
 		commands.getCommand("gaown").unregister();
+		commands.getCommand("galang").unregister();
 	}
 	
 	@Override

@@ -185,7 +185,7 @@ public class BanCommand extends DualSyntaxCommand {
 	
 	private void sendHelp(User user, String commandLabel, boolean complex) {
 		user.sendLocalizedMessage("header.help");
-		user.sendLocalizedMessage((complex) ? "help.ban.complex" : "help.ban.simple", commandLabel);
+		user.sendLocalizedMultilineMessage((complex) ? "help.ban.complex" : "help.ban.simple", commandLabel);
 	}
 
 }

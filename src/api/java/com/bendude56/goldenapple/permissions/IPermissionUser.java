@@ -29,6 +29,8 @@ public interface IPermissionUser extends IPermissionObject {
 	 *         it. Otherwise, a null-value will be returned.
 	 */
 	public String getPreferredLocale();
+	
+	public void setPreferredLocale(String locale);
 
 	/**
 	 * Checks this user's preference for command syntax.
