@@ -4,8 +4,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -13,6 +15,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 
 import com.bendude56.goldenapple.GoldenApple;
+import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.lock.LockedBlock.LockLevel;
 import com.bendude56.goldenapple.lock.LockedBlock.RegisteredBlock;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
@@ -38,6 +41,7 @@ public class SimpleLockManager extends LockManager {
 	private HashMap<Long, LockedBlock>	lockCache;
 	private Deque<Long>					cacheOut;
 	private int							cacheSize;
+	private List<User>                  overriding;
 
 	public SimpleLockManager() {
 		lockCache = new HashMap<Long, LockedBlock>();
@@ -45,6 +49,7 @@ public class SimpleLockManager extends LockManager {
 		cacheSize = GoldenApple.getInstanceMainConfig().getInt("modules.lock.cacheSize", 100);
 		if (cacheSize < 3)
 			cacheSize = 3;
+		overriding = new ArrayList<User>();
 
 		GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("locks");
 		GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("lockusers");
@@ -169,6 +174,24 @@ public class SimpleLockManager extends LockManager {
 		} finally {
 			GoldenApple.getInstanceDatabaseManager().closeResult(r);
 		}
+	}
+	
+	@Override
+	public boolean isOverrideOn(User u) {
+		return overriding.contains(u);
+	}
+
+	@Override
+	public void setOverrideOn(User u, boolean override) {
+		if (override && !overriding.contains(u))
+			overriding.add(u);
+		else if (!override && overriding.contains(u))
+			overriding.remove(u);
+	}
+	
+	@Override
+	public boolean canOverride(User u) {
+		return u.hasPermission(LockManager.fullPermission) || u.hasPermission(LockManager.modifyBlockPermission) || u.hasPermission(LockManager.invitePermission) || u.hasPermission(LockManager.usePermission);
 	}
 
 	@Override

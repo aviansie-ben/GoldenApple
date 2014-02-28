@@ -91,10 +91,27 @@ public class LockCommand extends DualSyntaxCommand {
 				user.sendLocalizedMessage("error.lock.notFound");
 			} else if (!lock.canModifyBlock(user)) {
 				GoldenApple.logPermissionFail(user, commandLabel, args, true);
+				if (lock.getOverrideLevel(user).levelId >= GuestLevel.ALLOW_BLOCK_MODIFY.levelId) {
+					user.sendLocalizedMessage("general.lock.overrideAvailable.complex");
+				}
 			} else {
 				deleteLock(instance, user, lock.getLockId());
 			}
 			return;
+		} else if (args[arg].equalsIgnoreCase("-o:on")) {
+			if (!LockManager.getInstance().canOverride(user)) {
+				GoldenApple.logPermissionFail(user, commandLabel, args, true);
+			} else {
+				LockManager.getInstance().setOverrideOn(user, true);
+				user.sendLocalizedMessage("general.lock.override.on");
+			}
+		} else if (args[arg].equalsIgnoreCase("-o:off")) {
+			if (!LockManager.getInstance().canOverride(user)) {
+				GoldenApple.logPermissionFail(user, commandLabel, args, true);
+			} else {
+				LockManager.getInstance().setOverrideOn(user, false);
+				user.sendLocalizedMessage("general.lock.override.off");
+			}
 		}
 
 		if (lock == null) {
@@ -109,6 +126,9 @@ public class LockCommand extends DualSyntaxCommand {
 					user.sendLocalizedMessage("shared.parameterMissing", "-in:u");
 				} else if (!lock.canInvite(user)) {
 					GoldenApple.logPermissionFail(user, commandLabel, args, true);
+					if (lock.getOverrideLevel(user).levelId >= GuestLevel.ALLOW_INVITE.levelId) {
+						user.sendLocalizedMessage("general.lock.overrideAvailable.complex");
+					}
 					return;
 				} else {
 					addUser(instance, user, lock, args[arg], GuestLevel.USE);
@@ -120,6 +140,9 @@ public class LockCommand extends DualSyntaxCommand {
 					user.sendLocalizedMessage("shared.parameterMissing", "-in:i");
 				} else if (!lock.hasFullControl(user)) {
 					GoldenApple.logPermissionFail(user, commandLabel, args, true);
+					if (lock.getOverrideLevel(user).levelId >= GuestLevel.FULL.levelId) {
+						user.sendLocalizedMessage("general.lock.overrideAvailable.complex");
+					}
 					return;
 				} else {
 					addUser(instance, user, lock, args[arg], GuestLevel.ALLOW_INVITE);
@@ -131,6 +154,9 @@ public class LockCommand extends DualSyntaxCommand {
 					user.sendLocalizedMessage("shared.parameterMissing", "-in:m");
 				} else if (!lock.hasFullControl(user)) {
 					GoldenApple.logPermissionFail(user, commandLabel, args, true);
+					if (lock.getOverrideLevel(user).levelId >= GuestLevel.FULL.levelId) {
+						user.sendLocalizedMessage("general.lock.overrideAvailable.complex");
+					}
 					return;
 				} else {
 					addUser(instance, user, lock, args[arg], GuestLevel.ALLOW_BLOCK_MODIFY);
@@ -142,6 +168,9 @@ public class LockCommand extends DualSyntaxCommand {
 					user.sendLocalizedMessage("shared.parameterMissing", "-in:f");
 				} else if (!lock.hasFullControl(user)) {
 					GoldenApple.logPermissionFail(user, commandLabel, args, true);
+					if (lock.getOverrideLevel(user).levelId >= GuestLevel.FULL.levelId) {
+						user.sendLocalizedMessage("general.lock.overrideAvailable.complex");
+					}
 					return;
 				} else {
 					addUser(instance, user, lock, args[arg], GuestLevel.FULL);
@@ -153,6 +182,9 @@ public class LockCommand extends DualSyntaxCommand {
 					user.sendLocalizedMessage("shared.parameterMissing", "-in:n");
 				} else if (!lock.hasFullControl(user)) {
 					GoldenApple.logPermissionFail(user, commandLabel, args, true);
+					if (lock.getOverrideLevel(user).levelId >= GuestLevel.FULL.levelId) {
+						user.sendLocalizedMessage("general.lock.overrideAvailable.complex");
+					}
 					return;
 				} else {
 					removeUser(instance, user, lock, args[arg]);
@@ -164,6 +196,9 @@ public class LockCommand extends DualSyntaxCommand {
 					user.sendLocalizedMessage("shared.parameterMissing", "-gr");
 				} else if (!lock.canModifyBlock(user)) {
 					GoldenApple.logPermissionFail(user, commandLabel, args, true);
+					if (lock.getOverrideLevel(user).levelId >= GuestLevel.ALLOW_BLOCK_MODIFY.levelId) {
+						user.sendLocalizedMessage("general.lock.overrideAvailable.complex");
+					}
 					return;
 				} else {
 					changeAccess(instance, user, lock, args[arg]);
@@ -175,6 +210,9 @@ public class LockCommand extends DualSyntaxCommand {
 			} else if (args[arg].equalsIgnoreCase("-r:on")) {
 				if (!lock.canModifyBlock(user)) {
 					GoldenApple.logPermissionFail(user, commandLabel, args, true);
+					if (lock.getOverrideLevel(user).levelId >= GuestLevel.ALLOW_BLOCK_MODIFY.levelId) {
+						user.sendLocalizedMessage("general.lock.overrideAvailable.complex");
+					}
 					return;
 				} else {
 					setHopperAllow(user, lock, true);
@@ -183,6 +221,9 @@ public class LockCommand extends DualSyntaxCommand {
 			} else if (args[arg].equalsIgnoreCase("-r:off")) {
 				if (!lock.canModifyBlock(user)) {
 					GoldenApple.logPermissionFail(user, commandLabel, args, true);
+					if (lock.getOverrideLevel(user).levelId >= GuestLevel.ALLOW_BLOCK_MODIFY.levelId) {
+						user.sendLocalizedMessage("general.lock.overrideAvailable.complex");
+					}
 					return;
 				} else {
 					setHopperAllow(user, lock, false);
@@ -224,6 +265,44 @@ public class LockCommand extends DualSyntaxCommand {
 			} else {
 				user.sendLocalizedMessage("shared.unknownOption", args[1]);
 			}
+		} else if (args[0].equalsIgnoreCase("override")) {
+			if (args.length == 1) {
+				if (!LockManager.getInstance().canOverride(user)) {
+					GoldenApple.logPermissionFail(user, commandLabel, args, true);
+				} else {
+					if (LockManager.getInstance().isOverrideOn(user)) {
+						if (!LockManager.getInstance().canOverride(user)) {
+							GoldenApple.logPermissionFail(user, commandLabel, args, true);
+						} else {
+							LockManager.getInstance().setOverrideOn(user, false);
+							user.sendLocalizedMessage("general.lock.override.off");
+						}
+					} else {
+						if (!LockManager.getInstance().canOverride(user)) {
+							GoldenApple.logPermissionFail(user, commandLabel, args, true);
+						} else {
+							LockManager.getInstance().setOverrideOn(user, true);
+							user.sendLocalizedMessage("general.lock.override.on");
+						}
+					}
+				}
+			} else if (args[1].equalsIgnoreCase("on")) {
+				if (!LockManager.getInstance().canOverride(user)) {
+					GoldenApple.logPermissionFail(user, commandLabel, args, true);
+				} else {
+					LockManager.getInstance().setOverrideOn(user, true);
+					user.sendLocalizedMessage("general.lock.override.on");
+				}
+			} else if (args[1].equalsIgnoreCase("off")) {
+				if (!LockManager.getInstance().canOverride(user)) {
+					GoldenApple.logPermissionFail(user, commandLabel, args, true);
+				} else {
+					LockManager.getInstance().setOverrideOn(user, false);
+					user.sendLocalizedMessage("general.lock.override.off");
+				}
+			} else {
+				user.sendLocalizedMessage("shared.unknownOption", args[1]);
+			}
 		} else {
 			LockedBlock lock = LockManager.getInstance().getLock(lockLocation);
 
@@ -237,6 +316,9 @@ public class LockCommand extends DualSyntaxCommand {
 					user.sendLocalizedMessage("shared.unknownOption", args[1]);
 				} else if (!lock.canModifyBlock(user)) {
 					GoldenApple.logPermissionFail(user, commandLabel, args, true);
+					if (lock.getOverrideLevel(user).levelId >= GuestLevel.ALLOW_BLOCK_MODIFY.levelId) {
+						user.sendLocalizedMessage("general.lock.overrideAvailable.simple");
+					}
 				} else {
 					deleteLock(instance, user, lock.getLockId());
 				}
@@ -247,6 +329,9 @@ public class LockCommand extends DualSyntaxCommand {
 					user.sendLocalizedMessage("shared.unknownOption", args[2]);
 				} else if (!lock.canInvite(user)) {
 					GoldenApple.logPermissionFail(user, commandLabel, args, true);
+					if (lock.getOverrideLevel(user).levelId >= GuestLevel.ALLOW_INVITE.levelId) {
+						user.sendLocalizedMessage("general.lock.overrideAvailable.simple");
+					}
 					return;
 				} else {
 					addUser(instance, user, lock, args[1], GuestLevel.USE);
@@ -258,6 +343,9 @@ public class LockCommand extends DualSyntaxCommand {
 					user.sendLocalizedMessage("shared.unknownOption", args[2]);
 				} else if (!lock.hasFullControl(user)) {
 					GoldenApple.logPermissionFail(user, commandLabel, args, true);
+					if (lock.getOverrideLevel(user).levelId >= GuestLevel.FULL.levelId) {
+						user.sendLocalizedMessage("general.lock.overrideAvailable.simple");
+					}
 					return;
 				} else {
 					removeUser(instance, user, lock, args[1]);
@@ -269,6 +357,9 @@ public class LockCommand extends DualSyntaxCommand {
 					user.sendLocalizedMessage("shared.unknownOption", args[2]);
 				} else if (!lock.canModifyBlock(user)) {
 					GoldenApple.logPermissionFail(user, commandLabel, args, true);
+					if (lock.getOverrideLevel(user).levelId >= GuestLevel.ALLOW_BLOCK_MODIFY.levelId) {
+						user.sendLocalizedMessage("general.lock.overrideAvailable.simple");
+					}
 					return;
 				} else {
 					changeAccess(instance, user, lock, args[1]);
@@ -280,6 +371,9 @@ public class LockCommand extends DualSyntaxCommand {
 					user.sendLocalizedMessage("shared.unknownOption", args[2]);
 				} else if (!lock.canModifyBlock(user)) {
 					GoldenApple.logPermissionFail(user, commandLabel, args, true);
+					if (lock.getOverrideLevel(user).levelId >= GuestLevel.ALLOW_BLOCK_MODIFY.levelId) {
+						user.sendLocalizedMessage("general.lock.overrideAvailable.simple");
+					}
 					return;
 				} else {
 					setHopperAllow(user, lock, args[1].equalsIgnoreCase("on"));

@@ -24,6 +24,7 @@ import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.lock.LockManager;
 import com.bendude56.goldenapple.lock.LockedBlock;
+import com.bendude56.goldenapple.lock.LockedBlock.GuestLevel;
 import com.bendude56.goldenapple.lock.LockedBlock.LockLevel;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 
@@ -90,6 +91,9 @@ public class LockListener implements Listener, EventExecutor {
 
 		if (!lock.canUse(u)) {
 			u.sendLocalizedMessage("error.lock.noUse", PermissionManager.getInstance().getUser(lock.getOwner()).getName());
+			if (lock.getOverrideLevel(u).levelId >= GuestLevel.USE.levelId) {
+				u.sendLocalizedMessage((u.isUsingComplexCommands()) ? "general.lock.overrideAvailable.complex" : "general.lock.overrideAvailable.simple");
+			}
 			event.setCancelled(true);
 			return;
 		}
@@ -103,6 +107,9 @@ public class LockListener implements Listener, EventExecutor {
 
 		if (!lock.canModifyBlock(u)) {
 			u.sendLocalizedMessage("error.lock.noEdit");
+			if (lock.getOverrideLevel(u).levelId >= GuestLevel.ALLOW_BLOCK_MODIFY.levelId) {
+				u.sendLocalizedMessage((u.isUsingComplexCommands()) ? "general.lock.overrideAvailable.complex" : "general.lock.overrideAvailable.simple");
+			}
 			event.setCancelled(true);
 			return;
 		} else {

@@ -5,6 +5,7 @@ import java.sql.SQLException;
 
 import org.bukkit.Location;
 
+import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.lock.LockedBlock.LockLevel;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
 import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
@@ -32,6 +33,10 @@ public abstract class LockManager {
 	
 	public abstract LockedBlock createLock(Location loc, LockLevel access, IPermissionUser owner) throws SQLException, InvocationTargetException;
 	public abstract void deleteLock(long id) throws SQLException;
+	
+	public abstract boolean isOverrideOn(User u);
+	public abstract void setOverrideOn(User u, boolean override);
+	public abstract boolean canOverride(User u);
 
 	public abstract void clearCache();
 }

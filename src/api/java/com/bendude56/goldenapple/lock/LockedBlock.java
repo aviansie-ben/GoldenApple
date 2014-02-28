@@ -319,18 +319,25 @@ public abstract class LockedBlock {
 			GoldenApple.log(Level.SEVERE, e);
 		}
 	}
-
-	public GuestLevel getEffectiveLevel(IPermissionUser user) {
-		GuestLevel l = (this.level == LockLevel.PUBLIC) ? GuestLevel.USE : GuestLevel.NONE;
-
-		if (ownerId == user.getId() || user.hasPermission(LockManager.fullPermission))
+	
+	public GuestLevel getOverrideLevel(User user) {
+		if (user.hasPermission(LockManager.fullPermission))
 			return GuestLevel.FULL;
 		else if (user.hasPermission(LockManager.modifyBlockPermission))
-			l = GuestLevel.ALLOW_BLOCK_MODIFY;
+			return GuestLevel.ALLOW_BLOCK_MODIFY;
 		else if (user.hasPermission(LockManager.invitePermission))
-			l = GuestLevel.ALLOW_INVITE;
-		else if (level != LockLevel.PUBLIC && user.hasPermission(LockManager.usePermission))
-			l = GuestLevel.USE;
+			return GuestLevel.ALLOW_INVITE;
+		else if (user.hasPermission(LockManager.usePermission))
+			return GuestLevel.USE;
+		else
+			return GuestLevel.NONE;
+	}
+	
+	public GuestLevel getActualLevel(User user) {
+		GuestLevel l = (this.level == LockLevel.PUBLIC) ? GuestLevel.USE : GuestLevel.NONE;
+
+		if (ownerId == user.getId())
+			return GuestLevel.FULL;
 		
 		if (userLevel.containsKey(user.getId()) && userLevel.get(user.getId()).levelId > l.levelId)
 			l = userLevel.get(user.getId());
@@ -344,6 +351,15 @@ public abstract class LockedBlock {
 		}
 
 		return l;
+	}
+
+	public GuestLevel getEffectiveLevel(User user) {
+		GuestLevel actual = getActualLevel(user), override = getOverrideLevel(user);
+		
+		if (LockManager.getInstance().isOverrideOn(user))
+			return (actual.levelId > override.levelId) ? actual : override;
+		else
+			return actual;
 	}
 
 	/**
