@@ -93,6 +93,10 @@ public class SimpleLocalizationManager implements LocalizationManager {
 		// If the user's preferred locale doesn't exist, use the default
 		if (!secondaryMessages.containsKey(lang))
 			lang = defaultLocale;
+		if (!secondaryMessages.get(lang).containsKey(message) && secondaryMessages.get(lang).containsKey("LANGFALLBACK"))
+			lang = secondaryMessages.get(lang).get("LANGFALLBACK");
+		if (!secondaryMessages.get(lang).containsKey(message))
+			return "???";
 		// Get the message string in the user's locale.
 		return secondaryMessages.get(lang).get(message);
 	}
