@@ -105,6 +105,7 @@ public class LockCommand extends DualSyntaxCommand {
 				LockManager.getInstance().setOverrideOn(user, true);
 				user.sendLocalizedMessage("general.lock.override.on");
 			}
+			return;
 		} else if (args[arg].equalsIgnoreCase("-o:off")) {
 			if (!LockManager.getInstance().canOverride(user)) {
 				GoldenApple.logPermissionFail(user, commandLabel, args, true);
@@ -112,6 +113,7 @@ public class LockCommand extends DualSyntaxCommand {
 				LockManager.getInstance().setOverrideOn(user, false);
 				user.sendLocalizedMessage("general.lock.override.off");
 			}
+			return;
 		}
 
 		if (lock == null) {
