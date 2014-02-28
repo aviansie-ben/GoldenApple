@@ -165,7 +165,7 @@ public abstract class ChatChannel {
 			}
 		} else {
 			message = censor.censorMessage(message);
-			broadcastMessage(user.getChatDisplayName() + ChatColor.WHITE + " " + message);
+			broadcastMessage("* " + user.getDisplayName() + " " + message);
 		}
 	}
 	
