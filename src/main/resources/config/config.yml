@@ -281,6 +281,10 @@ modules:
         # destroying any blocks.
         noFireDamage: true
         
+        # Setting this to true will prevent a Wither from being
+        # spawned by players.
+        noWitherSpawn: true
+        
         # Setting a potion's value to true here will cause the potion
         # to have no effect when drunk by a player
         noDrinkPotion:

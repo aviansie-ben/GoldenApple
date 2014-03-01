@@ -16,6 +16,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockIgniteEvent.IgniteCause;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
@@ -52,6 +53,7 @@ public class AntigriefListener implements Listener, EventExecutor {
 		PlayerInteractEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
 		BlockIgniteEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
 		BlockBurnEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
+		CreatureSpawnEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
 		EntityExplodeEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
 		EntityTargetEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
 		EntityChangeBlockEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
@@ -74,6 +76,7 @@ public class AntigriefListener implements Listener, EventExecutor {
 		PlayerInteractEvent.getHandlerList().unregister(this);
 		BlockIgniteEvent.getHandlerList().unregister(this);
 		BlockBurnEvent.getHandlerList().unregister(this);
+		CreatureSpawnEvent.getHandlerList().unregister(this);
 		EntityExplodeEvent.getHandlerList().unregister(this);
 		EntityTargetEvent.getHandlerList().unregister(this);
 		EntityChangeBlockEvent.getHandlerList().unregister(this);
@@ -112,6 +115,8 @@ public class AntigriefListener implements Listener, EventExecutor {
 			blockIgnite((BlockIgniteEvent) event);
 		} else if (event instanceof BlockBurnEvent) {
 			blockBurn((BlockBurnEvent)event);
+		} else if (event instanceof CreatureSpawnEvent) {
+			creatureSpawn((CreatureSpawnEvent)event);
 		} else if (event instanceof EntityExplodeEvent) {
 			entityExplode((EntityExplodeEvent)event);
 		} else if (event instanceof EntityTargetEvent) {
@@ -180,6 +185,12 @@ public class AntigriefListener implements Listener, EventExecutor {
 			if (GoldenApple.getInstanceMainConfig().getBoolean("modules.antigrief.noFireTnt", true))
 				event.setCancelled(true);
 		} else if (GoldenApple.getInstanceMainConfig().getBoolean("modules.antigrief.noFireDamage", true)) {
+			event.setCancelled(true);
+		}
+	}
+	
+	private void creatureSpawn(CreatureSpawnEvent event) {
+		if (event.getEntityType() == EntityType.WITHER && GoldenApple.getInstanceMainConfig().getBoolean("modules.antigrief.noWither", true)) {
 			event.setCancelled(true);
 		}
 	}
