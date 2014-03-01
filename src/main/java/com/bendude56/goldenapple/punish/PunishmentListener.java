@@ -1,4 +1,4 @@
-package com.bendude56.goldenapple.listener;
+package com.bendude56.goldenapple.punish;
 
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -18,7 +18,6 @@ import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.punish.Punishment;
 import com.bendude56.goldenapple.punish.PunishmentManager;
-import com.bendude56.goldenapple.punish.SimplePunishmentBan;
 
 public class PunishmentListener implements Listener, EventExecutor {
 	public static HashMap<User, Location> backLocation = new HashMap<User, Location>();

@@ -5,7 +5,6 @@ import com.bendude56.goldenapple.ModuleLoader;
 import com.bendude56.goldenapple.commands.ChannelCommand;
 import com.bendude56.goldenapple.commands.LemonPledgeCommand;
 import com.bendude56.goldenapple.commands.MeCommand;
-import com.bendude56.goldenapple.listener.ChatListener;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 
 public class ChatModuleLoader extends ModuleLoader {

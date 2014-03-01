@@ -8,7 +8,6 @@ import com.bendude56.goldenapple.commands.MuteCommand;
 import com.bendude56.goldenapple.commands.UnBanCommand;
 import com.bendude56.goldenapple.commands.UnGlobalMuteCommand;
 import com.bendude56.goldenapple.commands.UnMuteCommand;
-import com.bendude56.goldenapple.listener.PunishmentListener;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 
 public class PunishModuleLoader extends ModuleLoader {

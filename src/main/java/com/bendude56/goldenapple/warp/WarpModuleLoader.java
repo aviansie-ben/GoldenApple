@@ -12,7 +12,6 @@ import com.bendude56.goldenapple.commands.SpawnCommand;
 import com.bendude56.goldenapple.commands.TpCommand;
 import com.bendude56.goldenapple.commands.TpHereCommand;
 import com.bendude56.goldenapple.commands.WarpCommand;
-import com.bendude56.goldenapple.listener.WarpListener;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 
 public class WarpModuleLoader extends ModuleLoader {

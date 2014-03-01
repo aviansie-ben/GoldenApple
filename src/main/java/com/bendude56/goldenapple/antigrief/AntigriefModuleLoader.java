@@ -2,7 +2,6 @@ package com.bendude56.goldenapple.antigrief;
 
 import com.bendude56.goldenapple.CommandManager;
 import com.bendude56.goldenapple.ModuleLoader;
-import com.bendude56.goldenapple.listener.AntigriefListener;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
 import com.bendude56.goldenapple.permissions.PermissionManager.PermissionNode;

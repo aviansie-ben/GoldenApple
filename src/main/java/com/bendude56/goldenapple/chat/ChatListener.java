@@ -1,4 +1,4 @@
-package com.bendude56.goldenapple.listener;
+package com.bendude56.goldenapple.chat;
 
 import java.util.logging.Level;
 

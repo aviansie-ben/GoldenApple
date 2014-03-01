@@ -6,7 +6,6 @@ import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.commands.LangCommand;
 import com.bendude56.goldenapple.commands.OwnCommand;
 import com.bendude56.goldenapple.commands.PermissionsCommand;
-import com.bendude56.goldenapple.listener.PermissionListener;
 
 public class PermissionsModuleLoader extends ModuleLoader {
 	

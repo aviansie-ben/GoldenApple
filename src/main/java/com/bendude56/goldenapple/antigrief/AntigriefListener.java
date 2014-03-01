@@ -1,4 +1,4 @@
-package com.bendude56.goldenapple.listener;
+package com.bendude56.goldenapple.antigrief;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -27,7 +27,6 @@ import org.bukkit.plugin.RegisteredListener;
 
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
-import com.bendude56.goldenapple.antigrief.AntigriefModuleLoader;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 
 public class AntigriefListener implements Listener, EventExecutor {

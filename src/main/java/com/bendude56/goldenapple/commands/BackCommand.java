@@ -5,7 +5,7 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
-import com.bendude56.goldenapple.listener.WarpListener;
+import com.bendude56.goldenapple.warp.WarpListener;
 import com.bendude56.goldenapple.warp.WarpManager;
 
 public class BackCommand extends GoldenAppleCommand {
