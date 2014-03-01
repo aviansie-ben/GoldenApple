@@ -10,6 +10,7 @@ import com.bendude56.goldenapple.permissions.PermissionManager.PermissionNode;
 public class AntigriefModuleLoader extends ModuleLoader {
 	public static PermissionNode antigriefNode;
 	public static Permission tntPermission;
+	public static Permission lighterPermission;
 	
 	public AntigriefModuleLoader() {
 		super("Antigrief", new String[] { "Base" }, "modules.antigrief.enabled", "securityPolicy.blockModules.antigrief", "securityPolicy.blockManualUnload.antigrief");
@@ -23,6 +24,7 @@ public class AntigriefModuleLoader extends ModuleLoader {
 	protected void registerPermissions(PermissionManager permissions) {
 		antigriefNode = permissions.registerNode("antigrief", PermissionManager.goldenAppleNode);
 		tntPermission = permissions.registerPermission("tnt", antigriefNode);
+		lighterPermission = permissions.registerPermission("lighter", antigriefNode);
 	}
 	
 	@Override

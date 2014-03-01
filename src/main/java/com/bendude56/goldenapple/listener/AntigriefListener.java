@@ -14,6 +14,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBurnEvent;
+import org.bukkit.event.block.BlockIgniteEvent;
+import org.bukkit.event.block.BlockIgniteEvent.IgniteCause;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
@@ -21,6 +23,7 @@ import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.EventExecutor;
 import org.bukkit.plugin.RegisteredListener;
+
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.antigrief.AntigriefModuleLoader;
@@ -47,6 +50,7 @@ public class AntigriefListener implements Listener, EventExecutor {
 	private void registerEvents() {
 		errorLoadingTntBlock = false;
 		PlayerInteractEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
+		BlockIgniteEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
 		BlockBurnEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
 		EntityExplodeEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
 		EntityTargetEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
@@ -68,6 +72,7 @@ public class AntigriefListener implements Listener, EventExecutor {
 
 	private void unregisterEvents() {
 		PlayerInteractEvent.getHandlerList().unregister(this);
+		BlockIgniteEvent.getHandlerList().unregister(this);
 		BlockBurnEvent.getHandlerList().unregister(this);
 		EntityExplodeEvent.getHandlerList().unregister(this);
 		EntityTargetEvent.getHandlerList().unregister(this);
@@ -103,6 +108,8 @@ public class AntigriefListener implements Listener, EventExecutor {
 	public void execute(Listener listener, Event event) throws EventException {
 		if (event instanceof PlayerInteractEvent) {
 			playerInteract((PlayerInteractEvent)event);
+		} else if (event instanceof BlockIgniteEvent) {
+			blockIgnite((BlockIgniteEvent) event);
 		} else if (event instanceof BlockBurnEvent) {
 			blockBurn((BlockBurnEvent)event);
 		} else if (event instanceof EntityExplodeEvent) {
@@ -133,10 +140,47 @@ public class AntigriefListener implements Listener, EventExecutor {
 		}
 	}
 	
+	private void blockIgnite(BlockIgniteEvent event) {
+		if (event.getCause() == IgniteCause.SPREAD) {
+			if (GoldenApple.getInstanceMainConfig().getBoolean("modules.antigrief.noFireSpread", true)) {
+				event.setCancelled(true);
+			}
+		} else if (event.getCause() == IgniteCause.FIREBALL) {
+			if (GoldenApple.getInstanceMainConfig().getBoolean("modules.antigrief.noFireballFireLight", true)) {
+				event.setCancelled(true);
+			}
+		} else if (event.getCause() == IgniteCause.LAVA) {
+			if (GoldenApple.getInstanceMainConfig().getBoolean("modules.antigrief.noFireLava", true)) {
+				event.setCancelled(true);
+			}
+		} else if (event.getCause() == IgniteCause.LIGHTNING) {
+			if (GoldenApple.getInstanceMainConfig().getBoolean("modules.antigrief.noFireLightning", true)) {
+				event.setCancelled(true);
+			}
+		} else if (event.getCause() == IgniteCause.FLINT_AND_STEEL) {
+			User u = User.getUser(event.getPlayer());
+			Location l = event.getBlock().getLocation();
+			if (GoldenApple.getInstanceMainConfig().getBoolean("modules.antigrief.noFireLight", true)) {
+				if (u.hasPermission(AntigriefModuleLoader.lighterPermission)) {
+					GoldenApple.log(Level.WARNING, u.getName() + " has lit a fire at (" + l.getBlockX() + ", " + l.getBlockY() + ", " + l.getBlockZ() + ", " + l.getWorld().getName() + ")");
+				} else {
+					GoldenApple.log(Level.WARNING, u.getName() + " attempted to light fire at (" + l.getBlockX() + ", " + l.getBlockY() + ", " + l.getBlockZ() + ", " + l.getWorld().getName() + ")");
+					event.setCancelled(true);
+				}
+			}
+		} else {
+			if (GoldenApple.getInstanceMainConfig().getBoolean("modules.antigrief.noFireUnknown", true)) {
+				event.setCancelled(true);
+			}
+		}
+	}
+	
 	private void blockBurn(BlockBurnEvent event) {
 		if (event.getBlock().getType() == Material.TNT) {
 			if (GoldenApple.getInstanceMainConfig().getBoolean("modules.antigrief.noFireTnt", true))
 				event.setCancelled(true);
+		} else if (GoldenApple.getInstanceMainConfig().getBoolean("modules.antigrief.noFireDamage", true)) {
+			event.setCancelled(true);
 		}
 	}
 	

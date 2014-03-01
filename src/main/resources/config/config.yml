@@ -248,9 +248,38 @@ modules:
         # from damaging blocks. They will still damage players.
         noFireballBlockDamage: true
         
+        # Setting this to true will prevent any fireball explosions
+        # from lighting fires.
+        noFireballFireLight: true
+        
         # Setting this to true will prevent Endermen from picking up
         # and moving any blocks.
         noEndermanMoveBlock: true
+        
+        # Setting this to true prevents fires from being lit for
+        # other unknown reasons.
+        noFireUnknown: true
+        
+        # Setting this to true prevents lava from lighting fires on
+        # any adjacent blocks.
+        noFireLava: true
+        
+        # Setting this to true prevents lightning from lighting fires
+        # when it strikes.
+        noFireLightning: true
+        
+        # Setting this to true prevents flint and steel from being
+        # used to start fires. IMPORTANT: A user with proper
+        # permissions can override this setting.
+        noFireLight: true
+        
+        # Setting this to true will prevent fire from spreading to
+        # adjacent blocks.
+        noFireSpread: true
+        
+        # Setting this to true will prevent fire from burning and
+        # destroying any blocks.
+        noFireDamage: true
         
         # Setting a potion's value to true here will cause the potion
         # to have no effect when drunk by a player
