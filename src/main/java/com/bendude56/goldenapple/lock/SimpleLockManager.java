@@ -34,6 +34,11 @@ public class SimpleLockManager extends LockManager {
 		LockedBlock.registerBlock("GA_HOPPER", GoldenApple.getInstance(), Material.HOPPER, LockedHopper.class);
 		LockedBlock.registerBlock("GA_DISPENSER", GoldenApple.getInstance(), Material.DISPENSER, LockedDispenser.class);
 		LockedBlock.registerBlock("GA_DISPENSER", GoldenApple.getInstance(), Material.DROPPER, LockedDispenser.class);
+		LockedBlock.registerBlock("GA_UTILITYBLOCK", GoldenApple.getInstance(), Material.ENCHANTMENT_TABLE, LockedUtilityBlock.class);
+		LockedBlock.registerBlock("GA_UTILITYBLOCK", GoldenApple.getInstance(), Material.ANVIL, LockedUtilityBlock.class);
+		LockedBlock.registerBlock("GA_UTILITYBLOCK", GoldenApple.getInstance(), Material.BEACON, LockedUtilityBlock.class);
+		LockedBlock.registerBlock("GA_UTILITYBLOCK", GoldenApple.getInstance(), Material.JUKEBOX, LockedUtilityBlock.class);
+		LockedBlock.registerBlock("GA_BREWINGSTAND", GoldenApple.getInstance(), Material.BREWING_STAND, LockedBrewingStand.class);
 		LockedBlock.registerCorrector(DoubleChestLocationCorrector.class);
 		LockedBlock.registerCorrector(DoorLocationCorrector.class);
 	}
