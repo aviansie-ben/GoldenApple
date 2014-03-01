@@ -8,11 +8,9 @@ import org.bukkit.event.Event;
 import org.bukkit.event.EventException;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.plugin.EventExecutor;
 import org.bukkit.plugin.RegisteredListener;
 
@@ -45,8 +43,8 @@ public class PunishmentListener implements Listener, EventExecutor {
 	}
 
 	private void unregisterEvents() {
-		PlayerTeleportEvent.getHandlerList().unregister(this);
-		EntityDeathEvent.getHandlerList().unregister(this);
+		PlayerLoginEvent.getHandlerList().unregister(this);
+		PlayerQuitEvent.getHandlerList().unregister(this);
 	}
 
 	@Override
