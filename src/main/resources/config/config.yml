@@ -151,6 +151,11 @@ modules:
         # started.
         enabled: true
         
+        # When set to true, administrators will need to explicitly
+        # turn on lock overriding to use or edit another players'
+        # locked block.
+        explicitOverrideRequired: true
+        
         # The size of the GoldenApple lock cache. It is recommended
         # to keep this above at least 20 in order to minimize
         # database loading time. A size of 3 or higher is mandatory

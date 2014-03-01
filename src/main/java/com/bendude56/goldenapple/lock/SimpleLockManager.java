@@ -183,7 +183,7 @@ public class SimpleLockManager extends LockManager {
 	
 	@Override
 	public boolean isOverrideOn(User u) {
-		return overriding.contains(u);
+		return !GoldenApple.getInstanceMainConfig().getBoolean("modules.lock.explicitOverrideRequired", true) || overriding.contains(u);
 	}
 
 	@Override
