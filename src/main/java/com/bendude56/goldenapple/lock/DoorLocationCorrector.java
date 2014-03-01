@@ -13,6 +13,12 @@ public class DoorLocationCorrector implements ILocationCorrector {
 				return;
 			}
 			l.setY(l.getY() + 1);
+		} else {
+			l.setY(l.getY() + 1);
+			if (l.getBlock().getType() == Material.WOODEN_DOOR) {
+				return;
+			}
+			l.setY(l.getY() - 1);
 		}
 	}
 

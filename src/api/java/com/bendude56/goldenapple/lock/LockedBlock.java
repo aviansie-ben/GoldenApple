@@ -226,7 +226,7 @@ public abstract class LockedBlock {
 	 */
 	public void save() {
 		try {
-			GoldenApple.getInstanceDatabaseManager().execute("UPDATE Locks SET AccessLevel=?, Owner=? WHERE ID=?", level.levelId, (ownerId <= 0) ? null : ownerId, lockId);
+			GoldenApple.getInstanceDatabaseManager().execute("UPDATE Locks SET AccessLevel=?, Owner=?, AllowExternal=? WHERE ID=?", level.levelId, (ownerId <= 0) ? null : ownerId, allowExternal, lockId);
 		} catch (SQLException e) {
 			GoldenApple.log(Level.SEVERE, "Failed to save changes to lock " + lockId + ":");
 			GoldenApple.log(Level.SEVERE, e);

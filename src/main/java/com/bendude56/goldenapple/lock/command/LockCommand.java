@@ -482,6 +482,7 @@ public class LockCommand extends DualSyntaxCommand {
 	
 	private void setHopperAllow(User user, LockedBlock lock, boolean allow) {
 		lock.setAllowExternal(allow);
+		lock.save();
 		user.sendLocalizedMessage((allow) ? "general.lock.redstone.on" : "general.lock.redstone.off");
 	}
 
