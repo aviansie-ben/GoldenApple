@@ -10,6 +10,11 @@ public class WarpCommand extends GoldenAppleCommand {
 	public boolean onExecute(GoldenApple instance, User user, String commandLabel, String[] args) {
 		if (args.length != 1) return false;
 		
+		if (!user.hasPermission(WarpManager.warpPermission)) {
+			GoldenApple.logPermissionFail(user, commandLabel, args, true);
+			return true;
+		}
+		
 		int deathCooldown = WarpManager.getInstance().getDeathCooldown(user), teleportCooldown = WarpManager.getInstance().getTeleportCooldown(user);
 		PermissibleWarp w = WarpManager.getInstance().getNamedWarp(args[0]);
 		

@@ -40,6 +40,7 @@ public class WarpModuleLoader extends ModuleLoader {
 		WarpManager.warpNode = permissions.registerNode("warp", PermissionManager.goldenAppleNode);
 		WarpManager.backPermission = permissions.registerPermission("back", WarpManager.warpNode);
 		WarpManager.editPermission = permissions.registerPermission("edit", WarpManager.warpNode);
+		WarpManager.warpPermission = permissions.registerPermission("warp", WarpManager.warpNode);
 		
 		WarpManager.tpNode = permissions.registerNode("tp", WarpManager.warpNode);
 		WarpManager.tpSelfToOtherPermission = permissions.registerPermission("selfToOther", WarpManager.tpNode);
