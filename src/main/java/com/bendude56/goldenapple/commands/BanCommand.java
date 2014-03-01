@@ -32,7 +32,8 @@ public class BanCommand extends DualSyntaxCommand {
 				ArgumentInfo.newString("duration", "t", "time", false),
 				ArgumentInfo.newString("reason", "r", "reason", true),
 				ArgumentInfo.newSwitch("void", "v", "void"),
-				ArgumentInfo.newSwitch("info", "i", "info")
+				ArgumentInfo.newSwitch("info", "i", "info"),
+				ArgumentInfo.newSwitch("verify", null, "verify")
 			});
 			
 			user.sendLocalizedMessage("header.punish");
@@ -44,7 +45,7 @@ public class BanCommand extends DualSyntaxCommand {
 			if (arg.isDefined("info")) {
 				banInfo(target, user, commandLabel, args);
 			} else if (arg.isDefined("void")) {
-				banVoid(target, user, commandLabel, args);
+				banVoid(target, user, commandLabel, args, arg.isDefined("verify"));
 			} else {
 				banAdd(target, (arg.isDefined("duration")) ? arg.getString("duration") : null, (arg.isDefined("reason")) ? arg.getString("reason") : null, user, commandLabel, args);
 			}
@@ -70,7 +71,7 @@ public class BanCommand extends DualSyntaxCommand {
 		}
 	}
 	
-	public static void banVoid(IPermissionUser target, User user, String commandLabel, String[] args) {
+	public static void banVoid(IPermissionUser target, User user, String commandLabel, String[] args, boolean verified) {
 		if (!user.hasPermission(PunishmentManager.banVoidPermission)) {
 			GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			return;
@@ -81,9 +82,19 @@ public class BanCommand extends DualSyntaxCommand {
 		if (b == null) {
 			user.sendLocalizedMessage("error.ban.notBanned");
 		} else {
-			if (b.getAdminId() != user.getId() && !user.hasPermission(PunishmentManager.banVoidAllPermission)) {
-				GoldenApple.logPermissionFail(user, commandLabel, args, true);
-				return;
+			if (b.getAdminId() != user.getId() && (!verified || !user.hasPermission(PunishmentManager.banVoidAllPermission))) {
+				if (!user.hasPermission(PunishmentManager.banVoidAllPermission)) {
+					GoldenApple.logPermissionFail(user, commandLabel, args, true);
+				} else {
+					user.sendLocalizedMessage("general.ban.voidWarn", PermissionManager.getInstance().getUser(b.getAdminId()).getName());
+					
+					String cmd = commandLabel;
+					for (String a : args) {
+						cmd += " " + a;
+					}
+					cmd += " --verify";
+					VerifyCommand.commands.put(user, cmd);
+				}
 			} else {
 				b.voidPunishment();
 				b.update();
@@ -167,7 +178,7 @@ public class BanCommand extends DualSyntaxCommand {
 			} else if (args[1].equalsIgnoreCase("info")) {
 				banInfo(target, user, commandLabel, args);
 			} else if (args[1].equalsIgnoreCase("void")) {
-				banVoid(target, user, commandLabel, args);
+				banVoid(target, user, commandLabel, args, args.length >= 3 && args[2].equalsIgnoreCase("--verify"));
 			} else {
 				String reason = null;
 				

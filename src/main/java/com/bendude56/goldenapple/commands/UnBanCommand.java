@@ -18,7 +18,7 @@ public class UnBanCommand extends GoldenAppleCommand {
 		if (target == null) {
 			user.sendLocalizedMessage("shared.userNotFoundError", args[0]);
 		} else {
-			BanCommand.banVoid(target, user, commandLabel, args);
+			BanCommand.banVoid(target, user, "gaban", new String[] { "-u", target.getName(), "-v" }, false);
 		}
 		
 		return true;
