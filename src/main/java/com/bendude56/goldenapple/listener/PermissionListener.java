@@ -47,6 +47,7 @@ public class PermissionListener implements Listener, EventExecutor {
 
 	private void unregisterEvents() {
 		PlayerLoginEvent.getHandlerList().unregister(this);
+		PlayerJoinEvent.getHandlerList().unregister(this);
 		PlayerQuitEvent.getHandlerList().unregister(this);
 	}
 
