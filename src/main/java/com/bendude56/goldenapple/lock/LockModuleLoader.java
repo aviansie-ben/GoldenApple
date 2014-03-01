@@ -2,8 +2,8 @@ package com.bendude56.goldenapple.lock;
 
 import com.bendude56.goldenapple.CommandManager;
 import com.bendude56.goldenapple.ModuleLoader;
-import com.bendude56.goldenapple.commands.AutoLockCommand;
-import com.bendude56.goldenapple.commands.LockCommand;
+import com.bendude56.goldenapple.lock.command.AutoLockCommand;
+import com.bendude56.goldenapple.lock.command.LockCommand;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 
 public class LockModuleLoader extends ModuleLoader {

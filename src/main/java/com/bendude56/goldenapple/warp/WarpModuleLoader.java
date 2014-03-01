@@ -2,17 +2,17 @@ package com.bendude56.goldenapple.warp;
 
 import com.bendude56.goldenapple.CommandManager;
 import com.bendude56.goldenapple.ModuleLoader;
-import com.bendude56.goldenapple.commands.BackCommand;
-import com.bendude56.goldenapple.commands.DelHomeCommand;
-import com.bendude56.goldenapple.commands.DelWarpCommand;
-import com.bendude56.goldenapple.commands.HomeCommand;
-import com.bendude56.goldenapple.commands.SetHomeCommand;
-import com.bendude56.goldenapple.commands.SetWarpCommand;
-import com.bendude56.goldenapple.commands.SpawnCommand;
-import com.bendude56.goldenapple.commands.TpCommand;
-import com.bendude56.goldenapple.commands.TpHereCommand;
-import com.bendude56.goldenapple.commands.WarpCommand;
 import com.bendude56.goldenapple.permissions.PermissionManager;
+import com.bendude56.goldenapple.warp.command.BackCommand;
+import com.bendude56.goldenapple.warp.command.DelHomeCommand;
+import com.bendude56.goldenapple.warp.command.DelWarpCommand;
+import com.bendude56.goldenapple.warp.command.HomeCommand;
+import com.bendude56.goldenapple.warp.command.SetHomeCommand;
+import com.bendude56.goldenapple.warp.command.SetWarpCommand;
+import com.bendude56.goldenapple.warp.command.SpawnCommand;
+import com.bendude56.goldenapple.warp.command.TpCommand;
+import com.bendude56.goldenapple.warp.command.TpHereCommand;
+import com.bendude56.goldenapple.warp.command.WarpCommand;
 
 public class WarpModuleLoader extends ModuleLoader {
 	

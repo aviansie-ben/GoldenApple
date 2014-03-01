@@ -1,10 +1,10 @@
 package com.bendude56.goldenapple;
 
 import com.bendude56.goldenapple.audit.AuditLog;
-import com.bendude56.goldenapple.commands.ComplexCommand;
-import com.bendude56.goldenapple.commands.ImportCommand;
-import com.bendude56.goldenapple.commands.ModuleCommand;
-import com.bendude56.goldenapple.commands.VerifyCommand;
+import com.bendude56.goldenapple.command.ComplexCommand;
+import com.bendude56.goldenapple.command.ImportCommand;
+import com.bendude56.goldenapple.command.ModuleCommand;
+import com.bendude56.goldenapple.command.VerifyCommand;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 
 public class BaseModuleLoader extends ModuleLoader {

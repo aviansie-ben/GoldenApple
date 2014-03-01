@@ -3,11 +3,13 @@ package com.bendude56.goldenapple;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
-import com.bendude56.goldenapple.commands.UnloadedCommand;
+
+import com.bendude56.goldenapple.command.UnloadedCommand;
 
 public class SimpleCommandManager extends CommandManager {
 	public static final UnloadedCommand defaultCommand = new UnloadedCommand();

@@ -2,13 +2,13 @@ package com.bendude56.goldenapple.punish;
 
 import com.bendude56.goldenapple.CommandManager;
 import com.bendude56.goldenapple.ModuleLoader;
-import com.bendude56.goldenapple.commands.BanCommand;
-import com.bendude56.goldenapple.commands.GlobalMuteCommand;
-import com.bendude56.goldenapple.commands.MuteCommand;
-import com.bendude56.goldenapple.commands.UnBanCommand;
-import com.bendude56.goldenapple.commands.UnGlobalMuteCommand;
-import com.bendude56.goldenapple.commands.UnMuteCommand;
 import com.bendude56.goldenapple.permissions.PermissionManager;
+import com.bendude56.goldenapple.punish.command.BanCommand;
+import com.bendude56.goldenapple.punish.command.GlobalMuteCommand;
+import com.bendude56.goldenapple.punish.command.MuteCommand;
+import com.bendude56.goldenapple.punish.command.UnBanCommand;
+import com.bendude56.goldenapple.punish.command.UnGlobalMuteCommand;
+import com.bendude56.goldenapple.punish.command.UnMuteCommand;
 
 public class PunishModuleLoader extends ModuleLoader {
 

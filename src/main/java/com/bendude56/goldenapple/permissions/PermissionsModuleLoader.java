@@ -3,9 +3,9 @@ package com.bendude56.goldenapple.permissions;
 import com.bendude56.goldenapple.CommandManager;
 import com.bendude56.goldenapple.ModuleLoader;
 import com.bendude56.goldenapple.User;
-import com.bendude56.goldenapple.commands.LangCommand;
-import com.bendude56.goldenapple.commands.OwnCommand;
-import com.bendude56.goldenapple.commands.PermissionsCommand;
+import com.bendude56.goldenapple.permissions.command.LangCommand;
+import com.bendude56.goldenapple.permissions.command.OwnCommand;
+import com.bendude56.goldenapple.permissions.command.PermissionsCommand;
 
 public class PermissionsModuleLoader extends ModuleLoader {
 	

@@ -2,9 +2,9 @@ package com.bendude56.goldenapple.chat;
 
 import com.bendude56.goldenapple.CommandManager;
 import com.bendude56.goldenapple.ModuleLoader;
-import com.bendude56.goldenapple.commands.ChannelCommand;
-import com.bendude56.goldenapple.commands.LemonPledgeCommand;
-import com.bendude56.goldenapple.commands.MeCommand;
+import com.bendude56.goldenapple.chat.command.ChannelCommand;
+import com.bendude56.goldenapple.chat.command.LemonPledgeCommand;
+import com.bendude56.goldenapple.chat.command.MeCommand;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 
 public class ChatModuleLoader extends ModuleLoader {
