@@ -9,6 +9,7 @@ import com.bendude56.goldenapple.punish.command.MuteCommand;
 import com.bendude56.goldenapple.punish.command.UnBanCommand;
 import com.bendude56.goldenapple.punish.command.UnGlobalMuteCommand;
 import com.bendude56.goldenapple.punish.command.UnMuteCommand;
+import com.bendude56.goldenapple.punish.command.WhoisCommand;
 
 public class PunishModuleLoader extends ModuleLoader {
 
@@ -24,12 +25,13 @@ public class PunishModuleLoader extends ModuleLoader {
 		commands.insertCommand("gaunmute", "Punish", new UnMuteCommand());
 		commands.insertCommand("gaglobalmute", "Punish", new GlobalMuteCommand());
 		commands.insertCommand("gaunglobalmute", "Punish", new UnGlobalMuteCommand());
-		commands.insertCommand("gawhois", "Punish", null);
+		commands.insertCommand("gawhois", "Punish", new WhoisCommand());
 	}
 	
 	@Override
 	protected void registerPermissions(PermissionManager permissions) {
 		PunishmentManager.punishNode = permissions.registerNode("punish", PermissionManager.goldenAppleNode);
+		PunishmentManager.whoisPermission = permissions.registerPermission("whois", PunishmentManager.punishNode);
 		
 		PunishmentManager.globalMuteNode = permissions.registerNode("globalmute", PunishmentManager.punishNode);
 		PunishmentManager.globalMuteInfoPermission = permissions.registerPermission("info", PunishmentManager.globalMuteNode);

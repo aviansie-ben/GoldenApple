@@ -238,6 +238,16 @@ general.warps.teleportBy=&aYou have been teleported by %1&a.
 general.warps.teleportSpawn=&aYou have been teleported to spawn.
 general.warps.teleportSpawnWorld=&aYou have been teleported to the spawn of world %1.
 
+general.whois.ban.pemanent=&7%1 is banned permanently
+general.whois.ban.temporary=&7%1 is banned for %2
+general.whois.globalmute.permanent=&7%1 is permanently globally muted
+general.whois.globalmute.temporary=&7%1 is globally muted for %2
+general.whois.mute.permanent=&7%1 is permanently muted in %2
+general.whois.mute.temporary=&7%1 is muted in %2 for %3
+general.whois.none=&7%1 doesn't currently have any punishments against them
+general.whois.unknown.permanent=&7%1 has punishment type %2
+general.whois.unknown.temporary=&7%1 has punishment type %2 for %3
+
 header.chat=&7-----&6 GoldenApple Chat &7-----
 header.help=&7-----&6 GoldenApple Help &7-----
 header.lock=&7-----&6 GoldenApple Locks &7-----
