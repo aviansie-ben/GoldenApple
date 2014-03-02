@@ -6,8 +6,9 @@ import java.util.logging.Level;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.util.BlockIterator;
 
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
@@ -16,90 +17,25 @@ import com.bendude56.goldenapple.lock.LockManager;
 import com.bendude56.goldenapple.lock.LockedBlock;
 import com.bendude56.goldenapple.lock.LockedBlock.GuestLevel;
 import com.bendude56.goldenapple.lock.LockedBlock.LockLevel;
+import com.bendude56.goldenapple.permissions.IPermissionGroup;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
 import com.bendude56.goldenapple.permissions.PermissionManager;
+import com.bendude56.goldenapple.util.ComplexArgumentParser;
+import com.bendude56.goldenapple.util.ComplexArgumentParser.ArgumentInfo;
 
 public class LockCommand extends DualSyntaxCommand {
-	@SuppressWarnings("deprecation") // TODO Remove this when an alternative to getTargetBlock is released
+
 	@Override
 	public void onExecuteComplex(GoldenApple instance, User user, String commandLabel, String[] args) {
-		Location lockLocation = null;
-		long selectedId = -1;
-		if (user.getHandle() instanceof Player)
-			lockLocation = user.getPlayerHandle().getTargetBlock(null, 10).getLocation();
-
-		if (args.length == 0 || args[0].equals("-?") || args[0].equals("help")) {
-			sendHelp(user, commandLabel, true);
-			return;
-		}
-
+		ComplexArgumentParser arg = new ComplexArgumentParser(getArguments());
+		
+		if (!arg.parse(user, args)) return;
+		
 		user.sendLocalizedMessage("header.lock");
-
-		int arg = 0;
-		if (args[0].equalsIgnoreCase("-s")) {
-			try {
-				selectedId = Long.parseLong(args[1]);
-				arg = 2;
-			} catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-				user.sendLocalizedMessage("shared.parameterMissing", "-s");
-				return;
-			}
-
-			try {
-				if (selectedId < 0 || !LockManager.getInstance().lockExists(selectedId)) {
-					user.sendLocalizedMessage("error.lock.selectNotFound", String.valueOf(selectedId));
-					return;
-				} else if (args.length == 2) {
-					user.sendLocalizedMessage("error.lock.selectNoAction");
-					return;
-				}
-			} catch (SQLException e) {
-				user.sendLocalizedMessage("error.lock.selectNotFound", String.valueOf(selectedId));
-				return;
-			}
-		} else if (lockLocation == null || lockLocation.getBlock().getType() == Material.AIR) {
-			user.sendLocalizedMessage("error.lock.invalidBlock");
-			return;
-		}
-
-		LockedBlock lock = (selectedId >= 0) ? LockManager.getInstance().getLock(selectedId) : LockManager.getInstance().getLock(lockLocation);
-
-		if (args[arg].equalsIgnoreCase("-c")) {
-			arg++;
-			if (selectedId >= 0) {
-				user.sendLocalizedMessage("error.lock.selectCreate");
-				return;
-			} else if (!user.hasPermission(LockManager.addPermission)) {
-				GoldenApple.logPermissionFail(user, commandLabel, args, true);
-				return;
-			} else if (LockManager.getInstance().getLock(lockLocation) != null) {
-				user.sendLocalizedMessage("error.lock.create.alreadyExists");
-				return;
-			}
-
-			LockLevel accessLevel = LockLevel.PRIVATE;
-			if (args.length > arg && args[arg].equalsIgnoreCase("-p")) {
-				accessLevel = LockLevel.PUBLIC;
-				arg++;
-			}
-
-			lock = createLock(instance, user, accessLevel, lockLocation);
-
-			if (lock == null)
-				return;
-		} else if (args[arg].equalsIgnoreCase("-d")) {
-			if (lock == null) {
-				user.sendLocalizedMessage("error.lock.notFound");
-			} else if (!lock.canModifyBlock(user)) {
-				GoldenApple.logPermissionFail(user, commandLabel, args, true);
-				if (lock.getOverrideLevel(user).levelId >= GuestLevel.ALLOW_BLOCK_MODIFY.levelId) {
-					user.sendLocalizedMessage("general.lock.overrideAvailable.complex");
-				}
-			} else {
-				deleteLock(instance, user, lock.getLockId());
-			}
-			return;
-		} else if (args[arg].equalsIgnoreCase("-o:on")) {
+		
+		LockedBlock target = null;
+		
+		if (arg.isDefined("override-on")) {
 			if (!LockManager.getInstance().canOverride(user)) {
 				GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			} else {
@@ -107,7 +43,7 @@ public class LockCommand extends DualSyntaxCommand {
 				user.sendLocalizedMessage("general.lock.override.on");
 			}
 			return;
-		} else if (args[arg].equalsIgnoreCase("-o:off")) {
+		} else if (arg.isDefined("override-off")) {
 			if (!LockManager.getInstance().canOverride(user)) {
 				GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			} else {
@@ -116,136 +52,194 @@ public class LockCommand extends DualSyntaxCommand {
 			}
 			return;
 		}
-
-		if (lock == null) {
-			user.sendLocalizedMessage("error.lock.notFound");
+		
+		if (arg.isDefined("create")) {
+			Location lockLocation = findLockableBlock(user, 10);
+			if (!user.hasPermission(LockManager.addPermission)) {
+				GoldenApple.logPermissionFail(user, commandLabel, args, true);
+			} else if (lockLocation == null) {
+				user.sendLocalizedMessage("error.lock.invalidBlock");
+			} else if (LockManager.getInstance().getLock(lockLocation) != null) {
+				user.sendLocalizedMessage("error.lock.create.alreadyExists");
+			} else {
+				target = createLock(instance, user, (arg.isDefined("public")) ? LockLevel.PUBLIC : LockLevel.PRIVATE, lockLocation);
+			}
+		}
+		
+		if (target == null && arg.isDefined("select")) {
+			target = LockManager.getInstance().getLock(arg.getLong("select"));
+			
+			if (target == null) {
+				user.sendLocalizedMessage("error.lock.selectNotFound", arg.getLong("select") + "");
+				return;
+			}
+		} else if (target == null) {
+			target = findLock(user, 10);
+			
+			if (target == null) {
+				user.sendLocalizedMessage("error.lock.notFound");
+				return;
+			}
+		}
+		
+		if (arg.isDefined("delete")) {
+			if (!target.canModifyBlock(user)) {
+				GoldenApple.logPermissionFail(user, commandLabel, args, true);
+				return;
+			}
+			
+			deleteLock(instance, user, target.getLockId());
 			return;
 		}
-
-		while (arg < args.length) {
-			if (args[arg].equalsIgnoreCase("-in") || args[arg].equalsIgnoreCase("-in:u")) {
-				arg++;
-				if (arg == args.length) {
-					user.sendLocalizedMessage("shared.parameterMissing", "-in:u");
-				} else if (!lock.canInvite(user)) {
-					GoldenApple.logPermissionFail(user, commandLabel, args, true);
-					if (lock.getOverrideLevel(user).levelId >= GuestLevel.ALLOW_INVITE.levelId) {
-						user.sendLocalizedMessage("general.lock.overrideAvailable.complex");
-					}
-					return;
-				} else {
-					addUser(instance, user, lock, args[arg], GuestLevel.USE);
-					arg++;
-				}
-			} else if (args[arg].equalsIgnoreCase("-in:i")) {
-				arg++;
-				if (arg == args.length) {
-					user.sendLocalizedMessage("shared.parameterMissing", "-in:i");
-				} else if (!lock.hasFullControl(user)) {
-					GoldenApple.logPermissionFail(user, commandLabel, args, true);
-					if (lock.getOverrideLevel(user).levelId >= GuestLevel.FULL.levelId) {
-						user.sendLocalizedMessage("general.lock.overrideAvailable.complex");
-					}
-					return;
-				} else {
-					addUser(instance, user, lock, args[arg], GuestLevel.ALLOW_INVITE);
-					arg++;
-				}
-			} else if (args[arg].equalsIgnoreCase("-in:m")) {
-				arg++;
-				if (arg == args.length) {
-					user.sendLocalizedMessage("shared.parameterMissing", "-in:m");
-				} else if (!lock.hasFullControl(user)) {
-					GoldenApple.logPermissionFail(user, commandLabel, args, true);
-					if (lock.getOverrideLevel(user).levelId >= GuestLevel.FULL.levelId) {
-						user.sendLocalizedMessage("general.lock.overrideAvailable.complex");
-					}
-					return;
-				} else {
-					addUser(instance, user, lock, args[arg], GuestLevel.ALLOW_BLOCK_MODIFY);
-					arg++;
-				}
-			} else if (args[arg].equalsIgnoreCase("-in:f")) {
-				arg++;
-				if (arg == args.length) {
-					user.sendLocalizedMessage("shared.parameterMissing", "-in:f");
-				} else if (!lock.hasFullControl(user)) {
-					GoldenApple.logPermissionFail(user, commandLabel, args, true);
-					if (lock.getOverrideLevel(user).levelId >= GuestLevel.FULL.levelId) {
-						user.sendLocalizedMessage("general.lock.overrideAvailable.complex");
-					}
-					return;
-				} else {
-					addUser(instance, user, lock, args[arg], GuestLevel.FULL);
-					arg++;
-				}
-			} else if (args[arg].equalsIgnoreCase("-in:n")) {
-				arg++;
-				if (arg == args.length) {
-					user.sendLocalizedMessage("shared.parameterMissing", "-in:n");
-				} else if (!lock.hasFullControl(user)) {
-					GoldenApple.logPermissionFail(user, commandLabel, args, true);
-					if (lock.getOverrideLevel(user).levelId >= GuestLevel.FULL.levelId) {
-						user.sendLocalizedMessage("general.lock.overrideAvailable.complex");
-					}
-					return;
-				} else {
-					removeUser(instance, user, lock, args[arg]);
-					arg++;
-				}
-			} else if (args[arg].equalsIgnoreCase("-a")) {
-				arg++;
-				if (arg == args.length) {
-					user.sendLocalizedMessage("shared.parameterMissing", "-gr");
-				} else if (!lock.canModifyBlock(user)) {
-					GoldenApple.logPermissionFail(user, commandLabel, args, true);
-					if (lock.getOverrideLevel(user).levelId >= GuestLevel.ALLOW_BLOCK_MODIFY.levelId) {
-						user.sendLocalizedMessage("general.lock.overrideAvailable.complex");
-					}
-					return;
-				} else {
-					changeAccess(instance, user, lock, args[arg]);
-					arg++;
-				}
-			} else if (args[arg].equalsIgnoreCase("-i")) {
-				getInfo(instance, user, lock);
-				arg++;
-			} else if (args[arg].equalsIgnoreCase("-r:on")) {
-				if (!lock.canModifyBlock(user)) {
-					GoldenApple.logPermissionFail(user, commandLabel, args, true);
-					if (lock.getOverrideLevel(user).levelId >= GuestLevel.ALLOW_BLOCK_MODIFY.levelId) {
-						user.sendLocalizedMessage("general.lock.overrideAvailable.complex");
-					}
-					return;
-				} else {
-					setHopperAllow(user, lock, true);
-					arg++;
-				}
-			} else if (args[arg].equalsIgnoreCase("-r:off")) {
-				if (!lock.canModifyBlock(user)) {
-					GoldenApple.logPermissionFail(user, commandLabel, args, true);
-					if (lock.getOverrideLevel(user).levelId >= GuestLevel.ALLOW_BLOCK_MODIFY.levelId) {
-						user.sendLocalizedMessage("general.lock.overrideAvailable.complex");
-					}
-					return;
-				} else {
-					setHopperAllow(user, lock, false);
-					arg++;
-				}
-			} else {
-				user.sendLocalizedMessage("shared.unknownOption", args[arg]);
-				arg++;
+		
+		if (arg.isDefined("access")) {
+			if (!target.canModifyBlock(user)) {
+				GoldenApple.logPermissionFail(user, commandLabel, args, true);
+				return;
 			}
+			
+			changeAccess(instance, user, target, arg.getString("access"));
+		}
+		
+		if (arg.isDefined("redstone-on")) {
+			if (!target.canModifyBlock(user)) {
+				GoldenApple.logPermissionFail(user, commandLabel, args, true);
+				return;
+			}
+			
+			setHopperAllow(user, target, true);
+		} else if (arg.isDefined("redstone-off")) {
+			if (!target.canModifyBlock(user)) {
+				GoldenApple.logPermissionFail(user, commandLabel, args, true);
+				return;
+			}
+			
+			setHopperAllow(user, target, false);
+		}
+		
+		if (arg.isDefined("invite-none")) {
+			if (!target.canInvite(user)) {
+				GoldenApple.logPermissionFail(user, commandLabel, args, true);
+				return;
+			}
+			
+			for (IPermissionUser u : arg.getUserList("invite-none")) {
+				if (target.hasFullControl(user) || target.getActualLevel(u).levelId <= GuestLevel.ALLOW_INVITE.levelId) {
+					removeUser(instance, user, target, u);
+				}
+			}
+		}
+		
+		if (arg.isDefined("invite-use")) {
+			if (!target.canInvite(user)) {
+				GoldenApple.logPermissionFail(user, commandLabel, args, true);
+				return;
+			}
+			
+			for (IPermissionUser u : arg.getUserList("invite-use")) {
+				if (target.hasFullControl(user) || target.getActualLevel(u) == GuestLevel.NONE) {
+					addUser(instance, user, target, u, GuestLevel.USE);
+				}
+			}
+		}
+		
+		if (arg.isDefined("invite-invite")) {
+			if (!target.hasFullControl(user)) {
+				GoldenApple.logPermissionFail(user, commandLabel, args, true);
+				return;
+			}
+			
+			for (IPermissionUser u : arg.getUserList("invite-invite")) {
+				addUser(instance, user, target, u, GuestLevel.ALLOW_INVITE);
+			}
+		}
+		
+		if (arg.isDefined("invite-modify")) {
+			if (!target.hasFullControl(user)) {
+				GoldenApple.logPermissionFail(user, commandLabel, args, true);
+				return;
+			}
+			
+			for (IPermissionUser u : arg.getUserList("invite-modify")) {
+				addUser(instance, user, target, u, GuestLevel.ALLOW_BLOCK_MODIFY);
+			}
+		}
+		
+		if (arg.isDefined("invite-full")) {
+			if (!target.hasFullControl(user)) {
+				GoldenApple.logPermissionFail(user, commandLabel, args, true);
+				return;
+			}
+			
+			for (IPermissionUser u : arg.getUserList("invite-full")) {
+				addUser(instance, user, target, u, GuestLevel.FULL);
+			}
+		}
+		
+		if (arg.isDefined("group-invite-none")) {
+			if (!target.hasFullControl(user)) {
+				GoldenApple.logPermissionFail(user, commandLabel, args, true);
+				return;
+			}
+			
+			for (IPermissionGroup g : arg.getGroupList("group-invite-none")) {
+				removeGroup(instance, user, target, g);
+			}
+		}
+		
+		if (arg.isDefined("group-invite-use")) {
+			if (!target.hasFullControl(user)) {
+				GoldenApple.logPermissionFail(user, commandLabel, args, true);
+				return;
+			}
+			
+			for (IPermissionGroup g : arg.getGroupList("group-invite-use")) {
+				addGroup(instance, user, target, g, GuestLevel.USE);
+			}
+		}
+		
+		if (arg.isDefined("group-invite-invite")) {
+			if (!target.hasFullControl(user)) {
+				GoldenApple.logPermissionFail(user, commandLabel, args, true);
+				return;
+			}
+			
+			for (IPermissionGroup g : arg.getGroupList("group-invite-invite")) {
+				addGroup(instance, user, target, g, GuestLevel.ALLOW_INVITE);
+			}
+		}
+		
+		if (arg.isDefined("group-invite-modify")) {
+			if (!target.hasFullControl(user)) {
+				GoldenApple.logPermissionFail(user, commandLabel, args, true);
+				return;
+			}
+			
+			for (IPermissionGroup g : arg.getGroupList("group-invite-modify")) {
+				addGroup(instance, user, target, g, GuestLevel.ALLOW_BLOCK_MODIFY);
+			}
+		}
+		
+		if (arg.isDefined("group-invite-full")) {
+			if (!target.hasFullControl(user)) {
+				GoldenApple.logPermissionFail(user, commandLabel, args, true);
+				return;
+			}
+			
+			for (IPermissionGroup g : arg.getGroupList("group-invite-full")) {
+				addGroup(instance, user, target, g, GuestLevel.FULL);
+			}
+		}
+		
+		if (arg.isDefined("info")) {
+			getInfo(instance, user, target);
 		}
 	}
 
-	@SuppressWarnings("deprecation") // TODO Remove this when an alternative to getTargetBlock is released
 	@Override
 	public void onExecuteSimple(GoldenApple instance, User user, String commandLabel, String[] args) {
 		if (!(user.getHandle() instanceof Player))
 			user.sendLocalizedMessage("shared.noConsole");
-
-		Location lockLocation = user.getPlayerHandle().getTargetBlock(null, 10).getLocation();
 
 		if (args.length == 0 || args[0].equals("-?") || args[0].equals("help")) {
 			sendHelp(user, commandLabel, false);
@@ -255,8 +249,11 @@ public class LockCommand extends DualSyntaxCommand {
 		user.sendLocalizedMessage("header.lock");
 
 		if (args[0].equalsIgnoreCase("create")) {
+			Location lockLocation = findLockableBlock(user, 10);
 			if (!user.hasPermission(LockManager.addPermission)) {
 				GoldenApple.logPermissionFail(user, commandLabel, args, true);
+			} else if (lockLocation == null) {
+				user.sendLocalizedMessage("error.lock.invalidBlock");
 			} else if (LockManager.getInstance().getLock(lockLocation) != null) {
 				user.sendLocalizedMessage("error.lock.create.alreadyExists");
 			} else if (args.length > 2) {
@@ -307,7 +304,7 @@ public class LockCommand extends DualSyntaxCommand {
 				user.sendLocalizedMessage("shared.unknownOption", args[1]);
 			}
 		} else {
-			LockedBlock lock = LockManager.getInstance().getLock(lockLocation);
+			LockedBlock lock = findLock(user, 10);
 
 			if (lock == null) {
 				user.sendLocalizedMessage("error.lock.notFound");
@@ -344,14 +341,14 @@ public class LockCommand extends DualSyntaxCommand {
 					user.sendLocalizedMessage("shared.parameterMissing", "uninvite");
 				} else if (args.length > 2) {
 					user.sendLocalizedMessage("shared.unknownOption", args[2]);
-				} else if (!lock.hasFullControl(user)) {
+				} else if (!lock.canInvite(user)) {
 					GoldenApple.logPermissionFail(user, commandLabel, args, true);
 					if (lock.getOverrideLevel(user).levelId >= GuestLevel.FULL.levelId) {
 						user.sendLocalizedMessage("general.lock.overrideAvailable.simple");
 					}
 					return;
 				} else {
-					removeUser(instance, user, lock, args[1]);
+					removeUser(instance, user, lock, args[1], commandLabel, args);
 				}
 			} else if (args[0].equalsIgnoreCase("access")) {
 				if (args.length == 1) {
@@ -388,7 +385,33 @@ public class LockCommand extends DualSyntaxCommand {
 			}
 		}
 	}
-
+	
+	private LockedBlock findLock(User user, int range) {
+		BlockIterator i = new BlockIterator(user.getPlayerHandle(), range);
+		
+		while (i.hasNext()) {
+			Block b = i.next();
+			
+			if (LockManager.getInstance().isLockable(b.getType()))
+				return LockManager.getInstance().getLock(b.getLocation());
+		}
+		
+		return null;
+	}
+	
+	private Location findLockableBlock(User user, int range) {
+		BlockIterator i = new BlockIterator(user.getPlayerHandle(), range);
+		
+		while (i.hasNext()) {
+			Block b = i.next();
+			
+			if (LockManager.getInstance().isLockable(b.getType()))
+				return b.getLocation();
+		}
+		
+		return null;
+	}
+	
 	private LockedBlock createLock(GoldenApple instance, User user, LockLevel access, Location loc) {
 		LockedBlock lock;
 		try {
@@ -402,9 +425,6 @@ public class LockCommand extends DualSyntaxCommand {
 			return null;
 		} catch (SQLException e) {
 			user.sendLocalizedMessage("error.lock.create.ioError");
-			return null;
-		} catch (UnsupportedOperationException e) {
-			user.sendLocalizedMessage("error.lock.invalidBlock");
 			return null;
 		}
 	}
@@ -424,20 +444,40 @@ public class LockCommand extends DualSyntaxCommand {
 		if (gUser == null) {
 			user.sendLocalizedMessage("shared.userNotFoundWarning", guest);
 		} else {
-			lock.addUser(gUser, level);
-			user.sendLocalizedMessage("general.lock.guest.add.success", gUser.getName());
+			addUser(instance, user, lock, gUser, level);
 		}
 	}
+	
+	private void addUser(GoldenApple instance, User user, LockedBlock lock, IPermissionUser guest, GuestLevel level) {
+		lock.addUser(guest, level);
+		user.sendLocalizedMessage("general.lock.guest.add.success", guest.getName());
+	}
 
-	private void removeUser(GoldenApple instance, User user, LockedBlock lock, String guest) {
+	private void removeUser(GoldenApple instance, User user, LockedBlock lock, String guest, String commandLabel, String[] args) {
 		IPermissionUser gUser = PermissionManager.getInstance().getUser(guest);
 
 		if (gUser == null) {
 			user.sendLocalizedMessage("shared.userNotFoundWarning", guest);
+		} else if (lock.getActualLevel(gUser).levelId > GuestLevel.USE.levelId && !lock.hasFullControl(user)) {
+			GoldenApple.logPermissionFail(user, commandLabel, args, true);
 		} else {
-			lock.remUser(gUser);
-			user.sendLocalizedMessage("general.lock.guest.remove.success", gUser.getName());
+			removeUser(instance, user, lock, gUser);
 		}
+	}
+	
+	private void removeUser(GoldenApple instance, User user, LockedBlock lock, IPermissionUser guest) {
+		lock.remUser(guest);
+		user.sendLocalizedMessage("general.lock.guest.remove.success", guest.getName());
+	}
+	
+	private void addGroup(GoldenApple instance, User user, LockedBlock lock, IPermissionGroup guest, GuestLevel level) {
+		lock.addGroup(guest, level);
+		user.sendLocalizedMessage("general.lock.guest.add.success", guest.getName());
+	}
+	
+	private void removeGroup(GoldenApple instance, User user, LockedBlock lock, IPermissionGroup guest) {
+		lock.remGroup(guest);
+		user.sendLocalizedMessage("general.lock.guest.remove.success", guest.getName());
 	}
 
 	private void changeAccess(GoldenApple instance, User user, LockedBlock lock, String access) {
@@ -485,9 +525,40 @@ public class LockCommand extends DualSyntaxCommand {
 		lock.save();
 		user.sendLocalizedMessage((allow) ? "general.lock.redstone.on" : "general.lock.redstone.off");
 	}
-
+	
 	private void sendHelp(User user, String commandLabel, boolean complex) {
 		user.sendLocalizedMessage("header.help");
 		user.sendLocalizedMultilineMessage((complex) ? "help.lock.complex" : "help.lock.simple", commandLabel);
+	}
+	
+	private ArgumentInfo[] getArguments() {
+		return new ArgumentInfo[] {
+			ArgumentInfo.newInt("select", "s", "select"),
+			
+			ArgumentInfo.newSwitch("override-on", "o:on", "override:on"),
+			ArgumentInfo.newSwitch("override-off", "o:off", "override:off"),
+			
+			ArgumentInfo.newSwitch("create", "c", "create"),
+			ArgumentInfo.newSwitch("public", "p", "public"),
+			ArgumentInfo.newSwitch("delete", "d", "delete"),
+			
+			ArgumentInfo.newSwitch("info", "i", "info"),
+			
+			ArgumentInfo.newString("access", "a", "access", false),
+			ArgumentInfo.newSwitch("redstone-on", "r:on", "redstone:on"),
+			ArgumentInfo.newSwitch("redstone-off", "r:off", "redstone:off"),
+			
+			ArgumentInfo.newUserList("invite-none", "in:n", "invite:none", false, false),
+			ArgumentInfo.newUserList("invite-use", "in:u", "invite:use", false, false),
+			ArgumentInfo.newUserList("invite-invite", "in:i", "invite:invite", false, false),
+			ArgumentInfo.newUserList("invite-modify", "in:m", "invite:modify", false, false),
+			ArgumentInfo.newUserList("invite-full", "in:f", "invite:full", false, false),
+			
+			ArgumentInfo.newGroupList("group-invite-none", "gin:n", "groupinvite:none", false),
+			ArgumentInfo.newGroupList("group-invite-use", "gin:u", "groupinvite:use", false),
+			ArgumentInfo.newGroupList("group-invite-invite", "gin:i", "groupinvite:invite", false),
+			ArgumentInfo.newGroupList("group-invite-modify", "gin:m", "groupinvite:modify", false),
+			ArgumentInfo.newGroupList("group-invite-full", "gin:f", "groupinvite:full", false),
+		};
 	}
 }

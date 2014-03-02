@@ -320,6 +320,31 @@ public abstract class LockedBlock {
 		}
 	}
 	
+	public void addGroup(IPermissionGroup group, GuestLevel level) {
+		try {
+			if (groupLevel.containsKey(group.getId())) {
+				GoldenApple.getInstanceDatabaseManager().execute("UPDATE LockGroups SET AccessLevel=? WHERE LockID=? AND GuestID=?", level.levelId, lockId, group.getId());
+			} else {
+				GoldenApple.getInstanceDatabaseManager().execute("INSERT INTO LockGroups (LockID, GuestID, AccessLevel) VALUES (?, ?, ?)", lockId, group.getId(), level.levelId);
+			}
+			
+			groupLevel.put(group.getId(), level);
+		} catch (SQLException e) {
+			GoldenApple.log(Level.SEVERE, "Error while adding group '" + group.getName() + "' to the guestlist for lock " + lockId + ":");
+			GoldenApple.log(Level.SEVERE, e);
+		}
+	}
+	
+	public void remGroup(IPermissionGroup group) {
+		try {
+			userLevel.remove(group.getId());
+			GoldenApple.getInstanceDatabaseManager().execute("DELETE FROM LockGroups WHERE LockID=? AND GuestID=?", lockId, group.getId());
+		} catch (SQLException e) {
+			GoldenApple.log(Level.SEVERE, "Error while removing group '" + group.getName() + "' from the guestlist for lock " + lockId + ":");
+			GoldenApple.log(Level.SEVERE, e);
+		}
+	}
+	
 	public GuestLevel getOverrideLevel(User user) {
 		if (user.hasPermission(LockManager.fullPermission))
 			return GuestLevel.FULL;
@@ -333,19 +358,19 @@ public abstract class LockedBlock {
 			return GuestLevel.NONE;
 	}
 	
-	public GuestLevel getActualLevel(User user) {
+	public GuestLevel getActualLevel(IPermissionUser u) {
 		GuestLevel l = (this.level == LockLevel.PUBLIC) ? GuestLevel.USE : GuestLevel.NONE;
 
-		if (ownerId == user.getId())
+		if (ownerId == u.getId())
 			return GuestLevel.FULL;
 		
-		if (userLevel.containsKey(user.getId()) && userLevel.get(user.getId()).levelId > l.levelId)
-			l = userLevel.get(user.getId());
+		if (userLevel.containsKey(u.getId()) && userLevel.get(u.getId()).levelId > l.levelId)
+			l = userLevel.get(u.getId());
 
 		for (Map.Entry<Long, GuestLevel> group : groupLevel.entrySet()) {
 			IPermissionGroup g = PermissionManager.getInstance().getGroup(group.getKey());
 
-			if (g.isMember(user, false) && group.getValue().levelId > l.levelId) {
+			if (g.isMember(u, false) && group.getValue().levelId > l.levelId) {
 				l = group.getValue();
 			}
 		}

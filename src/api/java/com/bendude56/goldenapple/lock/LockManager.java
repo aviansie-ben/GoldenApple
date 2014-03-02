@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 
 import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.lock.LockedBlock.LockLevel;
@@ -30,6 +31,8 @@ public abstract class LockManager {
 	public abstract LockedBlock getLock(Location l);
 	public abstract LockedBlock getLockSpecific(Location l);
 	public abstract boolean lockExists(long id) throws SQLException;
+	
+	public abstract boolean isLockable(Material m);
 	
 	public abstract LockedBlock createLock(Location loc, LockLevel access, IPermissionUser owner) throws SQLException, InvocationTargetException;
 	public abstract void deleteLock(long id) throws SQLException;

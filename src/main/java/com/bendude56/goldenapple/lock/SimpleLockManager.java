@@ -205,4 +205,9 @@ public class SimpleLockManager extends LockManager {
 		cacheOut.clear();
 	}
 
+	@Override
+	public boolean isLockable(Material m) {
+		return LockedBlock.getBlock(m) != null;
+	}
+
 }
