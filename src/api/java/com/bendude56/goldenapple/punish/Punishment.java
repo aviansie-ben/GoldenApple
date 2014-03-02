@@ -3,6 +3,7 @@ package com.bendude56.goldenapple.punish;
 import java.sql.Timestamp;
 
 import com.bendude56.goldenapple.GoldenApple;
+import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 
@@ -34,7 +35,7 @@ public abstract class Punishment {
 	}
 	
 	public IPermissionUser getAdmin() {
-		return PermissionManager.getInstance().getUser(adminId);
+		return (adminId == -1) ? User.getConsoleUser() : PermissionManager.getInstance().getUser(adminId);
 	}
 	
 	public String getReason() {

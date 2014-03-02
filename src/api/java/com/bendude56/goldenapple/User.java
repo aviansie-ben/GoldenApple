@@ -20,6 +20,10 @@ import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
 public class User implements IPermissionUser {
 	private static HashMap<Long, User>	activeUsers	= new HashMap<Long, User>();
 	private static User					consoleUser	= new User(-1, Bukkit.getConsoleSender(), false);
+	
+	public static User getConsoleUser() {
+		return consoleUser;
+	}
 
 	/**
 	 * Gets a user instance from a

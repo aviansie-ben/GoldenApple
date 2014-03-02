@@ -66,13 +66,13 @@ public class PunishmentListener implements Listener, EventExecutor {
 		
 		if (ban != null) {
 			if (ban.isPermanent()) {
-				String msg = instance.getLocalizationManager().processMessageDefaultLocale("general.ban.permaKick", (ban.getAdminId() <= 0) ? "???" : ban.getAdmin().getName());
+				String msg = instance.getLocalizationManager().processMessageDefaultLocale("general.ban.permaKick", ban.getAdmin().getName());
 				msg += "\n" + ban.getReason();
 				msg += "\n" + GoldenApple.getInstanceMainConfig().getString("banAppealMessage", "Contact an administrator to dispute this ban.");
 				event.setResult(Result.KICK_BANNED);
 				event.setKickMessage(msg);
 			} else {
-				String msg = instance.getLocalizationManager().processMessageDefaultLocale("general.ban.tempKick", ban.getRemainingDuration().toString(), (ban.getAdminId() <= 0) ? "???" : ban.getAdmin().getName());
+				String msg = instance.getLocalizationManager().processMessageDefaultLocale("general.ban.tempKick", ban.getRemainingDuration().toString(), ban.getAdmin().getName());
 				msg += "\n" + ban.getReason();
 				msg += "\n" + GoldenApple.getInstanceMainConfig().getString("banAppealMessage", "Contact an administrator to dispute this ban.");
 				event.setResult(Result.KICK_BANNED);
