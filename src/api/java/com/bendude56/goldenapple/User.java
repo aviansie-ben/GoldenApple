@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
@@ -31,6 +32,8 @@ public class User implements IPermissionUser {
 	 */
 	public static User getUser(CommandSender sender) {
 		if (sender instanceof ConsoleCommandSender) {
+			return consoleUser;
+		} else if (sender instanceof BlockCommandSender) {
 			return consoleUser;
 		} else if (PermissionManager.getInstance() == null) {
 			// Assign each user a temporary id in the event of a permissions
