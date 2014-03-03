@@ -59,7 +59,8 @@ public class LockCommand extends DualSyntaxCommand {
 				GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			} else if (lockLocation == null) {
 				user.sendLocalizedMessage("error.lock.invalidBlock");
-			} else if (LockManager.getInstance().getLock(lockLocation) != null) {
+				return;
+			} else if ((target = LockManager.getInstance().getLock(lockLocation)) != null) {
 				user.sendLocalizedMessage("error.lock.create.alreadyExists");
 			} else {
 				target = createLock(instance, user, (arg.isDefined("public")) ? LockLevel.PUBLIC : LockLevel.PRIVATE, lockLocation);
