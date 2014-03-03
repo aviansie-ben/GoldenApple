@@ -92,6 +92,8 @@ public class LockListener implements Listener, EventExecutor {
 	}
 
 	private void playerInteract(PlayerInteractEvent event) {
+		if (!LockManager.getInstance().isLockable(event.getClickedBlock().getType())) return;
+		
 		LockedBlock lock = LockManager.getInstance().getLock(event.getClickedBlock().getLocation());
 		User u = User.getUser(event.getPlayer());
 		if (lock == null)
@@ -108,6 +110,8 @@ public class LockListener implements Listener, EventExecutor {
 	}
 
 	private void blockBreak(BlockBreakEvent event) {
+		if (!LockManager.getInstance().isLockable(event.getBlock().getType())) return;
+		
 		LockedBlock lock = LockManager.getInstance().getLock(event.getBlock().getLocation());
 		User u = User.getUser(event.getPlayer());
 		if (lock == null)
@@ -219,6 +223,8 @@ public class LockListener implements Listener, EventExecutor {
 	}
 	
 	private void lockRedstone(BlockRedstoneEvent event) {
+		if (!LockManager.getInstance().isLockable(event.getBlock().getType())) return;
+		
 		LockedBlock lock = LockManager.getInstance().getLock(event.getBlock().getLocation());
 		
 		if (lock != null && !lock.getAllowExternal() && lock.isRedstoneAccessApplicable())
