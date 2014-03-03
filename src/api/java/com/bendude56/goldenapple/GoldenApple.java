@@ -58,6 +58,10 @@ public abstract class GoldenApple extends JavaPlugin {
 	public static Configuration getInstanceMainConfig() {
 		return instance.getMainConfig();
 	}
+	
+	public static PerformanceMonitor getInstancePerformanceMonitor() {
+		return instance.getPerformanceMonitor();
+	}
 
 	/**
 	 * Retrieves the active localization manager for this instance of GoldenApple.
@@ -94,6 +98,8 @@ public abstract class GoldenApple extends JavaPlugin {
 	 * @return The active module manager
 	 */
 	public abstract ModuleManager getModuleManager();
+	
+	public abstract PerformanceMonitor getPerformanceMonitor();
 
 	/**
 	 * Retrieves an active reference to the main configuration file located

@@ -26,6 +26,7 @@ import org.bukkit.plugin.EventExecutor;
 import org.bukkit.plugin.RegisteredListener;
 
 import com.bendude56.goldenapple.GoldenApple;
+import com.bendude56.goldenapple.PerformanceMonitor.PerformanceEvent;
 import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 
@@ -108,24 +109,31 @@ public class AntigriefListener implements Listener, EventExecutor {
 
 	@Override
 	public void execute(Listener listener, Event event) throws EventException {
-		if (event instanceof PlayerInteractEvent) {
-			playerInteract((PlayerInteractEvent)event);
-		} else if (event instanceof BlockIgniteEvent) {
-			blockIgnite((BlockIgniteEvent) event);
-		} else if (event instanceof BlockBurnEvent) {
-			blockBurn((BlockBurnEvent)event);
-		} else if (event instanceof CreatureSpawnEvent) {
-			creatureSpawn((CreatureSpawnEvent)event);
-		} else if (event instanceof EntityExplodeEvent) {
-			entityExplode((EntityExplodeEvent)event);
-		} else if (event instanceof EntityTargetEvent) {
-			entityTarget((EntityTargetEvent)event);
-		} else if (event instanceof EntityChangeBlockEvent) {
-			entityChangeBlock((EntityChangeBlockEvent)event);
-		} else if (event instanceof PotionSplashEvent) {
-			potionSplash((PotionSplashEvent)event);
-		} else {
-			GoldenApple.log(Level.WARNING, "Unrecognized event in AntigriefListener: " + event.getClass().getName());
+		PerformanceEvent e = GoldenApple.getInstancePerformanceMonitor().createForEvent("Antigrief", event.getClass().getName());
+		e.start();
+		
+		try {
+			if (event instanceof PlayerInteractEvent) {
+				playerInteract((PlayerInteractEvent)event);
+			} else if (event instanceof BlockIgniteEvent) {
+				blockIgnite((BlockIgniteEvent) event);
+			} else if (event instanceof BlockBurnEvent) {
+				blockBurn((BlockBurnEvent)event);
+			} else if (event instanceof CreatureSpawnEvent) {
+				creatureSpawn((CreatureSpawnEvent)event);
+			} else if (event instanceof EntityExplodeEvent) {
+				entityExplode((EntityExplodeEvent)event);
+			} else if (event instanceof EntityTargetEvent) {
+				entityTarget((EntityTargetEvent)event);
+			} else if (event instanceof EntityChangeBlockEvent) {
+				entityChangeBlock((EntityChangeBlockEvent)event);
+			} else if (event instanceof PotionSplashEvent) {
+				potionSplash((PotionSplashEvent)event);
+			} else {
+				GoldenApple.log(Level.WARNING, "Unrecognized event in AntigriefListener: " + event.getClass().getName());
+			}
+		} finally {
+			e.stop();
 		}
 	}
 

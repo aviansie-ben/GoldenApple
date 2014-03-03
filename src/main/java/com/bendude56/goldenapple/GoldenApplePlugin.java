@@ -22,6 +22,7 @@ public class GoldenApplePlugin extends GoldenApple {
 	public SimpleDatabaseManager	database;
 	public SimpleCommandManager			commands;
 	public SimpleModuleManager		modules;
+	public SimplePerformanceMonitor monitor;
 
 	@Override
 	public SimpleLocalizationManager getLocalizationManager() {
@@ -51,6 +52,11 @@ public class GoldenApplePlugin extends GoldenApple {
 	@Override
 	public Configuration getDatabaseVersionConfig() {
 		return databaseVersion;
+	}
+	
+	@Override
+	public PerformanceMonitor getPerformanceMonitor() {
+		return monitor;
 	}
 
 	@Override
@@ -110,6 +116,7 @@ public class GoldenApplePlugin extends GoldenApple {
 		database = new SimpleDatabaseManager();
 		locale = new SimpleLocalizationManager(getClassLoader());
 		modules = new SimpleModuleManager();
+		monitor = new SimplePerformanceMonitor(this);
 		
 		// Verify that the database connected successfully
 		if (!database.isConnected()) {
@@ -141,6 +148,8 @@ public class GoldenApplePlugin extends GoldenApple {
 			database.close();
 			database = null;
 		}
+		
+		monitor.close();
 
 		mainConfig = null;
 	}

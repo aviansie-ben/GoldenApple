@@ -18,6 +18,7 @@ import org.bukkit.plugin.RegisteredListener;
 
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
+import com.bendude56.goldenapple.PerformanceMonitor.PerformanceEvent;
 import com.bendude56.goldenapple.warp.WarpManager;
 
 public class WarpListener implements Listener, EventExecutor {
@@ -51,16 +52,23 @@ public class WarpListener implements Listener, EventExecutor {
 
 	@Override
 	public void execute(Listener listener, Event event) throws EventException {
-		if (event instanceof PlayerTeleportEvent) {
-			playerTeleport((PlayerTeleportEvent)event);
-		} else if (event instanceof PlayerDeathEvent) {
-			playerDeath((PlayerDeathEvent)event);
-		} else if (event instanceof EntityDeathEvent) {
-			// Do nothing
-		} else if (event instanceof PlayerQuitEvent) {
-			backLocation.remove(User.getUser(((PlayerQuitEvent)event).getPlayer()));
-		} else {
-			GoldenApple.log(Level.WARNING, "Unrecognized event in WarpListener: " + event.getClass().getName());
+		PerformanceEvent e = GoldenApple.getInstancePerformanceMonitor().createForEvent("Warp", event.getClass().getName());
+		e.start();
+		
+		try {
+			if (event instanceof PlayerTeleportEvent) {
+				playerTeleport((PlayerTeleportEvent)event);
+			} else if (event instanceof PlayerDeathEvent) {
+				playerDeath((PlayerDeathEvent)event);
+			} else if (event instanceof EntityDeathEvent) {
+				// Do nothing
+			} else if (event instanceof PlayerQuitEvent) {
+				backLocation.remove(User.getUser(((PlayerQuitEvent)event).getPlayer()));
+			} else {
+				GoldenApple.log(Level.WARNING, "Unrecognized event in WarpListener: " + event.getClass().getName());
+			}
+		} finally {
+			e.stop();
 		}
 	}
 

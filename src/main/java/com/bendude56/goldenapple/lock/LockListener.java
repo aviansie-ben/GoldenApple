@@ -22,6 +22,7 @@ import org.bukkit.plugin.RegisteredListener;
 
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
+import com.bendude56.goldenapple.PerformanceMonitor.PerformanceEvent;
 import com.bendude56.goldenapple.lock.LockManager;
 import com.bendude56.goldenapple.lock.LockedBlock;
 import com.bendude56.goldenapple.lock.LockedBlock.GuestLevel;
@@ -64,22 +65,29 @@ public class LockListener implements Listener, EventExecutor {
 
 	@Override
 	public void execute(Listener listener, Event event) throws EventException {
-		if (event instanceof PlayerInteractEvent) {
-			playerInteract((PlayerInteractEvent)event);
-		} else if (event instanceof BlockBreakEvent) {
-			blockBreak((BlockBreakEvent)event);
-		} else if (event instanceof BlockPlaceEvent) {
-			chestMove((BlockPlaceEvent)event);
-			autoLock((BlockPlaceEvent)event);
-		} else if (event instanceof InventoryMoveItemEvent) {
-			itemMove((InventoryMoveItemEvent)event);
-		} else if (event instanceof BlockRedstoneEvent) {
-			lockRedstone((BlockRedstoneEvent)event);
-		} else if (event instanceof BlockDispenseEvent) {
-			lockDispense((BlockDispenseEvent)event);
-		} else if (event instanceof BlockExpEvent) {
-		} else {
-			GoldenApple.log(Level.WARNING, "Unrecognized event in LockListener: " + event.getClass().getName());
+		PerformanceEvent e = GoldenApple.getInstancePerformanceMonitor().createForEvent("Antigrief", event.getClass().getName());
+		e.start();
+		
+		try {
+			if (event instanceof PlayerInteractEvent) {
+				playerInteract((PlayerInteractEvent)event);
+			} else if (event instanceof BlockBreakEvent) {
+				blockBreak((BlockBreakEvent)event);
+			} else if (event instanceof BlockPlaceEvent) {
+				chestMove((BlockPlaceEvent)event);
+				autoLock((BlockPlaceEvent)event);
+			} else if (event instanceof InventoryMoveItemEvent) {
+				itemMove((InventoryMoveItemEvent)event);
+			} else if (event instanceof BlockRedstoneEvent) {
+				lockRedstone((BlockRedstoneEvent)event);
+			} else if (event instanceof BlockDispenseEvent) {
+				lockDispense((BlockDispenseEvent)event);
+			} else if (event instanceof BlockExpEvent) {
+			} else {
+				GoldenApple.log(Level.WARNING, "Unrecognized event in LockListener: " + event.getClass().getName());
+			}
+		} finally {
+			e.stop();
 		}
 	}
 

@@ -17,6 +17,7 @@ import org.bukkit.plugin.RegisteredListener;
 
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
+import com.bendude56.goldenapple.PerformanceMonitor.PerformanceEvent;
 import com.bendude56.goldenapple.audit.AuditLog;
 import com.bendude56.goldenapple.permissions.IPermissionGroup;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
@@ -53,14 +54,21 @@ public class PermissionListener implements Listener, EventExecutor {
 
 	@Override
 	public void execute(Listener listener, Event event) throws EventException {
-		if (event instanceof PlayerJoinEvent) {
-			playerJoin((PlayerJoinEvent)event);
-		} else if (event instanceof PlayerLoginEvent) {
-			playerLogin((PlayerLoginEvent)event);
-		} else if (event instanceof PlayerQuitEvent) {
-			playerQuit((PlayerQuitEvent)event);
-		} else {
-			GoldenApple.log(Level.WARNING, "Unrecognized event in PermissionListener: " + event.getClass().getName());
+		PerformanceEvent e = GoldenApple.getInstancePerformanceMonitor().createForEvent("Permissions", event.getClass().getName());
+		e.start();
+		
+		try {
+			if (event instanceof PlayerJoinEvent) {
+				playerJoin((PlayerJoinEvent)event);
+			} else if (event instanceof PlayerLoginEvent) {
+				playerLogin((PlayerLoginEvent)event);
+			} else if (event instanceof PlayerQuitEvent) {
+				playerQuit((PlayerQuitEvent)event);
+			} else {
+				GoldenApple.log(Level.WARNING, "Unrecognized event in PermissionListener: " + event.getClass().getName());
+			}
+		} finally {
+			e.stop();
 		}
 	}
 	

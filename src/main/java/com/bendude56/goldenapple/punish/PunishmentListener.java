@@ -16,6 +16,7 @@ import org.bukkit.plugin.RegisteredListener;
 
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
+import com.bendude56.goldenapple.PerformanceMonitor.PerformanceEvent;
 import com.bendude56.goldenapple.punish.Punishment;
 import com.bendude56.goldenapple.punish.PunishmentManager;
 
@@ -48,12 +49,19 @@ public class PunishmentListener implements Listener, EventExecutor {
 
 	@Override
 	public void execute(Listener listener, Event event) throws EventException {
-		if (event instanceof PlayerLoginEvent) {
-			playerLogin((PlayerLoginEvent)event);
-		} else if (event instanceof PlayerQuitEvent) {
-			playerQuit((PlayerQuitEvent)event);
-		} else {
-			GoldenApple.log(Level.WARNING, "Unrecognized event in PunishmentListener: " + event.getClass().getName());
+		PerformanceEvent e = GoldenApple.getInstancePerformanceMonitor().createForEvent("Punish", event.getClass().getName());
+		e.start();
+		
+		try {
+			if (event instanceof PlayerLoginEvent) {
+				playerLogin((PlayerLoginEvent)event);
+			} else if (event instanceof PlayerQuitEvent) {
+				playerQuit((PlayerQuitEvent)event);
+			} else {
+				GoldenApple.log(Level.WARNING, "Unrecognized event in PunishmentListener: " + event.getClass().getName());
+			}
+		} finally {
+			e.stop();
 		}
 	}
 

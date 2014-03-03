@@ -14,6 +14,7 @@ import org.bukkit.plugin.RegisteredListener;
 
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
+import com.bendude56.goldenapple.PerformanceMonitor.PerformanceEvent;
 import com.bendude56.goldenapple.chat.ChatChannel;
 import com.bendude56.goldenapple.chat.ChatManager;
 
@@ -46,14 +47,21 @@ public class ChatListener implements Listener, EventExecutor {
 	
 	@Override
 	public void execute(Listener listener, Event event) throws EventException {
-		if (event instanceof AsyncPlayerChatEvent) {
-			asyncPlayerChat((AsyncPlayerChatEvent) event);
-		} else if (event instanceof PlayerJoinEvent) {
-			playerJoin((PlayerJoinEvent)event);
-		} else if (event instanceof PlayerQuitEvent) {
-			playerQuit((PlayerQuitEvent)event);
-		} else {
-			GoldenApple.log(Level.WARNING, "Unrecognized event in ChatListener: " + event.getClass().getName());
+		PerformanceEvent e = GoldenApple.getInstancePerformanceMonitor().createForEvent("Chat", event.getClass().getName());
+		e.start();
+		
+		try {
+			if (event instanceof AsyncPlayerChatEvent) {
+				asyncPlayerChat((AsyncPlayerChatEvent) event);
+			} else if (event instanceof PlayerJoinEvent) {
+				playerJoin((PlayerJoinEvent)event);
+			} else if (event instanceof PlayerQuitEvent) {
+				playerQuit((PlayerQuitEvent)event);
+			} else {
+				GoldenApple.log(Level.WARNING, "Unrecognized event in ChatListener: " + event.getClass().getName());
+			}
+		} finally {
+			e.stop();
 		}
 	}
 	

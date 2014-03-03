@@ -46,6 +46,15 @@ message:
     # on a public server may compromise security)
     verbose: false
 
+# Generic global plugin settings
+global:
+    
+    # Setting this to true will enable full logging of all data
+    # related to the performance of the plugin and different modules.
+    # It is recommended that this is kept off unless testing for
+    # issues, since the logs can get quite large.
+    performanceLogging: false
+
 # Policy settings for ensuring that security is not breached
 securityPolicy:
     
