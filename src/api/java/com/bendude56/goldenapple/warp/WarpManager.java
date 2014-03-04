@@ -15,6 +15,7 @@ public abstract class WarpManager {
 	public static Permission backPermission;
 	public static Permission editPermission;
 	public static Permission warpPermission;
+	public static Permission overrideCooldownPermission;
 	
 	// goldenapple.warp.tp
 	public static PermissionNode tpNode;

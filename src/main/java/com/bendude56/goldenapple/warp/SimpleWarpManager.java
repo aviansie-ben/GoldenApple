@@ -161,6 +161,7 @@ public class SimpleWarpManager extends WarpManager {
 	@Override
 	public int startTeleportCooldown(IPermissionUser user) {
 		if (teleportCooldownTime <= 0) return 0;
+		if (user.hasPermission(WarpManager.overrideCooldownPermission)) return 0;
 		
 		teleportCooldown.put(user.getId(), teleportCooldownTime);
 		return teleportCooldownTime;
@@ -169,6 +170,7 @@ public class SimpleWarpManager extends WarpManager {
 	@Override
 	public int startDeathCooldown(IPermissionUser user) {
 		if (deathCooldownTime <= 0) return 0;
+		if (user.hasPermission(WarpManager.overrideCooldownPermission)) return 0;
 		
 		deathCooldown.put(user.getId(), deathCooldownTime);
 		return deathCooldownTime;
