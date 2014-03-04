@@ -133,3 +133,6 @@ commands:
         usage: /<command> <locale>
         description: Sets your GoldenApple locale
         aliases: [lang, locale]
+    gadebug:
+        usage: If you don't know what this does, then DON'T TOUCH IT!
+        description: GoldenApple debugging commands

@@ -15,7 +15,7 @@ public class GoldenApplePlugin extends GoldenApple {
 		return (GoldenApplePlugin)Bukkit.getServer().getPluginManager().getPlugin("GoldenApple");
 	}
 
-	private Configuration			mainConfig;
+	public Configuration			mainConfig;
 	private Configuration			databaseVersion;
 
 	private SimpleLocalizationManager		locale;

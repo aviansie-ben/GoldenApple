@@ -46,6 +46,10 @@ public class AntigriefListener implements Listener, EventExecutor {
 		}
 	}
 	
+	public static boolean isTntLoaded() {
+		return !listener.errorLoadingTntBlock;
+	}
+	
 	private boolean errorLoadingTntBlock = false;
 
 	private void registerEvents() {

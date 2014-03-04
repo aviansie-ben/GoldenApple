@@ -2,6 +2,7 @@ package com.bendude56.goldenapple;
 
 import com.bendude56.goldenapple.audit.AuditLog;
 import com.bendude56.goldenapple.command.ComplexCommand;
+import com.bendude56.goldenapple.command.DebugCommand;
 import com.bendude56.goldenapple.command.ImportCommand;
 import com.bendude56.goldenapple.command.ModuleCommand;
 import com.bendude56.goldenapple.command.VerifyCommand;
@@ -19,6 +20,7 @@ public class BaseModuleLoader extends ModuleLoader {
 		commands.insertCommand("gaverify", "Base", new VerifyCommand());
 		commands.insertCommand("gaimport", "Base", new ImportCommand());
 		commands.insertCommand("gacomplex", "Base", new ComplexCommand());
+		commands.insertCommand("gadebug", "Base", new DebugCommand());
 	}
 	
 	@Override
@@ -32,6 +34,7 @@ public class BaseModuleLoader extends ModuleLoader {
 		commands.getCommand("gamodule").register();
 		commands.getCommand("gacomplex").register();
 		commands.getCommand("gaimport").register();
+		commands.getCommand("gadebug").register();
 	}
 	
 	@Override
@@ -60,6 +63,7 @@ public class BaseModuleLoader extends ModuleLoader {
 		commands.getCommand("gamodule").unregister();
 		commands.getCommand("gacomplex").unregister();
 		commands.getCommand("gaimport").unregister();
+		commands.getCommand("gadebug").unregister();
 	}
 	
 	@Override

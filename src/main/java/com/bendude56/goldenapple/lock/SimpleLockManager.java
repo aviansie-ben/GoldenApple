@@ -60,6 +60,14 @@ public class SimpleLockManager extends LockManager {
 		GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("lockusers");
 		GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("lockgroups");
 	}
+	
+	public int getLockCacheMaxSize() {
+		return cacheSize;
+	}
+	
+	public int getLockCacheCurrentSize() {
+		return cacheOut.size();
+	}
 
 	private LockedBlock checkCache(long id) {
 		if (lockCache.containsKey(id)) {

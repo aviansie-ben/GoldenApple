@@ -47,6 +47,18 @@ public class SimplePermissionManager extends PermissionManager {
 		GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("GroupUserMembers");
 	}
 	
+	public int getUserCacheCurrentSize() {
+		return userCacheOut.size();
+	}
+	
+	public int getUserCacheMaxSize() {
+		return userCacheSize;
+	}
+	
+	public int getUserCacheStickyCount() {
+		return userCache.size() - userCacheOut.size();
+	}
+	
 	private void popCache() {
 		while (userCacheOut.size() > userCacheSize) {
 			userCache.remove(userCacheOut.pop());

@@ -27,6 +27,10 @@ public class SimplePunishmentManager extends PunishmentManager {
 		}
 	}
 	
+	public int getLookupCacheCurrentSize() {
+		return cache.size();
+	}
+	
 	@Override
 	public void loadIntoCache(IPermissionUser u) {
 		if (cache.containsKey(u.getId())) {

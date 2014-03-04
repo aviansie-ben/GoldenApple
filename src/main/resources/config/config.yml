@@ -54,6 +54,11 @@ global:
     # It is recommended that this is kept off unless testing for
     # issues, since the logs can get quite large.
     performanceLogging: false
+    
+    # Setting this to true will enable the /gadebug command. While
+    # this command is useful for discovering plugin issues, it should
+    # generally be kept off for security reasons.
+    debugCommand: false
 
 # Policy settings for ensuring that security is not breached
 securityPolicy:

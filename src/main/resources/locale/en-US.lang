@@ -20,6 +20,8 @@ error.channel.notFound=&4ERROR: Cannot find a channel with identifier '%1'.
 error.channel.notInChannel=&4ERROR: You must join a chat channel to talk.
 error.channel.notInChannelCommand=&4ERROR: You must be in a chat channel to use that command.
 
+error.debug.disabled=&4ERROR: The /gadebug command has not been enabled in the server configuration!
+
 error.globalmute.alreadyMuted=&4ERROR: That user is already globally muted!
 error.globalmute.invalidDuration=&4ERROR: Cannot convert '%1' to a duration!
 error.globalmute.notMuted=&4ERROR: That user is not globally muted!
