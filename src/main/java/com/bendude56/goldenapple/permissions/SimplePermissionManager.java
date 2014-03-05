@@ -363,7 +363,7 @@ public class SimplePermissionManager extends PermissionManager {
 				userCacheOut.remove(id);
 			} else if (!sticky && !userCacheOut.contains(id)) {
 				userCacheOut.addLast(id);
-				if (userCacheOut.size() > 10) {
+				if (userCacheOut.size() > userCacheSize) {
 					long id2 = userCacheOut.pop();
 					userCache.remove(id2);
 				}
