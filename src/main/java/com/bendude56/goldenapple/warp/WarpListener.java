@@ -41,7 +41,7 @@ public class WarpListener implements Listener, EventExecutor {
 	private void registerEvents() {
 		PlayerTeleportEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.MONITOR, GoldenApple.getInstance(), true));
 		EntityDeathEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.MONITOR, GoldenApple.getInstance(), true));
-		PlayerQuitEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.MONITOR, GoldenApple.getInstance(), true));
+		PlayerQuitEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.LOWEST, GoldenApple.getInstance(), true));
 	}
 
 	private void unregisterEvents() {
