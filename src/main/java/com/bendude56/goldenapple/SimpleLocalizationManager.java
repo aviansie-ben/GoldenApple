@@ -1,5 +1,7 @@
 package com.bendude56.goldenapple;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Properties;
@@ -44,23 +46,42 @@ public class SimpleLocalizationManager implements LocalizationManager {
 		
 		// Begin loading all available localization files
 		for (String locale : GoldenApple.getInstanceMainConfig().getStringList("message.availableLocales")) {
-			Properties p = new Properties();
-			
-			// Attempt to load the localization file
-			try {
-				p.load(loader.getResourceAsStream("locale/" + locale + ".lang"));
-			} catch (IOException e) {
-				GoldenApple.log(Level.WARNING, "Failed to load language from " + locale + ".lang:");
-				GoldenApple.log(Level.WARNING, e);
-				continue;
-			}
+			Properties p;
 			
 			// Create a place to store the localization data
 			secondaryMessages.put(locale, new HashMap<String, String>());
 			
-			// Start storing each localization string in memory
-			for (String entry : p.stringPropertyNames()) {
-				secondaryMessages.get(locale).put(entry, p.getProperty(entry).replace('&', ChatColor.COLOR_CHAR));
+			// Attempt to load localization information from the user-defined language file
+			try {
+				File f = new File(GoldenApple.getInstance().getDataFolder() + "/locale/" + locale + ".lang");
+				
+				if (f.exists()) {
+					p = new Properties();
+					p.load(new FileInputStream(f));
+					
+					for (String entry : p.stringPropertyNames()) {
+						secondaryMessages.get(locale).put(entry, p.getProperty(entry).replace('&', ChatColor.COLOR_CHAR));
+					}
+				}
+			} catch (IOException e) {
+				GoldenApple.log(Level.WARNING, "Failed to load language info from " + locale + ".lang:");
+				GoldenApple.log(Level.WARNING, e);
+			}
+			
+			// Attempt to load the default localization information from the jar resources
+			try {
+				if (loader.getResource("locale/" + locale + ".lang") != null) {
+					p = new Properties();
+					p.load(loader.getResourceAsStream("locale/" + locale + ".lang"));
+					
+					for (String entry : p.stringPropertyNames()) {
+						if (!secondaryMessages.get(locale).containsKey(entry));
+							secondaryMessages.get(locale).put(entry, p.getProperty(entry).replace('&', ChatColor.COLOR_CHAR));
+					}
+				}
+			} catch (IOException e) {
+				GoldenApple.log(Level.WARNING, "Failed to load default language info from " + locale + ".lang:");
+				GoldenApple.log(Level.WARNING, e);
 			}
 		}
 		
