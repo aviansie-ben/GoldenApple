@@ -48,7 +48,7 @@ public class LockListener implements Listener, EventExecutor {
 	private void registerEvents() {
 		PlayerInteractEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
 		BlockExpEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
-		BlockPlaceEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.MONITOR, GoldenApple.getInstance(), true));
+		BlockPlaceEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
 		InventoryMoveItemEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
 		BlockRedstoneEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
 		BlockDispenseEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
@@ -65,7 +65,7 @@ public class LockListener implements Listener, EventExecutor {
 
 	@Override
 	public void execute(Listener listener, Event event) throws EventException {
-		PerformanceEvent e = GoldenApple.getInstancePerformanceMonitor().createForEvent("Antigrief", event.getClass().getName());
+		PerformanceEvent e = GoldenApple.getInstancePerformanceMonitor().createForEvent("Lock", event.getClass().getName());
 		e.start();
 		
 		try {
