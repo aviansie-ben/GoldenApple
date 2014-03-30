@@ -6,6 +6,7 @@ import java.util.logging.Level;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
+import org.bukkit.entity.minecart.HopperMinecart;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventException;
 import org.bukkit.event.EventPriority;
@@ -217,6 +218,12 @@ public class LockListener implements Listener, EventExecutor {
 			if (lockDestination != null && !lockDestination.getAllowExternal() && (lockSource == null || lockSource.getOwner() != lockDestination.getOwner())) {
 				event.setCancelled(true);
 			} else if (lockSource != null && !lockSource.getAllowExternal() && (lockDestination == null || lockSource.getOwner() != lockDestination.getOwner())) {
+				event.setCancelled(true);
+			}
+		} else if (event.getDestination().getHolder() instanceof HopperMinecart && event.getSource().getHolder() instanceof BlockState) {
+			lockSource = LockManager.getInstance().getLock(((BlockState) event.getSource().getHolder()).getLocation());
+			
+			if (lockSource != null && !lockSource.getAllowExternal()) {
 				event.setCancelled(true);
 			}
 		}
