@@ -61,7 +61,11 @@ public class AntigriefListener implements Listener, EventExecutor {
 		EntityExplodeEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
 		EntityTargetEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
 		EntityChangeBlockEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
-		try {
+		
+		// TODO Fix this
+		errorLoadingTntBlock = true;
+		
+		/*try {
 			registerTntBlock();
 		} catch (Throwable e) {
 			GoldenApple.log(Level.WARNING, "Failed to replace TNT block data. Are you running the right version of Bukkit?");
@@ -73,7 +77,7 @@ public class AntigriefListener implements Listener, EventExecutor {
 		} catch (Throwable e) {
 			GoldenApple.log(Level.WARNING, "Failed to replace potion item data. Are you running the right version of Bukkit?");
 			GoldenApple.log(Level.WARNING, (e instanceof InvocationTargetException) ? e.getCause() : e);
-		}
+		}*/
 	}
 
 	private void unregisterEvents() {

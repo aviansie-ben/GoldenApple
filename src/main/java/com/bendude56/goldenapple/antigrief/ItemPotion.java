@@ -5,19 +5,19 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.bukkit.craftbukkit.v1_7_R2.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_7_R3.inventory.CraftItemStack;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionType;
 
 import com.bendude56.goldenapple.GoldenApple;
 
-import net.minecraft.server.v1_7_R2.EntityHuman;
-import net.minecraft.server.v1_7_R2.Item;
-import net.minecraft.server.v1_7_R2.ItemStack;
-import net.minecraft.server.v1_7_R2.RegistrySimple;
-import net.minecraft.server.v1_7_R2.World;
+import net.minecraft.server.v1_7_R3.EntityHuman;
+import net.minecraft.server.v1_7_R3.Item;
+import net.minecraft.server.v1_7_R3.ItemStack;
+import net.minecraft.server.v1_7_R3.RegistrySimple;
+import net.minecraft.server.v1_7_R3.World;
 
-public class ItemPotion extends net.minecraft.server.v1_7_R2.ItemPotion {
+public class ItemPotion extends net.minecraft.server.v1_7_R3.ItemPotion {
 	
 	public static HashMap<PotionType, String> typeConfigName = new HashMap<PotionType, String>();
 	
@@ -58,7 +58,7 @@ public class ItemPotion extends net.minecraft.server.v1_7_R2.ItemPotion {
 	
 	public static void unregisterItem() throws Exception {
 		// Create a new potion item
-		Item potion = prepClass((Item)net.minecraft.server.v1_7_R2.ItemPotion.class.getConstructors()[0].newInstance());
+		Item potion = prepClass((Item)net.minecraft.server.v1_7_R3.ItemPotion.class.getConstructors()[0].newInstance());
 		
 		// Unregister the old item (Suppresses warning messages)
 		removeRegistration();

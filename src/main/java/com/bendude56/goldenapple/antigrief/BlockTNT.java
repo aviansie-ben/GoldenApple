@@ -6,17 +6,17 @@ import java.util.Map;
 
 import com.bendude56.goldenapple.GoldenApple;
 
-import net.minecraft.server.v1_7_R2.Block;
-import net.minecraft.server.v1_7_R2.Entity;
-import net.minecraft.server.v1_7_R2.EntityArrow;
-import net.minecraft.server.v1_7_R2.EntityLiving;
-import net.minecraft.server.v1_7_R2.EntityTNTPrimed;
-import net.minecraft.server.v1_7_R2.Explosion;
-import net.minecraft.server.v1_7_R2.RegistrySimple;
-import net.minecraft.server.v1_7_R2.StepSound;
-import net.minecraft.server.v1_7_R2.World;
+import net.minecraft.server.v1_7_R3.Block;
+import net.minecraft.server.v1_7_R3.Entity;
+import net.minecraft.server.v1_7_R3.EntityArrow;
+import net.minecraft.server.v1_7_R3.EntityLiving;
+import net.minecraft.server.v1_7_R3.EntityTNTPrimed;
+import net.minecraft.server.v1_7_R3.Explosion;
+import net.minecraft.server.v1_7_R3.RegistrySimple;
+import net.minecraft.server.v1_7_R3.StepSound;
+import net.minecraft.server.v1_7_R3.World;
 
-public class BlockTNT extends net.minecraft.server.v1_7_R2.BlockTNT {
+public class BlockTNT extends net.minecraft.server.v1_7_R3.BlockTNT {
 	
 	private static void removeRegistration() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 		Map<Object, Object> registryMap;
@@ -42,7 +42,7 @@ public class BlockTNT extends net.minecraft.server.v1_7_R2.BlockTNT {
 	@SuppressWarnings("deprecation")
 	public static void unregisterBlock() throws Exception {
 		// Create a new TNT block
-		Block tnt = prepClass((Block)net.minecraft.server.v1_7_R2.BlockTNT.class.getConstructors()[0].newInstance());
+		Block tnt = prepClass((Block)net.minecraft.server.v1_7_R3.BlockTNT.class.getConstructors()[0].newInstance());
 		
 		// Unregister the old block (Suppresses warning messages)
 		removeRegistration();
