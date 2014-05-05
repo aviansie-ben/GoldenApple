@@ -241,6 +241,8 @@ general.tellspy.on=&aYou are now spying on /tell messages.
 general.tellspy.off=&aYou are no longer spying on /tell messages.
 
 general.warp.delete=&aWarp '%1' has been deleted.
+general.warp.list=&7The following named warps are available to you:
+general.warp.listNone=&7You have no named warps available to you!
 general.warp.set=&aWarp '%1' has been set here.
 
 general.warps.death=&4You have died and teleportation will be unavailable for %1 seconds!

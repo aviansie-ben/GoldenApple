@@ -2,7 +2,6 @@ package com.bendude56.goldenapple.warp;
 
 import org.bukkit.Location;
 
-import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 
@@ -22,7 +21,7 @@ public abstract class PlayerBoundWarp extends BaseWarp {
 	}
 
 	@Override
-	public boolean canTeleport(User u) {
+	public boolean canTeleport(IPermissionUser u) {
 		if (u.getId() == owner && u.hasPermission(WarpManager.homeTpOwn))
 			return true;
 		else if (isPublic && u.hasPermission(WarpManager.homeTpPublic))
@@ -34,7 +33,7 @@ public abstract class PlayerBoundWarp extends BaseWarp {
 	}
 
 	@Override
-	public boolean canEdit(User u) {
+	public boolean canEdit(IPermissionUser u) {
 		if (u.getId() == owner && u.hasPermission(WarpManager.homeEditOwn))
 			return true;
 		else if (isPublic && u.hasPermission(WarpManager.homeEditPublic))

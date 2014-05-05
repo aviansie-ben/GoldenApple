@@ -1,5 +1,9 @@
 package com.bendude56.goldenapple.warp.command;
 
+import java.util.List;
+
+import org.bukkit.ChatColor;
+
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.command.GoldenAppleCommand;
@@ -9,7 +13,7 @@ import com.bendude56.goldenapple.warp.WarpManager;
 public class WarpCommand extends GoldenAppleCommand {
 	@Override
 	public boolean onExecute(GoldenApple instance, User user, String commandLabel, String[] args) {
-		if (args.length < 1 || args.length > 2) return false;
+		if (args.length > 2) return false;
 		
 		if (!user.hasPermission(WarpManager.warpPermission)) {
 			GoldenApple.logPermissionFail(user, commandLabel, args, true);
@@ -19,7 +23,21 @@ public class WarpCommand extends GoldenAppleCommand {
             return true;
 		}
 		
-		if (args.length == 1) {
+		if (args.length == 0 || args[0].equalsIgnoreCase("list")) {
+		    List<PermissibleWarp> available = WarpManager.getInstance().getAvailableNamedWarps(user);
+		    
+		    user.sendLocalizedMessage("header.warps");
+		    
+		    if (available.size() > 0) {
+		        user.sendLocalizedMessage("general.warp.list");
+		        
+		        for (PermissibleWarp w : available) {
+		            user.getHandle().sendMessage(ChatColor.GRAY + "  " + w.getDisplayName());
+		        }
+		    } else {
+		        user.sendLocalizedMessage("general.warp.listNone");
+		    }
+		} else if (args.length == 1) {
     		int deathCooldown = WarpManager.getInstance().getDeathCooldown(user), teleportCooldown = WarpManager.getInstance().getTeleportCooldown(user);
     		PermissibleWarp w = WarpManager.getInstance().getNamedWarp(args[0]);
     		

@@ -7,13 +7,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
 import com.bendude56.goldenapple.User;
+import com.bendude56.goldenapple.permissions.IPermissionUser;
 
 public abstract class BaseWarp {
 	protected Location loc;
 	
 	public abstract String getDisplayName();
-	public abstract boolean canTeleport(User u);
-	public abstract boolean canEdit(User u);
+	public abstract boolean canTeleport(IPermissionUser u);
+	public abstract boolean canEdit(IPermissionUser u);
 	public abstract void update() throws SQLException;
 	public abstract void insert() throws SQLException;
 	public abstract void delete() throws SQLException;

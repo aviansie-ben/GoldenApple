@@ -9,7 +9,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 import com.bendude56.goldenapple.GoldenApple;
-import com.bendude56.goldenapple.User;
+import com.bendude56.goldenapple.permissions.IPermissionUser;
 import com.bendude56.goldenapple.permissions.PermissionGroup;
 
 public class NamedWarp extends PermissibleWarp {
@@ -49,7 +49,7 @@ public class NamedWarp extends PermissibleWarp {
 	}
 
 	@Override
-	public boolean canTeleport(User u) {
+	public boolean canTeleport(IPermissionUser u) {
 		if (canEverybodyTeleport()) {
 			return true;
 		} else {
@@ -64,7 +64,7 @@ public class NamedWarp extends PermissibleWarp {
 	}
 
 	@Override
-	public boolean canEdit(User u) {
+	public boolean canEdit(IPermissionUser u) {
 		return u.hasPermission(WarpManager.editPermission);
 	}
 

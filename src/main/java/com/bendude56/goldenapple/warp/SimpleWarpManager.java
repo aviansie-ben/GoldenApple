@@ -147,6 +147,40 @@ public class SimpleWarpManager extends WarpManager {
 	}
 	
 	@Override
+	public List<PermissibleWarp> getAvailableNamedWarps(IPermissionUser u) {
+	    List<PermissibleWarp> available = new ArrayList<PermissibleWarp>();
+	    
+	    for (PermissibleWarp w : getAllNamedWarps()) {
+	        if (w.canTeleport(u)) available.add(w);
+	    }
+	    
+	    return available;
+	}
+	
+	@Override
+	public List<PermissibleWarp> getAllNamedWarps() {
+	    try {
+	        List<PermissibleWarp> warps = new ArrayList<PermissibleWarp>();
+	        ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT * FROM Warps");
+	        
+	        try {
+	            while (r.next()) {
+	                warps.add(new NamedWarp(r));
+	            }
+	        } finally {
+	            GoldenApple.getInstanceDatabaseManager().closeResult(r);
+	        }
+	        
+	        return warps;
+	    } catch (SQLException e) {
+	        GoldenApple.log(Level.WARNING, "Error while attempting to retrieve a warp from the database:");
+	        GoldenApple.log(Level.WARNING, e);
+	        
+	        return new ArrayList<PermissibleWarp>();
+	    }
+	}
+	
+	@Override
 	public int getTeleportCooldown(IPermissionUser user) {
 		if (teleportCooldown.containsKey(user.getId())) return teleportCooldown.get(user.getId());
 		else return 0;

@@ -1,6 +1,7 @@
 package com.bendude56.goldenapple.warp;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import org.bukkit.Location;
 
@@ -61,8 +62,9 @@ public abstract class WarpManager {
 	public abstract PlayerBoundWarp setHome(IPermissionUser user, int homeNumber, Location loc, String alias, boolean isPublic) throws SQLException;
 	
 	public abstract PermissibleWarp getNamedWarp(String name);
-	
 	public abstract PermissibleWarp setNamedWarp(String name, Location loc) throws SQLException;
+	public abstract List<PermissibleWarp> getAvailableNamedWarps(IPermissionUser u);
+	public abstract List<PermissibleWarp> getAllNamedWarps();
 	
 	public abstract int getTeleportCooldown(IPermissionUser user);
 	public abstract int getDeathCooldown(IPermissionUser user);

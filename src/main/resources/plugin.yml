@@ -114,7 +114,7 @@ commands:
         description: Gets ban/mute information about a player
         aliases: [whois]
     gawarp:
-        usage: /<command> <Warp> [Player]
+        usage: /<command> <Warp> [Player] or /<command> list
         description: Warps you or another player to a named warp
         aliases: [warp]
     gasetwarp:
