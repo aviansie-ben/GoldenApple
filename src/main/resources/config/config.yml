@@ -433,6 +433,11 @@ modules:
         # A message that should be shown to banned users directing
         # them on how to appeal a wrongful ban.
         banAppealMessage: 'Contact an administrator to dispute this ban.'
+        
+        # Setting this to true will attempt to detect clients like
+        # MineChat and will automatically disconnect them if they are
+        # found.
+        blockMinechat: true
     
     market:
         
