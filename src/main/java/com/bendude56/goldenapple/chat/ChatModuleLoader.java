@@ -64,6 +64,11 @@ public class ChatModuleLoader extends ModuleLoader {
 	}
 	
 	@Override
+	protected void postInit() {
+	    ChatManager.getInstance().postInit();
+	}
+	
+	@Override
 	public void clearCache() {
 		// TODO Reload chat channels from database
 	}

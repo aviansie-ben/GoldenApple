@@ -25,6 +25,8 @@ public abstract class ChatManager {
 		return instance;
 	}
 	
+	public abstract void postInit();
+	
 	public abstract boolean getTellSpyStatus(User user);
 	public abstract void setTellSpyStatus(User user, boolean spy);
 	public abstract void sendTellMessage(User sender, User receiver, String message);

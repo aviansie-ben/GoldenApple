@@ -34,6 +34,7 @@ public abstract class ModuleLoader {
 	protected abstract void registerCommands(CommandManager commands);
 	protected abstract void registerListener();
 	protected abstract void initializeManager();
+	protected void postInit() { }
 	
 	public abstract void clearCache();
 
@@ -118,6 +119,18 @@ public abstract class ModuleLoader {
 			state = ModuleState.UNLOADED_ERROR;
 			throw new ModuleLoadException(name, "Unhandled exception during listener registration: " + e.getMessage(), e);
 		}
+		
+		try {
+            postInit();
+        } catch (ModuleLoadException e) {
+            crashCleanup(4, instance);
+            state = ModuleState.UNLOADED_ERROR;
+            throw e;
+        } catch (Exception e) {
+            crashCleanup(4, instance);
+            state = ModuleState.UNLOADED_ERROR;
+            throw new ModuleLoadException(name, "Unhandled exception during post-initialization: " + e.getMessage(), e);
+        }
 		
 		state = ModuleState.LOADED;
 	}

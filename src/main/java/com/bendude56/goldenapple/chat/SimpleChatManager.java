@@ -52,11 +52,14 @@ public class SimpleChatManager extends ChatManager {
 		} else {
 			defaultChannel = getChannel(GoldenApple.getInstanceMainConfig().getString("modules.chat.defaultChatChannel", "default"));
 		}
-		
-		for (Player p : Bukkit.getOnlinePlayers()) {
-			User u = User.getUser(p);
-			tryJoinChannel(u, defaultChannel, false);
-		}
+	}
+	
+	@Override
+	public void postInit() {
+	    for (Player p : Bukkit.getOnlinePlayers()) {
+            User u = User.getUser(p);
+            tryJoinChannel(u, defaultChannel, false);
+        }
 	}
 	
 	@Override
