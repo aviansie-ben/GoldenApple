@@ -1,7 +1,9 @@
 package com.bendude56.goldenapple;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
@@ -20,6 +22,36 @@ import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
 public class User implements IPermissionUser {
 	private static HashMap<Long, User>	activeUsers	= new HashMap<Long, User>();
 	private static User					consoleUser	= new User(-1, Bukkit.getConsoleSender(), false);
+	
+	private static List<String> globalNegative = new ArrayList<String>();
+	
+	public static void setGlobalNegative(String permission) {
+	    if (!globalNegative.contains(permission)) {
+	        globalNegative.add(permission);
+	        
+	        for (Map.Entry<Long, User> u : activeUsers.entrySet()) {
+	            u.getValue().registerBukkitPermissions();
+	        }
+	    }
+	}
+	
+	public static void unsetGlobalNegative(String permission) {
+	    if (globalNegative.contains(permission)) {
+	        globalNegative.remove(permission);
+	        
+	        for (Map.Entry<Long, User> u : activeUsers.entrySet()) {
+                u.getValue().registerBukkitPermissions();
+            }
+	    }
+	}
+	
+	public static void resetGlobalNegative() {
+	    while (globalNegative.size() > 0) globalNegative.remove(0);
+	    
+	    for (Map.Entry<Long, User> u : activeUsers.entrySet()) {
+            u.getValue().registerBukkitPermissions();
+        }
+	}
 	
 	public static User getConsoleUser() {
 		return consoleUser;
@@ -147,6 +179,10 @@ public class User implements IPermissionUser {
 			
 			for (Permission p : getPermissions(true)) {
 				bukkitPermissions.setPermission(p.getFullName(), true);
+			}
+			
+			for (String p : globalNegative) {
+			    bukkitPermissions.setPermission(p, false);
 			}
 		}
 	}

@@ -2,6 +2,7 @@ package com.bendude56.goldenapple.chat;
 
 import com.bendude56.goldenapple.CommandManager;
 import com.bendude56.goldenapple.ModuleLoader;
+import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.chat.command.ChannelCommand;
 import com.bendude56.goldenapple.chat.command.LemonPledgeCommand;
 import com.bendude56.goldenapple.chat.command.MeCommand;
@@ -28,6 +29,12 @@ public class ChatModuleLoader extends ModuleLoader {
 		ChatManager.channelAddPermission = permissions.registerPermission("add", ChatManager.channelsNode);
 		ChatManager.channelModPermission = permissions.registerPermission("mod", ChatManager.channelsNode);
 		ChatManager.channelAdminPermission = permissions.registerPermission("admin", ChatManager.channelsNode);
+		
+		User.setGlobalNegative("bukkit.command.tell");
+		User.setGlobalNegative("bukkit.command.me");
+		
+		User.setGlobalNegative("minecraft.command.tell");
+		User.setGlobalNegative("minecraft.command.me");
 	}
 	
 	@Override
@@ -61,6 +68,12 @@ public class ChatModuleLoader extends ModuleLoader {
 		ChatManager.channelAddPermission = null;
 		ChatManager.channelModPermission = null;
 		ChatManager.channelAdminPermission = null;
+		
+		User.unsetGlobalNegative("bukkit.command.tell");
+        User.unsetGlobalNegative("bukkit.command.me");
+        
+        User.unsetGlobalNegative("minecraft.command.tell");
+        User.unsetGlobalNegative("minecraft.command.me");
 	}
 	
 	@Override

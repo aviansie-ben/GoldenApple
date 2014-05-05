@@ -2,6 +2,7 @@ package com.bendude56.goldenapple.warp;
 
 import com.bendude56.goldenapple.CommandManager;
 import com.bendude56.goldenapple.ModuleLoader;
+import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 import com.bendude56.goldenapple.warp.command.BackCommand;
 import com.bendude56.goldenapple.warp.command.DelHomeCommand;
@@ -63,6 +64,10 @@ public class WarpModuleLoader extends ModuleLoader {
 		WarpManager.homeEditOwn = permissions.registerPermission("own", WarpManager.homeEditNode);
 		WarpManager.homeEditPublic = permissions.registerPermission("public", WarpManager.homeEditNode);
 		WarpManager.homeEditAll = permissions.registerPermission("all", WarpManager.homeEditNode);
+		
+		User.setGlobalNegative("bukkit.command.teleport");
+		
+		User.setGlobalNegative("minecraft.command.tp");
 	}
 
 	@Override
@@ -119,6 +124,10 @@ public class WarpModuleLoader extends ModuleLoader {
 		WarpManager.homeEditOwn = null;
 		WarpManager.homeEditPublic = null;
 		WarpManager.homeEditAll = null;
+		
+		User.unsetGlobalNegative("bukkit.command.teleport");
+        
+        User.unsetGlobalNegative("minecraft.command.tp");
 	}
 	
 	@Override
