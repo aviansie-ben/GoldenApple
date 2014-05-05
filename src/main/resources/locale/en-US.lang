@@ -95,6 +95,8 @@ error.permissions.remove.groupUnknown=&4ERROR: Failed to remove group '%1': Unkn
 error.permissions.remove.userOnline=&eWARNING: Failed to remove user '%1': Cannot remove user while online!
 error.permissions.remove.userUnknown=&4ERROR: Failed to remove user '%1': Unknown error!
 
+error.reply.nobody=&4ERROR: You have nobody to reply to!
+
 error.tell.self=&4ERROR: You cannot send a /tell message to yourself!
 
 error.tellspy.alreadyOn=&4ERROR: You are already spying on /tell messages!

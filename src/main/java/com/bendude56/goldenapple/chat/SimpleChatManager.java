@@ -23,6 +23,8 @@ public class SimpleChatManager extends ChatManager {
 	private ChatChannel						defaultChannel;
 	private List<User> tellSpy = new ArrayList<User>();
 	
+	private HashMap<User, Long> replyTo = new HashMap<User, Long>();
+	
 	public SimpleChatManager() {
 		activeChannels = new HashMap<String, ChatChannel>();
 		userChannels = new HashMap<User, String>();
@@ -204,10 +206,33 @@ public class SimpleChatManager extends ChatManager {
             receiver.getHandle().sendMessage("(" + sender.getChatColor() + sender.getDisplayName() + ChatColor.WHITE + " => " + ChatColor.YELLOW + "You" + ChatColor.WHITE + ") " + message);
         }
         
+        replyTo.put(receiver, sender.getId());
+        
         for (User spy : tellSpy) {
             if (spy != sender && spy != receiver) {
                 spy.getHandle().sendMessage("(" + sender.getChatColor() + sender.getDisplayName() + ChatColor.WHITE + " => " + receiver.getChatColor() + receiver.getDisplayName() + ChatColor.WHITE + ") " + message);
             }
         }
+    }
+    
+    @Override
+    public boolean sendReplyMessage(User sender, String message) {
+        if (!replyTo.containsKey(sender)) {
+            return false;
+        } else {
+            User receiver = User.getUser(replyTo.get(sender));
+            
+            if (receiver == null) {
+                return false;
+            } else {
+                sendTellMessage(sender, receiver, message);
+                return true;
+            }
+        }
+    }
+    
+    @Override
+    public void removeReplyEntry(User user) {
+        replyTo.remove(user);
     }
 }

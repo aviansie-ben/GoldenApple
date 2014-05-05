@@ -127,7 +127,9 @@ public class User implements IPermissionUser {
 	}
 	
 	public static User getUser(long id) {
-		if (activeUsers.containsKey(id))
+	    if (id == -1)
+	        return consoleUser;
+	    else if (activeUsers.containsKey(id))
 			return activeUsers.get(id);
 		else
 			return null;

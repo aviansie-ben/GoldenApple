@@ -41,6 +41,10 @@ commands:
         usage: /<command> <player> <message>
         description: Send a message to another player
         aliases: [tell]
+    gareply:
+        usage: /<command> <message>
+        description: Sends a /tell message to the last player who sent you a message
+        aliases: [reply]
     gatellspy:
         usage: /<command> {on|off}
         description: Turns tell-spying on or off

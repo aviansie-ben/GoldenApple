@@ -29,7 +29,10 @@ public abstract class ChatManager {
 	
 	public abstract boolean getTellSpyStatus(User user);
 	public abstract void setTellSpyStatus(User user, boolean spy);
+	public abstract void removeReplyEntry(User user);
+	
 	public abstract void sendTellMessage(User sender, User receiver, String message);
+	public abstract boolean sendReplyMessage(User sender, String message);
 	
 	public abstract void tryJoinChannel(User user, ChatChannel channel, boolean broadcast);
 	public abstract void leaveChannel(User user, boolean broadcast);
