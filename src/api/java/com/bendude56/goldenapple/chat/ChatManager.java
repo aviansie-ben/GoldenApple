@@ -56,4 +56,7 @@ public abstract class ChatManager {
 	
 	public abstract ChatCensor getDefaultCensor();
 	public abstract ChatCensor getStrictCensor();
+	
+	public abstract void setAfkStatus(User user, boolean afk, boolean broadcast);
+	public abstract boolean getAfkStatus(User user);
 }

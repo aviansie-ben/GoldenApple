@@ -112,6 +112,9 @@ error.warps.cooldownDeath=&4ERROR: You have recently died! You will be able to t
 error.warps.noBack=&4ERROR: You have nowhere to go back to!
 error.warps.pluginCancel=&4ERROR: Teleport was cancelled by another plugin!
 
+general.afk.on=&7You are now marked AFK.
+general.afk.off=&7You are no longer marked AFK.
+
 general.ban.info.notBanned=&7User '%1' is not currently banned.
 general.ban.info.permBanned=&7User '%1' is permanently banned by %2.
 general.ban.info.tempBanned=&7User '%1' is banned for %2 by %3.
@@ -122,6 +125,8 @@ general.ban.tempKick=You have been banned for %1 by %2:
 general.ban.voidBan=&aThe ban on %1 has been voided.
 general.ban.voidWarn=&eWARNING: This player's active ban was set by '%1'. You may wish to talk to them before voiding this ban. If you are sure you wish to continue, type /gaverify.
 
+general.channel.afk.on=%1&7 is now AFK
+general.channel.afk.off=%1&7 is no longer AFK
 general.channel.deleteBroadcast=&eChannel %1&e is being deleted. Everybody will now be kicked from this channel.
 general.channel.deleteWarn=&eWARNING: You are about to permanently delete this chat channel! If you are sure you wish to do this, type /gaverify.
 general.channel.join=&aYou are now in channel %1&a.

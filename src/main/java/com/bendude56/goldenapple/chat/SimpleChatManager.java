@@ -22,6 +22,7 @@ public class SimpleChatManager extends ChatManager {
 
 	private ChatChannel						defaultChannel;
 	private List<User> tellSpy = new ArrayList<User>();
+	private List<User> afkUsers = new ArrayList<User>();
 	
 	private HashMap<User, Long> replyTo = new HashMap<User, Long>();
 	
@@ -234,5 +235,31 @@ public class SimpleChatManager extends ChatManager {
     @Override
     public void removeReplyEntry(User user) {
         replyTo.remove(user);
+    }
+
+    @Override
+    public void setAfkStatus(User user, boolean afk, boolean broadcast) {
+        if (afk && afkUsers.contains(user)) return;
+        if (!afk && !afkUsers.contains(user)) return;
+        
+        ChatChannel channel = ChatManager.getInstance().getActiveChannel(user);
+        
+        if (broadcast && channel != null && channel.calculateLevel(user).id >= ChatChannelUserLevel.CHAT.id) {
+            if (afk) channel.broadcastLocalizedMessage("general.channel.afk.on", user.getChatColor() + user.getDisplayName());
+            else channel.broadcastLocalizedMessage("general.channel.afk.off", user.getChatColor() + user.getDisplayName());
+        }
+        
+        if (afk) {
+            user.getPlayerHandle().setPlayerListName("[AFK] " + user.getName());
+            afkUsers.add(user);
+        } else {
+            user.getPlayerHandle().setPlayerListName(user.getName());
+            afkUsers.remove(user);
+        }
+    }
+
+    @Override
+    public boolean getAfkStatus(User user) {
+        return afkUsers.contains(user);
     }
 }

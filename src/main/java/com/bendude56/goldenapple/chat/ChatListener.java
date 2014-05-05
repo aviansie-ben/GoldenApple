@@ -94,5 +94,6 @@ public class ChatListener implements Listener, EventExecutor {
 		ChatManager.getInstance().leaveChannel(user, false);
 		ChatManager.getInstance().setTellSpyStatus(user, false);
 		ChatManager.getInstance().removeReplyEntry(user);
+		ChatManager.getInstance().setAfkStatus(user, false, false);
 	}
 }

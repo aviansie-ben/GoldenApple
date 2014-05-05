@@ -3,6 +3,7 @@ package com.bendude56.goldenapple.chat;
 import com.bendude56.goldenapple.CommandManager;
 import com.bendude56.goldenapple.ModuleLoader;
 import com.bendude56.goldenapple.User;
+import com.bendude56.goldenapple.chat.command.AfkCommand;
 import com.bendude56.goldenapple.chat.command.ChannelCommand;
 import com.bendude56.goldenapple.chat.command.LemonPledgeCommand;
 import com.bendude56.goldenapple.chat.command.MeCommand;
@@ -25,6 +26,7 @@ public class ChatModuleLoader extends ModuleLoader {
 		commands.insertCommand("gatell", "Chat", new TellCommand());
 		commands.insertCommand("gatellspy", "Chat", new TellSpyCommand());
 		commands.insertCommand("gareply", "Chat", new ReplyCommand());
+		commands.insertCommand("gaafk", "Chat", new AfkCommand());
 	}
 
 	@Override
@@ -53,6 +55,7 @@ public class ChatModuleLoader extends ModuleLoader {
 		commands.getCommand("gatell").register();
 		commands.getCommand("gatellspy").register();
 		commands.getCommand("gareply").register();
+		commands.getCommand("gaafk").register();
 	}
 
 	@Override
@@ -102,6 +105,7 @@ public class ChatModuleLoader extends ModuleLoader {
 		commands.getCommand("gatell").unregister();
 		commands.getCommand("gatellspy").unregister();
 		commands.getCommand("gareply").unregister();
+		commands.getCommand("gaafk").unregister();
 	}
 	
 	@Override
