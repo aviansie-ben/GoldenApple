@@ -21,6 +21,7 @@ public class SimpleChatManager extends ChatManager {
 	protected HashMap<User, String>			userChannels	= new HashMap<User, String>();
 
 	private ChatChannel						defaultChannel;
+	private List<User> tellSpy = new ArrayList<User>();
 	
 	public SimpleChatManager() {
 		activeChannels = new HashMap<String, ChatChannel>();
@@ -173,4 +174,37 @@ public class SimpleChatManager extends ChatManager {
 	public ChatCensor getStrictCensor() {
 		return SimpleChatCensor.strictChatCensor;
 	}
+
+    @Override
+    public void setTellSpyStatus(User user, boolean spy) {
+        if (spy) {
+            tellSpy.add(user);
+        } else {
+            tellSpy.remove(user);
+        }
+    }
+    
+    @Override
+    public boolean getTellSpyStatus(User user) {
+        return tellSpy.contains(user);
+    }
+
+    @Override
+    public void sendTellMessage(User sender, User receiver, String message) {
+        GoldenApple.log("(" + sender.getDisplayName() + " => " + receiver.getDisplayName() + ") " + message);
+        
+        if (sender != User.getConsoleUser()) {
+            sender.getHandle().sendMessage("(" + ChatColor.YELLOW + "You" + ChatColor.WHITE + " => " + receiver.getChatColor() + receiver.getDisplayName() + ChatColor.WHITE + ") " + message);
+        }
+        
+        if (receiver != User.getConsoleUser()) {
+            receiver.getHandle().sendMessage("(" + sender.getChatColor() + sender.getDisplayName() + ChatColor.WHITE + " => " + ChatColor.YELLOW + "You" + ChatColor.WHITE + ") " + message);
+        }
+        
+        for (User spy : tellSpy) {
+            if (spy != sender && spy != receiver) {
+                spy.getHandle().sendMessage("(" + sender.getChatColor() + sender.getDisplayName() + ChatColor.WHITE + " => " + receiver.getChatColor() + receiver.getDisplayName() + ChatColor.WHITE + ") " + message);
+            }
+        }
+    }
 }

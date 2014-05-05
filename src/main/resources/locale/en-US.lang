@@ -95,6 +95,11 @@ error.permissions.remove.groupUnknown=&4ERROR: Failed to remove group '%1': Unkn
 error.permissions.remove.userOnline=&eWARNING: Failed to remove user '%1': Cannot remove user while online!
 error.permissions.remove.userUnknown=&4ERROR: Failed to remove user '%1': Unknown error!
 
+error.tell.self=&4ERROR: You cannot send a /tell message to yourself!
+
+error.tellspy.alreadyOn=&4ERROR: You are already spying on /tell messages!
+error.tellSpy.alreadyOff=&4ERROR: You are not spying on /tell messages!
+
 error.verify.noCommand=&4ERROR: No command to verify!
 
 error.warp.notFound=&4ERROR: Warp '%1' was not found!
@@ -231,6 +236,9 @@ general.permissions.remove.warnStart=&eWARNING: You are about to permanently rem
 general.permissions.remove.warnUser=&e   User: %1
 general.permissions.remove.warnGroup=&e   Group: %1
 general.permissions.remove.warnEnd=&eIf you are sure you wish to permanently remove these groups and users, use /gaverify.
+
+general.tellspy.on=&aYou are now spying on /tell messages.
+general.tellspy.off=&aYou are no longer spying on /tell messages.
 
 general.warp.delete=&aWarp '%1' has been deleted.
 general.warp.set=&aWarp '%1' has been set here.

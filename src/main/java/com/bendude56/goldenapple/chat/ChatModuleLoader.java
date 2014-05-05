@@ -6,6 +6,8 @@ import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.chat.command.ChannelCommand;
 import com.bendude56.goldenapple.chat.command.LemonPledgeCommand;
 import com.bendude56.goldenapple.chat.command.MeCommand;
+import com.bendude56.goldenapple.chat.command.TellCommand;
+import com.bendude56.goldenapple.chat.command.TellSpyCommand;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 
 public class ChatModuleLoader extends ModuleLoader {
@@ -19,11 +21,15 @@ public class ChatModuleLoader extends ModuleLoader {
 		commands.insertCommand("gachannel", "Chat", new ChannelCommand());
 		commands.insertCommand("game", "Chat", new MeCommand());
 		commands.insertCommand("galemonpledge", "Chat", new LemonPledgeCommand());
+		commands.insertCommand("gatell", "Chat", new TellCommand());
+		commands.insertCommand("gatellspy", "Chat", new TellSpyCommand());
 	}
 
 	@Override
 	protected void registerPermissions(PermissionManager permissions) {
 		ChatManager.chatNode = permissions.registerNode("chat", PermissionManager.goldenAppleNode);
+		ChatManager.tellPermission = permissions.registerPermission("tell", ChatManager.chatNode);
+		ChatManager.tellSpyPermission = permissions.registerPermission("tellSpy", ChatManager.chatNode);
 		
 		ChatManager.channelsNode = permissions.registerNode("channels", ChatManager.chatNode);
 		ChatManager.channelAddPermission = permissions.registerPermission("add", ChatManager.channelsNode);
@@ -42,6 +48,8 @@ public class ChatModuleLoader extends ModuleLoader {
 		commands.getCommand("gachannel").register();
 		commands.getCommand("game").register();
 		commands.getCommand("galemonpledge").register();
+		commands.getCommand("gatell").register();
+		commands.getCommand("gatellspy").register();
 	}
 
 	@Override
@@ -63,6 +71,8 @@ public class ChatModuleLoader extends ModuleLoader {
 	@Override
 	protected void unregisterPermissions(PermissionManager permissions) {
 		ChatManager.chatNode = null;
+		ChatManager.tellPermission = null;
+		ChatManager.tellSpyPermission = null;
 		
 		ChatManager.channelsNode = null;
 		ChatManager.channelAddPermission = null;
@@ -81,6 +91,8 @@ public class ChatModuleLoader extends ModuleLoader {
 		commands.getCommand("gachannel").unregister();
 		commands.getCommand("game").unregister();
 		commands.getCommand("galemonpledge").unregister();
+		commands.getCommand("gatell").unregister();
+		commands.getCommand("gatellspy").unregister();
 	}
 	
 	@Override

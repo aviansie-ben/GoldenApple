@@ -82,9 +82,16 @@ public class ChatListener implements Listener, EventExecutor {
 		User user = User.getUser(event.getPlayer());
 		
 		ChatManager.getInstance().tryJoinChannel(user, ChatManager.getInstance().getDefaultChannel(), false);
+		
+		if (user.hasPermission(ChatManager.tellSpyPermission)) {
+		    ChatManager.getInstance().setTellSpyStatus(user, true);
+		}
 	}
 	
 	private void playerQuit(PlayerQuitEvent event) {
-		ChatManager.getInstance().leaveChannel(User.getUser(event.getPlayer()), false);
+	    User user = User.getUser(event.getPlayer());
+	    
+		ChatManager.getInstance().leaveChannel(user, false);
+		ChatManager.getInstance().setTellSpyStatus(user, false);
 	}
 }

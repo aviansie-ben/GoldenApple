@@ -11,6 +11,7 @@ public abstract class ChatManager {
 	// goldenapple.chat
 	public static PermissionNode	chatNode;
 	public static Permission		tellPermission;
+	public static Permission        tellSpyPermission;
 
 	// goldenapple.chat.channel
 	public static PermissionNode	channelsNode;
@@ -23,6 +24,10 @@ public abstract class ChatManager {
 	public static ChatManager getInstance() {
 		return instance;
 	}
+	
+	public abstract boolean getTellSpyStatus(User user);
+	public abstract void setTellSpyStatus(User user, boolean spy);
+	public abstract void sendTellMessage(User sender, User receiver, String message);
 	
 	public abstract void tryJoinChannel(User user, ChatChannel channel, boolean broadcast);
 	public abstract void leaveChannel(User user, boolean broadcast);
