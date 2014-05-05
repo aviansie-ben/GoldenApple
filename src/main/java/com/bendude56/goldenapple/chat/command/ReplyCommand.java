@@ -14,7 +14,9 @@ public class ReplyCommand extends GoldenAppleCommand {
         String message = args[0];
         for (int i = 1; i < args.length; i++) message += " " + args[i];
         
-        ChatManager.getInstance().sendReplyMessage(user, message);
+        if (!ChatManager.getInstance().sendReplyMessage(user, message)) {
+            user.sendLocalizedMessage("error.reply.nobody");
+        }
         
         return true;
     }
