@@ -55,7 +55,7 @@ public class WarpCommand extends GoldenAppleCommand {
     		}
 		} else if (args.length == 2) {
 		    PermissibleWarp w = WarpManager.getInstance().getNamedWarp(args[0]);
-		    User u = User.getUser(args[1]);
+		    User u = User.findUser(args[1]);
 		    
 		    if (w == null) {
 		        user.sendLocalizedMessage("error.warp.notFound", args[0]);

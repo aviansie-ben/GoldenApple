@@ -11,7 +11,7 @@ public class TellCommand extends GoldenAppleCommand {
     public boolean onExecute(GoldenApple instance, User user, String commandLabel, String[] args) {
         if (args.length < 2) return false;
         
-        User receiver = (args[0].equalsIgnoreCase("server")) ? User.getConsoleUser() : User.getUser(args[0]);
+        User receiver = (args[0].equalsIgnoreCase("server")) ? User.getConsoleUser() : User.findUser(args[0]);
         
         if (receiver == null) {
             user.sendLocalizedMessage("shared.userNotFoundError", args[0]);

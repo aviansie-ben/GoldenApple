@@ -112,6 +112,20 @@ public class User implements IPermissionUser {
 		}
 	}
 	
+	public static User findUser(String name) {
+	    User found = null;
+	    
+	    for (Entry<Long, User> cached : activeUsers.entrySet()) {
+	        if (cached.getValue().getName().startsWith(name)) {
+	            if (found != null) return null;
+	            
+	            found = cached.getValue();
+	        }
+	    }
+	    
+	    return found;
+	}
+	
 	public static User getUser(long id) {
 		if (activeUsers.containsKey(id))
 			return activeUsers.get(id);

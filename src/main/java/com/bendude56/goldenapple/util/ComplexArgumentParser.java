@@ -98,7 +98,7 @@ public class ComplexArgumentParser {
 				} else if (arg.type == ArgumentType.USER_ONLINE) {
 					String name = (String)value;
 					
-					value = User.getUser(name);
+					value = User.findUser(name);
 					
 					if (value == null) {
 						if (u != null) u.sendLocalizedMessage((arg.errorIfNotFound) ? "shared.userNotFoundError" : "shared.userNotFoundWarning", name);

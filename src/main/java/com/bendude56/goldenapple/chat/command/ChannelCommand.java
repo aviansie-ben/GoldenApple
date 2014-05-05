@@ -35,7 +35,7 @@ public class ChannelCommand extends DualSyntaxCommand {
 			} else if (ChatManager.getInstance().getActiveChannelLevel(user).id < ChatChannelUserLevel.MODERATOR.id) {
 				GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			} else {
-				User u = User.getUser(args[1]);
+				User u = User.findUser(args[1]);
 				if (u == null) {
 					user.sendLocalizedMessage("shared.userNotFoundError");
 				} else if (c.isInChannel(u)) {
@@ -247,7 +247,7 @@ public class ChannelCommand extends DualSyntaxCommand {
 			} else if (ChatManager.getInstance().getActiveChannelLevel(user).id < ChatChannelUserLevel.MODERATOR.id) {
 				GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			} else {
-				User u = User.getUser(args[1]);
+				User u = User.findUser(args[1]);
 				if (u == null) {
 					user.sendLocalizedMessage("shared.userNotFoundError");
 				} else if (c.isInChannel(u)) {

@@ -64,7 +64,7 @@ public class DebugCommand extends GoldenAppleCommand {
 				User target = user;
 				
 				if (args.length >= 2) {
-					target = User.getUser(args[1]);
+					target = User.findUser(args[1]);
 					
 					if (target == null) {
 						user.getHandle().sendMessage("User not online: " + args[1]);
@@ -83,7 +83,7 @@ public class DebugCommand extends GoldenAppleCommand {
 				User target = user;
 				
 				if (args.length >= 3) {
-					target = User.getUser(args[2]);
+					target = User.findUser(args[2]);
 					
 					if (target == null) {
 						user.getHandle().sendMessage("User not online: " + args[1]);

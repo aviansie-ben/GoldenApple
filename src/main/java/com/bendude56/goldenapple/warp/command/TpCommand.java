@@ -14,7 +14,7 @@ public class TpCommand extends GoldenAppleCommand {
 		if (args.length == 0) {
 			return false;
 		} else if (args.length == 1) {
-			User user2 = User.getUser(args[0]);
+			User user2 = User.findUser(args[0]);
 			if (!(user.getHandle() instanceof Player)) {
 				user.sendLocalizedMessage("shared.noConsole");
 			} else if (!user.hasPermission(WarpManager.tpSelfToOtherPermission)) {
@@ -26,8 +26,8 @@ public class TpCommand extends GoldenAppleCommand {
 				user.sendLocalizedMessage("error.warps.pluginCancel");
 			}
 		} else {
-			User user1 = User.getUser(args[0]);
-			User user2 = User.getUser(args[1]);
+			User user1 = User.findUser(args[0]);
+			User user2 = User.findUser(args[1]);
 			if (!user.hasPermission(WarpManager.tpOtherToOtherPermission)) {
 				GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			} else if (user1 == null) {

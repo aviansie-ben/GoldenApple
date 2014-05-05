@@ -14,7 +14,7 @@ public class TpHereCommand extends GoldenAppleCommand {
 		if (args.length == 0) {
 			return false;
 		} else {
-			User user2 = User.getUser(args[0]);
+			User user2 = User.findUser(args[0]);
 			if (!(user.getHandle() instanceof Player)) {
 				user.sendLocalizedMessage("shared.noConsole");
 			} else if (!user.hasPermission(WarpManager.tpOtherToSelfPermission)) {
