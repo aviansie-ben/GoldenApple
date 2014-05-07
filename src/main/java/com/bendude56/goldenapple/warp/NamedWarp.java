@@ -9,8 +9,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 import com.bendude56.goldenapple.GoldenApple;
+import com.bendude56.goldenapple.permissions.IPermissionGroup;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
-import com.bendude56.goldenapple.permissions.PermissionGroup;
 
 public class NamedWarp extends PermissibleWarp {
 	private String name;
@@ -97,12 +97,12 @@ public class NamedWarp extends PermissibleWarp {
 	}
 
 	@Override
-	public boolean canTeleport(PermissionGroup g) {
+	public boolean canTeleport(IPermissionGroup g) {
 		return groups.contains(g.getId());
 	}
 
 	@Override
-	public void addGroup(PermissionGroup g) {
+	public void addGroup(IPermissionGroup g) {
 		groups.add(g.getId());
 		try {
 			update();
@@ -110,7 +110,7 @@ public class NamedWarp extends PermissibleWarp {
 	}
 
 	@Override
-	public void removeGroup(PermissionGroup g) {
+	public void removeGroup(IPermissionGroup g) {
 		groups.remove(g.getId());
 		try {
 			update();
