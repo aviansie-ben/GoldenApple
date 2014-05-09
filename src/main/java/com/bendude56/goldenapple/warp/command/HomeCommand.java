@@ -18,7 +18,7 @@ public class HomeCommand extends GoldenAppleCommand {
 		if (args.length < 2) {
 			userHome = user;
 		} else {
-			userHome = PermissionManager.getInstance().getUser(args[1]);
+			userHome = PermissionManager.getInstance().findUser(args[1], false);
 			if (userHome == null) {
 				user.sendLocalizedMessage("shared.userNotFoundError", args[1]);
 				return true;

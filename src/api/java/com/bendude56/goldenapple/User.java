@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -91,7 +92,7 @@ public class User implements IPermissionUser {
 			activeUsers.put(id, u = new User(id, sender, false));
 			return u;
 		}
-		long id = PermissionManager.getInstance().getUserId(sender.getName());
+		long id = PermissionManager.getInstance().getUserId(((Player)sender).getUniqueId());
 		if (id == -1) {
 			return null;
 		} else if (activeUsers.containsKey(id)) {
@@ -104,6 +105,10 @@ public class User implements IPermissionUser {
 		}
 	}
 	
+	/**
+	 * @deprecated {@link com.bendude56.goldenapple.User#findUser(String)} is preferred for commands
+	 * and {@link com.bendude56.goldenapple.User#getUser(CommandSender)} elsewhere.
+	 */
 	public static User getUser(String name) {
 		if (PermissionManager.getInstance() == null) {
 			for (Entry<Long, User> cached : activeUsers.entrySet()) {
@@ -218,6 +223,16 @@ public class User implements IPermissionUser {
 			return "Server";
 		else
 			return permissions.getName();
+	}
+	
+	@Override
+	public UUID getUuid() {
+	    if (handle instanceof ConsoleCommandSender)
+	        throw new UnsupportedOperationException();
+	    else if (permissions == null)
+	        return getPlayerHandle().getUniqueId();
+	    else
+	        return permissions.getUuid();
 	}
 	
 	public String getDisplayName() {

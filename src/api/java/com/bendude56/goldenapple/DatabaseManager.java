@@ -116,6 +116,8 @@ public interface DatabaseManager {
 	 */
 	public void closeResult(ResultSet r) throws SQLException;
 	
+	public void registerTableUpdater(String table, int version, AdvancedTableUpdater updater);
+	
 	/**
 	 * Ensures that the listed table is at the proper revision for this version of
 	 * GoldenApple. If the table doesn't exist, it will be created using the
@@ -142,4 +144,9 @@ public interface DatabaseManager {
 	 * Closes the connection to the database
 	 */
 	public void close();
+	
+	public interface AdvancedTableUpdater {
+        public void doMySqlUpdate(DatabaseManager manager) throws SQLException;
+        public void doSqliteUpdate(DatabaseManager manager) throws SQLException;
+    }
 }

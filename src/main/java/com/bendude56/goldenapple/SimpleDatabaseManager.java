@@ -28,12 +28,13 @@ import org.sqlite.JDBC;
  * @author ben_dude56
  */
 public final class SimpleDatabaseManager implements DatabaseManager {
-	public static int DB_VERSION = 3;
+	public static int DB_VERSION = 4;
 	
 	private Connection	connection;
 	private boolean		mySql;
 	
 	private HashMap<ResultSet, PreparedStatement> toClose = new HashMap<ResultSet, PreparedStatement>();
+	private HashMap<String, HashMap<Integer, AdvancedTableUpdater>> updaters = new HashMap<String, HashMap<Integer, AdvancedTableUpdater>>();
 
 	protected SimpleDatabaseManager() {
 		if (GoldenApple.getInstanceMainConfig().getBoolean("database.useMySQL", false)) {
@@ -200,6 +201,14 @@ public final class SimpleDatabaseManager implements DatabaseManager {
 	}
 	
 	@Override
+	public void registerTableUpdater(String table, int version, AdvancedTableUpdater updater) {
+	    table = table.toLowerCase();
+	    
+	    if (!updaters.containsKey(table)) updaters.put(table, new HashMap<Integer, AdvancedTableUpdater>());
+	    if (!updaters.get(table).containsKey(version)) updaters.get(table).put(version, updater);
+	}
+	
+	@Override
 	public boolean createOrUpdateTable(String tableName) {
 		int expectedDbVersion = DB_VERSION;
 		try {
@@ -224,6 +233,11 @@ public final class SimpleDatabaseManager implements DatabaseManager {
 					if (resourceExists("sql/" + ((mySql) ? "mysql" : "sqlite") + "/update/" + i + "/" + tableName + "_update.sql")) {
 						executeFromResource("update/" + i + "/" + tableName + "_update");
 						executed = true;
+					}
+					
+					if (updaters.containsKey(tableName) && updaters.get(tableName).containsKey(i)) {
+					    if (mySql) updaters.get(tableName).get(i).doMySqlUpdate(this);
+					    else updaters.get(tableName).get(i).doSqliteUpdate(this);
 					}
 				}
 				

@@ -31,14 +31,14 @@ public class ChatModuleLoader extends ModuleLoader {
 
 	@Override
 	protected void registerPermissions(PermissionManager permissions) {
-		ChatManager.chatNode = permissions.registerNode("chat", PermissionManager.goldenAppleNode);
-		ChatManager.tellPermission = permissions.registerPermission("tell", ChatManager.chatNode);
-		ChatManager.tellSpyPermission = permissions.registerPermission("tellSpy", ChatManager.chatNode);
+		ChatManager.chatNode = PermissionManager.goldenAppleNode.createNode("chat");
+		ChatManager.tellPermission = ChatManager.chatNode.createPermission("tell");
+		ChatManager.tellSpyPermission = ChatManager.chatNode.createPermission("tellSpy");
 		
-		ChatManager.channelsNode = permissions.registerNode("channels", ChatManager.chatNode);
-		ChatManager.channelAddPermission = permissions.registerPermission("add", ChatManager.channelsNode);
-		ChatManager.channelModPermission = permissions.registerPermission("mod", ChatManager.channelsNode);
-		ChatManager.channelAdminPermission = permissions.registerPermission("admin", ChatManager.channelsNode);
+		ChatManager.channelsNode = ChatManager.chatNode.createNode("channels");
+		ChatManager.channelAddPermission = ChatManager.channelsNode.createPermission("add");
+		ChatManager.channelModPermission = ChatManager.channelsNode.createPermission("mod");
+		ChatManager.channelAdminPermission = ChatManager.channelsNode.createPermission("admin");
 		
 		User.setGlobalNegative("bukkit.command.tell");
 		User.setGlobalNegative("bukkit.command.me");

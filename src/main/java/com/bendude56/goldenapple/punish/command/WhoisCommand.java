@@ -19,7 +19,7 @@ public class WhoisCommand extends GoldenAppleCommand {
 		if (user.hasPermission(PunishmentManager.whoisPermission)) {
 			user.sendLocalizedMessage("header.punish");
 			
-			IPermissionUser target = PermissionManager.getInstance().getUser(args[0]);
+			IPermissionUser target = PermissionManager.getInstance().findUser(args[0], false);
 			
 			if (target != null) {
 				boolean none = true;

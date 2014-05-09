@@ -30,24 +30,24 @@ public class PunishModuleLoader extends ModuleLoader {
 	
 	@Override
 	protected void registerPermissions(PermissionManager permissions) {
-		PunishmentManager.punishNode = permissions.registerNode("punish", PermissionManager.goldenAppleNode);
-		PunishmentManager.whoisPermission = permissions.registerPermission("whois", PunishmentManager.punishNode);
-		
-		PunishmentManager.globalMuteNode = permissions.registerNode("globalmute", PunishmentManager.punishNode);
-		PunishmentManager.globalMuteInfoPermission = permissions.registerPermission("info", PunishmentManager.globalMuteNode);
-		PunishmentManager.globalMuteTempPermission = permissions.registerPermission("temp", PunishmentManager.globalMuteNode);
-		PunishmentManager.globalMuteTempOverridePermission = permissions.registerPermission("tempOverride", PunishmentManager.globalMuteNode);
-		PunishmentManager.globalMutePermPermission = permissions.registerPermission("perm", PunishmentManager.globalMuteNode);
-		PunishmentManager.globalMuteVoidPermission = permissions.registerPermission("void", PunishmentManager.globalMuteNode);
-		PunishmentManager.globalMuteVoidAllPermission = permissions.registerPermission("voidAll", PunishmentManager.globalMuteNode);
-		
-		PunishmentManager.banNode = permissions.registerNode("ban", PunishmentManager.punishNode);
-		PunishmentManager.banInfoPermission = permissions.registerPermission("info", PunishmentManager.banNode);
-		PunishmentManager.banTempPermission = permissions.registerPermission("temp", PunishmentManager.banNode);
-		PunishmentManager.banTempOverridePermission = permissions.registerPermission("tempOverride", PunishmentManager.banNode);
-		PunishmentManager.banPermPermission = permissions.registerPermission("perm", PunishmentManager.banNode);
-		PunishmentManager.banVoidPermission = permissions.registerPermission("void", PunishmentManager.banNode);
-		PunishmentManager.banVoidAllPermission = permissions.registerPermission("voidAll", PunishmentManager.banNode);
+	    PunishmentManager.punishNode = PermissionManager.goldenAppleNode.createNode("punish");
+	    PunishmentManager.whoisPermission = PunishmentManager.punishNode.createPermission("whois");
+	    
+	    PunishmentManager.globalMuteNode = PunishmentManager.punishNode.createNode("globalmute");
+	    PunishmentManager.globalMuteInfoPermission = PunishmentManager.globalMuteNode.createPermission("info");
+	    PunishmentManager.globalMuteTempPermission = PunishmentManager.globalMuteNode.createPermission("temp");
+	    PunishmentManager.globalMuteTempOverridePermission = PunishmentManager.globalMuteNode.createPermission("tempOverride");
+	    PunishmentManager.globalMutePermPermission = PunishmentManager.globalMuteNode.createPermission("perm");
+	    PunishmentManager.globalMuteVoidPermission = PunishmentManager.globalMuteNode.createPermission("void");
+	    PunishmentManager.globalMuteVoidAllPermission = PunishmentManager.globalMuteNode.createPermission("voidAll");
+	    
+	    PunishmentManager.banNode = PunishmentManager.punishNode.createNode("ban");
+        PunishmentManager.banInfoPermission = PunishmentManager.banNode.createPermission("info");
+        PunishmentManager.banTempPermission = PunishmentManager.banNode.createPermission("temp");
+        PunishmentManager.banTempOverridePermission = PunishmentManager.banNode.createPermission("tempOverride");
+        PunishmentManager.banPermPermission = PunishmentManager.banNode.createPermission("perm");
+        PunishmentManager.banVoidPermission = PunishmentManager.banNode.createPermission("void");
+        PunishmentManager.banVoidAllPermission = PunishmentManager.banNode.createPermission("voidAll");
 	}
 	
 	@Override

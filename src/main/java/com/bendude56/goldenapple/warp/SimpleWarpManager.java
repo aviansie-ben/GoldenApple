@@ -274,7 +274,8 @@ public class SimpleWarpManager extends WarpManager {
 			this.sender = sender;
 		}
 
-		@Override
+		@SuppressWarnings("deprecation")
+        @Override
 		public void run() {
 			int numHomes = 0, numUsers = 0, newUsers = 0;
 			

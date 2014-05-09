@@ -37,33 +37,33 @@ public class WarpModuleLoader extends ModuleLoader {
 	
 	@Override
 	protected void registerPermissions(PermissionManager permissions) {
-		WarpManager.warpNode = permissions.registerNode("warp", PermissionManager.goldenAppleNode);
-		WarpManager.backPermission = permissions.registerPermission("back", WarpManager.warpNode);
-		WarpManager.editPermission = permissions.registerPermission("edit", WarpManager.warpNode);
-		WarpManager.warpPermission = permissions.registerPermission("warp", WarpManager.warpNode);
-		WarpManager.warpOtherPermission = permissions.registerPermission("warpOther", WarpManager.warpNode);
-		WarpManager.overrideCooldownPermission = permissions.registerPermission("overrideCooldown", WarpManager.warpNode);
-		
-		WarpManager.tpNode = permissions.registerNode("tp", WarpManager.warpNode);
-		WarpManager.tpSelfToOtherPermission = permissions.registerPermission("selfToOther", WarpManager.tpNode);
-		WarpManager.tpOtherToSelfPermission = permissions.registerPermission("otherToSelf", WarpManager.tpNode);
-		WarpManager.tpOtherToOtherPermission = permissions.registerPermission("otherToOther", WarpManager.tpNode);
-		
-		WarpManager.spawnNode = permissions.registerNode("spawn", WarpManager.warpNode);
-		WarpManager.spawnCurrentPermission = permissions.registerPermission("current", WarpManager.spawnNode);
-		WarpManager.spawnAllPermission = permissions.registerPermission("all", WarpManager.spawnNode);
-		
-		WarpManager.homeNode = permissions.registerNode("home", WarpManager.warpNode);
-		
-		WarpManager.homeTpNode = permissions.registerNode("tp", WarpManager.homeNode);
-		WarpManager.homeTpOwn = permissions.registerPermission("own", WarpManager.homeTpNode);
-		WarpManager.homeTpPublic = permissions.registerPermission("public", WarpManager.homeTpNode);
-		WarpManager.homeTpAll = permissions.registerPermission("all", WarpManager.homeTpNode);
-		
-		WarpManager.homeEditNode = permissions.registerNode("edit", WarpManager.homeNode);
-		WarpManager.homeEditOwn = permissions.registerPermission("own", WarpManager.homeEditNode);
-		WarpManager.homeEditPublic = permissions.registerPermission("public", WarpManager.homeEditNode);
-		WarpManager.homeEditAll = permissions.registerPermission("all", WarpManager.homeEditNode);
+	    WarpManager.warpNode = PermissionManager.goldenAppleNode.createNode("warp");
+	    WarpManager.backPermission = WarpManager.warpNode.createPermission("back");
+	    WarpManager.editPermission = WarpManager.warpNode.createPermission("edit");
+	    WarpManager.warpPermission = WarpManager.warpNode.createPermission("warp");
+	    WarpManager.warpOtherPermission = WarpManager.warpNode.createPermission("warpOther");
+	    WarpManager.overrideCooldownPermission = WarpManager.warpNode.createPermission("overrideCooldown");
+	    
+	    WarpManager.tpNode = WarpManager.warpNode.createNode("tp");
+	    WarpManager.tpSelfToOtherPermission = WarpManager.tpNode.createPermission("selfToOther");
+	    WarpManager.tpOtherToSelfPermission = WarpManager.tpNode.createPermission("otherToSelf");
+	    WarpManager.tpOtherToOtherPermission = WarpManager.tpNode.createPermission("otherToOther");
+	    
+	    WarpManager.spawnNode = WarpManager.warpNode.createNode("spawn");
+	    WarpManager.spawnCurrentPermission = WarpManager.spawnNode.createPermission("current");
+	    WarpManager.spawnAllPermission = WarpManager.spawnNode.createPermission("all");
+	    
+	    WarpManager.homeNode = WarpManager.warpNode.createNode("home");
+	    
+	    WarpManager.homeTpNode = WarpManager.homeNode.createNode("tp");
+	    WarpManager.homeTpOwn = WarpManager.homeTpNode.createPermission("own");
+	    WarpManager.homeTpPublic = WarpManager.homeTpNode.createPermission("public");
+	    WarpManager.homeTpAll = WarpManager.homeTpNode.createPermission("all");
+	    
+	    WarpManager.homeEditNode = WarpManager.homeNode.createNode("edit");
+	    WarpManager.homeEditOwn = WarpManager.homeEditNode.createPermission("own");
+	    WarpManager.homeEditPublic = WarpManager.homeEditNode.createPermission("public");
+	    WarpManager.homeEditAll = WarpManager.homeEditNode.createPermission("all");
 		
 		User.setGlobalNegative("bukkit.command.teleport");
 		

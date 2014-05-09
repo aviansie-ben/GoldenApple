@@ -189,7 +189,7 @@ public class MuteCommand extends DualSyntaxCommand {
 		} else {
 			user.sendLocalizedMessage("header.punish");
 			
-			IPermissionUser target = PermissionManager.getInstance().getUser(args[0]);
+			IPermissionUser target = PermissionManager.getInstance().findUser(args[0], false);
 			ChatChannel c;
 			
 			if (target == null) {

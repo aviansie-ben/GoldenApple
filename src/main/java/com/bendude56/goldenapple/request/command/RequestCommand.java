@@ -224,7 +224,7 @@ public class RequestCommand extends GoldenAppleCommand {
                     } else if (!user.hasPermission(RequestManager.reassignPermission)) {
                         GoldenApple.logPermissionFail(user, commandLabel, args, true);
                     } else {
-                        IPermissionUser assignTo = PermissionManager.getInstance().getUser(args[3]);
+                        IPermissionUser assignTo = PermissionManager.getInstance().findUser(args[3], false);
                         
                         if (!queue.canReceive(assignTo)) {
                             user.sendLocalizedMessage("error.request.cannotReceive", assignTo.getName());

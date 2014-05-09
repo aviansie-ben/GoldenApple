@@ -24,7 +24,7 @@ public class OwnCommand extends GoldenAppleCommand {
 			user.sendLocalizedMessage("general.own.warnBefore");
 			VerifyCommand.commands.put(user, "gaown -v");
 		} else {
-			user.addPermission(PermissionManager.getInstance().getRootStar());
+			user.addPermission(PermissionManager.getInstance().getRootNode().getStarPermission());
 			user.sendLocalizedMessage("general.own.success");
 			user.sendLocalizedMessage("general.own.warnAfter");
 		}

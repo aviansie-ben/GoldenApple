@@ -20,12 +20,12 @@ public class LockModuleLoader extends ModuleLoader {
 	
 	@Override
 	protected void registerPermissions(PermissionManager permissions) {
-		LockManager.lockNode = permissions.registerNode("lock", PermissionManager.goldenAppleNode);
-		LockManager.addPermission = permissions.registerPermission("add", LockManager.lockNode);
-		LockManager.usePermission = permissions.registerPermission("use", LockManager.lockNode);
-		LockManager.invitePermission = permissions.registerPermission("invite", LockManager.lockNode);
-		LockManager.modifyBlockPermission = permissions.registerPermission("modifyBlock", LockManager.lockNode);
-		LockManager.fullPermission = permissions.registerPermission("full", LockManager.lockNode);
+	    LockManager.lockNode = PermissionManager.goldenAppleNode.createNode("lock");
+	    LockManager.addPermission = LockManager.lockNode.createPermission("add");
+	    LockManager.usePermission = LockManager.lockNode.createPermission("use");
+	    LockManager.invitePermission = LockManager.lockNode.createPermission("invite");
+	    LockManager.modifyBlockPermission = LockManager.lockNode.createPermission("modifyBlock");
+	    LockManager.fullPermission = LockManager.lockNode.createPermission("full");
 	}
 	
 	@Override

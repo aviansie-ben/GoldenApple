@@ -54,7 +54,7 @@ public class DebugCommand extends GoldenAppleCommand {
 			}
 		} else if (args[0].equalsIgnoreCase("forceown")) {
 			if (instance.getModuleManager().getModule("Permissions").getCurrentState() == ModuleState.LOADED) {
-				user.addPermission(PermissionManager.getInstance().getRootStar());
+				user.addPermission(PermissionManager.getInstance().getRootNode().getStarPermission());
 				user.getHandle().sendMessage("All permissions given");
 			} else {
 				user.getHandle().sendMessage("Permissions module not loaded");

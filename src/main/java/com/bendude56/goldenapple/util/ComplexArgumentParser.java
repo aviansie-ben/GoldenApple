@@ -88,7 +88,7 @@ public class ComplexArgumentParser {
 					// Offline user
 					String name = (String)value;
 					
-					value = PermissionManager.getInstance().getUser(name);
+					value = PermissionManager.getInstance().findUser(name, false);
 					
 					if (value == null) {
 						if (u != null) u.sendLocalizedMessage((arg.errorIfNotFound) ? "shared.userNotFoundError" : "shared.userNotFoundWarning", name);

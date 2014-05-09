@@ -84,6 +84,7 @@ error.own.disabled=&4ERROR: This command has been disabled by an administrator f
 error.permissions.add.groupExists=&4ERROR: Failed to add group '%1': Group already exists!
 error.permissions.add.groupUnknown=&4ERROR: Failed to add group '%1': Unknown error!
 error.permissions.add.userExists=&4ERROR: Failed to add user '%1': User already exists!
+error.permissions.add.userNoUuid=&4ERROR: Failed to add user '%1': UUID lookup failure!
 error.permissions.add.userUnknown=&4ERROR: Failed to add user '%1': Unknown error!
 error.permissions.conflict=&4ERROR: There is an option conflict. Make sure you're not trying to modify a group/user as you remove them.
 error.permissions.member.unknown=&4ERROR: Unknown error occured while changing group membership!

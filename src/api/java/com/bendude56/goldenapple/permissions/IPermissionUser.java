@@ -1,5 +1,7 @@
 package com.bendude56.goldenapple.permissions;
 
+import java.util.UUID;
+
 import org.bukkit.ChatColor;
 
 /**
@@ -15,64 +17,71 @@ import org.bukkit.ChatColor;
  * @author ben_dude56
  */
 public interface IPermissionUser extends IPermissionObject {
-	/**
-	 * Gets the name of the user represented by this object. Where possible, the
-	 * ID number returned from {@link IPermissionObject#getId()} should be
-	 * stored in place of this name.
-	 */
-	public String getName();
-
-	/**
-	 * Gets the locale preference of this user.
-	 * 
-	 * @return The name of the preferred locale for this user, if they have set
-	 *         it. Otherwise, a null-value will be returned.
-	 */
-	public String getPreferredLocale();
-	
-	public void setPreferredLocale(String locale);
-
-	/**
-	 * Checks this user's preference for command syntax.
-	 * 
-	 * @return True if the user has complex commands enabled, false otherwise
-	 */
-	public boolean isUsingComplexCommands();
-
-	/**
-	 * Sets this user's preference for command syntax.
-	 * 
-	 * @param useComplex True to enable complex command syntax, false to enable
-	 *            simple command syntax.
-	 */
-	public void setUsingComplexCommands(boolean useComplex);
-
-	/**
-	 * Checks whether this user has chosen to enable automatic locking of
-	 * lockable blocks.
-	 * 
-	 * @return True if lockable blocks should be locked when placed, false
-	 *         otherwise.
-	 */
-	public boolean isAutoLockEnabled();
-
-	/**
-	 * Sets whether blocks placed by this user should be automatically locked
-	 * when they are placed if possible.
-	 * 
-	 * @param autoLock True to lock blocks when possible, false otherwise.
-	 */
-	public void setAutoLockEnabled(boolean autoLock);
-
-	/**
-	 * Gets the color that this user's name should appear in chat.
-	 */
-	public ChatColor getChatColor();
-
-	/**
-	 * Gets the prefix that should preceed this user's name in chat.
-	 */
-	public String getPrefix();
-	
-	public void reloadFromDatabase();
+    /**
+     * Gets the name of the user represented by this object. Where possible, the
+     * ID number returned from {@link IPermissionObject#getId()} should be
+     * stored in place of this name.
+     */
+    public String getName();
+    
+    /**
+     * Gets the UUID of the user represented by this object. While this is
+     * guaranteed to be unique, it is preferred to store the GoldenApple ID of
+     * this user instead for performance reasons;
+     */
+    public UUID getUuid();
+    
+    /**
+     * Gets the locale preference of this user.
+     * 
+     * @return The name of the preferred locale for this user, if they have set
+     * it. Otherwise, a null-value will be returned.
+     */
+    public String getPreferredLocale();
+    
+    public void setPreferredLocale(String locale);
+    
+    /**
+     * Checks this user's preference for command syntax.
+     * 
+     * @return True if the user has complex commands enabled, false otherwise
+     */
+    public boolean isUsingComplexCommands();
+    
+    /**
+     * Sets this user's preference for command syntax.
+     * 
+     * @param useComplex True to enable complex command syntax, false to enable
+     * simple command syntax.
+     */
+    public void setUsingComplexCommands(boolean useComplex);
+    
+    /**
+     * Checks whether this user has chosen to enable automatic locking of
+     * lockable blocks.
+     * 
+     * @return True if lockable blocks should be locked when placed, false
+     * otherwise.
+     */
+    public boolean isAutoLockEnabled();
+    
+    /**
+     * Sets whether blocks placed by this user should be automatically locked
+     * when they are placed if possible.
+     * 
+     * @param autoLock True to lock blocks when possible, false otherwise.
+     */
+    public void setAutoLockEnabled(boolean autoLock);
+    
+    /**
+     * Gets the color that this user's name should appear in chat.
+     */
+    public ChatColor getChatColor();
+    
+    /**
+     * Gets the prefix that should preceed this user's name in chat.
+     */
+    public String getPrefix();
+    
+    public void reloadFromDatabase();
 }

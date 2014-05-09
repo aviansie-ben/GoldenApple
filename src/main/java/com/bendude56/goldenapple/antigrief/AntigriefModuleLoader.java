@@ -21,9 +21,9 @@ public class AntigriefModuleLoader extends ModuleLoader {
 	
 	@Override
 	protected void registerPermissions(PermissionManager permissions) {
-		antigriefNode = permissions.registerNode("antigrief", PermissionManager.goldenAppleNode);
-		tntPermission = permissions.registerPermission("tnt", antigriefNode);
-		lighterPermission = permissions.registerPermission("lighter", antigriefNode);
+		antigriefNode = PermissionManager.goldenAppleNode.createNode("antigrief");
+		tntPermission = antigriefNode.createPermission("tnt");
+		lighterPermission = antigriefNode.createPermission("lighter");
 	}
 	
 	@Override

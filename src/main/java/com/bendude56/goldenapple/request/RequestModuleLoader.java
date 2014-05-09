@@ -20,11 +20,11 @@ public class RequestModuleLoader extends ModuleLoader {
 	
 	@Override
 	protected void registerPermissions(PermissionManager permissions) {
-	    RequestManager.requestNode = permissions.registerNode("request", PermissionManager.goldenAppleNode);
-	    RequestManager.statsPermission = permissions.registerPermission("stats", RequestManager.requestNode);
-	    RequestManager.viewAllPermission = permissions.registerPermission("viewAll", RequestManager.requestNode);
-	    RequestManager.reassignPermission = permissions.registerPermission("reassign", RequestManager.requestNode);
-	    RequestManager.editQueuePermission = permissions.registerPermission("editQueue", RequestManager.requestNode);
+	    RequestManager.requestNode = PermissionManager.goldenAppleNode.createNode("request");
+	    RequestManager.statsPermission = RequestManager.requestNode.createPermission("stats");
+	    RequestManager.viewAllPermission = RequestManager.requestNode.createPermission("viewAll");
+	    RequestManager.reassignPermission = RequestManager.requestNode.createPermission("reassign");
+	    RequestManager.editQueuePermission = RequestManager.requestNode.createPermission("editQueue");
 	}
 
 	@Override

@@ -23,7 +23,7 @@ public class UnMuteCommand extends GoldenAppleCommand {
 			
 			user.sendLocalizedMessage("header.punish");
 			
-			IPermissionUser target = PermissionManager.getInstance().getUser(args[0]);
+			IPermissionUser target = PermissionManager.getInstance().findUser(args[0], false);
 			ChatChannel c = ChatManager.getInstance().getActiveChannel(user);
 			
 			if (c == null) {

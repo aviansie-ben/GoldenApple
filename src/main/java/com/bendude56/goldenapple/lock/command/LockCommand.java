@@ -440,7 +440,7 @@ public class LockCommand extends DualSyntaxCommand {
 	}
 
 	private void addUser(GoldenApple instance, User user, LockedBlock lock, String guest, GuestLevel level) {
-		IPermissionUser gUser = PermissionManager.getInstance().getUser(guest);
+		IPermissionUser gUser = PermissionManager.getInstance().findUser(guest, false);
 
 		if (gUser == null) {
 			user.sendLocalizedMessage("shared.userNotFoundWarning", guest);
@@ -455,7 +455,7 @@ public class LockCommand extends DualSyntaxCommand {
 	}
 
 	private void removeUser(GoldenApple instance, User user, LockedBlock lock, String guest, String commandLabel, String[] args) {
-		IPermissionUser gUser = PermissionManager.getInstance().getUser(guest);
+		IPermissionUser gUser = PermissionManager.getInstance().findUser(guest, false);
 
 		if (gUser == null) {
 			user.sendLocalizedMessage("shared.userNotFoundWarning", guest);

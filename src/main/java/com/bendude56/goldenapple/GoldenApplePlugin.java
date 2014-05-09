@@ -63,6 +63,12 @@ public class GoldenApplePlugin extends GoldenApple {
 	public void onEnable() {
 		setInstance(this);
 		
+		if (!Bukkit.getServer().getOnlineMode()) {
+		    GoldenApple.log(Level.SEVERE, "Due to UUID changes, GoldenApple cannot be run with online-mode=false!");
+		    Bukkit.shutdown();
+		    return;
+		}
+		
 		if (!new File(this.getDataFolder() + "/config.yml").exists()) {
 			// The config file wasn't found in the plugin directory
 			try {
@@ -92,7 +98,6 @@ public class GoldenApplePlugin extends GoldenApple {
 		
 		// Load in the main config
 		mainConfig = YamlConfiguration.loadConfiguration(new File(this.getDataFolder() + "/config.yml"));
-		
 		
 		try {
 			if (new File(this.getDataFolder() + "/dbversion.yml").exists()) {

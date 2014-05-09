@@ -76,7 +76,7 @@ public class ChannelCommand extends DualSyntaxCommand {
 			} else {
 				ChatChannelUserLevel l = ChatChannelUserLevel.fromCmdComplex(args[0].substring(5));
 				if (args[0].substring(5).equals("r")) {
-					IPermissionUser u = PermissionManager.getInstance().getUser(args[1]);
+					IPermissionUser u = PermissionManager.getInstance().findUser(args[1], false);
 					if (u == null) {
 						user.sendLocalizedMessage("shared.userNotFoundError", args[1]);
 					} else {
@@ -86,7 +86,7 @@ public class ChannelCommand extends DualSyntaxCommand {
 				} else if (l == ChatChannelUserLevel.UNKNOWN) {
 					user.sendLocalizedMessage("error.channel.invalidLevel", args[0].substring(5));
 				} else {
-					IPermissionUser u = PermissionManager.getInstance().getUser(args[1]);
+					IPermissionUser u = PermissionManager.getInstance().findUser(args[1], false);
 					if (u == null) {
 						user.sendLocalizedMessage("shared.userNotFoundError", args[1]);
 					} else {
@@ -288,7 +288,7 @@ public class ChannelCommand extends DualSyntaxCommand {
 			} else {
 				ChatChannelUserLevel l = ChatChannelUserLevel.fromCmdSimple(args[1]);
 				if (args[1].equals("remove")) {
-					IPermissionUser u = PermissionManager.getInstance().getUser(args[2]);
+					IPermissionUser u = PermissionManager.getInstance().findUser(args[2], false);
 					if (u == null) {
 						user.sendLocalizedMessage("shared.userNotFoundError", args[2]);
 					} else {
@@ -306,7 +306,7 @@ public class ChannelCommand extends DualSyntaxCommand {
 							user.sendLocalizedMessage("general.channel.lvlSetDefault", l.display);
 						}
 					} else {
-						IPermissionUser u = PermissionManager.getInstance().getUser(args[2]);
+						IPermissionUser u = PermissionManager.getInstance().findUser(args[2], false);
 						if (u == null) {
 							user.sendLocalizedMessage("shared.userNotFoundError", args[2]);
 						} else {

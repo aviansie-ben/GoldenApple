@@ -21,7 +21,7 @@ public class UnGlobalMuteCommand extends GoldenAppleCommand {
 			
 			user.sendLocalizedMessage("header.punish");
 			
-			IPermissionUser target = PermissionManager.getInstance().getUser(args[0]);
+			IPermissionUser target = PermissionManager.getInstance().findUser(args[0], false);
 			
 			if (target == null) {
 				user.sendLocalizedMessage("shared.userNotFoundError", args[0]);
