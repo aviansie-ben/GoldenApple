@@ -97,6 +97,20 @@ error.permissions.remove.userUnknown=&4ERROR: Failed to remove user '%1': Unknow
 
 error.reply.nobody=&4ERROR: You have nobody to reply to!
 
+error.request.queueNotFound=&4ERROR: Queue '%1' was not found!
+error.request.requestNotFound=&4ERROR: Request #%1 was not found! It may have been deleted or it may be in another queue!
+error.request.alreadyAssigned=&4ERROR: Another admin is assigned to this request and you do not have permission to reassign!
+error.request.notAssignedToYou=&4ERROR: You can only do this to a request assigned to you!
+error.request.alreadyClosed=&4ERROR: That request is already closed!
+error.request.alreadyOnHold=&4ERROR: That request is already on hold!
+error.request.alreadyOpen=&4ERROR: That request is already open!
+error.request.cannotReceive=&4ERROR: %1 cannot receive requests on this queue!
+error.request.maxOpen=&4ERROR: You already have the maximum number of requests open on this queue!
+error.request.maxAssignedSelf=&4ERROR: You have been assigned the maximum number of requests! Hold or close one before starting another!
+error.request.maxAssignedOther=&4ERROR: %1 has the maximum number of requests assigned to them!
+
+error.requestqueue.alreadyExists=&4ERROR: Queue %1 already exists!
+
 error.tell.self=&4ERROR: You cannot send a /tell message to yourself!
 
 error.tellspy.alreadyOn=&4ERROR: You are already spying on /tell messages!
@@ -244,6 +258,74 @@ general.permissions.remove.warnUser=&e   User: %1
 general.permissions.remove.warnGroup=&e   Group: %1
 general.permissions.remove.warnEnd=&eIf you are sure you wish to permanently remove these groups and users, use /gaverify.
 
+general.request.assigned=&aRequest #%1 is now assigned to %2&a.
+general.request.closed=&aRequest #%1 has been closed.
+general.request.onHold=&aRequest #%1 has been marked as on hold.
+general.request.opened=&aRequest #%1 has been reopened.
+general.request.sent=&aYour request has been sent. Use &7/garequest %2 %1 info&a to check the status of your request.
+
+general.request.info.1=&7Request #%1:
+general.request.info.2=&7  Sender: %2
+general.request.info.3=&7  Assigned to: %3
+general.request.info.4=&7  Message: %4
+general.request.info.5=&7  Created at %5
+general.request.info.6=&7  Status: %6
+
+general.request.status.open=&aOpen
+general.request.status.hold=&eOn Hold
+general.request.status.closed=&4Closed&7 at %1
+
+general.request.nobody=&8Nobody
+
+general.request.list.yours=&7Your open requests:
+general.request.list.assignedToYou=&7Requests assigned to you:
+general.request.list.unassigned=&7Unassigned requests:
+general.request.list.assignedToOther=&7Requests assigned to others:
+general.request.list.empty=&7  No requests to display
+general.request.list.entry=&7  [%2] #%1 - %3
+
+general.request.listqueue.head=&7Available queues:
+general.request.listqueue.empty=&7  You do not have permission to see any queues
+general.request.listqueue.entryS=&7  [&1S&8--&7] %1
+general.request.listqueue.entryR=&7  [&8-&2R&8-&7] %1
+general.request.listqueue.entryV=&7  [&8--&3V&7] %1
+general.request.listqueue.entrySR=&7  [&1S&2R&8-&7] %1
+general.request.listqueue.entrySV=&7  [&1S&8-&3V&7] %1
+general.request.listqueue.entryRV=&7  [&8-&2R&3V&7] %1
+general.request.listqueue.entrySRV=&7  [&1S&2R&3V&7] %1
+
+general.request.notifyNew=&eA new request has been sent to queue %1! Use &7/garequest %1 %2 info&e to see it.
+general.request.notifyNewLogin=&eThere are unassigned requests on queue %1! Use &7/garequest %1 list&e to see them.
+
+general.request.notifyOn=&aYou will now be notified of new requests on queue %1.
+general.request.notifyOff=&aYou will no longer be notified of new requests on queue %1.
+general.request.autoAssignOn=&aYou can now be automatically assigned requests on queue %1.
+general.request.autoAssignOff=&aYou will no longer be automatically assigned requests on queue %1.
+
+general.request.auto.assigned=&eYou have been automatically assigned to request %2 in queue %1. Use &7/garequest %1 %2 info&e to see it.
+general.request.auto.requested=&eThe auto-assigner would like to assign you to request %2 in queue %1. Use &7/garequest %1 %2 own&e to accept.
+general.request.auto.requestedEnd=&eYou have not been assigned request %2 in queue %1 because you didn't accept in time.
+
+general.requestqueue.list.head=&7All request queues:
+general.requestqueue.list.empty=&7  There are no request queues!
+general.requestqueue.list.entry=&7  -%1
+
+general.requestqueue.info.1=&7Queue %1:
+general.requestqueue.info.2=&7  Send Group: %2
+general.requestqueue.info.3=&7  Receive Group: %3
+general.requestqueue.info.4=&7  Allow Offline: %4
+general.requestqueue.info.5=&7  Max Requests/Sender: %5
+
+general.requestqueue.deleteVerify=&eWARNING: You are about to delete queue %1! If you are sure you wish to do this, use /gaverify.
+general.requestqueue.deleted=&aQueue %1 has been deleted.
+
+general.requestqueue.created=&aQueue %1 has been created.
+general.requestqueue.sendGroupSet=&aQueue %1 has had its send group set to %2.
+general.requestqueue.receiveGroupSet=&aQueue %1 has had its receive group set to %2.
+general.requestqueue.allowOfflineOff=&aQueue %1 will no longer accept requests when no receivers are online.
+general.requestqueue.allowOfflineOn=&aQueue %1 will now accept requests when no receivers are online.
+general.requestqueue.maxPerSenderSet=&aQueue %1 has had its maximum open requests per sender set to %2.
+
 general.tellspy.on=&aYou are now spying on /tell messages.
 general.tellspy.off=&aYou are no longer spying on /tell messages.
 
@@ -273,6 +355,7 @@ header.lock=&7-----&6 GoldenApple Locks &7-----
 header.module=&7-----&6 GoldenApple Module Controller &7-----
 header.permissions=&7-----&6 GoldenApple Permissions &7-----
 header.punish=&7-----&6 GoldenApple Punishment &7-----
+header.request=&7-----&6 GoldenApple Requests &7-----
 header.warps=&7-----&6 GoldenApple Warps &7-----
 
 help.ban.complex.1=Select a target using &7-u <user>
@@ -373,6 +456,22 @@ help.permissions.4=Add permissions using &7-pa <permission>&f and remove using &
 help.permissions.5=Add users/groups to a group using &7-ua <user>&f and &7-ga <group>
 help.permissions.6=Remove users/groups from a group using &7-ur <user>&f and &7-gr <group>
 
+help.request.1=List available queues using /%1 list
+help.request.2=List a queue's open requests using /%1 <queue> list
+help.request.3=Send a request using /%1 <queue> send <message>
+help.request.4=Toggle auto-assign or notifications using /%1 <queue> {notify|autoassign}
+help.request.5=View a request using /%1 <queue> <request> info
+help.request.6=Change assignment of a request using /%1 <queue> <request> {own|disown|assign <user>}
+help.request.7=Change the state of a request using /%1 <queue> <request> {close|hold|open}
+
+help.requestqueue.1=List all queues using /%1 list
+help.requestqueue.2=Create a new queue using /%1 <queue> create
+help.requestqueue.3=Get queue information using /%1 <queue> info
+help.requestqueue.4=Delete an existing queue using /%1 <queue> delete
+help.requestqueue.5=Change send/receive groups using /%1 <queue> {send|receive} <group>
+help.requestqueue.6=Toggle allow offline using /%1 <queue> allowoffline
+help.requestqueue.7=Change maximum requests per sender using /%1 <queue> maxpersender <max>
+
 shared.cmdUnload.generic=&4ERROR: This command has been disabled
 shared.cmdUnload.specific=&4ERROR: This command relies on unloaded module '%1'
 shared.groupNotFoundError=&4ERROR: Failed to find group '%1'
@@ -386,6 +485,8 @@ shared.userNotFoundError=&4ERROR: Failed to find user '%1'
 shared.userNotFoundWarning=&eWARNING: Failed to find user '%1'
 shared.worldNotFoundError=&4ERROR: Failed to find world '%1'
 shared.worldNotFoundWarning=&eWARNING: Failed to find world '%1'
+shared.yes=&aYes
+shared.no=&4No
 
 time.days=%1 day(s)
 time.hours=%1 hour(s)

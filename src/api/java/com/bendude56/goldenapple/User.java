@@ -1,6 +1,7 @@
 package com.bendude56.goldenapple;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +52,10 @@ public class User implements IPermissionUser {
 	    for (Map.Entry<Long, User> u : activeUsers.entrySet()) {
             u.getValue().registerBukkitPermissions();
         }
+	}
+	
+	public static List<User> getOnlineUsers() {
+	    return Collections.unmodifiableList(new ArrayList<User>(activeUsers.values()));
 	}
 	
 	public static User getConsoleUser() {

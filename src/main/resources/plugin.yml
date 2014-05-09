@@ -133,18 +133,14 @@ commands:
         usage: /<command> <Warp>
         description: Deletes a named warp
         aliases: [delwarp]
-    gasell:
-        usage: /<command> <item> <price per item> [amount]
-        description: Creates a new sell offer
-        aliases: [sell]
-    gabuy:
-        usage: /<command> <item> <price per item> [amount]
-        description: Creates a new buy offer
-        aliases: [buy]
-    gaprice:
-        usage: /<command> [item]
-        description: Gets the average price of the currently held or specified item
-        aliases: [price]
+    garequest:
+        usage: Use /<command> -? for help
+        description: Sends and manages administrator requests
+        aliases: [request]
+    garequestqueue:
+        usage: Use /<command> -? for help
+        description: Manages request queues
+        aliases: [requestqueue]
     galang:
         usage: /<command> <locale>
         description: Sets your GoldenApple locale
