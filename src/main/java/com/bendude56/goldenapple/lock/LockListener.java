@@ -93,7 +93,7 @@ public class LockListener implements Listener, EventExecutor {
 	}
 
 	private void playerInteract(PlayerInteractEvent event) {
-		if (!LockManager.getInstance().isLockable(event.getClickedBlock().getType())) return;
+		if (!LockManager.getInstance().isLockable(LockedBlock.correctLocation(event.getClickedBlock().getLocation()).getBlock().getType())) return;
 		
 		LockedBlock lock = LockManager.getInstance().getLock(event.getClickedBlock().getLocation());
 		User u = User.getUser(event.getPlayer());
@@ -111,7 +111,7 @@ public class LockListener implements Listener, EventExecutor {
 	}
 
 	private void blockBreak(BlockBreakEvent event) {
-		if (!LockManager.getInstance().isLockable(event.getBlock().getType())) return;
+		if (!LockManager.getInstance().isLockable(LockedBlock.correctLocation(event.getBlock().getLocation()).getBlock().getType())) return;
 		
 		LockedBlock lock = LockManager.getInstance().getLock(event.getBlock().getLocation());
 		User u = User.getUser(event.getPlayer());

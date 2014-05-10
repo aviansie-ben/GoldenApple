@@ -159,10 +159,12 @@ public abstract class LockedBlock {
 	 * 
 	 * @param l The location that should be corrected
 	 */
-	public static void correctLocation(Location l) {
+	public static Location correctLocation(Location l) {
 		for (ILocationCorrector corrector : locationCorrectors) {
 			corrector.correctLocation(l);
 		}
+		
+		return l;
 	}
 
 	private final long	lockId;
