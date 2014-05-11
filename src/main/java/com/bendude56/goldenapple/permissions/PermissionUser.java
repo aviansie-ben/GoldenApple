@@ -131,7 +131,7 @@ public class PermissionUser implements IPermissionUser {
     
     @Override
     public boolean hasPermission(Permission permission, boolean inherited) {
-        List<Long> parentGroups = getParentGroups(true);
+        List<Long> parentGroups = getParentGroups(false);
         if (hasPermissionSpecificInheritance(permission, parentGroups, inherited)) {
             return true;
         }

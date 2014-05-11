@@ -243,7 +243,7 @@ public class PermissionGroup implements IPermissionGroup {
         }
         
         if (!directOnly) {
-            for (Long g : getParentGroups(true)) {
+            for (Long g : getAllGroups()) {
                 if (PermissionManager.getInstance().getGroup(g).isMember(user, true)) {
                     return true;
                 }
@@ -267,7 +267,11 @@ public class PermissionGroup implements IPermissionGroup {
         ArrayList<Long> groups = new ArrayList<Long>();
         groups.addAll(getGroups());
         for (int i = 0; i < groups.size(); i++) {
-            groups.addAll(PermissionManager.getInstance().getGroup(groups.get(i)).getGroups());
+            if (groups.get(i) == id) {
+                GoldenApple.log(Level.WARNING, "Recursive group membership: '" + name + "' is a member of itself!");
+            } else {
+                groups.addAll(PermissionManager.getInstance().getGroup(groups.get(i)).getGroups());
+            }
         }
         return groups;
     }
@@ -313,7 +317,7 @@ public class PermissionGroup implements IPermissionGroup {
         }
         
         if (!directOnly) {
-            for (Long g : getParentGroups(true)) {
+            for (Long g : getAllGroups()) {
                 if (PermissionManager.getInstance().getGroup(g).isMember(group, true)) {
                     return true;
                 }
@@ -329,7 +333,7 @@ public class PermissionGroup implements IPermissionGroup {
             ArrayList<Permission> permissions = new ArrayList<Permission>();
             permissions.addAll(getPermissions(false));
             
-            for (Long g : getParentGroups(true)) {
+            for (Long g : getParentGroups(false)) {
                 permissions.addAll(PermissionManager.getInstance().getGroup(g).getPermissions(false));
             }
             
@@ -436,7 +440,7 @@ public class PermissionGroup implements IPermissionGroup {
      */
     @Override
     public boolean hasPermission(Permission permission, boolean inherited) {
-        List<Long> parentGroups = getParentGroups(true);
+        List<Long> parentGroups = getParentGroups(false);
         if (hasPermissionSpecificInheritance(permission, parentGroups, inherited)) {
             return true;
         }
@@ -478,7 +482,11 @@ public class PermissionGroup implements IPermissionGroup {
             parents.addAll(parentGroups);
             
             for (int i = 0; i < parents.size(); i++) {
-                parents.addAll(PermissionManager.getInstance().getGroup(parents.get(i)).getParentGroups(false));
+                if (parents.get(i) == id) {
+                    GoldenApple.log(Level.WARNING, "Recursive group membership: '" + name + "' is a member of itself!");
+                } else {
+                    parents.addAll(PermissionManager.getInstance().getGroup(parents.get(i)).getParentGroups(false));
+                }
             }
             
             return parents;
