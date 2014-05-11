@@ -391,7 +391,7 @@ public class SimplePermissionManager extends PermissionManager {
             return user;
         } else {
             try {
-                ResultSet r = GoldenApple.getInstanceDatabaseManager().executeReturnGenKeys("INSERT INTO Users (Name, UUID, ComplexCommands, AutoLock) VALUES (?, ?, ?, ?)", name, uuid, defaultComplexCommands, defaultAutoLock);
+                ResultSet r = GoldenApple.getInstanceDatabaseManager().executeReturnGenKeys("INSERT INTO Users (Name, UUID, ComplexCommands, AutoLock) VALUES (?, ?, ?, ?)", name, uuid.toString(), defaultComplexCommands, defaultAutoLock);
                 
                 try {
                     r.next();
