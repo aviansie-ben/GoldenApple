@@ -70,6 +70,7 @@ public final class SimpleDatabaseManager implements DatabaseManager {
 				Driver d = new JDBC();
 				GoldenApple.log("Loading database using SQLite v" + d.getMajorVersion() + "." + d.getMinorVersion());
 				connection = d.connect("jdbc:sqlite:" + GoldenApple.getInstanceMainConfig().getString("database.path"), new Properties());
+				execute("PRAGMA foreign_keys = ON");
 				GoldenApple.log("Successfully connected to SQLite database at \'" + GoldenApple.getInstanceMainConfig().getString("database.path") + "\'");
 			} catch (Exception e) {
 				GoldenApple.log(Level.SEVERE, "Failed to connect to SQLite database!");
@@ -265,7 +266,7 @@ public final class SimpleDatabaseManager implements DatabaseManager {
 	@Override
 	public boolean isConnected() {
 		try {
-			return connection != null && connection.isValid(1000);
+			return connection != null && (!mySql || connection.isValid(1000));
 		} catch (SQLException e) {
 			return false;
 		}

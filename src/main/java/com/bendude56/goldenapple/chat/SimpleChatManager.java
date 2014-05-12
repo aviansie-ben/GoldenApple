@@ -123,7 +123,7 @@ public class SimpleChatManager extends ChatManager {
 	@Override
 	public ChatChannel createChannel(String identifier) {
 		try {
-			GoldenApple.getInstanceDatabaseManager().execute("INSERT INTO Channels (Identifier, DisplayName, MOTD, StrictCensor, DefaultLevel) VALUES (?, ?, NULL, FALSE, 2)", identifier, ChatColor.WHITE + identifier);
+			GoldenApple.getInstanceDatabaseManager().execute("INSERT INTO Channels (Identifier, DisplayName, MOTD, StrictCensor, DefaultLevel) VALUES (?, ?, NULL, 0, 2)", identifier, ChatColor.WHITE + identifier);
 			
 			ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT * FROM Channels WHERE Identifier=?", identifier);
 			try {
