@@ -224,7 +224,11 @@ public class SimplePermissionManager extends PermissionManager {
                 ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT * FROM Users WHERE ID=?", id);
                 try {
                     if (r.next()) {
-                        return new PermissionUser(r.getLong("ID"), r.getString("Name"), UUID.fromString(r.getString("UUID")), r.getString("Locale"), r.getBoolean("ComplexCommands"), r.getBoolean("AutoLock"));
+                        PermissionUser u = new PermissionUser(r.getLong("ID"), r.getString("Name"), UUID.fromString(r.getString("UUID")), r.getString("Locale"), r.getBoolean("ComplexCommands"), r.getBoolean("AutoLock"));
+                        userCache.put(u.getId(), u);
+                        userCacheOut.addLast(u.getId());
+                        popCache();
+                        return u;
                     } else {
                         return null;
                     }
