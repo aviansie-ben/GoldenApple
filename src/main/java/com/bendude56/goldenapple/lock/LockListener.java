@@ -6,7 +6,7 @@ import java.util.logging.Level;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
-import org.bukkit.entity.minecart.HopperMinecart;
+import org.bukkit.block.DoubleChest;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventException;
 import org.bukkit.event.EventPriority;
@@ -209,23 +209,39 @@ public class LockListener implements Listener, EventExecutor {
 	}
 	
 	private void itemMove(InventoryMoveItemEvent event) {
-		LockedBlock lockSource, lockDestination;
+		LockedBlock lockSource = null;
+		LockedBlock lockDestination = null;
 		
-		if (event.getDestination().getHolder() instanceof BlockState && event.getSource().getHolder() instanceof BlockState) {
-			lockDestination = LockManager.getInstance().getLock(((BlockState) event.getDestination().getHolder()).getLocation());
-			lockSource = LockManager.getInstance().getLock(((BlockState) event.getSource().getHolder()).getLocation());
-			
-			if (lockDestination != null && !lockDestination.getAllowExternal() && (lockSource == null || lockSource.getOwner() != lockDestination.getOwner())) {
-				event.setCancelled(true);
-			} else if (lockSource != null && !lockSource.getAllowExternal() && (lockDestination == null || lockSource.getOwner() != lockDestination.getOwner())) {
-				event.setCancelled(true);
-			}
-		} else if (event.getDestination().getHolder() instanceof HopperMinecart && event.getSource().getHolder() instanceof BlockState) {
-			lockSource = LockManager.getInstance().getLock(((BlockState) event.getSource().getHolder()).getLocation());
-			
-			if (lockSource != null && !lockSource.getAllowExternal()) {
-				event.setCancelled(true);
-			}
+		if (event.getSource().getHolder() instanceof BlockState) {
+		    lockSource = LockManager.getInstance().getLock(((BlockState)event.getSource().getHolder()).getLocation());
+		} else if (event.getSource().getHolder() instanceof DoubleChest) {
+		    assert ((DoubleChest) event.getSource().getHolder()).getRightSide() instanceof BlockState;
+		    assert ((DoubleChest) event.getSource().getHolder()).getLeftSide() instanceof BlockState;
+		    
+		    lockSource = LockManager.getInstance().getLock(((BlockState) ((DoubleChest)event.getSource().getHolder()).getRightSide()).getLocation());
+		}
+		
+		if (event.getDestination().getHolder() instanceof BlockState) {
+            lockDestination = LockManager.getInstance().getLock(((BlockState)event.getDestination().getHolder()).getLocation());
+        } else if (event.getDestination().getHolder() instanceof DoubleChest) {
+            assert ((DoubleChest) event.getDestination().getHolder()).getRightSide() instanceof BlockState;
+            assert ((DoubleChest) event.getDestination().getHolder()).getLeftSide() instanceof BlockState;
+            
+            lockDestination = LockManager.getInstance().getLock(((BlockState) ((DoubleChest)event.getDestination().getHolder()).getRightSide()).getLocation());
+        }
+		
+		if (lockSource != null && lockDestination != null) {
+		    if ((!lockSource.getAllowExternal() || !lockDestination.getAllowExternal()) && lockSource.getOwner() != lockDestination.getOwner()) {
+		        event.setCancelled(true);
+		    }
+		} else if (lockSource != null) {
+		    if (!lockSource.getAllowExternal()) {
+		        event.setCancelled(true);
+		    }
+		} else if (lockDestination != null) {
+		    if (!lockDestination.getAllowExternal()) {
+		        event.setCancelled(true);
+		    }
 		}
 	}
 	
