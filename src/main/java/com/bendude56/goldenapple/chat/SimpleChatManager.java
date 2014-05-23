@@ -250,7 +250,11 @@ public class SimpleChatManager extends ChatManager {
         }
         
         if (afk) {
-            user.getPlayerHandle().setPlayerListName("[AFK] " + user.getName());
+            if (user.getName().length() > 10) {
+                user.getPlayerHandle().setPlayerListName("[AFK] " + user.getName().substring(0, 10));
+            } else {
+                user.getPlayerHandle().setPlayerListName("[AFK] " + user.getName());
+            }
             afkUsers.add(user);
         } else {
             user.getPlayerHandle().setPlayerListName(user.getName());
