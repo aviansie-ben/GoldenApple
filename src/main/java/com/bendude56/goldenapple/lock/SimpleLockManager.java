@@ -62,6 +62,7 @@ public class SimpleLockManager extends LockManager {
 		GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("lockgroups");
 		
 		PermissionManager.getInstance().setVariableDefaultValue("goldenapple.lock.autoLock", GoldenApple.getInstanceMainConfig().getBoolean("modules.lock.autoLockDefault"));
+		PermissionManager.getInstance().setVariableDefaultValue("goldenapple.lock.alwaysOverride", !GoldenApple.getInstanceMainConfig().getBoolean("modules.lock.explicitOverrideRequired", true));
 	}
 	
 	public int getLockCacheMaxSize() {
@@ -194,7 +195,7 @@ public class SimpleLockManager extends LockManager {
 	
 	@Override
 	public boolean isOverrideOn(User u) {
-		return !GoldenApple.getInstanceMainConfig().getBoolean("modules.lock.explicitOverrideRequired", true) || overriding.contains(u);
+		return u.getVariableBoolean("goldenapple.lock.alwaysOverride") || overriding.contains(u);
 	}
 
 	@Override

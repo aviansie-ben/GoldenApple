@@ -35,11 +35,21 @@ public class LockCommand extends DualSyntaxCommand {
 		
 		LockedBlock target = null;
 		
-		if (arg.isDefined("override-on")) {
+		if (arg.isDefined("override-alwayson")) {
+		    if (!LockManager.getInstance().canOverride(user)) {
+		        GoldenApple.logPermissionFail(user, commandLabel, args, true);
+		    } else {
+		        LockManager.getInstance().setOverrideOn(user, false);
+                user.setVariable("goldenapple.lock.alwaysOverride", true);
+                user.sendLocalizedMessage("general.lock.override.alwaysOn");
+		    }
+		    return;
+		} else if (arg.isDefined("override-on")) {
 			if (!LockManager.getInstance().canOverride(user)) {
 				GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			} else {
 				LockManager.getInstance().setOverrideOn(user, true);
+				user.deleteVariable("goldenapple.lock.alwaysOverride");
 				user.sendLocalizedMessage("general.lock.override.on");
 			}
 			return;
@@ -48,6 +58,7 @@ public class LockCommand extends DualSyntaxCommand {
 				GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			} else {
 				LockManager.getInstance().setOverrideOn(user, false);
+				user.deleteVariable("goldenapple.lock.alwaysOverride");
 				user.sendLocalizedMessage("general.lock.override.off");
 			}
 			return;
@@ -537,6 +548,7 @@ public class LockCommand extends DualSyntaxCommand {
 			ArgumentInfo.newInt("select", "s", "select"),
 			
 			ArgumentInfo.newSwitch("override-on", "o:on", "override:on"),
+			ArgumentInfo.newSwitch("override-alwayson", "o:alwayson", "override:alwayson"),
 			ArgumentInfo.newSwitch("override-off", "o:off", "override:off"),
 			
 			ArgumentInfo.newSwitch("create", "c", "create"),

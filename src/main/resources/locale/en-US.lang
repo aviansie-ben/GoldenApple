@@ -194,6 +194,7 @@ general.lock.auto.on=&aAuto-lock has been turned on
 general.lock.delete.success=&aThe lock on that block has been deleted successfully!
 general.lock.guest.add.success=&aLock shared with '%1' successfully.
 general.lock.guest.remove.success=&aLock unshared from '%1' successfully.
+general.lock.override.alwaysOn=&aLock override permanently enabled!
 general.lock.override.on=&aLock override enabled!
 general.lock.override.off=&aLock override disabled!
 general.lock.overrideAvailable.complex=&7You have permission to override this using /galock -o:on
