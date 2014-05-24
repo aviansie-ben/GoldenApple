@@ -110,7 +110,7 @@ public class SimpleLocalizationManager implements LocalizationManager {
 	@Override
 	public String getMessage(User user, String message) {
 		// Get the user's preferred locale
-		String lang = user.getPreferredLocale();
+		String lang = user.getVariableString("goldenapple.locale");
 		// If the user's preferred locale doesn't exist, use the default
 		if (!secondaryMessages.containsKey(lang))
 			lang = defaultLocale;
@@ -168,7 +168,7 @@ public class SimpleLocalizationManager implements LocalizationManager {
 	@Override
 	public void sendMessage(User user, String message, boolean multiline, String... args) {
 		// Get the user's preferred locale
-		String lang = user.getPreferredLocale();
+		String lang = user.getVariableString("goldenapple.locale");
 		
 		// If the user's preferred locale doesn't exist, use the default locale
 		if (!secondaryMessages.containsKey(lang))

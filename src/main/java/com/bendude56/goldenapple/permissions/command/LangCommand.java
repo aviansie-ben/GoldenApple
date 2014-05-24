@@ -14,7 +14,7 @@ public class LangCommand extends GoldenAppleCommand {
 		if (user.isServer()) {
 			user.sendLocalizedMessage("shared.noConsole");
 		} else if (GoldenApple.getInstance().getLocalizationManager().languageExists(args[0])) {
-			user.setPreferredLocale(args[0]);
+			user.setVariable("goldenapple.locale", args[0]);
 			user.sendLocalizedMessage("general.lang.set", args[0]);
 		} else {
 			user.sendLocalizedMessage("error.lang.notFound", args[0]);

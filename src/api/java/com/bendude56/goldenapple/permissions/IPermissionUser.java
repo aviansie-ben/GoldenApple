@@ -32,45 +32,51 @@ public interface IPermissionUser extends IPermissionObject {
     public UUID getUuid();
     
     /**
-     * Gets the locale preference of this user.
-     * 
-     * @return The name of the preferred locale for this user, if they have set
-     * it. Otherwise, a null-value will be returned.
+     * @deprecated Replaced by the new user variable system. Use
+     * {@link IPermissionObject#getVariableString(String)} with the
+     * "goldenapple.locale" variable.
      */
+    @Deprecated
     public String getPreferredLocale();
     
+    /**
+     * @deprecated Replaced by the new user variable system. Use
+     * {@link IPermissionObject#setVariable(String, String)} with the
+     * "goldenapple.locale" variable.
+     */
+    @Deprecated
     public void setPreferredLocale(String locale);
     
     /**
-     * Checks this user's preference for command syntax.
-     * 
-     * @return True if the user has complex commands enabled, false otherwise
+     * @deprecated Replaced by the new user variable system. Use
+     * {@link IPermissionObject#getVariableBoolean(String)} with the
+     * "goldenapple.complexSyntax" variable.
      */
+    @Deprecated
     public boolean isUsingComplexCommands();
     
     /**
-     * Sets this user's preference for command syntax.
-     * 
-     * @param useComplex True to enable complex command syntax, false to enable
-     * simple command syntax.
+     * @deprecated Replaced by the new user variable system. Use
+     * {@link IPermissionObject#setVariable(String, Boolean)} with the
+     * "goldenapple.complexSyntax" variable.
      */
+    @Deprecated
     public void setUsingComplexCommands(boolean useComplex);
     
     /**
-     * Checks whether this user has chosen to enable automatic locking of
-     * lockable blocks.
-     * 
-     * @return True if lockable blocks should be locked when placed, false
-     * otherwise.
+     * @deprecated Replaced by the new user variable system. Use
+     * {@link IPermissionObject#getVariableBoolean(String)} with the
+     * "goldenapple.lock.autoLock" variable.
      */
+    @Deprecated
     public boolean isAutoLockEnabled();
     
     /**
-     * Sets whether blocks placed by this user should be automatically locked
-     * when they are placed if possible.
-     * 
-     * @param autoLock True to lock blocks when possible, false otherwise.
+     * @deprecated Replaced by the new user variable system. Use
+     * {@link IPermissionObject#setVariable(String, Boolean)} with the
+     * "goldenapple.lock.autoLock" variable.
      */
+    @Deprecated
     public void setAutoLockEnabled(boolean autoLock);
     
     /**

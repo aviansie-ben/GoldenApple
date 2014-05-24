@@ -19,7 +19,7 @@ public class UnBanCommand extends GoldenAppleCommand {
 		if (target == null) {
 			user.sendLocalizedMessage("shared.userNotFoundError", args[0]);
 		} else {
-			if (user.isUsingComplexCommands()) BanCommand.banVoid(target, user, "gaban", new String[] { "-u", target.getName(), "-v" }, false);
+			if (user.getVariableBoolean("goldenapple.complexSyntax")) BanCommand.banVoid(target, user, "gaban", new String[] { "-u", target.getName(), "-v" }, false);
 			else BanCommand.banVoid(target, user, "gaban", new String[] { target.getName(), "void" }, false);
 		}
 		

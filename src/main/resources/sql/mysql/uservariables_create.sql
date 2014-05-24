@@ -1,0 +1,10 @@
+CREATE TABLE IF NOT EXISTS UserVariables (
+	UserID BIGINT NOT NULL,
+	VariableName VARCHAR(32) NOT NULL,
+	Value TEXT NOT NULL,
+	CONSTRAINT fk_uservariables_userid
+		FOREIGN KEY (UserID)
+		REFERENCES Users(ID)
+		ON DELETE CASCADE ON UPDATE CASCADE,
+	PRIMARY KEY (UserID, VariableName)
+) Engine=InnoDB

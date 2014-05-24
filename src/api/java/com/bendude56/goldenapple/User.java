@@ -65,9 +65,9 @@ public class User implements IPermissionUser {
 
 	/**
 	 * Gets a user instance from a
-	 * {@link org.bukkit.craftbukkit.command.CommandSender} for use with other
+	 * {@link org.bukkit.command.CommandSender} for use with other
 	 * GoldenApple functions. If that
-	 * {@link org.bukkit.craftbukkit.command.CommandSender} doesn't have a user
+	 * {@link org.bukkit.command.CommandSender} doesn't have a user
 	 * instance already associated with it, one will be automatically created.
 	 * 
 	 * @param sender The instance that the returned user should be based upon
@@ -298,6 +298,7 @@ public class User implements IPermissionUser {
 	}
 
 	@Override
+	@Deprecated
 	public String getPreferredLocale() {
 		if (permissions == null)
 			return "";
@@ -306,6 +307,7 @@ public class User implements IPermissionUser {
 	}
 	
 	@Override
+	@Deprecated
 	public void setPreferredLocale(String locale) {
 		if (permissions == null)
 			throw new UnsupportedOperationException();
@@ -378,6 +380,7 @@ public class User implements IPermissionUser {
 	}
 
 	@Override
+	@Deprecated
 	public boolean isUsingComplexCommands() {
 		if (permissions == null)
 			return true;
@@ -385,6 +388,7 @@ public class User implements IPermissionUser {
 	}
 
 	@Override
+	@Deprecated
 	public void setUsingComplexCommands(boolean useComplex) {
 		if (permissions == null)
 			throw new UnsupportedOperationException();
@@ -392,6 +396,7 @@ public class User implements IPermissionUser {
 	}
 
 	@Override
+	@Deprecated
 	public boolean isAutoLockEnabled() {
 		if (permissions == null)
 			throw new UnsupportedOperationException();
@@ -399,6 +404,7 @@ public class User implements IPermissionUser {
 	}
 
 	@Override
+	@Deprecated
 	public void setAutoLockEnabled(boolean autoLock) {
 		if (permissions == null)
 			throw new UnsupportedOperationException();
@@ -464,4 +470,106 @@ public class User implements IPermissionUser {
 		else
 			permissions.reloadFromDatabase();
 	}
+
+    @Override
+    public String getVariableString(String variableName) {
+        if (permissions == null) {
+            return getVariableSpecificString(variableName);
+        } else {
+            return permissions.getVariableString(variableName);
+        }
+    }
+
+    @Override
+    public Boolean getVariableBoolean(String variableName) {
+        if (permissions == null) {
+            return getVariableSpecificBoolean(variableName);
+        } else {
+            return permissions.getVariableBoolean(variableName);
+        }
+    }
+
+    @Override
+    public Integer getVariableInteger(String variableName) {
+        if (permissions == null) {
+            return getVariableSpecificInteger(variableName);
+        } else {
+            return permissions.getVariableInteger(variableName);
+        }
+    }
+
+    @Override
+    public String getVariableSpecificString(String variableName) {
+        if (permissions == null) {
+            return PermissionManager.getInstance().getVariableDefaultValue(variableName);
+        } else {
+            return permissions.getVariableSpecificString(variableName);
+        }
+    }
+
+    @Override
+    public Boolean getVariableSpecificBoolean(String variableName) {
+        if (permissions == null) {
+            if (PermissionManager.getInstance().getVariableDefaultValue(variableName) != null) {
+                return PermissionManager.getInstance().getVariableDefaultValue(variableName).equalsIgnoreCase("true");
+            } else {
+                return null;
+            }
+        } else {
+            return permissions.getVariableSpecificBoolean(variableName);
+        }
+    }
+
+    @Override
+    public Integer getVariableSpecificInteger(String variableName) {
+        if (permissions == null) {
+            if (PermissionManager.getInstance().getVariableDefaultValue(variableName) != null) {
+                try {
+                    return Integer.parseInt(PermissionManager.getInstance().getVariableDefaultValue(variableName));
+                } catch (NumberFormatException e) {
+                    return null;
+                }
+            } else {
+                return null;
+            }
+        } else {
+            return permissions.getVariableSpecificInteger(variableName);
+        }
+    }
+
+    @Override
+    public void deleteVariable(String variableName) {
+        if (permissions == null) {
+            throw new UnsupportedOperationException();
+        } else {
+            permissions.deleteVariable(variableName);
+        }
+    }
+
+    @Override
+    public void setVariable(String variableName, String value) {
+        if (permissions == null) {
+            throw new UnsupportedOperationException();
+        } else {
+            permissions.setVariable(variableName, value);
+        }
+    }
+
+    @Override
+    public void setVariable(String variableName, Boolean value) {
+        if (permissions == null) {
+            throw new UnsupportedOperationException();
+        } else {
+            permissions.setVariable(variableName, value);
+        }
+    }
+
+    @Override
+    public void setVariable(String variableName, Integer value) {
+        if (permissions == null) {
+            throw new UnsupportedOperationException();
+        } else {
+            permissions.setVariable(variableName, value);
+        }
+    }
 }

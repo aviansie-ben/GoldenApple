@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -34,6 +35,7 @@ public class PermissionGroup implements IPermissionGroup {
     private ArrayList<Long> groups;
     private ArrayList<Long> parentGroups;
     private ArrayList<Permission> permissions;
+    private HashMap<String, String> variables;
     
     protected PermissionGroup(ResultSet r) throws SQLException {
         this.id = r.getLong("ID");
@@ -45,6 +47,7 @@ public class PermissionGroup implements IPermissionGroup {
         
         this.loadUsersAndGroups();
         this.loadPermissions();
+        this.loadVariables();
     }
     
     protected PermissionGroup(long id, String name, int priority) {
@@ -119,6 +122,23 @@ public class PermissionGroup implements IPermissionGroup {
             }
         } catch (SQLException e) {
             GoldenApple.log(Level.SEVERE, "An error occurred while calculating permissions for group '" + name + "':");
+            GoldenApple.log(Level.SEVERE, e);
+        }
+    }
+    
+    private void loadVariables() {
+        try {
+            variables = new HashMap<String, String>();
+            ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT VariableName, Value FROM GroupVariables WHERE GroupID=?", id);
+            try {
+                while (r.next()) {
+                    variables.put(r.getString("VariableName"), r.getString("Value"));
+                }
+            } finally {
+                GoldenApple.getInstanceDatabaseManager().closeResult(r);
+            }
+        } catch (SQLException e) {
+            GoldenApple.log(Level.SEVERE, "An error occurred while loading variables for group '" + name + "':");
             GoldenApple.log(Level.SEVERE, e);
         }
     }
@@ -497,5 +517,159 @@ public class PermissionGroup implements IPermissionGroup {
     public void reloadFromDatabase() {
         this.loadPermissions();
         this.loadUsersAndGroups();
+    }
+
+    @Override
+    public String getVariableString(String variableName) {
+        if (variables.containsKey(variableName)) {
+            return getVariableSpecificString(variableName);
+        } else {
+            int priority = Integer.MIN_VALUE;
+            String value = PermissionManager.getInstance().getVariableDefaultValue(variableName);
+            
+            for (Long parent : getParentGroups(false)) {
+                IPermissionGroup parentGroup = PermissionManager.getInstance().getGroup(parent);
+                String groupValue = parentGroup.getVariableSpecificString(variableName);
+                
+                if (groupValue != null && parentGroup.getPriority() > priority) {
+                    value = groupValue;
+                    priority = parentGroup.getPriority();
+                }
+            }
+            
+            return value;
+        }
+    }
+
+    @Override
+    public Boolean getVariableBoolean(String variableName) {
+        if (variables.containsKey(variableName)) {
+            return getVariableSpecificBoolean(variableName);
+        } else {
+            int priority = Integer.MIN_VALUE;
+            Boolean value;
+            
+            if (PermissionManager.getInstance().getVariableDefaultValue(variableName) != null) {
+                value = PermissionManager.getInstance().getVariableDefaultValue(variableName).equalsIgnoreCase("true");
+            } else {
+                value = null;
+            }
+            
+            for (Long parent : getParentGroups(false)) {
+                IPermissionGroup parentGroup = PermissionManager.getInstance().getGroup(parent);
+                Boolean groupValue = parentGroup.getVariableSpecificBoolean(variableName);
+                
+                if (groupValue != null && parentGroup.getPriority() > priority) {
+                    value = groupValue;
+                    priority = parentGroup.getPriority();
+                }
+            }
+            
+            return value;
+        }
+    }
+
+    @Override
+    public Integer getVariableInteger(String variableName) {
+        if (variables.containsKey(variableName)) {
+            return getVariableSpecificInteger(variableName);
+        } else {
+            int priority = Integer.MIN_VALUE;
+            Integer value;
+            
+            try {
+                if (PermissionManager.getInstance().getVariableDefaultValue(variableName) != null) {
+                    value = Integer.parseInt(PermissionManager.getInstance().getVariableDefaultValue(variableName));
+                } else {
+                    value = null;
+                }
+            } catch (NumberFormatException e) {
+                value = null;
+            }
+            
+            for (Long parent : getParentGroups(false)) {
+                IPermissionGroup parentGroup = PermissionManager.getInstance().getGroup(parent);
+                Integer groupValue = parentGroup.getVariableSpecificInteger(variableName);
+                
+                if (groupValue != null && parentGroup.getPriority() > priority) {
+                    value = groupValue;
+                    priority = parentGroup.getPriority();
+                }
+            }
+            
+            return value;
+        }
+    }
+
+    @Override
+    public String getVariableSpecificString(String variableName) {
+        return variables.get(variableName);
+    }
+
+    @Override
+    public Boolean getVariableSpecificBoolean(String variableName) {
+        if (variables.containsKey(variableName)) {
+            return variables.get(variableName).equalsIgnoreCase("true");
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public Integer getVariableSpecificInteger(String variableName) {
+        if (variables.containsKey(variableName)) {
+            try {
+                return Integer.parseInt(variables.get(variableName));
+            } catch (NumberFormatException e) {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+    
+    @Override
+    public void deleteVariable(String variableName) {
+        variables.remove(variableName);
+        
+        try {
+            GoldenApple.getInstanceDatabaseManager().execute("DELETE FROM GroupVariables WHERE GroupID=? AND VariableName=?", id, variableName);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void setVariable(String variableName, String value) {
+        if (value != null) {
+            deleteVariable(variableName);
+            variables.put(variableName, value);
+            
+            try {
+                GoldenApple.getInstanceDatabaseManager().execute("INSERT INTO GroupVariables (GroupID, VariableName, Value) VALUES (?, ?, ?)", id, variableName, value);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            deleteVariable(variableName);
+        }
+    }
+
+    @Override
+    public void setVariable(String variableName, Boolean value) {
+        if (value != null) {
+            setVariable(variableName, (value) ? "true" : "false");
+        } else {
+            deleteVariable(variableName);
+        }
+    }
+
+    @Override
+    public void setVariable(String variableName, Integer value) {
+        if (variableName != null) {
+            setVariable(variableName, value.toString());
+        } else {
+            deleteVariable(variableName);
+        }
     }
 }

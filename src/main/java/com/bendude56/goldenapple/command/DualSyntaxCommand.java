@@ -7,7 +7,7 @@ public abstract class DualSyntaxCommand extends GoldenAppleCommand {
 
 	@Override
 	public final boolean onExecute(GoldenApple instance, User user, String commandLabel, String[] args) {
-		if (user.isUsingComplexCommands())
+		if (user.getVariableBoolean("goldenapple.complexSyntax"))
 			onExecuteComplex(instance, user, commandLabel, args);
 		else
 			onExecuteSimple(instance, user, commandLabel, args);

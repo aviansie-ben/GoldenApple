@@ -10,10 +10,15 @@ public class ComplexCommand extends GoldenAppleCommand {
 	public boolean onExecute(GoldenApple instance, User user, String commandLabel, String[] args) {
 		if (user.getHandle() instanceof Player) {
 			if (args.length == 1 && args[0].equals("-v")) {
-				user.setUsingComplexCommands(!user.isUsingComplexCommands());
-				user.sendLocalizedMessage((user.isUsingComplexCommands()) ? "general.complex.successOn" : "general.complex.successOff");
+			    if (user.getVariableBoolean("goldenapple.complexSyntax")) {
+    				user.setVariable("goldenapple.complexSyntax", false);
+    				user.sendLocalizedMessage("general.complex.successOff");
+			    } else {
+			        user.setVariable("goldenapple.complexSyntax", true);
+                    user.sendLocalizedMessage("general.complex.successOn");
+			    }
 			} else {
-				user.sendLocalizedMessage((user.isUsingComplexCommands()) ? "general.complex.warnOff" : "general.complex.warnOn");
+				user.sendLocalizedMessage((user.getVariableBoolean("goldenapple.complexSyntax")) ? "general.complex.warnOff" : "general.complex.warnOn");
 				VerifyCommand.commands.put(user, commandLabel + " -v");
 			}
 		} else {

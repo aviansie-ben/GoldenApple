@@ -103,7 +103,7 @@ public class LockListener implements Listener, EventExecutor {
 		if (!lock.canUse(u)) {
 			u.sendLocalizedMessage("error.lock.noUse", PermissionManager.getInstance().getUser(lock.getOwner()).getName());
 			if (lock.getOverrideLevel(u).levelId >= GuestLevel.USE.levelId) {
-				u.sendLocalizedMessage((u.isUsingComplexCommands()) ? "general.lock.overrideAvailable.complex" : "general.lock.overrideAvailable.simple");
+				u.sendLocalizedMessage((u.getVariableBoolean("goldenapple.complexSyntax")) ? "general.lock.overrideAvailable.complex" : "general.lock.overrideAvailable.simple");
 			}
 			event.setCancelled(true);
 			return;
@@ -121,7 +121,7 @@ public class LockListener implements Listener, EventExecutor {
 		if (!lock.canModifyBlock(u)) {
 			u.sendLocalizedMessage("error.lock.noEdit");
 			if (lock.getOverrideLevel(u).levelId >= GuestLevel.ALLOW_BLOCK_MODIFY.levelId) {
-				u.sendLocalizedMessage((u.isUsingComplexCommands()) ? "general.lock.overrideAvailable.complex" : "general.lock.overrideAvailable.simple");
+				u.sendLocalizedMessage((u.getVariableBoolean("goldenapple.complexSyntax")) ? "general.lock.overrideAvailable.complex" : "general.lock.overrideAvailable.simple");
 			}
 			event.setCancelled(true);
 			return;
@@ -199,7 +199,7 @@ public class LockListener implements Listener, EventExecutor {
 		User user = User.getUser(event.getPlayer());
 
 		// TODO getTypeId() is deprecated. Look at alternatives.
-		if (user.isAutoLockEnabled() && user.hasPermission(LockManager.addPermission) && GoldenApple.getInstanceMainConfig().getIntegerList("modules.lock.autoLockBlocks").contains(event.getBlock().getTypeId()) && LockManager.getInstance().getLock(event.getBlock().getLocation()) == null) {
+		if (user.getVariableBoolean("goldenapple.lock.autoLock") && user.hasPermission(LockManager.addPermission) && GoldenApple.getInstanceMainConfig().getIntegerList("modules.lock.autoLockBlocks").contains(event.getBlock().getTypeId()) && LockManager.getInstance().getLock(event.getBlock().getLocation()) == null) {
 			try {
 				LockManager.getInstance().createLock(event.getBlock().getLocation(), LockLevel.PRIVATE, user);
 				user.sendLocalizedMessage("general.lock.auto");

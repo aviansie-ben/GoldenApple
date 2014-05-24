@@ -86,7 +86,7 @@ public class DebugCommand extends GoldenAppleCommand {
 					target = User.findUser(args[2]);
 					
 					if (target == null) {
-						user.getHandle().sendMessage("User not online: " + args[1]);
+						user.getHandle().sendMessage("User not online: " + args[2]);
 					}
 				}
 				
@@ -144,6 +144,46 @@ public class DebugCommand extends GoldenAppleCommand {
 			} else {
 				user.getHandle().sendMessage("Missing command");
 			}
+		} else if (args[0].equalsIgnoreCase("getvar")) {
+		    if (args.length == 2 || args.length == 3) {
+		        User target = user;
+                
+                if (args.length >= 3) {
+                    target = User.findUser(args[2]);
+                    
+                    if (target == null) {
+                        user.getHandle().sendMessage("User not online: " + args[2]);
+                    }
+                }
+                
+                if (target != null) {
+                    String effective = target.getVariableString(args[1]);
+                    String userVal = target.getVariableSpecificString(args[1]);
+                    String serverDefault = PermissionManager.getInstance().getVariableDefaultValue(args[1]);
+                    
+                    user.getHandle().sendMessage("Testing variable " + args[1] + " on user " + target.getName());
+                    
+                    if (effective == null) {
+                        user.getHandle().sendMessage("Effective Value: <null>");
+                    } else {
+                        user.getHandle().sendMessage("Effective Value: " + effective);
+                    }
+                    
+                    if (userVal == null) {
+                        user.getHandle().sendMessage("User-Specific Value: <null>");
+                    } else {
+                        user.getHandle().sendMessage("User-Specific Value: " + userVal);
+                    }
+                    
+                    if (serverDefault == null) {
+                        user.getHandle().sendMessage("Default Value: <null>");
+                    } else {
+                        user.getHandle().sendMessage("Default Value: " + serverDefault);
+                    }
+                }
+		    } else {
+		        user.getHandle().sendMessage("Missing variable");
+		    }
 		} else {
 			user.getHandle().sendMessage("Bad command: " + args[0]);
 		}

@@ -126,6 +126,11 @@ public abstract class PermissionManager {
     public abstract IPermissionGroup createGroup(String name);
     public abstract void deleteGroup(long id);
     
+    public abstract String getVariableDefaultValue(String variableName);
+    public abstract void setVariableDefaultValue(String variableName, String defaultValue);
+    public abstract void setVariableDefaultValue(String variableName, Boolean defaultValue);
+    public abstract void setVariableDefaultValue(String variableName, Integer defaultValue);
+    
     public abstract void close();
     public abstract void clearCache();
     

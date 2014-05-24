@@ -19,6 +19,7 @@ import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.lock.LockedBlock.LockLevel;
 import com.bendude56.goldenapple.lock.LockedBlock.RegisteredBlock;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
+import com.bendude56.goldenapple.permissions.PermissionManager;
 
 public class SimpleLockManager extends LockManager {
 	static {
@@ -59,6 +60,8 @@ public class SimpleLockManager extends LockManager {
 		GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("locks");
 		GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("lockusers");
 		GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("lockgroups");
+		
+		PermissionManager.getInstance().setVariableDefaultValue("goldenapple.lock.autoLock", GoldenApple.getInstanceMainConfig().getBoolean("modules.lock.autoLockDefault"));
 	}
 	
 	public int getLockCacheMaxSize() {

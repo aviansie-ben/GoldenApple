@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -17,23 +18,19 @@ public class PermissionUser implements IPermissionUser {
     private long id;
     private String name;
     private UUID uuid;
-    private String preferredLocale;
-    private boolean complexCommands;
-    private boolean autoLock;
     
     private ArrayList<Long> groups;
     private ArrayList<Permission> permissions;
+    private HashMap<String, String> variables;
     
-    protected PermissionUser(long id, String name, UUID uuid, String preferredLocale, boolean complexCommands, boolean autoLock) {
+    protected PermissionUser(long id, String name, UUID uuid) {
         this.id = id;
         this.name = name;
         this.uuid = uuid;
-        this.preferredLocale = preferredLocale;
-        this.complexCommands = complexCommands;
-        this.autoLock = autoLock;
         
         this.loadGroups();
         this.loadPermissions();
+        this.loadVariables();
     }
     
     private void loadGroups() {
@@ -70,9 +67,26 @@ public class PermissionUser implements IPermissionUser {
         }
     }
     
+    private void loadVariables() {
+        try {
+            variables = new HashMap<String, String>();
+            ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT VariableName, Value FROM UserVariables WHERE UserID=?", id);
+            try {
+                while (r.next()) {
+                    variables.put(r.getString("VariableName"), r.getString("Value"));
+                }
+            } finally {
+                GoldenApple.getInstanceDatabaseManager().closeResult(r);
+            }
+        } catch (SQLException e) {
+            GoldenApple.log(Level.SEVERE, "An error occurred while loading variables for user '" + name + "':");
+            GoldenApple.log(Level.SEVERE, e);
+        }
+    }
+    
     public void save() {
         try {
-            GoldenApple.getInstanceDatabaseManager().execute("UPDATE Users SET Name=?, Locale=?, ComplexCommands=?, AutoLock=? WHERE ID=?", name, preferredLocale, complexCommands, autoLock, id);
+            GoldenApple.getInstanceDatabaseManager().execute("UPDATE Users SET Name=? WHERE ID=?", name, id);
         } catch (SQLException e) {
             GoldenApple.log(Level.SEVERE, "Failed to save changes to user '" + name + "':");
             GoldenApple.log(Level.SEVERE, e);
@@ -165,14 +179,15 @@ public class PermissionUser implements IPermissionUser {
     }
     
     @Override
+    @Deprecated
     public String getPreferredLocale() {
-        return preferredLocale;
+        return getVariableString("goldenapple.locale");
     }
     
     @Override
+    @Deprecated
     public void setPreferredLocale(String locale) {
-        preferredLocale = locale;
-        save();
+        setVariable("goldenapple.locale", locale);
     }
     
     @Override
@@ -228,30 +243,32 @@ public class PermissionUser implements IPermissionUser {
     }
     
     @Override
+    @Deprecated
     public boolean isUsingComplexCommands() {
-        return complexCommands;
+        return getVariableBoolean("goldenapple.complexSyntax");
     }
     
     @Override
+    @Deprecated
     public void setUsingComplexCommands(boolean useComplex) {
-        complexCommands = useComplex;
-        save();
+        setVariable("goldenapple.complexSyntax", useComplex);
     }
     
     @Override
+    @Deprecated
     public boolean isAutoLockEnabled() {
-        return autoLock;
+        return getVariableBoolean("goldenapple.lock.autoLock");
     }
     
     @Override
+    @Deprecated
     public void setAutoLockEnabled(boolean autoLock) {
-        this.autoLock = autoLock;
-        save();
+        setVariable("goldenapple.lock.autoLock", autoLock);
     }
     
     @Override
     public ChatColor getChatColor() {
-        int priority = -1;
+        int priority = Integer.MIN_VALUE;
         ChatColor color = ChatColor.WHITE;
         
         for (Long gid : getParentGroups(false)) {
@@ -267,7 +284,7 @@ public class PermissionUser implements IPermissionUser {
     
     @Override
     public String getPrefix() {
-        int priority = -1;
+        int priority = Integer.MIN_VALUE;
         String prefix = null;
         
         for (Long gid : getParentGroups(false)) {
@@ -285,5 +302,159 @@ public class PermissionUser implements IPermissionUser {
     public void reloadFromDatabase() {
         this.loadGroups();
         this.loadPermissions();
+    }
+
+    @Override
+    public String getVariableString(String variableName) {
+        if (variables.containsKey(variableName)) {
+            return getVariableSpecificString(variableName);
+        } else {
+            int priority = Integer.MIN_VALUE;
+            String value = PermissionManager.getInstance().getVariableDefaultValue(variableName);
+            
+            for (Long parent : getParentGroups(false)) {
+                IPermissionGroup parentGroup = PermissionManager.getInstance().getGroup(parent);
+                String groupValue = parentGroup.getVariableSpecificString(variableName);
+                
+                if (groupValue != null && parentGroup.getPriority() > priority) {
+                    value = groupValue;
+                    priority = parentGroup.getPriority();
+                }
+            }
+            
+            return value;
+        }
+    }
+
+    @Override
+    public Boolean getVariableBoolean(String variableName) {
+        if (variables.containsKey(variableName)) {
+            return getVariableSpecificBoolean(variableName);
+        } else {
+            int priority = Integer.MIN_VALUE;
+            Boolean value;
+            
+            if (PermissionManager.getInstance().getVariableDefaultValue(variableName) != null) {
+                value = PermissionManager.getInstance().getVariableDefaultValue(variableName).equalsIgnoreCase("true");
+            } else {
+                value = null;
+            }
+            
+            for (Long parent : getParentGroups(false)) {
+                IPermissionGroup parentGroup = PermissionManager.getInstance().getGroup(parent);
+                Boolean groupValue = parentGroup.getVariableSpecificBoolean(variableName);
+                
+                if (groupValue != null && parentGroup.getPriority() > priority) {
+                    value = groupValue;
+                    priority = parentGroup.getPriority();
+                }
+            }
+            
+            return value;
+        }
+    }
+
+    @Override
+    public Integer getVariableInteger(String variableName) {
+        if (variables.containsKey(variableName)) {
+            return getVariableSpecificInteger(variableName);
+        } else {
+            int priority = Integer.MIN_VALUE;
+            Integer value;
+            
+            try {
+                if (PermissionManager.getInstance().getVariableDefaultValue(variableName) != null) {
+                    value = Integer.parseInt(PermissionManager.getInstance().getVariableDefaultValue(variableName));
+                } else {
+                    value = null;
+                }
+            } catch (NumberFormatException e) {
+                value = null;
+            }
+            
+            for (Long parent : getParentGroups(false)) {
+                IPermissionGroup parentGroup = PermissionManager.getInstance().getGroup(parent);
+                Integer groupValue = parentGroup.getVariableSpecificInteger(variableName);
+                
+                if (groupValue != null && parentGroup.getPriority() > priority) {
+                    value = groupValue;
+                    priority = parentGroup.getPriority();
+                }
+            }
+            
+            return value;
+        }
+    }
+
+    @Override
+    public String getVariableSpecificString(String variableName) {
+        return variables.get(variableName);
+    }
+
+    @Override
+    public Boolean getVariableSpecificBoolean(String variableName) {
+        if (variables.containsKey(variableName)) {
+            return variables.get(variableName).equalsIgnoreCase("true");
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public Integer getVariableSpecificInteger(String variableName) {
+        if (variables.containsKey(variableName)) {
+            try {
+                return Integer.parseInt(variables.get(variableName));
+            } catch (NumberFormatException e) {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+    
+    @Override
+    public void deleteVariable(String variableName) {
+        variables.remove(variableName);
+        
+        try {
+            GoldenApple.getInstanceDatabaseManager().execute("DELETE FROM UserVariables WHERE UserID=? AND VariableName=?", id, variableName);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void setVariable(String variableName, String value) {
+        if (value != null) {
+            deleteVariable(variableName);
+            variables.put(variableName, value);
+            
+            try {
+                GoldenApple.getInstanceDatabaseManager().execute("INSERT INTO UserVariables (UserID, VariableName, Value) VALUES (?, ?, ?)", id, variableName, value);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            deleteVariable(variableName);
+        }
+    }
+
+    @Override
+    public void setVariable(String variableName, Boolean value) {
+        if (value != null) {
+            setVariable(variableName, (value) ? "true" : "false");
+        } else {
+            deleteVariable(variableName);
+        }
+    }
+
+    @Override
+    public void setVariable(String variableName, Integer value) {
+        if (variableName != null) {
+            setVariable(variableName, value.toString());
+        } else {
+            deleteVariable(variableName);
+        }
     }
 }

@@ -135,4 +135,16 @@ public interface IPermissionObject {
      */
     public List<Long> getParentGroups(boolean directOnly);
     
+    public String getVariableString(String variableName);
+    public Boolean getVariableBoolean(String variableName);
+    public Integer getVariableInteger(String variableName);
+    
+    public String getVariableSpecificString(String variableName);
+    public Boolean getVariableSpecificBoolean(String variableName);
+    public Integer getVariableSpecificInteger(String variableName);
+    
+    public void deleteVariable(String variableName);
+    public void setVariable(String variableName, String value);
+    public void setVariable(String variableName, Boolean value);
+    public void setVariable(String variableName, Integer value);
 }

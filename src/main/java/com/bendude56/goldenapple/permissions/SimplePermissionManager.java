@@ -13,6 +13,7 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 import com.bendude56.goldenapple.GoldenApple;
+import com.bendude56.goldenapple.SimpleLocalizationManager;
 import com.bendude56.goldenapple.util.UUIDFetcher;
 
 /**
@@ -30,13 +31,11 @@ public class SimplePermissionManager extends PermissionManager {
     
     private PermissionNode rootNode;
     
-    private boolean defaultComplexCommands;
-    private boolean defaultAutoLock;
-    
     private PermissionGroup requiredGroup;
     private ArrayList<PermissionGroup> defaultGroups;
     private ArrayList<PermissionGroup> opGroups;
     private ArrayList<PermissionGroup> devGroups;
+    private HashMap<String, String> variableDefaults = new HashMap<String, String>();
     
     public SimplePermissionManager() {
         rootNode = new SimplePermissionNode("", null);
@@ -46,13 +45,15 @@ public class SimplePermissionManager extends PermissionManager {
         GoldenApple.getInstanceDatabaseManager().registerTableUpdater("Users", 4, new UserUuidTableUpdater());
         GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("Users");
         GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("UserPermissions");
+        GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("UserVariables");
         GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("Groups");
         GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("GroupPermissions");
         GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("GroupGroupMembers");
         GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("GroupUserMembers");
+        GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("GroupVariables");
         
-        defaultComplexCommands = GoldenApple.getInstanceMainConfig().getBoolean("modules.permissions.defaultComplexCommands", true);
-        defaultAutoLock = GoldenApple.getInstanceMainConfig().getBoolean("modules.lock.autoLockDefault", true);
+        setVariableDefaultValue("goldenapple.complexSyntax", GoldenApple.getInstanceMainConfig().getBoolean("modules.permissions.defaultComplexCommands", true));
+        setVariableDefaultValue("goldenapple.locale", ((SimpleLocalizationManager) GoldenApple.getInstance().getLocalizationManager()).defaultLocale);
     }
     
     public int getUserCacheCurrentSize() {
@@ -224,7 +225,7 @@ public class SimplePermissionManager extends PermissionManager {
                 ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT * FROM Users WHERE ID=?", id);
                 try {
                     if (r.next()) {
-                        PermissionUser u = new PermissionUser(r.getLong("ID"), r.getString("Name"), UUID.fromString(r.getString("UUID")), r.getString("Locale"), r.getBoolean("ComplexCommands"), r.getBoolean("AutoLock"));
+                        PermissionUser u = new PermissionUser(r.getLong("ID"), r.getString("Name"), UUID.fromString(r.getString("UUID")));
                         userCache.put(u.getId(), u);
                         userCacheOut.addLast(u.getId());
                         popCache();
@@ -260,7 +261,7 @@ public class SimplePermissionManager extends PermissionManager {
             ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT * FROM Users WHERE UUID=?", uuid.toString());
             try {
                 if (r.next()) {
-                    PermissionUser u = new PermissionUser(r.getLong("ID"), r.getString("Name"), UUID.fromString(r.getString("UUID")), r.getString("Locale"), r.getBoolean("ComplexCommands"), r.getBoolean("AutoLock"));
+                    PermissionUser u = new PermissionUser(r.getLong("ID"), r.getString("Name"), UUID.fromString(r.getString("UUID")));
                     userCache.put(u.getId(), u);
                     userCacheOut.addLast(u.getId());
                     popCache();
@@ -299,7 +300,7 @@ public class SimplePermissionManager extends PermissionManager {
                 ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT * FROM Users WHERE Name=?", name);
                 try {
                     if (r.next()) {
-                        PermissionUser u = new PermissionUser(r.getLong("ID"), r.getString("Name"), UUID.fromString(r.getString("UUID")), r.getString("Locale"), r.getBoolean("ComplexCommands"), r.getBoolean("AutoLock"));
+                        PermissionUser u = new PermissionUser(r.getLong("ID"), r.getString("Name"), UUID.fromString(r.getString("UUID")));
                         userCache.put(u.getId(), u);
                         userCacheOut.addLast(u.getId());
                         popCache();
@@ -395,7 +396,7 @@ public class SimplePermissionManager extends PermissionManager {
             return user;
         } else {
             try {
-                ResultSet r = GoldenApple.getInstanceDatabaseManager().executeReturnGenKeys("INSERT INTO Users (Name, UUID, ComplexCommands, AutoLock) VALUES (?, ?, ?, ?)", name, uuid.toString(), defaultComplexCommands, defaultAutoLock);
+                ResultSet r = GoldenApple.getInstanceDatabaseManager().executeReturnGenKeys("INSERT INTO Users (Name, UUID) VALUES (?, ?)", name, uuid.toString());
                 
                 try {
                     r.next();
@@ -502,7 +503,27 @@ public class SimplePermissionManager extends PermissionManager {
             }
         }
     }
-    
+
+    @Override
+    public String getVariableDefaultValue(String variableName) {
+        return variableDefaults.get(variableName);
+    }
+
+    @Override
+    public void setVariableDefaultValue(String variableName, String defaultValue) {
+        variableDefaults.put(variableName, defaultValue);
+    }
+
+    @Override
+    public void setVariableDefaultValue(String variableName, Boolean defaultValue) {
+       variableDefaults.put(variableName, (defaultValue) ? "true" : "false");
+    }
+
+    @Override
+    public void setVariableDefaultValue(String variableName, Integer defaultValue) {
+        variableDefaults.put(variableName, defaultValue.toString());
+    }
+
     @Override
     public void close() {
         userCache = null;
