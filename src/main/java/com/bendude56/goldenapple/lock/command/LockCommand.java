@@ -2,6 +2,7 @@ package com.bendude56.goldenapple.lock.command;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
+import java.util.Map;
 import java.util.logging.Level;
 
 import org.bukkit.ChatColor;
@@ -35,33 +36,38 @@ public class LockCommand extends DualSyntaxCommand {
 		
 		LockedBlock target = null;
 		
-		if (arg.isDefined("override-alwayson")) {
-		    if (!LockManager.getInstance().canOverride(user)) {
-		        GoldenApple.logPermissionFail(user, commandLabel, args, true);
-		    } else {
-		        LockManager.getInstance().setOverrideOn(user, false);
-                user.setVariable("goldenapple.lock.alwaysOverride", true);
-                user.sendLocalizedMessage("general.lock.override.alwaysOn");
-		    }
+		if (arg.isDefined("override")) {
+		    String overrideMode = arg.getKeyValuePair("override").getKey();
+		    
+		    if (overrideMode.equalsIgnoreCase("alwayson")) {
+	            if (!LockManager.getInstance().canOverride(user)) {
+	                GoldenApple.logPermissionFail(user, commandLabel, args, true);
+	            } else {
+	                LockManager.getInstance().setOverrideOn(user, false);
+	                user.setVariable("goldenapple.lock.alwaysOverride", true);
+	                user.sendLocalizedMessage("general.lock.override.alwaysOn");
+	            }
+	        } else if (overrideMode.equalsIgnoreCase("on")) {
+	            if (!LockManager.getInstance().canOverride(user)) {
+	                GoldenApple.logPermissionFail(user, commandLabel, args, true);
+	            } else {
+	                LockManager.getInstance().setOverrideOn(user, true);
+	                user.deleteVariable("goldenapple.lock.alwaysOverride");
+	                user.sendLocalizedMessage("general.lock.override.on");
+	            }
+	        } else if (overrideMode.equalsIgnoreCase("off")) {
+	            if (!LockManager.getInstance().canOverride(user)) {
+	                GoldenApple.logPermissionFail(user, commandLabel, args, true);
+	            } else {
+	                LockManager.getInstance().setOverrideOn(user, false);
+	                user.deleteVariable("goldenapple.lock.alwaysOverride");
+	                user.sendLocalizedMessage("general.lock.override.off");
+	            }
+	        } else {
+	            user.sendLocalizedMessage("error.lock.unknownOverrideMode", overrideMode);
+	        }
+		    
 		    return;
-		} else if (arg.isDefined("override-on")) {
-			if (!LockManager.getInstance().canOverride(user)) {
-				GoldenApple.logPermissionFail(user, commandLabel, args, true);
-			} else {
-				LockManager.getInstance().setOverrideOn(user, true);
-				user.deleteVariable("goldenapple.lock.alwaysOverride");
-				user.sendLocalizedMessage("general.lock.override.on");
-			}
-			return;
-		} else if (arg.isDefined("override-off")) {
-			if (!LockManager.getInstance().canOverride(user)) {
-				GoldenApple.logPermissionFail(user, commandLabel, args, true);
-			} else {
-				LockManager.getInstance().setOverrideOn(user, false);
-				user.deleteVariable("goldenapple.lock.alwaysOverride");
-				user.sendLocalizedMessage("general.lock.override.off");
-			}
-			return;
 		}
 		
 		if (arg.isDefined("create")) {
@@ -113,135 +119,105 @@ public class LockCommand extends DualSyntaxCommand {
 			changeAccess(instance, user, target, arg.getString("access"));
 		}
 		
-		if (arg.isDefined("redstone-on")) {
-			if (!target.canModifyBlock(user)) {
-				GoldenApple.logPermissionFail(user, commandLabel, args, true);
-				return;
-			}
-			
-			setHopperAllow(user, target, true);
-		} else if (arg.isDefined("redstone-off")) {
-			if (!target.canModifyBlock(user)) {
-				GoldenApple.logPermissionFail(user, commandLabel, args, true);
-				return;
-			}
-			
-			setHopperAllow(user, target, false);
+		if (arg.isDefined("redstone")) {
+		    String redstoneMode = arg.getKeyValuePair("redstone").getKey();
+		    
+		    if (redstoneMode.equalsIgnoreCase("on")) {
+		        if (!target.canModifyBlock(user)) {
+	                GoldenApple.logPermissionFail(user, commandLabel, args, true);
+	                return;
+	            }
+	            
+	            setHopperAllow(user, target, true);
+		    } else if (redstoneMode.equalsIgnoreCase("off")) {
+		        if (!target.canModifyBlock(user)) {
+	                GoldenApple.logPermissionFail(user, commandLabel, args, true);
+	                return;
+	            }
+	            
+	            setHopperAllow(user, target, false);
+		    } else {
+		        user.sendLocalizedMessage("error.lock.unknownRedstoneMode", redstoneMode);
+		    }
 		}
 		
-		if (arg.isDefined("invite-none")) {
-			if (!target.canInvite(user)) {
-				GoldenApple.logPermissionFail(user, commandLabel, args, true);
-				return;
-			}
-			
-			for (IPermissionUser u : arg.getUserList("invite-none")) {
-				if (target.hasFullControl(user) || target.getActualLevel(u).levelId <= GuestLevel.ALLOW_INVITE.levelId) {
-					removeUser(instance, user, target, u);
-				}
-			}
+		if (arg.isDefined("invite")) {
+		    for (Map.Entry<String, Object> kvp : arg.getKeyValuePairList("invite")) {
+		        String accessLevel = kvp.getKey();
+		        IPermissionUser guest = (IPermissionUser)kvp.getValue();
+		        GuestLevel l;
+		        
+		        if (accessLevel.equalsIgnoreCase("n") || accessLevel.equalsIgnoreCase("none")) {
+		            l = GuestLevel.NONE;
+		        } else if (accessLevel.equalsIgnoreCase("u") || accessLevel.equalsIgnoreCase("use")) {
+		            l = GuestLevel.USE;
+		        } else if (accessLevel.equalsIgnoreCase("i") || accessLevel.equalsIgnoreCase("invite")) {
+		            l = GuestLevel.ALLOW_INVITE;
+		        } else if (accessLevel.equalsIgnoreCase("m") || accessLevel.equalsIgnoreCase("modify")) {
+		            l = GuestLevel.ALLOW_BLOCK_MODIFY;
+		        } else if (accessLevel.equalsIgnoreCase("f") || accessLevel.equalsIgnoreCase("full")) {
+		            l = GuestLevel.FULL;
+		        } else {
+		            user.sendLocalizedMessage("error.lock.unknownAccessLevel", accessLevel);
+		            continue;
+		        }
+		        
+		        if (!target.canInvite(user)) {
+		            GoldenApple.logPermissionFail(user, commandLabel, args, true);
+		            if (target.getOverrideLevel(user).levelId >= GuestLevel.ALLOW_INVITE.levelId) {
+                        user.sendLocalizedMessage("general.lock.overrideAvailable.complex");
+                    }
+		            return;
+		        } else if (target.getOwner() == guest.getId()) {
+                    user.sendLocalizedMessage("error.lock.inviteOwner");
+		        } else if (!target.hasFullControl(user) && ((l == GuestLevel.NONE && target.getActualLevel(guest).levelId >= GuestLevel.ALLOW_INVITE.levelId) || l.levelId >= GuestLevel.ALLOW_INVITE.levelId)) {
+		            GoldenApple.logPermissionFail(user, commandLabel, args, true);
+		            if (target.getOverrideLevel(user).levelId >= GuestLevel.FULL.levelId) {
+                        user.sendLocalizedMessage("general.lock.overrideAvailable.complex");
+                    }
+                    return;
+		        } else if (l == GuestLevel.NONE) {
+		            removeUser(instance, user, target, guest);
+		        } else {
+		            addUser(instance, user, target, guest, l);
+		        }
+		    }
 		}
 		
-		if (arg.isDefined("invite-use")) {
-			if (!target.canInvite(user)) {
-				GoldenApple.logPermissionFail(user, commandLabel, args, true);
-				return;
-			}
-			
-			for (IPermissionUser u : arg.getUserList("invite-use")) {
-				if (target.hasFullControl(user) || target.getActualLevel(u) == GuestLevel.NONE) {
-					addUser(instance, user, target, u, GuestLevel.USE);
-				}
-			}
-		}
-		
-		if (arg.isDefined("invite-invite")) {
-			if (!target.hasFullControl(user)) {
-				GoldenApple.logPermissionFail(user, commandLabel, args, true);
-				return;
-			}
-			
-			for (IPermissionUser u : arg.getUserList("invite-invite")) {
-				addUser(instance, user, target, u, GuestLevel.ALLOW_INVITE);
-			}
-		}
-		
-		if (arg.isDefined("invite-modify")) {
-			if (!target.hasFullControl(user)) {
-				GoldenApple.logPermissionFail(user, commandLabel, args, true);
-				return;
-			}
-			
-			for (IPermissionUser u : arg.getUserList("invite-modify")) {
-				addUser(instance, user, target, u, GuestLevel.ALLOW_BLOCK_MODIFY);
-			}
-		}
-		
-		if (arg.isDefined("invite-full")) {
-			if (!target.hasFullControl(user)) {
-				GoldenApple.logPermissionFail(user, commandLabel, args, true);
-				return;
-			}
-			
-			for (IPermissionUser u : arg.getUserList("invite-full")) {
-				addUser(instance, user, target, u, GuestLevel.FULL);
-			}
-		}
-		
-		if (arg.isDefined("group-invite-none")) {
-			if (!target.hasFullControl(user)) {
-				GoldenApple.logPermissionFail(user, commandLabel, args, true);
-				return;
-			}
-			
-			for (IPermissionGroup g : arg.getGroupList("group-invite-none")) {
-				removeGroup(instance, user, target, g);
-			}
-		}
-		
-		if (arg.isDefined("group-invite-use")) {
-			if (!target.hasFullControl(user)) {
-				GoldenApple.logPermissionFail(user, commandLabel, args, true);
-				return;
-			}
-			
-			for (IPermissionGroup g : arg.getGroupList("group-invite-use")) {
-				addGroup(instance, user, target, g, GuestLevel.USE);
-			}
-		}
-		
-		if (arg.isDefined("group-invite-invite")) {
-			if (!target.hasFullControl(user)) {
-				GoldenApple.logPermissionFail(user, commandLabel, args, true);
-				return;
-			}
-			
-			for (IPermissionGroup g : arg.getGroupList("group-invite-invite")) {
-				addGroup(instance, user, target, g, GuestLevel.ALLOW_INVITE);
-			}
-		}
-		
-		if (arg.isDefined("group-invite-modify")) {
-			if (!target.hasFullControl(user)) {
-				GoldenApple.logPermissionFail(user, commandLabel, args, true);
-				return;
-			}
-			
-			for (IPermissionGroup g : arg.getGroupList("group-invite-modify")) {
-				addGroup(instance, user, target, g, GuestLevel.ALLOW_BLOCK_MODIFY);
-			}
-		}
-		
-		if (arg.isDefined("group-invite-full")) {
-			if (!target.hasFullControl(user)) {
-				GoldenApple.logPermissionFail(user, commandLabel, args, true);
-				return;
-			}
-			
-			for (IPermissionGroup g : arg.getGroupList("group-invite-full")) {
-				addGroup(instance, user, target, g, GuestLevel.FULL);
-			}
-		}
+		if (arg.isDefined("group-invite")) {
+            for (Map.Entry<String, Object> kvp : arg.getKeyValuePairList("group-invite")) {
+                String accessLevel = kvp.getKey();
+                IPermissionGroup guest = (IPermissionGroup)kvp.getValue();
+                GuestLevel l;
+                
+                if (accessLevel.equalsIgnoreCase("n") || accessLevel.equalsIgnoreCase("none")) {
+                    l = GuestLevel.NONE;
+                } else if (accessLevel.equalsIgnoreCase("u") || accessLevel.equalsIgnoreCase("use")) {
+                    l = GuestLevel.USE;
+                } else if (accessLevel.equalsIgnoreCase("i") || accessLevel.equalsIgnoreCase("invite")) {
+                    l = GuestLevel.ALLOW_INVITE;
+                } else if (accessLevel.equalsIgnoreCase("m") || accessLevel.equalsIgnoreCase("modify")) {
+                    l = GuestLevel.ALLOW_BLOCK_MODIFY;
+                } else if (accessLevel.equalsIgnoreCase("f") || accessLevel.equalsIgnoreCase("full")) {
+                    l = GuestLevel.FULL;
+                } else {
+                    user.sendLocalizedMessage("error.lock.unknownAccessLevel", accessLevel);
+                    continue;
+                }
+                
+                if (!target.hasFullControl(user)) {
+                    GoldenApple.logPermissionFail(user, commandLabel, args, true);
+                    if (target.getOverrideLevel(user).levelId >= GuestLevel.FULL.levelId) {
+                        user.sendLocalizedMessage("general.lock.overrideAvailable.complex");
+                    }
+                    return;
+                } else if (l == GuestLevel.NONE) {
+                    removeGroup(instance, user, target, guest);
+                } else {
+                    addGroup(instance, user, target, guest, l);
+                }
+            }
+        }
 		
 		if (arg.isDefined("info")) {
 			getInfo(instance, user, target);
@@ -547,9 +523,7 @@ public class LockCommand extends DualSyntaxCommand {
 		return new ArgumentInfo[] {
 			ArgumentInfo.newInt("select", "s", "select"),
 			
-			ArgumentInfo.newSwitch("override-on", "o:on", "override:on"),
-			ArgumentInfo.newSwitch("override-alwayson", "o:alwayson", "override:alwayson"),
-			ArgumentInfo.newSwitch("override-off", "o:off", "override:off"),
+			ArgumentInfo.newKeyValuePair(ArgumentInfo.newSwitch("override", "o", "override")),
 			
 			ArgumentInfo.newSwitch("create", "c", "create"),
 			ArgumentInfo.newSwitch("public", "p", "public"),
@@ -558,20 +532,10 @@ public class LockCommand extends DualSyntaxCommand {
 			ArgumentInfo.newSwitch("info", "i", "info"),
 			
 			ArgumentInfo.newString("access", "a", "access", false),
-			ArgumentInfo.newSwitch("redstone-on", "r:on", "redstone:on"),
-			ArgumentInfo.newSwitch("redstone-off", "r:off", "redstone:off"),
+			ArgumentInfo.newKeyValuePair(ArgumentInfo.newSwitch("redstone", "r", "redstone")),
 			
-			ArgumentInfo.newUserList("invite-none", "in:n", "invite:none", false, false),
-			ArgumentInfo.newUserList("invite-use", "in:u", "invite:use", false, false),
-			ArgumentInfo.newUserList("invite-invite", "in:i", "invite:invite", false, false),
-			ArgumentInfo.newUserList("invite-modify", "in:m", "invite:modify", false, false),
-			ArgumentInfo.newUserList("invite-full", "in:f", "invite:full", false, false),
-			
-			ArgumentInfo.newGroupList("group-invite-none", "gin:n", "groupinvite:none", false),
-			ArgumentInfo.newGroupList("group-invite-use", "gin:u", "groupinvite:use", false),
-			ArgumentInfo.newGroupList("group-invite-invite", "gin:i", "groupinvite:invite", false),
-			ArgumentInfo.newGroupList("group-invite-modify", "gin:m", "groupinvite:modify", false),
-			ArgumentInfo.newGroupList("group-invite-full", "gin:f", "groupinvite:full", false),
+			ArgumentInfo.newKeyValuePair(ArgumentInfo.newUserList("invite", "in", "invite", false, false)),
+			ArgumentInfo.newKeyValuePair(ArgumentInfo.newGroupList("group-invite", "gin", "groupinvite", false)),
 		};
 	}
 }
