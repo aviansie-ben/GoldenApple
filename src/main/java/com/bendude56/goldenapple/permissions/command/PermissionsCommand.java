@@ -352,12 +352,22 @@ public class PermissionsCommand extends GoldenAppleCommand {
                 
                 for (Entry<String, String> var : setVars.entrySet()) {
                     for (IPermissionUser u : ul) {
-                        u.setVariable(var.getKey(), var.getValue());
+                        if (var.getValue().equals("<null>")) {
+                            u.deleteVariable(var.getKey());
+                        } else {
+                            u.setVariable(var.getKey(), var.getValue());
+                        }
+                        
                         user.sendLocalizedMessage("general.permissions.varSet.user", u.getName(), var.getKey(), var.getValue());
                     }
                     
                     for (IPermissionGroup g : gl) {
-                        g.setVariable(var.getKey(), var.getValue());
+                        if (var.getValue().equals("<null>")) {
+                            g.deleteVariable(var.getKey());
+                        } else {
+                            g.setVariable(var.getKey(), var.getValue());
+                        }
+                        
                         user.sendLocalizedMessage("general.permissions.varSet.group", g.getName(), var.getKey(), var.getValue());
                     }
                 }
