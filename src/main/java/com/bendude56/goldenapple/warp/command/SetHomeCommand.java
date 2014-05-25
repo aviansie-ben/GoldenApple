@@ -38,8 +38,10 @@ public class SetHomeCommand extends GoldenAppleCommand {
 		}
 		
 		if (user.hasPermission(WarpManager.homeEditOwn)) {
-			if (homeNumber > WarpManager.getInstance().getMaxHomes()) {
-				user.sendLocalizedMessage("error.home.setMax", WarpManager.getInstance().getMaxHomes() + "");
+		    int maxHomes = user.getVariableInteger("goldenapple.warp.maxHomes");
+		    
+			if (homeNumber > maxHomes) {
+				user.sendLocalizedMessage("error.home.setMax", user.getVariableInteger("goldenapple.warp.maxHomes") + "");
 				return true;
 			}
 			
