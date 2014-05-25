@@ -259,6 +259,8 @@ general.permissions.remove.warnStart=&eWARNING: You are about to permanently rem
 general.permissions.remove.warnUser=&e   User: %1
 general.permissions.remove.warnGroup=&e   Group: %1
 general.permissions.remove.warnEnd=&eIf you are sure you wish to permanently remove these groups and users, use /gaverify.
+general.permissions.varSet.group=&aGroup '%1' has had variable '%2' set to '%3' successfully...
+general.permissions.varSet.user=&aUser '%1' has had variable '%2' set to '%3' successfully...
 
 general.request.assigned=&aRequest #%1 is now assigned to %2&a.
 general.request.closed=&aRequest #%1 has been closed.
@@ -457,6 +459,7 @@ help.permissions.3=Delete selected users and groups using &7-r
 help.permissions.4=Add permissions using &7-pa <permission>&f and remove using &7-pr <permission>
 help.permissions.5=Add users/groups to a group using &7-ua <user>&f and &7-ga <group>
 help.permissions.6=Remove users/groups from a group using &7-ur <user>&f and &7-gr <group>
+help.permissions.7=Set user/group variables using &7-var:<variable> <value>
 
 help.request.1=List available queues using /%1 list
 help.request.2=List a queue's open requests using /%1 <queue> list
