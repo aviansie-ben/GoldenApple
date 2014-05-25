@@ -1,6 +1,8 @@
 package com.bendude56.goldenapple.permissions.command;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -44,6 +46,7 @@ public class PermissionsCommand extends GoldenAppleCommand {
         ArrayList<String> remUsers = new ArrayList<String>();
         ArrayList<String> addGroups = new ArrayList<String>();
         ArrayList<String> remGroups = new ArrayList<String>();
+        HashMap<String, String> setVars = new HashMap<String, String>();
         
         String chatPrefix = null;
         Character chatColor = null;
@@ -127,18 +130,25 @@ public class PermissionsCommand extends GoldenAppleCommand {
                     chatColor = args[i + 1].charAt(0);
                     i++;
                 }
+            } else if (args[i].toLowerCase().startsWith("-var:") && args[i].length() > 5) {
+                if (i == args.length - 1 || args[i + 1].startsWith("-")) {
+                    user.sendLocalizedMessage("shared.parameterMissing", args[i]);
+                } else {
+                    setVars.put(args[i].substring(5), args[i + 1]);
+                    i++;
+                }
             } else if (args[i].equalsIgnoreCase("-v")) {
                 verified = true;
             } else {
                 user.sendLocalizedMessage("shared.unknownOption", args[i]);
             }
         }
-        if (chatPrefix == null && chatColor == null && !remove && !add && addPermissions.isEmpty() && remPermissions.isEmpty() && addUsers.isEmpty() && remUsers.isEmpty() && addGroups.isEmpty() && remGroups.isEmpty()) {
+        if (chatPrefix == null && chatColor == null && !remove && !add && addPermissions.isEmpty() && remPermissions.isEmpty() && addUsers.isEmpty() && remUsers.isEmpty() && addGroups.isEmpty() && remGroups.isEmpty() && setVars.isEmpty()) {
             user.sendLocalizedMessage("error.permissions.noAction");
             return true;
         }
         if (remove) {
-            if (add || !remPermissions.isEmpty() || !addPermissions.isEmpty() || !addUsers.isEmpty() || !remUsers.isEmpty() || !addGroups.isEmpty() || !remGroups.isEmpty()) {
+            if (add || !remPermissions.isEmpty() || !addPermissions.isEmpty() || !addUsers.isEmpty() || !remUsers.isEmpty() || !addGroups.isEmpty() || !remGroups.isEmpty() || !setVars.isEmpty()) {
                 user.sendLocalizedMessage("error.permissions.conflict");
                 return true;
             }
@@ -207,7 +217,7 @@ public class PermissionsCommand extends GoldenAppleCommand {
             }
             return true;
         } else if (add) {
-            if (!remPermissions.isEmpty() || !addUsers.isEmpty() || !remUsers.isEmpty() || !addGroups.isEmpty() || !remGroups.isEmpty()) {
+            if (!remPermissions.isEmpty() || !addUsers.isEmpty() || !remUsers.isEmpty() || !addGroups.isEmpty() || !remGroups.isEmpty() || !setVars.isEmpty()) {
                 user.sendLocalizedMessage("error.permissions.conflict");
                 return true;
             } else if (!changeUsers.isEmpty() && !user.hasPermission(PermissionManager.userAddPermission)) {
@@ -331,6 +341,25 @@ public class PermissionsCommand extends GoldenAppleCommand {
                 for (IPermissionGroup g : gl) {
                     g.setPrefix(chatPrefix);
                     ((PermissionGroup)g).save();
+                }
+            }
+            
+            if (!setVars.isEmpty()) {
+                if (gl.isEmpty() && ul.isEmpty()) {
+                    user.sendLocalizedMessage("error.permissions.noTarget", "-var");
+                    return true;
+                }
+                
+                for (Entry<String, String> var : setVars.entrySet()) {
+                    for (IPermissionUser u : ul) {
+                        u.setVariable(var.getKey(), var.getValue());
+                        user.sendLocalizedMessage("general.permissions.varSet.user", u.getName(), var.getKey(), var.getValue());
+                    }
+                    
+                    for (IPermissionGroup g : gl) {
+                        g.setVariable(var.getKey(), var.getValue());
+                        user.sendLocalizedMessage("general.permissions.varSet.group", g.getName(), var.getKey(), var.getValue());
+                    }
                 }
             }
         }
