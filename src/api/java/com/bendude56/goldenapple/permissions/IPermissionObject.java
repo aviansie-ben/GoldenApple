@@ -39,8 +39,8 @@ public interface IPermissionObject {
      * or an equivalent permission. Permissions inherited from groups that this
      * object is a member of will be included in this search.
      * <p>
-     * {@link #hasPermission(Permission)} is preferred and should be used in
-     * place of this function wherever possible.
+     * {@link #hasPermission(PermissionManager.Permission)} is preferred and
+     * should be used in place of this function wherever possible.
      * 
      * @param permission The name of the permission that this object should be
      * checked for.
@@ -64,8 +64,8 @@ public interface IPermissionObject {
      * Checks whether or not this object has been granted a specified permission
      * or an equivalent permission.
      * <p>
-     * {@link #hasPermission(Permission, boolean)} is preferred and should be
-     * used in place of this function wherever possible.
+     * {@link #hasPermission(PermissionManager.Permission, boolean)} is
+     * preferred and should be used in place of this function wherever possible.
      * 
      * @param permission The name of the permission that this object should be
      * checked for.
@@ -93,7 +93,8 @@ public interface IPermissionObject {
      * permission. Equivalent permissions and group inheritance will be ignored.
      * This function should <strong>not</strong> be used to check whether a
      * object has permission to perform a specific action; in these cases,
-     * {@link #hasPermission(Permission)} should be used instead.
+     * {@link #hasPermission(PermissionManager.Permission)} should be used
+     * instead.
      * 
      * @param permission The permission that this object should be checked for.
      * @return True if this object has been explicitly granted the specified
@@ -113,8 +114,8 @@ public interface IPermissionObject {
      * Explicitly grants the specified permission to this object. If this object
      * has already been granted the requested permission, nothing will occur.
      * <p>
-     * {@link #addPermission(Permission)} is preferred and should be used in
-     * place of this function wherever possible.
+     * {@link #addPermission(PermissionManager.Permission)} is preferred and
+     * should be used in place of this function wherever possible.
      * 
      * @param permission The name of the permission to be granted.
      */
@@ -138,8 +139,8 @@ public interface IPermissionObject {
      * of, or have been granted an equivalent permission. If this object has not
      * been granted the specified permission, nothing will occur.
      * <p>
-     * {@link #removePermission(Permission)} is preferred and should be used in
-     * place of this function wherever possible.
+     * {@link #removePermission(PermissionManager.Permission)} is preferred and
+     * should be used in place of this function wherever possible.
      * 
      * @param permission The name of the permission to be removed.
      */
