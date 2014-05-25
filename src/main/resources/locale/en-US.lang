@@ -363,12 +363,11 @@ header.request=&7-----&6 GoldenApple Requests &7-----
 header.warps=&7-----&6 GoldenApple Warps &7-----
 
 help.ban.complex.1=Select a target using &7-u <user>
-help.ban.complex.2=Select a channel using &7-c <channel>
-help.ban.complex.3=Specify a ban reason using &7-r <reason>
-help.ban.complex.4=Specify ban duration using &7-t <duration>
-help.ban.complex.5=Void a previous ban using &7-v
-help.ban.complex.6=Get information on current bans using &7-i
-help.ban.complex.7=Durations are in form XdXhXmXs
+help.ban.complex.2=Specify a ban reason using &7-r <reason>
+help.ban.complex.3=Specify ban duration using &7-t <duration>
+help.ban.complex.4=Void a previous ban using &7-v
+help.ban.complex.5=Get information on current bans using &7-i
+help.ban.complex.6=Durations are in form XdXhXmXs
 
 help.ban.simple.1=Ban a user using &7/%1 <player> [{<duration>|permanent}] [reason]
 help.ban.simple.2=Void a previous ban using &7/%1 <player> void
