@@ -143,9 +143,6 @@ public class PermissionGroup implements IPermissionGroup {
         }
     }
     
-    /**
-     * Pushes any changes made to this group to the SQL database
-     */
     public void save() {
         try {
             GoldenApple.getInstanceDatabaseManager().execute("UPDATE Groups SET Name=?, Priority=?, ChatColor=?, Prefix=? WHERE ID=?", name, priority, (chatColorSelected) ? String.valueOf(chatColor.getChar()) : null, prefix, id);
@@ -160,9 +157,6 @@ public class PermissionGroup implements IPermissionGroup {
         return id;
     }
     
-    /**
-     * Gets the name of the group represented by this instance.
-     */
     @Override
     public String getName() {
         return name;
@@ -204,9 +198,6 @@ public class PermissionGroup implements IPermissionGroup {
         this.prefix = prefix;
     }
     
-    /**
-     * Gets a list of user IDs for users that inherit this group's permissions.
-     */
     @Override
     public List<Long> getUsers() {
         return Collections.unmodifiableList(users);
@@ -273,10 +264,6 @@ public class PermissionGroup implements IPermissionGroup {
         return false;
     }
     
-    /**
-     * Gets a list of group IDs for groups that inherit this group's
-     * permissions.
-     */
     @Override
     public List<Long> getGroups() {
         return Collections.unmodifiableList(groups);
@@ -411,53 +398,21 @@ public class PermissionGroup implements IPermissionGroup {
         removePermission(PermissionManager.getInstance().getPermissionByName(permission));
     }
     
-    /**
-     * Checks whether this group has a given permission.
-     * 
-     * @param permission The permission to check for.
-     * @return True if the group has the specified permission, false otherwise.
-     */
     @Override
     public boolean hasPermission(String permission) {
         return hasPermission(permission, false);
     }
     
-    /**
-     * Checks whether this group has a given permission.
-     * 
-     * @param permission The permission to check for.
-     * @return True if the group has the specified permission, false otherwise.
-     */
     @Override
     public boolean hasPermission(Permission permission) {
         return hasPermission(permission, false);
     }
     
-    /**
-     * Checks whether this group has a given permission.
-     * 
-     * @param permission The permission to check for.
-     * @param specific Determines whether or not indirect permissions should be
-     * considered. If true, only permissions given specifically to this group
-     * will be checked. If false, all permissions (including indirect
-     * permissions) will be considered.
-     * @return True if the group has the specified permission, false otherwise.
-     */
     @Override
     public boolean hasPermission(String permission, boolean specific) {
         return hasPermission(PermissionManager.getInstance().getPermissionByName(permission), specific);
     }
     
-    /**
-     * Checks whether this group has a given permission.
-     * 
-     * @param permission The permission to check for.
-     * @param specific Determines whether or not indirect permissions should be
-     * considered. If true, only permissions given specifically to this group
-     * will be checked. If false, all permissions (including indirect
-     * permissions) will be considered.
-     * @return True if the group has the specified permission, false otherwise.
-     */
     @Override
     public boolean hasPermission(Permission permission, boolean inherited) {
         List<Long> parentGroups = getParentGroups(false);

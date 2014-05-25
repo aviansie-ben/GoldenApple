@@ -16,12 +16,6 @@ import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.SimpleLocalizationManager;
 import com.bendude56.goldenapple.util.UUIDFetcher;
 
-/**
- * Manages the inner workings of the GoldenApple permissions system
- * 
- * @author Deaboy
- * @author ben_dude56
- */
 public class SimplePermissionManager extends PermissionManager {
     private int userCacheSize;
     private HashMap<Long, PermissionUser> userCache = new HashMap<Long, PermissionUser>();
