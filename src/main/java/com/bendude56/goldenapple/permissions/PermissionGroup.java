@@ -60,6 +60,7 @@ public class PermissionGroup implements IPermissionGroup {
         
         this.loadUsersAndGroups();
         this.loadPermissions();
+        this.loadVariables();
     }
     
     private void loadUsersAndGroups() {
@@ -185,17 +186,20 @@ public class PermissionGroup implements IPermissionGroup {
     @Override
     public void setPriority(int priority) {
         this.priority = priority;
+        this.save();
     }
     
     @Override
     public void setChatColor(boolean isSet, ChatColor color) {
         chatColor = (isSet) ? color : ChatColor.WHITE;
         chatColorSelected = isSet;
+        this.save();
     }
     
     @Override
     public void setPrefix(String prefix) {
         this.prefix = prefix;
+        this.save();
     }
     
     @Override
@@ -472,6 +476,7 @@ public class PermissionGroup implements IPermissionGroup {
     public void reloadFromDatabase() {
         this.loadPermissions();
         this.loadUsersAndGroups();
+        this.loadVariables();
     }
 
     @Override

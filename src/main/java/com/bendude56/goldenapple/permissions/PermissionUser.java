@@ -302,6 +302,7 @@ public class PermissionUser implements IPermissionUser {
     public void reloadFromDatabase() {
         this.loadGroups();
         this.loadPermissions();
+        this.loadVariables();
     }
 
     @Override

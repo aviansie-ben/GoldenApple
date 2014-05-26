@@ -353,6 +353,16 @@ public abstract class PermissionManager {
     public abstract void deleteGroup(long id);
     
     /**
+     * Checks whether a group is marked as protected. A protected group is
+     * referenced in the configuration file and cannot be deleted unless the
+     * configuration file is modified first.
+     * 
+     * @param group The group which will be checked for protection.
+     * @return True if the group is protected, false otherwise.
+     */
+    public abstract boolean isGroupProtected(IPermissionGroup group);
+    
+    /**
      * Gets the default value of a specified variable. The default value will be
      * used if a user has no explicit value for the variable
      * <strong>and</strong> no group that they are a member of contains a value

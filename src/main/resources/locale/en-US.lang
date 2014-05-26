@@ -85,20 +85,17 @@ error.mute.voidGlobal=&4ERROR: Cannot void a global mute using /mute!
 
 error.own.disabled=&4ERROR: This command has been disabled by an administrator for security reasons!
 
-error.permissions.add.groupExists=&4ERROR: Failed to add group '%1': Group already exists!
 error.permissions.add.groupUnknown=&4ERROR: Failed to add group '%1': Unknown error!
-error.permissions.add.userExists=&4ERROR: Failed to add user '%1': User already exists!
 error.permissions.add.userNoUuid=&4ERROR: Failed to add user '%1': UUID lookup failure!
 error.permissions.add.userUnknown=&4ERROR: Failed to add user '%1': Unknown error!
 error.permissions.conflict=&4ERROR: There is an option conflict. Make sure you're not trying to modify a group/user as you remove them.
 error.permissions.member.unknown=&4ERROR: Unknown error occured while changing group membership!
 error.permissions.noAction=&4ERROR: No valid actions were specified
 error.permissions.noTarget=&4ERROR: No valid targets were specified for option: %1
-error.permissions.perm.notFound=&eWARNING: Failed to find permission '%1'
+error.permissions.perm.notFound=&eWARNING: Failed to find permission '%1'! Use --force to override.
 error.permissions.perm.unknown=&4ERROR: Unknown error occured while adding/removing permissions!
-error.permissions.remove.groupUnknown=&4ERROR: Failed to remove group '%1': Unknown error!
+error.permissions.remove.groupProtected=&4ERROR: Failed to remove group '%1': Group is referenced in the config file!
 error.permissions.remove.userOnline=&eWARNING: Failed to remove user '%1': Cannot remove user while online!
-error.permissions.remove.userUnknown=&4ERROR: Failed to remove user '%1': Unknown error!
 
 error.reply.nobody=&4ERROR: You have nobody to reply to!
 
@@ -251,12 +248,15 @@ general.own.warnBefore=&eWARNING: You are about to give yourself full permission
 
 general.permissions.add.group=&aGroup '%1' added successfully...
 general.permissions.add.user=&aUser '%1' added successfully...
+general.permissions.chatColor=&aGroup '%1' has had its chat color set to '%2&a' successfully...
 general.permissions.member.addGroup=&aGroup '%1' added to group '%2' successfully...
 general.permissions.member.addUser=&aUser '%1' added to group '%2' successfully...
 general.permissions.member.remGroup=&aGroup '%1' removed from group '%2' successfully...
 general.permissions.member.remUser=&aUser '%1' removed from group '%2' successfully...
 general.permissions.perm.add=&aPermission '%1' given to '%2' successfully...
 general.permissions.perm.rem=&aPermission '%1' removed from '%2' successfully...
+general.permissions.prefix=&aGroup '%1' has had its prefix set to '%2' successfully...
+general.permissions.priority=&aGroup '%1' has had its priority set to '%2' successfully...
 general.permissions.remove.group=&aGroup '%1' removed successfully...
 general.permissions.remove.user=&aUser '%1' removed successfully...
 general.permissions.remove.warnStart=&eWARNING: You are about to permanently remove the following groups and users:
@@ -456,13 +456,13 @@ help.mute.simple.2=Void a previous mute using &7/%1 <player> void
 help.mute.simple.3=Get information on current mutes using &7/%1 <player> info
 help.mute.simple.4=Durations are in form XdXhXmXs
 
-help.permissions.1=Select users and groups using &7-u <user>&f and &7-g <group>
-help.permissions.2=Add new users and groups based on selection using &7-a
-help.permissions.3=Delete selected users and groups using &7-r
-help.permissions.4=Add permissions using &7-pa <permission>&f and remove using &7-pr <permission>
-help.permissions.5=Add users/groups to a group using &7-ua <user>&f and &7-ga <group>
-help.permissions.6=Remove users/groups from a group using &7-ur <user>&f and &7-gr <group>
-help.permissions.7=Set user/group variables using &7-var:<variable> <value>
+help.permissions.complex.1=Select users and groups using &7-u <user>&f and &7-g <group>
+help.permissions.complex.2=Add new users and groups based on selection using &7-a
+help.permissions.complex.3=Delete selected users and groups using &7-r
+help.permissions.complex.4=Add permissions using &7-pa <permission>&f and remove using &7-pr <permission>
+help.permissions.complex.5=Add users/groups to a group using &7-ua <user>&f and &7-ga <group>
+help.permissions.complex.6=Remove users/groups from a group using &7-ur <user>&f and &7-gr <group>
+help.permissions.complex.7=Set user/group variables using &7-var:<variable> <value>
 
 help.request.1=List available queues using /%1 list
 help.request.2=List a queue's open requests using /%1 <queue> list

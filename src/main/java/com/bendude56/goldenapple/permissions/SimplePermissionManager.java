@@ -467,12 +467,23 @@ public class SimplePermissionManager extends PermissionManager {
     }
     
     @Override
+    public boolean isGroupProtected(IPermissionGroup group) {
+        return defaultGroups.contains(group) || opGroups.contains(group) || devGroups.contains(group) || requiredGroup == group;
+    }
+
+    @Override
     public void deleteUser(long id) {
         if (id < 0) {
             throw new IllegalArgumentException("id cannot be < 0");
         } else if (isUserSticky(id)) {
             throw new UnsupportedOperationException("Cannot delete a sticky user");
         } else {
+            IPermissionUser target = getUser(id);
+            
+            for (Long g : target.getParentGroups(true)) {
+                getGroup(g).removeUser(target);
+            }
+            
             userCache.remove(id);
             userCacheOut.remove(id);
             
@@ -489,9 +500,24 @@ public class SimplePermissionManager extends PermissionManager {
         if (id < 0) {
             throw new IllegalArgumentException("id cannot be < 0");
         } else {
-            groups.remove(id);
+            IPermissionGroup target = groups.remove(id);
+            
+            if (isGroupProtected(target)) {
+                throw new UnsupportedOperationException("Cannot delete a group which is referenced in the config file!");
+            }
+            
             try {
                 GoldenApple.getInstanceDatabaseManager().execute("DELETE FROM Groups WHERE ID=?", id);
+                
+                for (Long u : target.getUsers()) {
+                    if (userCache.containsKey(u)) {
+                        userCache.get(u).reloadFromDatabase();
+                    }
+                }
+                
+                for (Long g : target.getGroups()) {
+                    groups.get(g).reloadFromDatabase();
+                }
             } catch (SQLException e) {
                 throw new RuntimeException("Failed to delete group!", e);
             }

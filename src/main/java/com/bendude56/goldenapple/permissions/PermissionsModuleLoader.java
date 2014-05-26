@@ -4,8 +4,8 @@ import com.bendude56.goldenapple.CommandManager;
 import com.bendude56.goldenapple.ModuleLoader;
 import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.permissions.command.LangCommand;
-import com.bendude56.goldenapple.permissions.command.OwnCommand;
 import com.bendude56.goldenapple.permissions.command.PermissionsCommand;
+import com.bendude56.goldenapple.permissions.command.OwnCommand;
 
 public class PermissionsModuleLoader extends ModuleLoader {
     
