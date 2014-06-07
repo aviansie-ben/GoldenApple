@@ -148,3 +148,7 @@ commands:
     gadebug:
         usage: If you don't know what this does, then DON'T TOUCH IT!
         description: GoldenApple debugging commands
+    gapoof:
+        usage: /<command>
+        description: POOF!
+        aliases: [poof]

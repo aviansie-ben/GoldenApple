@@ -17,6 +17,7 @@ import com.bendude56.goldenapple.audit.AuditLog;
 import com.bendude56.goldenapple.audit.ModuleDisableEvent;
 import com.bendude56.goldenapple.audit.ModuleEnableEvent;
 import com.bendude56.goldenapple.chat.ChatModuleLoader;
+import com.bendude56.goldenapple.invisible.InvisibleModuleLoader;
 import com.bendude56.goldenapple.lock.LockModuleLoader;
 import com.bendude56.goldenapple.permissions.PermissionsModuleLoader;
 import com.bendude56.goldenapple.punish.PunishModuleLoader;
@@ -37,7 +38,7 @@ public class SimpleModuleManager implements ModuleManager {
 	 * Preprogrammed order in which to load the various GoldenApple modules.
 	 */
 	private static final String[]			loadOrder	= new String[] {
-		"Base", "Permissions", "Lock", "Antigrief", "Chat", "Warp", "Punish", "Request" };
+		"Base", "Permissions", "Lock", "Antigrief", "Chat", "Warp", "Punish", "Request", "Invisible" };
 	
 	/**
 	 * Hashmap to store registered {@ModuleLoader}s by module name.
@@ -58,6 +59,7 @@ public class SimpleModuleManager implements ModuleManager {
 		registerModule(new WarpModuleLoader());
 		registerModule(new PunishModuleLoader());
 		registerModule(new RequestModuleLoader());
+		registerModule(new InvisibleModuleLoader());
 	}
 	
 	/**

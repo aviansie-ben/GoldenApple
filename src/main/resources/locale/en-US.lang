@@ -97,6 +97,8 @@ error.permissions.perm.unknown=&4ERROR: Unknown error occured while adding/remov
 error.permissions.remove.groupProtected=&4ERROR: Failed to remove group '%1': Group is referenced in the config file!
 error.permissions.remove.userOnline=&eWARNING: Failed to remove user '%1': Cannot remove user while online!
 
+error.poof.noInteract=&4ERROR: You cannot interact with the world while invisible!
+
 error.reply.nobody=&4ERROR: You have nobody to reply to!
 
 error.request.queueNotFound=&4ERROR: Queue '%1' was not found!
@@ -265,6 +267,9 @@ general.permissions.remove.warnGroup=&e   Group: %1
 general.permissions.remove.warnEnd=&eIf you are sure you wish to permanently remove these groups and users, use /gaverify.
 general.permissions.varSet.group=&aGroup '%1' has had variable '%2' set to '%3' successfully...
 general.permissions.varSet.user=&aUser '%1' has had variable '%2' set to '%3' successfully...
+
+general.poof.off=&aYou are no longer invisible.
+general.poof.on=&aYou are now invisible.
 
 general.request.assigned=&aRequest #%1 is now assigned to %2&a.
 general.request.closed=&aRequest #%1 has been closed.
