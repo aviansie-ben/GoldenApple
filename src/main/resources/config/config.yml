@@ -507,3 +507,15 @@ modules:
         # When set to true, senders will be notified when a request
         # they made is marked by its assigned receiver as "on hold".
         notifySenderHold: true
+    
+    select:
+        # When set to true, the selection module will be activated.
+        # The selection module provides the ability for getting
+        # region selections to other modules.
+        enabled: true
+        
+        # Determines where the selection module should retrieve
+        # region selections from. Use 'worldedit' to use WE selections
+        # or 'builtin' to use GoldenApple's internal mechanisms for
+        # selections.
+        provider: 'builtin'

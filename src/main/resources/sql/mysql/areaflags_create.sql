@@ -1,0 +1,10 @@
+CREATE TABLE IF NOT EXISTS AreaFlags (
+	AreaID BIGINT NOT NULL,
+	Flag INT NOT NULL,
+	PRIMARY KEY (AreaID, Flag),
+	INDEX ind_areaflags_areaid (AreaID ASC),
+	CONSTRAINT fk_areaflags_areaid
+		FOREIGN KEY (AreaID)
+		REFERENCES Areas(ID)
+		ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB

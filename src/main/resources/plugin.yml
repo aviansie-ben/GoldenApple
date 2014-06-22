@@ -152,3 +152,19 @@ commands:
         usage: /<command>
         description: POOF!
         aliases: [poof]
+    gaarea:
+        usage: Use /<command> -? for help
+        description: Manages area protections
+        aliases: [area]
+    gaselcontract:
+        usage: /<command> <amount> [reverse-amount] [direction]
+        description: Contracts your GoldenApple selection
+        aliases: [selcontract]
+    gaselexpand:
+        usage: /<command> <amount> [reverse-amount] [direction]
+        description: Expands your GoldenApple selection
+        aliases: [selexpand]
+    gaselshift:
+        usage: /<command> <amount> [direction]
+        description: Shifts your GoldenApple selection
+        aliases: [selshift]

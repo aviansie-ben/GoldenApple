@@ -218,7 +218,7 @@ public class SimpleLocalizationManager implements LocalizationManager {
 		}
 		
 		// Replace placeholders with given 
-		for (int i = 0; i < args.length; i++) {
+		for (int i = args.length - 1; i >= 0; i--) {
 			if (args[i] == null)
 				throw new IllegalArgumentException("args[" + i + "] cannot be null");
 			msg = msg.replace("%" + (i + 1), args[i]);

@@ -2,6 +2,7 @@ package com.bendude56.goldenapple.command;
 
 import java.io.File;
 
+import org.bukkit.Location;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -18,6 +19,7 @@ import com.bendude56.goldenapple.permissions.PermissionManager;
 import com.bendude56.goldenapple.permissions.SimplePermissionManager;
 import com.bendude56.goldenapple.punish.PunishmentManager;
 import com.bendude56.goldenapple.punish.SimplePunishmentManager;
+import com.bendude56.goldenapple.select.SelectManager;
 import com.bendude56.goldenapple.SimpleLocalizationManager;
 import com.bendude56.goldenapple.User;
 
@@ -184,6 +186,20 @@ public class DebugCommand extends GoldenAppleCommand {
 		    } else {
 		        user.getHandle().sendMessage("Missing variable");
 		    }
+		} else if (args[0].equalsIgnoreCase("selection")) {
+            if (GoldenApple.getInstance().getModuleManager().getModule("Select").getCurrentState() != ModuleState.LOADED) {
+                user.getHandle().sendMessage("The 'Select' module has not been loaded!");
+            } else if (!SelectManager.getInstance().isSelectionMade(user)) {
+                user.getHandle().sendMessage("You have not yet made a selection!");
+            } else {
+                Location min = SelectManager.getInstance().getSelectionMinimum(user);
+                Location max = SelectManager.getInstance().getSelectionMaximum(user);
+                
+                user.getHandle().sendMessage("You have selected the following region:");
+                user.getHandle().sendMessage("  Min: (" + min.getBlockX() + ", " + min.getBlockY() + ", " + min.getBlockZ() + ")");
+                user.getHandle().sendMessage("  Max: (" + max.getBlockX() + ", " + max.getBlockY() + ", " + max.getBlockZ() + ")");
+                user.getHandle().sendMessage("  World: " + min.getWorld().getName());
+            }
 		} else {
 			user.getHandle().sendMessage("Bad command: " + args[0]);
 		}
