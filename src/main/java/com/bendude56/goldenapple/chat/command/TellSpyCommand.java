@@ -13,6 +13,7 @@ public class TellSpyCommand extends GoldenAppleCommand {
         
         if (!user.hasPermission(ChatManager.tellSpyPermission)) {
             GoldenApple.logPermissionFail(user, commandLabel, args, true);
+            return true;
         }
         
         boolean spy = ChatManager.getInstance().getTellSpyStatus(user);
