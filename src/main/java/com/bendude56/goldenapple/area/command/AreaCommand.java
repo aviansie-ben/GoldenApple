@@ -187,7 +187,7 @@ public class AreaCommand extends DualSyntaxCommand {
 		}
 		
 		// Attempt to create the area
-		return createArea(user, owner, RegionShape.CUBOID, c1, c2, false) != null;
+		return createArea(user, null, 0, owner, RegionShape.CUBOID, c1, c2, false) != null;
 	}
 
 	private boolean onExecuteSimpleDelete(GoldenApple instance, User user, String commandLabel, String[] args) {
@@ -282,11 +282,10 @@ public class AreaCommand extends DualSyntaxCommand {
 			}
 		}
 		
-		area = createArea(user, owner, shape, c1, c2, ignoreY);
+		area = createArea(user, label, priority, owner, shape, c1, c2, ignoreY);
 		
 		return (area != null
-				&& setAreaLabel(user, area, label)
-				&& addAreaFlags(user, area, flags));
+				&& (flags.isEmpty() || addAreaFlags(user, area, flags)));
 	}
 
 	/**
@@ -767,10 +766,7 @@ public class AreaCommand extends DualSyntaxCommand {
 		}
 		
 		// Attempt to set the priority of the area
-		area.setPriority(priority);
-		user.sendLocalizedMessage("general.area.edit.priority", area.getAreaId()+"", priority+"");
-		
-		return true;
+		return setAreaPriority(user, area, priority);
 	}
 
 	/**
@@ -900,7 +896,7 @@ public class AreaCommand extends DualSyntaxCommand {
 		// Send user info about area
 		user.sendLocalizedMultilineMessage("general.area.info",
 				area.getAreaId()+"",
-				area.getLabel(),
+				(area.getLabel() == null ? "[No label]" : area.getLabel()),
 				area.getPriority()+"",
 				flags,
 				owners,
@@ -1119,15 +1115,15 @@ public class AreaCommand extends DualSyntaxCommand {
 		return areas.get(0);
 	}
 
-	private Area createArea(User user, IPermissionUser owner, RegionShape shape, Location c1, Location c2, boolean ignoreY) {
+	private Area createArea(User user, String label, int priority, IPermissionUser owner, RegionShape shape, Location c1, Location c2, boolean ignoreY) {
 		try {
 			Area area;
-			area = AreaManager.getInstance().createArea(owner, shape, c1, c2, ignoreY);
+			area = AreaManager.getInstance().createArea(owner, label, priority, shape, c1, c2, ignoreY);
 			if (area == null) {
 				user.sendLocalizedMessage("error.area.create");
 				return null;
 			}
-			user.sendLocalizedMessage("general.area.create", area.getAreaId()+"");
+			user.sendLocalizedMultilineMessage("general.area.create", area.getAreaId()+"", (label == null ? "[No label]" : label), priority+"", owner.getName());
 			return area;
 		} catch (Exception e) {
 
@@ -1160,7 +1156,13 @@ public class AreaCommand extends DualSyntaxCommand {
 
 	private boolean setAreaLabel(User user, Area area, String label) {
 		area.setLabel(label);
-		user.sendLocalizedMessage("general.area.edit.label", area.getAreaId()+"", label);
+		user.sendLocalizedMessage("general.area.edit.label", area.getAreaId()+"", (label == null ? "NO LABEL" : label));
+		return true;
+	}
+	
+	private boolean setAreaPriority(User user, Area area, int priority) {
+		area.setPriority(priority);
+		user.sendLocalizedMessage("general.area.edit.priority", area.getAreaId()+"", priority+"");
 		return true;
 	}
 

@@ -138,6 +138,10 @@ error.request.maxAssignedOther=&4ERROR: %1 has the maximum number of requests as
 
 error.requestqueue.alreadyExists=&4ERROR: Queue %1 already exists!
 
+error.select.noSelection=&4ERROR: You must make a selection first!
+error.select.notBuiltin=&4ERROR: The selection provider is not builtin!
+error.select.unknownDirection=&4ERROR: '%1' is not a valid direction!
+
 error.tell.self=&4ERROR: You cannot send a /tell message to yourself!
 
 error.tellspy.alreadyOn=&4ERROR: You are already spying on /tell messages!
@@ -156,7 +160,10 @@ error.warps.pluginCancel=&4ERROR: Teleport was cancelled by another plugin!
 general.afk.on=&7You are now marked AFK.
 general.afk.off=&7You are no longer marked AFK.
 
-general.area.create=&aArea created successfully with ID &f%1&a.
+general.area.create.1=&aArea successfully created.
+general.area.create.2=&7  Area ID: &f%1  &7Priority: &f%3
+general.area.create.3=&7  Label: &f%2
+general.area.create.5=&7  Owner: &f%4
 general.area.delete=&aArea with ID &f%1 &adeleted successfully!
 general.area.edit.flag.add=&aFlag set for area &f%1&a: &f%2
 general.area.edit.flag.remove=&aFlag reset for area  &f%1&a: &f%2
@@ -175,14 +182,14 @@ general.area.edit.owner.add=&aUser &f%2 &aadded as an owner to area &f%1&a.
 general.area.edit.owner.remove=&aUser &f%2 &ano longer an owner of area &f%1&a.
 general.area.edit.owner.unmodified=&7Owners list unmodified for area &f%1&7.
 general.area.edit.priority=&aPriority for area &f%1 &aset to &f%2&a.
-general.area.info.1=&7Area ID: &f%1  &7Priority: &f%3
-general.area.info.2=&7Label: &f%2
-general.area.info.3=&7Flags: &f%4
-general.area.info.4=&7Owners: &f%5
-general.area.info.5=&7Guests: &f%6
-general.area.info.6=&7Group Owners: &f%7
-general.area.info.7=&7Group Guests: &f%8
-general.area.info.8=&7Regions: &f%9  &7World: &f%10
+general.area.info.1=&7  Area ID: &f%1  &7Priority: &f%3
+general.area.info.2=&7  Label: &f%2
+general.area.info.3=&7  Flags: &f%4
+general.area.info.4=&7  Owners: &f%5
+general.area.info.5=&7  Guests: &f%6
+general.area.info.6=&7  Group Owners: &f%7
+general.area.info.7=&7  Group Guests: &f%8
+general.area.info.8=&7  Regions: &f%9  &7World: &f%10
 general.area.list.header=&7List of areas on server. Page &f%1&7/&f%2
 general.area.list.headerLocation=&7List of areas at location. Page &f%1&7/&f%2
 general.area.list.item=&7#%1. %2 (Priority: %3)
@@ -396,6 +403,12 @@ general.requestqueue.receiveGroupSet=&aQueue %1 has had its receive group set to
 general.requestqueue.allowOfflineOff=&aQueue %1 will no longer accept requests when no receivers are online.
 general.requestqueue.allowOfflineOn=&aQueue %1 will now accept requests when no receivers are online.
 general.requestqueue.maxPerSenderSet=&aQueue %1 has had its maximum open requests per sender set to %2.
+
+general.select.contract=&aYour selected region has been contracted %1 blocks %2.
+general.select.expand=&aYour selected region has been expanded %1 blocks %2.
+general.select.set1=&aYour selection #1 has been set to (%1, %2, %3).
+general.select.set2=&aYour selection #2 has been set to (%1, %2, %3).
+general.select.shift=&aYour selected region has been shifted %1 blocks %2.
 
 general.tellspy.on=&aYou are now spying on /tell messages.
 general.tellspy.off=&aYou are no longer spying on /tell messages.

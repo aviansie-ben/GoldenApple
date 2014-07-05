@@ -179,6 +179,8 @@ public abstract class AreaManager {
      * created area.
      * 
      * @param ownerId The id of the owner of the area.
+     * @param label The label of the area.
+     * @param priority The priority of the area.
      * @param shape The shape that the area's region should take.
      * @param c1 The first corner of the area's region.
      * @param c2 The second corner of the area's region.
@@ -188,7 +190,7 @@ public abstract class AreaManager {
      * @throws SQLException
      * @throws InvocationTargetException
      */
-    public abstract Area createArea(IPermissionUser owner, RegionShape shape, Location c1, Location c2, boolean ignoreY)
+    public abstract Area createArea(IPermissionUser owner, String label, int priority, RegionShape shape, Location c1, Location c2, boolean ignoreY)
         throws SQLException, InvocationTargetException;
     
     /**

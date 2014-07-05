@@ -402,7 +402,7 @@ public class SimpleAreaManager extends AreaManager {
     
     // Create new area
     @Override
-    public Area createArea(IPermissionUser owner, RegionShape shape, Location c1, Location c2, boolean ignoreY)
+    public Area createArea(IPermissionUser owner, String label, int priority, RegionShape shape, Location c1, Location c2, boolean ignoreY)
         throws SQLException, InvocationTargetException {
         long areaId;
         
@@ -416,7 +416,7 @@ public class SimpleAreaManager extends AreaManager {
         
         // Insert into database, retrieve id
         try {
-            GoldenApple.getInstanceDatabaseManager().execute("INSERT INTO Areas (Priority) VALUES (0)");
+            GoldenApple.getInstanceDatabaseManager().execute("INSERT INTO Areas (Label, Priority) VALUES (?, ?)", label, priority);
             ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT LAST_INSERT_ID()");
             r.next();
             areaId = r.getLong("LAST_INSERT_ID()");
