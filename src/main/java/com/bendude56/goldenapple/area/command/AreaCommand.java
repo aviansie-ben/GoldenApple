@@ -22,6 +22,7 @@ import com.bendude56.goldenapple.command.DualSyntaxCommand;
 import com.bendude56.goldenapple.permissions.IPermissionGroup;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
 import com.bendude56.goldenapple.permissions.PermissionManager;
+import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
 import com.bendude56.goldenapple.select.SelectManager;
 import com.bendude56.goldenapple.util.ComplexArgumentParser;
 import com.bendude56.goldenapple.util.ComplexArgumentParser.ArgumentInfo;
@@ -61,9 +62,12 @@ public class AreaCommand extends DualSyntaxCommand {
 			}
 			return;
 		} else if (arg.isDefined("list")) {
+			onExecuteComplexList(instance, user, commandLabel, arg);
+			/*
 			int page = (arg.isDefined("page") ? arg.getInt("page") : 1);
 			if (page <= 0) page = 1;
 			sendAreaList(user, page, arg.isDefined("all"));
+			*/
 		}
 		
 		// Check for area creation/deletion. If both are defined, only execute
@@ -122,10 +126,12 @@ public class AreaCommand extends DualSyntaxCommand {
 
 	@Override
 	public void onExecuteSimple(GoldenApple instance, User user, String commandLabel, String[] args) {
+		/*
 		// Redirect to complex temporarily
 		onExecuteComplex(instance, user, commandLabel, args);
+		*/
 		
-		/*
+		// /*
 		if (args.length == 0 || args[0].equals("-?") || args[0].equalsIgnoreCase("help")) {
 			sendHelp(user, commandLabel, false);
 			return;
@@ -133,22 +139,50 @@ public class AreaCommand extends DualSyntaxCommand {
 		
 		user.sendLocalizedMessage("header.area");
 		
-		switch (args[1].toLowerCase()) {
+		switch (args[0].toLowerCase()) {
 			case "create":
 				onExecuteSimpleCreate(instance, user, commandLabel, args);
 				break;
 			case "delete":
 				onExecuteSimpleDelete(instance, user, commandLabel, args);
 				break;
+			case "list":
+			case "ls":
+				onExecuteSimpleList(instance, user, commandLabel, args);
+				break;
+			case "addowner":
+				onExecuteSimpleAddOwner(instance, user, commandLabel, args);
+				break;
+			case "removeowner":
+				onExecuteSimpleRemoveOwner(instance, user, commandLabel, args);
+				break;
+			case "addgroupowner":
+				onExecuteSimpleAddGroupOwner(instance, user, commandLabel, args);
+				break;
+			case "removegroupowner":
+				onExecuteSimpleRemoveGroupOwner(instance, user, commandLabel, args);
+				break;
+			case "invite":
+				onExecuteSimpleAddGuest(instance, user, commandLabel, args);
+				break;
+			case "uninvite":
+				onExecuteSimpleRemoveGuest(instance, user, commandLabel, args);
+				break;
+			case "invitegroup":
+				onExecuteSimpleAddGroupGuest(instance, user, commandLabel, args);
+				break;
+			case "uninvitegroup":
+				onExecuteSimpleRemoveGroupGuest(instance, user, commandLabel, args);
+				break;
 				
-				// TODO Create cases for each command
+				// TODO Create more cases for each action
 				
 			default:
-				// TODO Unknown argument
-				onExecuteComplex(instance, user, commandLabel, args);
+				// Unknown argument
+				user.sendLocalizedMessage("shared.unknownOption", args[0]);
 		
 		}
-		*/
+		// */
 	}
 
 	private boolean onExecuteSimpleCreate(GoldenApple instance, User user, String commandLabel, String[] args) {
@@ -206,6 +240,342 @@ public class AreaCommand extends DualSyntaxCommand {
 
 		// Delete the area
 		return deleteArea(user, area.getAreaId());
+	}
+
+	private boolean onExecuteSimpleList(GoldenApple instance, User user, String commandLabel, String[] args) {
+		
+		// Make sure user has adequate permissions
+		if (!user.hasPermission(AreaManager.listLocationPermission)
+				&& !user.hasPermission(AreaManager.listAllPermission)
+				&& !user.hasPermission(AreaManager.listOwnPermission)) {
+			user.sendLocalizedMessage("shared.noPermission");
+			return false;
+		}
+		
+		// Variables
+		boolean all = false;
+		boolean location = false;
+		boolean mine = false;
+		boolean owner = false;
+		IPermissionUser o = null;
+		int page = 1;
+		
+		// Determine mode
+		if (args.length > 1) {
+			switch (args[1].toLowerCase()) {
+				case "all":
+				case "a":
+					
+					// List-all-areas-on-server mode
+					if (!user.hasPermission(AreaManager.listAllPermission)) {
+						user.sendLocalizedMessage("shared.noPermission");
+						return false;
+					}
+					all = true;
+					break;
+					
+				case "location":
+				case "here":
+				case "l":
+					
+					// List-all-areas-at-current-location mode
+					if (!(user.getHandle() instanceof Player)) {
+						user.sendLocalizedMessage("shared.noConsole");
+						return false;
+					}
+					if (!user.hasPermission(AreaManager.listLocationPermission)) {
+						user.sendLocalizedMessage("shared.noPermission");
+						return false;
+					}
+					location = true;
+					break;
+					
+				case "mine":
+				case "me":
+					
+					// List-areas-owned-by-user mode
+					if (!user.hasPermission(AreaManager.listOwnPermission)) {
+						user.sendLocalizedMessage("shared.noPermission");
+						return false;
+					}
+					mine = true;
+					o = user;
+					break;
+					
+				case "owner":
+				case "user":
+				case "u":
+					
+					// List-all-areas-owned-by-certain-user mode
+					if (!user.hasPermission(AreaManager.listAllPermission)) {
+						user.sendLocalizedMessage("shared.noPermission");
+						return false;
+					}
+					owner = true;
+					if (args.length > 2) {
+						
+						// Get the owner
+						o = PermissionManager.getInstance().findUser(args[2], true);
+						if (o == null) {
+							user.sendLocalizedMessage("shared.userNotFoundError", args[2]);
+							return false;
+						}
+					}
+					break;
+					
+				default:
+					
+					// No special mode
+					try {
+						page = Integer.parseInt(args[1]);
+						if (page < 1) page = 1;
+					} catch (NumberFormatException e) {
+						user.sendLocalizedMessage("shared.unknownOption", args[1]);
+						return false;
+					}
+					break;
+			}
+		} else {
+			page = 1;
+		}
+		
+		// Figure out the page, or he mode if no mode is given
+		if (all || location || mine || owner) {
+			if (args.length > (owner ? 3 : 2)) {
+				try {
+					page = Integer.parseInt(args[owner ? 3 : 2]);
+					if (page < 1) page = 1;
+				} catch (NumberFormatException e) {
+					user.sendLocalizedMessage("shared.notANumber", args[owner ? 3 : 2]);
+					return false;
+				}
+			} else {
+				page = 1;
+			}
+		} else {
+			
+			// No mode selected, default to the one the user has permission for
+			if (user.hasPermission(AreaManager.listLocationPermission) && !user.isServer()) {
+				location = true;
+			} else if (user.hasPermission(AreaManager.listAllPermission)) {
+				all = true;
+			} else if (user.hasPermission(AreaManager.listOwnPermission)) {
+				mine = true;
+				o = user;
+			} else {
+				user.sendLocalizedMessage("shared.noConsole");
+				return false;
+			}
+		}
+		
+		// Well, that sucked. Now to actually send the list.
+		if (all) {
+			sendAreaListAll(user, page);
+		} else if (location) {
+			sendAreaListLocation(user, page, ((Player) user.getHandle()).getLocation());
+		} else if (mine || owner) {
+			sendAreaListOwner(user, page, o);
+		}
+		return true;
+	}
+
+	private boolean onExecuteSimpleAddOwner(GoldenApple instance, User user, String commandLabel, String[] args) {
+		
+		// Verify number of arguments
+		if (args.length < 2) {
+			return false;
+		}
+		
+		// Get the selected area
+		Area area = findAreaWithPermissionSimple(user, (args.length < 3 ? null : args[2]), AreaManager.editOwnersPermission, AreaManager.editOwnOwnersPermission);
+		if (area == null) {
+			return false;
+		}
+		
+		// Get the user
+		IPermissionUser u = PermissionManager.getInstance().findUser(args[1], true);
+		if (u == null) {
+			user.sendLocalizedMessage("shared.userNotFoundError");
+			return false;
+		}
+		
+		addAreaOwner(user, u, area);
+		
+		return true;
+	}
+
+	private boolean onExecuteSimpleRemoveOwner(GoldenApple instance, User user, String commandLabel, String[] args) {
+		
+		// Verify number of arguments
+		if (args.length < 2) {
+			return false;
+		}
+		
+		// Get the selected area
+		Area area = findAreaWithPermissionSimple(user, (args.length < 3 ? null : args[2]), AreaManager.editOwnersPermission, AreaManager.editOwnOwnersPermission);
+		if (area == null) {
+			return false;
+		}
+		
+		// Get the user
+		IPermissionUser u = PermissionManager.getInstance().findUser(args[1], true);
+		if (u == null) {
+			user.sendLocalizedMessage("shared.userNotFoundError");
+			return false;
+		}
+		
+		removeAreaOwner(user, u, area);
+		return true;
+	}
+
+	private boolean onExecuteSimpleAddGroupOwner(GoldenApple instance, User user, String commandLabel, String[] args) {
+
+		// Verify number of arguments
+		if (args.length < 2) {
+			return false;
+		}
+		
+		// Get the selected area
+		Area area = findAreaWithPermissionSimple(user, (args.length < 3 ? null : args[2]), AreaManager.editGroupOwnersPermission, AreaManager.editOwnGroupOwnersPermission);
+		if (area == null) {
+			return false;
+		}
+		
+		// Get the user
+		IPermissionGroup g = PermissionManager.getInstance().getGroup(args[1]);
+		if (g == null) {
+			user.sendLocalizedMessage("shared.groupNotFoundError");
+			return false;
+		}
+		
+		addAreaGroupOwner(user, g, area);
+		
+		return true;
+	}
+
+	private boolean onExecuteSimpleRemoveGroupOwner(GoldenApple instance, User user, String commandLabel, String[] args) {
+
+		// Verify number of arguments
+		if (args.length < 2) {
+			return false;
+		}
+		
+		// Get the selected area
+		Area area = findAreaWithPermissionSimple(user, (args.length < 3 ? null : args[2]), AreaManager.editGroupOwnersPermission, AreaManager.editOwnGroupOwnersPermission);
+		if (area == null) {
+			return false;
+		}
+		
+		// Get the user
+		IPermissionGroup g = PermissionManager.getInstance().getGroup(args[1]);
+		if (g == null) {
+			user.sendLocalizedMessage("shared.groupNotFoundError");
+			return false;
+		}
+		
+		removeAreaGroupOwner(user, g, area);
+		
+		return true;
+	}
+
+	private boolean onExecuteSimpleAddGuest(GoldenApple instance, User user, String commandLabel, String[] args) {
+
+		// Verify number of arguments
+		if (args.length < 2) {
+			return false;
+		}
+		
+		// Get the selected area
+		Area area = findAreaWithPermissionSimple(user, (args.length < 3 ? null : args[2]), AreaManager.editGuestsPermission, AreaManager.editOwnGuestsPermission);
+		if (area == null) {
+			return false;
+		}
+		
+		// Get the user
+		IPermissionUser u = PermissionManager.getInstance().findUser(args[1], true);
+		if (u == null) {
+			user.sendLocalizedMessage("shared.userNotFoundError");
+			return false;
+		}
+		
+		addAreaGuest(user, u, area);
+		
+		return true;
+	}
+
+	private boolean onExecuteSimpleRemoveGuest(GoldenApple instance, User user, String commandLabel, String[] args) {
+
+		// Verify number of arguments
+		if (args.length < 2) {
+			return false;
+		}
+		
+		// Get the selected area
+		Area area = findAreaWithPermissionSimple(user, (args.length < 3 ? null : args[2]), AreaManager.editGuestsPermission, AreaManager.editOwnGuestsPermission);
+		if (area == null) {
+			return false;
+		}
+		
+		// Get the user
+		IPermissionUser u = PermissionManager.getInstance().findUser(args[1], true);
+		if (u == null) {
+			user.sendLocalizedMessage("shared.userNotFoundError");
+			return false;
+		}
+		
+		removeAreaGuest(user, u, area);
+		
+		return true;
+	}
+
+	private boolean onExecuteSimpleAddGroupGuest(GoldenApple instance, User user, String commandLabel, String[] args) {
+
+		// Verify number of arguments
+		if (args.length < 2) {
+			return false;
+		}
+		
+		// Get the selected area
+		Area area = findAreaWithPermissionSimple(user, (args.length < 3 ? null : args[2]), AreaManager.editGroupGuestsPermission, AreaManager.editOwnGroupGuestsPermission);
+		if (area == null) {
+			return false;
+		}
+		
+		// Get the user
+		IPermissionGroup g = PermissionManager.getInstance().getGroup(args[1]);
+		if (g == null) {
+			user.sendLocalizedMessage("shared.groupNotFoundError");
+			return false;
+		}
+		
+		addAreaGroupGuest(user, g, area);
+		
+		return true;
+	}
+
+	private boolean onExecuteSimpleRemoveGroupGuest(GoldenApple instance, User user, String commandLabel, String[] args) {
+
+		// Verify number of arguments
+		if (args.length < 2) {
+			return false;
+		}
+		
+		// Get the selected area
+		Area area = findAreaWithPermissionSimple(user, (args.length < 3 ? null : args[2]), AreaManager.editGroupGuestsPermission, AreaManager.editOwnGroupGuestsPermission);
+		if (area == null) {
+			return false;
+		}
+		
+		// Get the user
+		IPermissionGroup g = PermissionManager.getInstance().getGroup(args[1]);
+		if (g == null) {
+			user.sendLocalizedMessage("shared.groupNotFoundError");
+			return false;
+		}
+		
+		removeAreaGroupGuest(user, g, area);
+		
+		return true;
 	}
 
 	/**
@@ -311,13 +681,86 @@ public class AreaCommand extends DualSyntaxCommand {
 		}
 		
 		// Get the selected area
-		Area area = extractSelectedArea(arg, user, false);
+		Area area = extractSelectedArea(arg, user, false, false);
 		if (area == null) {
 			return false;
 		}
 		
 		// Delete the area
 		return deleteArea(user, area.getAreaId());
+	}
+
+	private boolean onExecuteComplexList(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg) {
+		
+		// Make sure user has adequate permissions
+		if (!user.hasPermission(AreaManager.listLocationPermission)
+				&& !user.hasPermission(AreaManager.listAllPermission)
+				&& !user.hasPermission(AreaManager.listOwnPermission)) {
+			user.sendLocalizedMessage("shared.noPermission");
+			return false;
+		}
+
+		// Variables
+		boolean all = false;
+		boolean location = false;
+		boolean mine = false;
+		boolean owner = false;
+		int page;
+		IPermissionUser o = null;
+		
+		if (arg.isDefined("all")) {
+			if (!user.hasPermission(AreaManager.listAllPermission)) {
+				user.sendLocalizedMessage("shared.noPermission");
+				return false;
+			}
+			all = true;
+		} else if (arg.isDefined("location")) {
+			if (!(user.getHandle() instanceof Player)) {
+				user.sendLocalizedMessage("shared.noConsole");
+				return false;
+			}
+			if (!user.hasPermission(AreaManager.listLocationPermission)) {
+				user.sendLocalizedMessage("shared.noPermission");
+				return false;
+			}
+			location = true;
+		} else if (arg.isDefined("mine")) {
+			if (!user.hasPermission(AreaManager.listOwnPermission)) {
+				user.sendLocalizedMessage("shared.noPermission");
+				return false;
+			}
+			mine = true;
+			o = user;
+		} else if (arg.isDefined("owner")) {
+			if (!user.hasPermission(AreaManager.listAllPermission)) {
+				user.sendLocalizedMessage("shared.noPermission");
+				return false;
+			}
+			owner = true;
+			o = arg.getUser("owner");
+		} else {
+			if (user.hasPermission(AreaManager.listLocationPermission)) {
+				location = true;
+			} else if (user.hasPermission(AreaManager.listAllPermission)) {
+				all = true;
+			} else if (user.hasPermission(AreaManager.listOwnPermission)) {
+				mine = true;
+				o = user;
+			}
+		}
+		
+		// Get the page
+		page = (arg.isDefined("page") ? arg.getInt("page") : 1);
+		if (page < 1) page = 1;
+		
+		if (all) {
+			sendAreaListAll(user, page);
+		} else if (location) {
+			sendAreaListLocation(user, page, ((Player) user.getHandle()).getLocation());
+		} else if (mine || owner) {
+			sendAreaListOwner(user, page, o);
+		}
+		return true;
 	}
 
 	/**
@@ -333,27 +776,15 @@ public class AreaCommand extends DualSyntaxCommand {
 	private boolean onExecuteComplexAddOwner(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg) {
 		int count = 0;
 		
-		// Make sure user has adequate permissions
-		if (!user.hasPermission(AreaManager.editOwnersPermission)) {
-			user.sendLocalizedMessage("shared.noPermission");
-			return false;
-		}
-		
-		// Get the selected area
-		Area area = extractSelectedArea(arg, user, true);
+		// Find selected area while taking given permissions into account
+		Area area = findAreaWithPermissionComplex(user, arg, AreaManager.editOwnersPermission, AreaManager.editOwnOwnersPermission);
 		if (area == null) {
 			return false;
 		}
 		
 		// Add all of the owners specified
 		for (IPermissionUser u : arg.getUserList("owner-add")) {
-			if (area.getUserAccessLevel(u.getId()).getComparableValue() < AreaAccessLevel.OWNER.getComparableValue()) {
-				area.setUserAccessLevel(u.getId(), AreaAccessLevel.OWNER);
-				user.sendLocalizedMessage("general.area.edit.owner.add", area.getAreaId()+"", u.getName());
-				++count;
-			} else {
-				user.sendLocalizedMessage("error.area.edit.owner.add", area.getAreaId()+"", u.getName(), area.getUserAccessLevel(u.getId()).toString());
-			}
+			if (addAreaOwner(user, u, area)) count++;
 		}
 		
 		// check if no changes were made
@@ -377,27 +808,15 @@ public class AreaCommand extends DualSyntaxCommand {
 	private boolean onExecuteComplexRemoveOwner(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg) {
 		int count = 0;
 		
-		// Make sure user has adequate permissions
-		if (!user.hasPermission(AreaManager.editOwnersPermission)) {
-			user.sendLocalizedMessage("shared.noPermission");
-			return false;
-		}
-
-		// Get the selected area
-		Area area = extractSelectedArea(arg, user, true);
+		// Find selected area while taking given permissions into account
+		Area area = findAreaWithPermissionComplex(user, arg, AreaManager.editOwnersPermission, AreaManager.editOwnOwnersPermission);
 		if (area == null) {
 			return false;
 		}
 		
 		// Attempt to remove users form owner list
 		for (IPermissionUser u : arg.getUserList("owner-remove")) {
-			if (area.getUserAccessLevel(u.getId()) == AreaAccessLevel.OWNER) {
-				area.setUserAccessLevel(u.getId(), AreaAccessLevel.NONE);
-				user.sendLocalizedMessage("general.area.edit.owner.remove", area.getAreaId()+"", u.getName());
-				++count;
-			} else {
-				user.sendLocalizedMessage("error.area.edit.owner.remove", area.getAreaId()+"", u.getName());
-			}
+			if (removeAreaOwner(user, u, area)) count++;
 		}
 		
 		// Check if no modifications were made
@@ -421,27 +840,15 @@ public class AreaCommand extends DualSyntaxCommand {
 	private boolean onExecuteComplexAddGroupOwner(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg) {
 		int count = 0;
 		
-		// Make sure user has adequate permissions
-		if (!user.hasPermission(AreaManager.editOwnersPermission)) {
-			user.sendLocalizedMessage("shared.noPermission");
-			return false;
-		}
-
-		// Get the selected area
-		Area area = extractSelectedArea(arg, user, true);
+		// Find selected area while taking given permissions into account
+		Area area = findAreaWithPermissionComplex(user, arg, AreaManager.editOwnersPermission, AreaManager.editOwnOwnersPermission);
 		if (area == null) {
 			return false;
 		}
 		
 		// Attempt to add group owners to area
 		for (IPermissionGroup g : arg.getGroupList("group-owner-add")) {
-			if (area.getGroupAccessLevel(g.getId()).getComparableValue() < AreaAccessLevel.OWNER.getComparableValue()) {
-				area.setGroupAccessLevel(g.getId(), AreaAccessLevel.OWNER);
-				user.sendLocalizedMessage("general.area.edit.groupOwner.add", area.getAreaId()+"", g.getName());
-				++count;
-			} else {
-				user.sendLocalizedMessage("error.area.edit.groupOwner.add", area.getAreaId()+"", g.getName(), area.getGroupAccessLevel(g.getId()).toString());
-			}
+			if (addAreaGroupGuest(user, g, area)) count++;
 		}
 		
 		// Check if no modifications were made
@@ -465,27 +872,15 @@ public class AreaCommand extends DualSyntaxCommand {
 	private boolean onExecuteComplexRemoveGroupOwner(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg) {
 		int count = 0;
 		
-		// Make sure user has adequate permissions
-		if (!user.hasPermission(AreaManager.editOwnersPermission)) {
-			user.sendLocalizedMessage("shared.noPermission");
-			return false;
-		}
-
-		// Get the selected area
-		Area area = extractSelectedArea(arg, user, true);
+		// Find selected area while taking given permissions into account
+		Area area = findAreaWithPermissionComplex(user, arg, AreaManager.editOwnersPermission, AreaManager.editOwnOwnersPermission);
 		if (area == null) {
 			return false;
 		}
 		
 		// Attempt to remove group owners from area
 		for (IPermissionGroup g : arg.getGroupList("group-owner-remove")) {
-			if (area.getGroupAccessLevel(g.getId()) == AreaAccessLevel.OWNER) {
-				area.setGroupAccessLevel(g.getId(), AreaAccessLevel.NONE);
-				user.sendLocalizedMessage("general.area.edit.groupOwner.remove", area.getAreaId()+"", g.getName());
-				++count;
-			} else {
-				user.sendLocalizedMessage("error.area.edit.groupOwner.remove", area.getAreaId()+"", g.getName());
-			}
+			if (removeAreaGroupOwner(user, g, area)) count++;
 		}
 		
 		// Check if no changes were made
@@ -509,27 +904,15 @@ public class AreaCommand extends DualSyntaxCommand {
 	private boolean onExecuteComplexAddGuest(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg) {
 		int count = 0;
 		
-		// Get the selected area
-		Area area = extractSelectedArea(arg, user, true);
+		// Find selected area while taking given permissions into account
+		Area area = findAreaWithPermissionComplex(user, arg, AreaManager.editGuestsPermission, AreaManager.editOwnGuestsPermission);
 		if (area == null) {
-			return false;
-		}
-		
-		// Make sure user has adequate permissions
-		if (!user.hasPermission(AreaManager.editGuestsPermission) && area.getUserAccessLevel(user.getId()).getComparableValue() < AreaAccessLevel.OWNER.getComparableValue()) {
-			user.sendLocalizedMessage("shared.noPermission");
 			return false;
 		}
 		
 		// Attempt to add guests to area
 		for (IPermissionUser u : arg.getUserList("invite-full")) {
-			if (area.getUserAccessLevel(u.getId()).getComparableValue() < AreaAccessLevel.GUEST.getComparableValue()) {
-				area.setUserAccessLevel(u.getId(), AreaAccessLevel.GUEST);
-				user.sendLocalizedMessage("general.area.edit.guest.add", area.getAreaId()+"", u.getName());
-				++count;
-			} else {
-				user.sendLocalizedMessage("error.area.edit.guest.add", area.getAreaId()+"", u.getName(), area.getUserAccessLevel(u.getId()).toString());
-			}
+			if (addAreaGuest(user, u, area)) count++;
 		}
 		
 		// Check if no changes were made
@@ -553,27 +936,15 @@ public class AreaCommand extends DualSyntaxCommand {
 	private boolean onExecuteComplexRemoveGuest(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg) {
 		int count = 0;
 		
-		// Get the selected area
-		Area area = extractSelectedArea(arg, user, true);
+		// Find selected area while taking given permissions into account
+		Area area = findAreaWithPermissionComplex(user, arg, AreaManager.editGuestsPermission, AreaManager.editOwnGuestsPermission);
 		if (area == null) {
-			return false;
-		}
-
-		// Make sure user has adequate permissions
-		if (!user.hasPermission(AreaManager.editGuestsPermission) && area.getUserAccessLevel(user.getId()).getComparableValue() < AreaAccessLevel.OWNER.getComparableValue()) {
-			user.sendLocalizedMessage("shared.noPermission");
 			return false;
 		}
 		
 		// Attempt to remove guests from area
 		for (IPermissionUser u : arg.getUserList("invite-none")) {
-			if (area.getUserAccessLevel(u.getId()) == AreaAccessLevel.GUEST) {
-				area.setUserAccessLevel(u.getId(), AreaAccessLevel.NONE);
-				user.sendLocalizedMessage("general.area.edit.guest.remove", area.getAreaId()+"", u.getName());
-				++count;
-			} else {
-				user.sendLocalizedMessage("error.area.edit.guest.remove", area.getAreaId()+"", u.getName());
-			}
+			if (removeAreaGuest(user, u, area)) count++;
 		}
 		
 		// Check if no changes were made
@@ -597,27 +968,15 @@ public class AreaCommand extends DualSyntaxCommand {
 	private boolean onExecuteComplexAddGroupGuest(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg) {
 		int count = 0;
 		
-		// Get the selected area
-		Area area = extractSelectedArea(arg, user, true);
+		// Find selected area while taking given permissions into account
+		Area area = findAreaWithPermissionComplex(user, arg, AreaManager.editGuestsPermission, AreaManager.editOwnGuestsPermission);
 		if (area == null) {
-			return false;
-		}
-
-		// Make sure user has adequate permissions
-		if (!user.hasPermission(AreaManager.editGuestsPermission) && area.getUserAccessLevel(user.getId()).getComparableValue() < AreaAccessLevel.OWNER.getComparableValue()) {
-			user.sendLocalizedMessage("shared.noPermission");
 			return false;
 		}
 		
 		// Attempt to add group guests to area
 		for (IPermissionGroup g : arg.getGroupList("group-invite-full")) {
-			if (area.getGroupAccessLevel(g.getId()).getComparableValue() < AreaAccessLevel.GUEST.getComparableValue()) {
-				area.setGroupAccessLevel(g.getId(), AreaAccessLevel.GUEST);
-				user.sendLocalizedMessage("general.area.edit.groupGuest.add", area.getAreaId()+"", g.getName());
-				++count;
-			} else {
-				user.sendLocalizedMessage("error.area.edit.groupGuest.add", area.getAreaId()+"", g.getName(), area.getGroupAccessLevel(g.getId()).toString());
-			}
+			if (addAreaGroupGuest(user, g, area)) count++;
 		}
 		
 		// Check if no changes were made
@@ -641,27 +1000,15 @@ public class AreaCommand extends DualSyntaxCommand {
 	private boolean onExecuteComplexRemoveGroupGuest(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg) {
 		int count = 0;
 		
-		// Get the selected area
-		Area area = extractSelectedArea(arg, user, true);
+		// Find selected area while taking given permissions into account
+		Area area = findAreaWithPermissionComplex(user, arg, AreaManager.editGuestsPermission, AreaManager.editOwnGuestsPermission);
 		if (area == null) {
-			return false;
-		}
-
-		// Make sure user has adequate permissions
-		if (!user.hasPermission(AreaManager.editGuestsPermission) && area.getUserAccessLevel(user.getId()).getComparableValue() < AreaAccessLevel.OWNER.getComparableValue()) {
-			user.sendLocalizedMessage("shared.noPermission");
 			return false;
 		}
 		
 		// Attempt to remove group guests from area
 		for (IPermissionGroup g : arg.getGroupList("group-invite-none")) {
-			if (area.getGroupAccessLevel(g.getId()) == AreaAccessLevel.GUEST) {
-				area.setGroupAccessLevel(g.getId(), AreaAccessLevel.NONE);
-				user.sendLocalizedMessage("general.area.edit.groupGuest.remove", area.getAreaId()+"", g.getName());
-				++count;
-			} else {
-				user.sendLocalizedMessage("error.area.edit.groupGuest.remove", area.getAreaId()+"", g.getName());
-			}
+			if (removeAreaGroupGuest(user, g, area)) count++;
 		}
 		
 		// Check if no changes were made
@@ -684,14 +1031,8 @@ public class AreaCommand extends DualSyntaxCommand {
 	 */
 	private boolean onExecuteComplexAddFlags(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg) {
 
-		// Make sure user has adequate permissions
-		if (!user.hasPermission(AreaManager.editFlagsPermission)) {
-			user.sendLocalizedMessage("shared.noPermission");
-			return false;
-		}
-
-		// Get the selected area
-		Area area = extractSelectedArea(arg, user, true);
+		// Find selected area while taking given permissions into account
+		Area area = findAreaWithPermissionComplex(user, arg, AreaManager.editFlagsPermission, AreaManager.editOwnFlagsPermission);
 		if (area == null) {
 			return false;
 		}
@@ -715,14 +1056,8 @@ public class AreaCommand extends DualSyntaxCommand {
 	 */
 	private boolean onExecuteComplexRemoveFlags(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg) {
 
-		// Make sure user has adequate permissions
-		if (!user.hasPermission(AreaManager.editFlagsPermission)) {
-			user.sendLocalizedMessage("shared.noPermission");
-			return false;
-		}
-
-		// Get the selected area
-		Area area = extractSelectedArea(arg, user, true);
+		// Find selected area while taking given permissions into account
+		Area area = findAreaWithPermissionComplex(user, arg, AreaManager.editFlagsPermission, AreaManager.editOwnFlagsPermission);
 		if (area == null) {
 			return false;
 		}
@@ -747,14 +1082,8 @@ public class AreaCommand extends DualSyntaxCommand {
 	private boolean onExecuteComplexSetPriority(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg) {
 		Integer priority;
 		
-		// Make sure user has adequate permissions
-		if (!user.hasPermission(AreaManager.editPriorityPermission)) {
-			user.sendLocalizedMessage("shared.noPermission");
-			return false;
-		}
-		
-		// Get the selected area
-		Area area = extractSelectedArea(arg, user, true);
+		// Find selected area while taking given permissions into account
+		Area area = findAreaWithPermissionComplex(user, arg, AreaManager.editPriorityPermission, AreaManager.editOwnPriorityPermission);
 		if (area == null) {
 			return false;
 		}
@@ -782,14 +1111,8 @@ public class AreaCommand extends DualSyntaxCommand {
 	private boolean onExecuteComplexSetLabel(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg) {
 		String label;
 		
-		// Make sure user has adequate permissions
-		if (!user.hasPermission(AreaManager.editLabelPermission)) {
-			user.sendLocalizedMessage("shared.noPermission");
-			return false;
-		}
-		
-		// Get the selected area
-		Area area = extractSelectedArea(arg, user, true);
+		// Find selected area while taking given permissions into account
+		Area area = findAreaWithPermissionComplex(user, arg, AreaManager.editLabelPermission, AreaManager.editOwnLabelPermission);
 		if (area == null) {
 			return false;
 		}
@@ -813,98 +1136,18 @@ public class AreaCommand extends DualSyntaxCommand {
 	 */
 	private boolean onExecuteComplexInfo(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg) {
 		
+		if (!user.hasPermission(AreaManager.infoAllPermission) && !user.hasPermission(AreaManager.infoOwnPermission)) {
+			user.sendLocalizedMessage("shared.noPermission");
+			return false;
+		}
+		
 		// Get the selected area
-		Area area = extractSelectedArea(arg, user, true);
+		Area area = extractSelectedArea(arg, user, true, (user.hasPermission(AreaManager.infoOwnPermission) && !user.hasPermission(AreaManager.infoAllPermission)));
 		if (area == null) {
 			return false;
 		}
 
-		// Generate lists for info
-		String flags;
-		String owners;
-		String guests;
-		String gowners;
-		String gguests;
-		String world;
-		
-		// Generate flag list
-		List<AreaFlag> flaglist = area.getFlags();
-		if (flaglist.isEmpty()) {
-			flags = GoldenApple.getInstance().getLocalizationManager().getMessage(user, "shared.none");
-		} else {
-			flags = "";
-			for (AreaFlag f : flaglist) {
-				if (!flags.isEmpty()) flags += ", ";
-				flags += f.toString();
-			}
-		}
-		
-		// Generate owner list
-		List<IPermissionUser> users = area.getUsers(AreaAccessLevel.OWNER);
-		if (users.isEmpty()) {
-			owners = GoldenApple.getInstance().getLocalizationManager().getMessage(user, "shared.none");
-		} else {
-			owners = "";
-			for (IPermissionUser u : users) {
-				if (!owners.isEmpty()) owners += ", ";
-				owners += u.getName();
-			}
-		}
-		
-		// Generate guest list
-		users = area.getUsers(AreaAccessLevel.GUEST);
-		if (users.isEmpty()) {
-			guests = GoldenApple.getInstance().getLocalizationManager().getMessage(user, "shared.none");
-		} else {
-			guests = "";
-			for (IPermissionUser u : users) {
-				if (!guests.isEmpty()) guests += ", ";
-				guests += u.getName();
-			}
-		}
-		
-		// Generate group owner list
-		List<IPermissionGroup> groups = area.getGroups(AreaAccessLevel.OWNER);
-		if (groups.isEmpty()) {
-			gowners = GoldenApple.getInstance().getLocalizationManager().getMessage(user, "shared.none");
-		} else {
-			gowners = "";
-			for (IPermissionGroup g : groups) {
-				if (!gowners.isEmpty()) gowners += ", ";
-				gowners += g.getName();
-			}
-		}
-		
-		// Generate group guest list
-		groups = area.getGroups(AreaAccessLevel.GUEST);
-		if (groups.isEmpty()) {
-			gguests = GoldenApple.getInstance().getLocalizationManager().getMessage(user, "shared.none");
-		} else {
-			gguests = "";
-			for (IPermissionGroup g : groups) {
-				if (!gguests.isEmpty()) gguests += ", ";
-				gguests += g.getName();
-			}
-		}
-		
-		if (area.getRegionIds().size() > 0) {
-			world = AreaManager.getInstance().getRegion(area.getRegionIds().get(0)).getWorld().getName();
-		} else {
-			world = GoldenApple.getInstance().getLocalizationManager().getMessage(user, "shared.none");
-		}
-		
-		// Send user info about area
-		user.sendLocalizedMultilineMessage("general.area.info",
-				area.getAreaId()+"",
-				(area.getLabel() == null ? "[No label]" : area.getLabel()),
-				area.getPriority()+"",
-				flags,
-				owners,
-				guests,
-				gowners,
-				gguests,
-				area.getRegionIds().size()+"",
-				world);
+		sendAreaInfo(user, area);
 		return true;
 		
 	}
@@ -916,16 +1159,18 @@ public class AreaCommand extends DualSyntaxCommand {
 	 * @param arg The arguments to extract from.
 	 * @param user The user to check the location of
 	 * @param useLocation True to check the user's location, false if not
+	 * @param own True to only include areas the user is an owner of when
+	 * performing location check.
 	 * @return The area explicitly selected by the user, the area of highest
 	 * priority at the location of the player, or null if no area exists
 	 * matching these criteria.
 	 */
-	private Area extractSelectedArea(ComplexArgumentParser arg, User user, boolean useLocation) {
+	private Area extractSelectedArea(ComplexArgumentParser arg, User user, boolean useLocation, boolean own) {
 		
 		if (arg.isDefined("select")) {
 			return findArea(user, arg.getString("select"));
 		} else if (useLocation && user != null) {
-			return findArea(user);
+			return findArea(user, own);
 		} else {
 			if (user != null) {
 				user.sendLocalizedMessage("error.area.select.missing");
@@ -1089,7 +1334,7 @@ public class AreaCommand extends DualSyntaxCommand {
 		return area;
 	}
 
-	private Area findArea(User user) {
+	private Area findArea(User user, boolean own) {
 		// Search by user's location, return area with highest priority
 		Location location;
 		
@@ -1112,7 +1357,64 @@ public class AreaCommand extends DualSyntaxCommand {
 			user.sendLocalizedMessage("error.area.select.location");
 			return null; // No areas at current location
 		}
-		return areas.get(0);
+		if (own) {
+			for (Area area : areas) {
+				if (area.getUserAccessLevel(user.getId()) == AreaAccessLevel.OWNER) {
+					return area;
+				}
+			}
+			user.sendLocalizedMessage("error.area.noOwn");
+			return null;
+		} else {
+			return areas.get(0);
+		}
+	}
+
+	private Area findAreaWithPermissionComplex(User user, ComplexArgumentParser arg, Permission global, Permission own) {
+		
+		// Make sure user has adequate permissions
+		if (!user.hasPermission(global) && !user.hasPermission(own)) {
+			user.sendLocalizedMessage("shared.noPermission");
+			return null;
+		}
+		
+		// Get the selected area
+		Area area = extractSelectedArea(arg, user, true, !user.hasPermission(global));
+		if (area == null) {
+			return null;
+		}
+		
+		// Make sure user has adequate permissions again
+		if (!user.hasPermission(global) && (!user.hasPermission(own) || area.getUserAccessLevel(user.getId()).getComparableValue() < AreaAccessLevel.OWNER.getComparableValue())) {
+			user.sendLocalizedMessage("error.area.select.noOwn");
+			return null;
+		}
+		
+		return area;
+	}
+
+	private Area findAreaWithPermissionSimple(User user, String query, Permission global, Permission own) {
+		
+		// Make sure user has adequate permissions
+		if (!user.hasPermission(global) && !user.hasPermission(own)) {
+			user.sendLocalizedMessage("shared.noPermission");
+			return null;
+		}
+		
+		// Get the selected area
+		// Area area = extractSelectedArea(arg, user, true, !user.hasPermission(global));
+		Area area = query != null ?  findArea(user, query) : findArea(user, !user.hasPermission(global)); 
+		if (area == null) {
+			return null;
+		}
+		
+		// Make sure user has adequate permissions again
+		if (!user.hasPermission(global) && (!user.hasPermission(own) || area.getUserAccessLevel(user.getId()).getComparableValue() < AreaAccessLevel.OWNER.getComparableValue())) {
+			user.sendLocalizedMessage("error.area.select.noOwn");
+			return null;
+		}
+		
+		return area;
 	}
 
 	private Area createArea(User user, String label, int priority, IPermissionUser owner, RegionShape shape, Location c1, Location c2, boolean ignoreY) {
@@ -1150,6 +1452,94 @@ public class AreaCommand extends DualSyntaxCommand {
 			user.sendLocalizedMessage("error.area.delete");
 			GoldenApple.log(Level.SEVERE, "An error occured while attempting to delete area " + areaId);
 			GoldenApple.log(Level.SEVERE, e);
+			return false;
+		}
+	}
+
+	private boolean addAreaOwner(User user, IPermissionUser u, Area area) {
+		if (area.getUserAccessLevel(u.getId()).getComparableValue() < AreaAccessLevel.OWNER.getComparableValue()) {
+			area.setUserAccessLevel(u.getId(), AreaAccessLevel.OWNER);
+			user.sendLocalizedMessage("general.area.edit.owner.add", area.getAreaId()+"", u.getName());
+			return true;
+		} else {
+			user.sendLocalizedMessage("error.area.edit.owner.add", area.getAreaId()+"", u.getName(), area.getUserAccessLevel(u.getId()).toString());
+			return false;
+		}
+	}
+	
+	private boolean removeAreaOwner(User user, IPermissionUser u, Area area) {
+		if (area.getUserAccessLevel(u.getId()) == AreaAccessLevel.OWNER) {
+			area.setUserAccessLevel(u.getId(), AreaAccessLevel.NONE);
+			user.sendLocalizedMessage("general.area.edit.owner.remove", area.getAreaId()+"", u.getName());
+			return true;
+		} else {
+			user.sendLocalizedMessage("error.area.edit.owner.remove", area.getAreaId()+"", u.getName());
+			return false;
+		}
+	}
+
+	private boolean addAreaGroupOwner(User user, IPermissionGroup g, Area area) {
+		if (area.getGroupAccessLevel(g.getId()).getComparableValue() < AreaAccessLevel.OWNER.getComparableValue()) {
+			area.setGroupAccessLevel(g.getId(), AreaAccessLevel.OWNER);
+			user.sendLocalizedMessage("general.area.edit.groupOwner.add", area.getAreaId()+"", g.getName());
+			return true;
+		} else {
+			user.sendLocalizedMessage("error.area.edit.groupOwner.add", area.getAreaId()+"", g.getName(), area.getGroupAccessLevel(g.getId()).toString());
+			return false;
+		}
+	}
+
+	private boolean removeAreaGroupOwner(User user, IPermissionGroup g, Area area) {
+		if (area.getGroupAccessLevel(g.getId()) == AreaAccessLevel.OWNER) {
+			area.setGroupAccessLevel(g.getId(), AreaAccessLevel.NONE);
+			user.sendLocalizedMessage("general.area.edit.groupOwner.remove", area.getAreaId()+"", g.getName());
+			return true;
+		} else {
+			user.sendLocalizedMessage("error.area.edit.groupOwner.remove", area.getAreaId()+"", g.getName());
+			return false;
+		}
+	}
+
+	private boolean addAreaGuest(User user, IPermissionUser u, Area area) {
+		if (area.getUserAccessLevel(u.getId()).getComparableValue() < AreaAccessLevel.GUEST.getComparableValue()) {
+			area.setUserAccessLevel(u.getId(), AreaAccessLevel.GUEST);
+			user.sendLocalizedMessage("general.area.edit.guest.add", area.getAreaId()+"", u.getName());
+			return true;
+		} else {
+			user.sendLocalizedMessage("error.area.edit.guest.add", area.getAreaId()+"", u.getName(), area.getUserAccessLevel(u.getId()).toString());
+			return false;
+		}
+	}
+
+	private boolean removeAreaGuest(User user, IPermissionUser u, Area area) {
+		if (area.getUserAccessLevel(u.getId()) == AreaAccessLevel.GUEST) {
+			area.setUserAccessLevel(u.getId(), AreaAccessLevel.NONE);
+			user.sendLocalizedMessage("general.area.edit.guest.remove", area.getAreaId()+"", u.getName());
+			return true;
+		} else {
+			user.sendLocalizedMessage("error.area.edit.guest.remove", area.getAreaId()+"", u.getName());
+			return false;
+		}
+	}
+
+	private boolean addAreaGroupGuest(User user, IPermissionGroup g, Area area) {
+		if (area.getGroupAccessLevel(g.getId()).getComparableValue() < AreaAccessLevel.GUEST.getComparableValue()) {
+			area.setGroupAccessLevel(g.getId(), AreaAccessLevel.GUEST);
+			user.sendLocalizedMessage("general.area.edit.groupGuest.add", area.getAreaId()+"", g.getName());
+			return true;
+		} else {
+			user.sendLocalizedMessage("error.area.edit.groupGuest.add", area.getAreaId()+"", g.getName(), area.getGroupAccessLevel(g.getId()).toString());
+			return false;
+		}
+	}
+
+	private boolean removeAreaGroupGuest(User user, IPermissionGroup g, Area area) {
+		if (area.getGroupAccessLevel(g.getId()) == AreaAccessLevel.GUEST) {
+			area.setGroupAccessLevel(g.getId(), AreaAccessLevel.NONE);
+			user.sendLocalizedMessage("general.area.edit.groupGuest.remove", area.getAreaId()+"", g.getName());
+			return true;
+		} else {
+			user.sendLocalizedMessage("error.area.edit.groupGuest.remove", area.getAreaId()+"", g.getName());
 			return false;
 		}
 	}
@@ -1202,59 +1592,206 @@ public class AreaCommand extends DualSyntaxCommand {
 		return true;
 	}
 
-	/**
-	 * Sends a user a list of areas in which they're currently standing, 6 at a
-	 * time,
-	 * @param user
-	 * @param page
-	 * @param all Indicates whether or not to list all areas on the server, or
-	 * to only include areas at the user's current location.
-	 */
-	private void sendAreaList(User user, int page, boolean all) {
-		if (!(user.getHandle() instanceof Player) && !all) {
-			user.sendLocalizedMessage("shared.noConsole");
-			return;
-		}
-		int per = 6;		// Areas per page
+	private void sendAreaListAll(User user, int page) {
+		
+		// Variables
+		int per = (user.getHandle() instanceof ConsoleCommandSender ? 10 : 6);
 		int total;
-		if (user.getHandle() instanceof ConsoleCommandSender) {
-			per = 10;
-		}
 		
-		// Fetch the list of areas at the user's current location
-		List<Area> areas;
-		if (all) {
-			areas = AreaManager.getInstance().getAreas(page, per);
-			total = AreaManager.getInstance().getTotalAreas();
-		} else {
-			areas = AreaManager.getInstance().getAreas(((Player) user.getHandle()).getLocation());
-			total = areas.size();
-		}
+		// Retrieve list of areas
+		List<Area> areas = AreaManager.getInstance().getAreas(page, per);
+		total = AreaManager.getInstance().getTotalAreas();
 		
-		// Adjust page number
+		// Adjust for pagination
 		if (page > (total + per - 1) / per) {
 			page = (total + per -1) / per;
 		}
 		if (page < 1) {
 			page = 1;
 		}
-		if (!all) {
-			areas = areas.subList((page - 1) * per, ((page * per) > total ? total : (page * per)));
-		}
 		
 		// Check if no areas are there
 		if (areas.isEmpty()) {
-			user.sendLocalizedMessage(all ? "error.area.list.none" : "error.area.list.noneLocation");
+			user.sendLocalizedMessage("error.area.list.none");
 			return;
 		}
 		
 		// Print listing header
-		user.sendLocalizedMessage((all ? "general.area.list.header" : "general.area.list.headerLocation"), page+"", (total+per-1)/6+"");
+		user.sendLocalizedMessage("general.area.list.header", page+"", (total+per-1)/6+"");
 		
+		// Send the list
+		sendAreaList(user, areas);
+	}
+
+	private void sendAreaListLocation(User user, int page, Location location) {
+		
+		// Variables
+		int per = (user.getHandle() instanceof ConsoleCommandSender ? 10 : 6);
+		int total;
+		
+		// Retrieve list of areas
+		List<Area> areas = AreaManager.getInstance().getAreas(((Player) user.getHandle()).getLocation());
+		total = areas.size();
+		
+		// Adjust for pagination
+		if (page > (total + per - 1) / per) {
+			page = (total + per -1) / per;
+		}
+		if (page < 1) {
+			page = 1;
+		}
+		areas = areas.subList((page - 1) * per, ((page * per) > total ? total : (page * per)));
+		
+		// Check if no areas are there
+		if (areas.isEmpty()) {
+			user.sendLocalizedMessage("error.area.list.noneLocation");
+			return;
+		}
+		
+		// Print listing header
+		user.sendLocalizedMessage("general.area.list.headerLocation", page+"", (total+per-1)/6+"");
+		
+		// Send the list
+		sendAreaList(user, areas);
+		
+	}
+
+	private void sendAreaListOwner(User user, int page, IPermissionUser owner) {
+
+		// Variables
+		int per = (user.getHandle() instanceof ConsoleCommandSender ? 10 : 6);
+		int total;
+		boolean same = user.getId() == owner.getId();
+		
+		// Retrieve list of areas
+		List<Area> areas = AreaManager.getInstance().getAreasByOwner(owner.getId());
+		total = areas.size();
+		
+		// Adjust for pagination
+		if (page > (total + per - 1) / per) {
+			page = (total + per -1) / per;
+		}
+		if (page < 1) {
+			page = 1;
+		}
+		areas = areas.subList((page - 1) * per, ((page * per) > total ? total : (page * per)));
+		
+		// Check if no areas are there
+		if (areas.isEmpty()) {
+			if (same) {
+				user.sendLocalizedMessage("error.area.list.noneOwn");
+			} else {
+				user.sendLocalizedMessage("error.area.list.noneUser", owner.getName());
+			}
+			return;
+		}
+		
+		// Print listing header
+		if (same) {
+			user.sendLocalizedMessage("general.area.list.headerOwn", page+"", (total+per-1)/per+"");
+		} else {
+			user.sendLocalizedMessage("general.area.list.headerUser", page+"", (total+per-1)/per+"", owner.getName());
+		}
+		
+		// Send the list
+		sendAreaList(user, areas);
+		
+	}
+
+	private void sendAreaList(User user, List<Area> areas) {
 		for (Area area : areas) {
 			user.sendLocalizedMessage("general.area.list.item", area.getAreaId()+"", (area.getLabel() == null || area.getLabel().isEmpty()) ? "[No label]" : area.getLabel(), area.getPriority()+"");
 		}
+	}
+
+	private void sendAreaInfo(User user, Area area) {
 		
+		// Generate lists for info
+		String flags;
+		String owners;
+		String guests;
+		String gowners;
+		String gguests;
+		String world;
+		
+		// Generate flag list
+		List<AreaFlag> flaglist = area.getFlags();
+		if (flaglist.isEmpty()) {
+			flags = GoldenApple.getInstance().getLocalizationManager().getMessage(user, "shared.none");
+		} else {
+			flags = "";
+			for (AreaFlag f : flaglist) {
+				if (!flags.isEmpty()) flags += ", ";
+				flags += f.toString();
+			}
+		}
+		
+		// Generate owner list
+		List<IPermissionUser> users = area.getUsers(AreaAccessLevel.OWNER);
+		if (users.isEmpty()) {
+			owners = GoldenApple.getInstance().getLocalizationManager().getMessage(user, "shared.none");
+		} else {
+			owners = "";
+			for (IPermissionUser u : users) {
+				if (!owners.isEmpty()) owners += ", ";
+				owners += u.getName();
+			}
+		}
+		
+		// Generate guest list
+		users = area.getUsers(AreaAccessLevel.GUEST);
+		if (users.isEmpty()) {
+			guests = GoldenApple.getInstance().getLocalizationManager().getMessage(user, "shared.none");
+		} else {
+			guests = "";
+			for (IPermissionUser u : users) {
+				if (!guests.isEmpty()) guests += ", ";
+				guests += u.getName();
+			}
+		}
+		
+		// Generate group owner list
+		List<IPermissionGroup> groups = area.getGroups(AreaAccessLevel.OWNER);
+		if (groups.isEmpty()) {
+			gowners = GoldenApple.getInstance().getLocalizationManager().getMessage(user, "shared.none");
+		} else {
+			gowners = "";
+			for (IPermissionGroup g : groups) {
+				if (!gowners.isEmpty()) gowners += ", ";
+				gowners += g.getName();
+			}
+		}
+		
+		// Generate group guest list
+		groups = area.getGroups(AreaAccessLevel.GUEST);
+		if (groups.isEmpty()) {
+			gguests = GoldenApple.getInstance().getLocalizationManager().getMessage(user, "shared.none");
+		} else {
+			gguests = "";
+			for (IPermissionGroup g : groups) {
+				if (!gguests.isEmpty()) gguests += ", ";
+				gguests += g.getName();
+			}
+		}
+		
+		if (area.getRegionIds().size() > 0) {
+			world = AreaManager.getInstance().getRegion(area.getRegionIds().get(0)).getWorld().getName();
+		} else {
+			world = GoldenApple.getInstance().getLocalizationManager().getMessage(user, "shared.none");
+		}
+		
+		// Send user info about area
+		user.sendLocalizedMultilineMessage("general.area.info",
+				area.getAreaId()+"",
+				(area.getLabel() == null ? "[No label]" : area.getLabel()),
+				area.getPriority()+"",
+				flags,
+				owners,
+				guests,
+				gowners,
+				gguests,
+				area.getRegionIds().size()+"",
+				world);
 	}
 
 	private void sendHelp(User user, String commandLabel, boolean complex) {
@@ -1274,6 +1811,8 @@ public class AreaCommand extends DualSyntaxCommand {
 			ArgumentInfo.newSwitch("delete", "d", "delete"),
 			ArgumentInfo.newSwitch("list", "ls", "list"),
 			ArgumentInfo.newSwitch("all", "a", "all"),
+			ArgumentInfo.newSwitch("location", "loc", "location"),
+			ArgumentInfo.newSwitch("mine", "me", "mine"),
 			ArgumentInfo.newInt("page", "pg", "page"),
 			
 			ArgumentInfo.newSwitch("info", "i", "info"),
@@ -1301,7 +1840,7 @@ public class AreaCommand extends DualSyntaxCommand {
 			ArgumentInfo.newStringList("flags-remove", "f:r", "flags:remove", false),
 			
 			ArgumentInfo.newLong("region-add", "r:a", "region:add"),
-			ArgumentInfo.newLongList("region-remove", "r:r", "region:remove")
+			ArgumentInfo.newLongList("region-remove", "r:r", "region:remove"),
 		};
 	}
 

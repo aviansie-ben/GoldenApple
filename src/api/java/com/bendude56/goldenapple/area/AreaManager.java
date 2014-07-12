@@ -20,9 +20,22 @@ public abstract class AreaManager {
      */
     public static PermissionNode areaNode;
     /**
+     * Permission node to retrieve a list of areas.
+     */
+    public static PermissionNode areaListNode;
+    /**
+     * Permission node to view information of an area.
+     */
+    public static PermissionNode areaInfoNode;
+    /**
      * Permission node to edit the properties of existing areas.
      */
     public static PermissionNode areaEditNode;
+    /**
+     * Permission node to edit the properties of existing areas that the user
+     * is an owner of.
+     */
+    public static PermissionNode areaEditOwnNode;
     /**
      * Permission to create new areas.
      */
@@ -31,6 +44,26 @@ public abstract class AreaManager {
      * Permission to delete existing areas.
      */
     public static Permission removePermission;
+    /**
+     * Permission to list all areas on the server.
+     */
+    public static Permission listAllPermission;
+    /**
+     * Permission to list all areas at a user's current location.
+     */
+    public static Permission listLocationPermission;
+    /**
+     * Permission to list all areas owned by the user.
+     */
+    public static Permission listOwnPermission;
+    /**
+     * Permission to get information on any area on the server.
+     */
+    public static Permission infoAllPermission;
+    /**
+     * Permission to get information on any area owned by the user.
+     */
+    public static Permission infoOwnPermission;
     /**
      * Permission to override building restrictions.
      */
@@ -48,9 +81,17 @@ public abstract class AreaManager {
      */
     public static Permission editOwnersPermission;
     /**
+     * Permission to change an area's group owners.
+     */
+    public static Permission editGroupOwnersPermission;
+    /**
      * Permission to change an area's guests.
      */
     public static Permission editGuestsPermission;
+    /**
+     * Permission to change an area's group guests.
+     */
+    public static Permission editGroupGuestsPermission;
     /**
      * Permission to add/remove regions to/from an area.
      */
@@ -59,6 +100,38 @@ public abstract class AreaManager {
      * Permission to change an area's flags.
      */
     public static Permission editFlagsPermission;
+    /**
+     * Permission for user to change their own area's label.
+     */
+    public static Permission editOwnLabelPermission;
+    /**
+     * Permission for user to change their own area's priority.
+     */
+    public static Permission editOwnPriorityPermission;
+    /**
+     * Permission for user to change their own area's owners.
+     */
+    public static Permission editOwnOwnersPermission;
+    /**
+     * Permission for user to change their own area's group owners.
+     */
+    public static Permission editOwnGroupOwnersPermission;
+    /**
+     * Permission for user to change their own area's guests.
+     */
+    public static Permission editOwnGuestsPermission;
+    /**
+     * Permission for user to change their own area's group guests.
+     */
+    public static Permission editOwnGroupGuestsPermission;
+    /**
+     * Permission for user to modify their own area's regions.
+     */
+    public static Permission editOwnRegionsPermission;
+    /**
+     * Permission for user to modify their own area's flags.
+     */
+    public static Permission editOwnFlagsPermission;
     
     /**
      * Static reference to the class instance.
@@ -92,7 +165,9 @@ public abstract class AreaManager {
     public abstract Area getArea(String label);
     
     /**
-     * Fetches an unsorted list of Areas that cover the given location.
+     * Fetches a sorted list of Areas that cover the given location, sorted
+     * by the value of their priorities in descending order. Sorting behavior
+     * in regards to areas with matching priorities is undefined.
      * 
      * @param l The location to search for.
      * @return An ArrayList of Areas that cover the given location.
@@ -100,7 +175,7 @@ public abstract class AreaManager {
     public abstract List<Area> getAreas(Location l);
     
     /**
-     * Fetches a list of Areas sorted by ID in descending order, starting at the
+     * Fetches a list of Areas sorted by ID in ascending order, starting at the
      * given page and including the indicated number of results per page.
      * 
      * @param page The page to start on.
@@ -108,6 +183,16 @@ public abstract class AreaManager {
      * @return ArrayList of Areas
      */
     public abstract List<Area> getAreas(int page, int per);
+    
+    /**
+     * Fetches a sorted list of Areas that are owned either directly or
+     * indirectly (through group membership) by the user with the given id.
+     * Sorted by area ID in ascending order.
+     * @param userId The ID of the user to search for.
+     * @return An ArrayList of Areas that the given user has ownership rights
+     * rights to.
+     */
+    public abstract List<Area> getAreasByOwner(long userId);
     
     /**
      * Gets the total number of areas in the database.

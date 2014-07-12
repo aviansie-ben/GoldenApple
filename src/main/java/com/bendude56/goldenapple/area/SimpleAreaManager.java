@@ -229,6 +229,37 @@ public class SimpleAreaManager extends AreaManager {
             return null;
         }
     }
+
+    @Override
+    public List<Area> getAreasByOwner(long userId) {
+    	List<Area> areas = new ArrayList<Area>();
+    	Area a;
+    	
+    	String query = "(SELECT Areas.* FROM Areas, AreaUsers WHERE AreaUsers.UserID=? AND AreaUsers.AreaID=Areas.ID AND AreaUsers.AccessLevel=?) UNION DISTINCT (SELECT Areas.* FROM Areas, AreaGroups, GroupUserMembers WHERE GroupUserMembers.MemberID=? AND GroupUserMembers.GroupID=AreaGroups.GroupID AND AreaGroups.AreaID=Areas.ID AND AreaGroups.AccessLevel=?) ORDER BY ID";
+    	
+    	try {
+    		ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery(query, userId, AreaAccessLevel.OWNER.getId(), userId, AreaAccessLevel.OWNER.getId());
+    		try {
+    			while (r.next()) {
+    				a = checkAreaCache(r.getLong("ID"), false);
+    				if (a == null) {
+    					a = loadAreaIntoCache(r);
+    				}
+    				if (a != null) {
+    					areas.add(a);
+    				}
+    			}
+    		} finally {
+    			GoldenApple.getInstanceDatabaseManager().closeResult(r);
+    		}
+    		return areas;
+    	} catch (SQLException e) {
+    		GoldenApple.log(Level.SEVERE, "There was an error while loading an area.");
+            GoldenApple.log(Level.SEVERE, "Please report this error to the creator of 'GoldenApple'. Please include the following stack trace:");
+            GoldenApple.log(Level.SEVERE, e);
+            return null;
+    	}
+    }
     
     @Override
     public int getTotalAreas() {
