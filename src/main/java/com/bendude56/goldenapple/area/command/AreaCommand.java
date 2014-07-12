@@ -62,7 +62,7 @@ public class AreaCommand extends DualSyntaxCommand {
 			}
 			return;
 		} else if (arg.isDefined("list")) {
-			onExecuteComplexList(instance, user, commandLabel, arg);
+			onExecuteComplexList(instance, user, commandLabel, arg, args);
 			/*
 			int page = (arg.isDefined("page") ? arg.getInt("page") : 1);
 			if (page <= 0) page = 1;
@@ -73,51 +73,51 @@ public class AreaCommand extends DualSyntaxCommand {
 		// Check for area creation/deletion. If both are defined, only execute
 		// creation and ignore deletion.
 		if (arg.isDefined("create")) {
-			if (!onExecuteComplexCreate(instance, user, commandLabel, arg)) return;
+			if (!onExecuteComplexCreate(instance, user, commandLabel, arg, args)) return;
 		} else if (arg.isDefined("delete")) {
-			if (!onExecuteComplexDelete(instance, user, commandLabel, arg)) return;
+			if (!onExecuteComplexDelete(instance, user, commandLabel, arg, args)) return;
 		} else {
 		
 			// Check for area modification. If multiple are defined, execute them
 			// in order defined below.
 			if (arg.isDefined("owner-add")) {
-				onExecuteComplexAddOwner(instance, user, commandLabel, arg);
+				onExecuteComplexAddOwner(instance, user, commandLabel, arg, args);
 			}
 			if (arg.isDefined("owner-remove")) {
-				onExecuteComplexRemoveOwner(instance, user, commandLabel, arg);
+				onExecuteComplexRemoveOwner(instance, user, commandLabel, arg, args);
 			}
 			if (arg.isDefined("group-owner-add")) {
-				onExecuteComplexAddGroupOwner(instance, user, commandLabel, arg);
+				onExecuteComplexAddGroupOwner(instance, user, commandLabel, arg, args);
 			}
 			if (arg.isDefined("group-owner-remove")) {
-				onExecuteComplexRemoveGroupOwner(instance, user, commandLabel, arg);
+				onExecuteComplexRemoveGroupOwner(instance, user, commandLabel, arg, args);
 			}
 			if (arg.isDefined("invite-full")) {
-				onExecuteComplexAddGuest(instance, user, commandLabel, arg);
+				onExecuteComplexAddGuest(instance, user, commandLabel, arg, args);
 			}
 			if (arg.isDefined("invite-none")) {
-				onExecuteComplexRemoveGuest(instance, user, commandLabel, arg);
+				onExecuteComplexRemoveGuest(instance, user, commandLabel, arg, args);
 			}
 			if (arg.isDefined("group-invite-full")) {
-				onExecuteComplexAddGroupGuest(instance, user, commandLabel, arg);
+				onExecuteComplexAddGroupGuest(instance, user, commandLabel, arg, args);
 			}
 			if (arg.isDefined("group-invite-none")) {
-				onExecuteComplexRemoveGroupGuest(instance, user, commandLabel, arg);
+				onExecuteComplexRemoveGroupGuest(instance, user, commandLabel, arg, args);
 			}
 			if (arg.isDefined("flags-add")) {
-				onExecuteComplexAddFlags(instance, user, commandLabel, arg);
+				onExecuteComplexAddFlags(instance, user, commandLabel, arg, args);
 			}
 			if (arg.isDefined("flags-remove")) {
-				onExecuteComplexRemoveFlags(instance, user, commandLabel, arg);
+				onExecuteComplexRemoveFlags(instance, user, commandLabel, arg, args);
 			}
 			if (arg.isDefined("priority")) {
-				onExecuteComplexSetPriority(instance, user, commandLabel, arg);
+				onExecuteComplexSetPriority(instance, user, commandLabel, arg, args);
 			}
 			if (arg.isDefined("label")) {
-				onExecuteComplexSetLabel(instance, user, commandLabel, arg);
+				onExecuteComplexSetLabel(instance, user, commandLabel, arg, args);
 			}
 			if (arg.isDefined("info")) {
-				onExecuteComplexInfo(instance, user, commandLabel, arg);
+				onExecuteComplexInfo(instance, user, commandLabel, arg, args);
 			}
 			
 			// TODO Finish these (adding/removing regions)
@@ -149,6 +149,13 @@ public class AreaCommand extends DualSyntaxCommand {
 			case "list":
 			case "ls":
 				onExecuteSimpleList(instance, user, commandLabel, args);
+				break;
+			case "info":
+			case "i":
+				onExecuteSimpleInfo(instance, user, commandLabel, args);
+				break;
+			case "override":
+				onExecuteSimpleOverride(instance, user, commandLabel, args);
 				break;
 			case "addowner":
 				onExecuteSimpleAddOwner(instance, user, commandLabel, args);
@@ -195,7 +202,7 @@ public class AreaCommand extends DualSyntaxCommand {
 		
 		// Make sure user has adequate permissions
 		if (!user.hasPermission(AreaManager.addPermission)) {
-			user.sendLocalizedMessage("shared.noPermission");
+			GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			return false;
 		}
 		
@@ -228,7 +235,7 @@ public class AreaCommand extends DualSyntaxCommand {
 
 		// Make sure user has adequate permissions
 		if (!user.hasPermission(AreaManager.removePermission)) {
-			user.sendLocalizedMessage("shared.noPermission");
+			GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			return false;
 		}
 		
@@ -248,7 +255,7 @@ public class AreaCommand extends DualSyntaxCommand {
 		if (!user.hasPermission(AreaManager.listLocationPermission)
 				&& !user.hasPermission(AreaManager.listAllPermission)
 				&& !user.hasPermission(AreaManager.listOwnPermission)) {
-			user.sendLocalizedMessage("shared.noPermission");
+			GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			return false;
 		}
 		
@@ -268,7 +275,7 @@ public class AreaCommand extends DualSyntaxCommand {
 					
 					// List-all-areas-on-server mode
 					if (!user.hasPermission(AreaManager.listAllPermission)) {
-						user.sendLocalizedMessage("shared.noPermission");
+						GoldenApple.logPermissionFail(user, commandLabel, args, true);
 						return false;
 					}
 					all = true;
@@ -284,7 +291,7 @@ public class AreaCommand extends DualSyntaxCommand {
 						return false;
 					}
 					if (!user.hasPermission(AreaManager.listLocationPermission)) {
-						user.sendLocalizedMessage("shared.noPermission");
+						GoldenApple.logPermissionFail(user, commandLabel, args, true);
 						return false;
 					}
 					location = true;
@@ -295,7 +302,7 @@ public class AreaCommand extends DualSyntaxCommand {
 					
 					// List-areas-owned-by-user mode
 					if (!user.hasPermission(AreaManager.listOwnPermission)) {
-						user.sendLocalizedMessage("shared.noPermission");
+						GoldenApple.logPermissionFail(user, commandLabel, args, true);
 						return false;
 					}
 					mine = true;
@@ -308,7 +315,7 @@ public class AreaCommand extends DualSyntaxCommand {
 					
 					// List-all-areas-owned-by-certain-user mode
 					if (!user.hasPermission(AreaManager.listAllPermission)) {
-						user.sendLocalizedMessage("shared.noPermission");
+						GoldenApple.logPermissionFail(user, commandLabel, args, true);
 						return false;
 					}
 					owner = true;
@@ -379,15 +386,67 @@ public class AreaCommand extends DualSyntaxCommand {
 		return true;
 	}
 
-	private boolean onExecuteSimpleAddOwner(GoldenApple instance, User user, String commandLabel, String[] args) {
+	private boolean onExecuteSimpleOverride(GoldenApple instance, User user, String commandLabel, String[] args) {
 		
-		// Verify number of arguments
-		if (args.length < 2) {
+		// Make sure user has adequate permissions
+		if (!user.hasPermission(AreaManager.overridePermission)) {
+			GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			return false;
 		}
 		
+		// Verify argument length
+		if (args.length < 2) {
+			user.sendLocalizedMessage("shared.parameterMissing", args[0]);
+			return false;
+		} else if (args.length > 2) {
+			user.sendLocalizedMessage("shared.unknownOption", args[2]);
+			return false;
+		}
+		
+		// Determine how they want it and make the switch
+		switch (args[1].toLowerCase()) {
+			case "on": // Turn overide on
+				AreaManager.getInstance().setOverride(user, true);
+				user.sendLocalizedMessage("general.area.override.on");
+				break;
+				
+			case "off": // Turn override off
+				AreaManager.getInstance().setOverride(user, false);
+				user.sendLocalizedMessage("general.area.override.off");
+				break;
+				
+			default: // Unknown option
+				user.sendLocalizedMessage("shared.unknownOption", args[1]);
+				return false;
+		}
+		return true;
+	}
+
+	private boolean onExecuteSimpleAddOwner(GoldenApple instance, User user, String commandLabel, String[] args) {
+		
+		// Make sure user has adequate permissions
+		if (!user.hasPermission(AreaManager.editOwnersPermission) && !user.hasPermission(AreaManager.editOwnOwnersPermission)) {
+			GoldenApple.logPermissionFail(user, commandLabel, args, true);
+			return false;
+		}
+		
+		// Verify number of arguments
+		if (args.length < 2) {
+			// TODO ERROR message
+			return false;
+		}
+		
+		// Generate Query
+		String query = null;
+		if (args.length > 2) {
+			query = "";
+			for (int i = 2; i < args.length; i++) {
+				query += " " + args[i];
+			}
+		}
+		
 		// Get the selected area
-		Area area = findAreaWithPermissionSimple(user, (args.length < 3 ? null : args[2]), AreaManager.editOwnersPermission, AreaManager.editOwnOwnersPermission);
+		Area area = findAreaWithPermissionSimple(user, commandLabel, args, query, AreaManager.editOwnersPermission, AreaManager.editOwnOwnersPermission);
 		if (area == null) {
 			return false;
 		}
@@ -405,14 +464,30 @@ public class AreaCommand extends DualSyntaxCommand {
 	}
 
 	private boolean onExecuteSimpleRemoveOwner(GoldenApple instance, User user, String commandLabel, String[] args) {
-		
-		// Verify number of arguments
-		if (args.length < 2) {
+
+		// Make sure user has adequate permissions
+		if (!user.hasPermission(AreaManager.editOwnersPermission) && !user.hasPermission(AreaManager.editOwnOwnersPermission)) {
+			GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			return false;
 		}
 		
+		// Verify number of arguments
+		if (args.length < 2) {
+			// TODO Error message
+			return false;
+		}
+		
+		// Generate Query
+		String query = null;
+		if (args.length > 2) {
+			query = "";
+			for (int i = 2; i < args.length; i++) {
+				query += " " + args[i];
+			}
+		}
+		
 		// Get the selected area
-		Area area = findAreaWithPermissionSimple(user, (args.length < 3 ? null : args[2]), AreaManager.editOwnersPermission, AreaManager.editOwnOwnersPermission);
+		Area area = findAreaWithPermissionSimple(user, commandLabel, args, query, AreaManager.editOwnersPermission, AreaManager.editOwnOwnersPermission);
 		if (area == null) {
 			return false;
 		}
@@ -430,13 +505,29 @@ public class AreaCommand extends DualSyntaxCommand {
 
 	private boolean onExecuteSimpleAddGroupOwner(GoldenApple instance, User user, String commandLabel, String[] args) {
 
-		// Verify number of arguments
-		if (args.length < 2) {
+		// Make sure user has adequate permissions
+		if (!user.hasPermission(AreaManager.editGroupOwnersPermission) && !user.hasPermission(AreaManager.editOwnGroupOwnersPermission)) {
+			GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			return false;
 		}
 		
+		// Verify number of arguments
+		if (args.length < 2) {
+			// TODO Error message
+			return false;
+		}
+		
+		// Generate Query
+		String query = null;
+		if (args.length > 2) {
+			query = "";
+			for (int i = 2; i < args.length; i++) {
+				query += " " + args[i];
+			}
+		}
+		
 		// Get the selected area
-		Area area = findAreaWithPermissionSimple(user, (args.length < 3 ? null : args[2]), AreaManager.editGroupOwnersPermission, AreaManager.editOwnGroupOwnersPermission);
+		Area area = findAreaWithPermissionSimple(user, commandLabel, args, query, AreaManager.editGroupOwnersPermission, AreaManager.editOwnGroupOwnersPermission);
 		if (area == null) {
 			return false;
 		}
@@ -455,13 +546,29 @@ public class AreaCommand extends DualSyntaxCommand {
 
 	private boolean onExecuteSimpleRemoveGroupOwner(GoldenApple instance, User user, String commandLabel, String[] args) {
 
-		// Verify number of arguments
-		if (args.length < 2) {
+		// Make sure user has adequate permissions
+		if (!user.hasPermission(AreaManager.editGroupOwnersPermission) && !user.hasPermission(AreaManager.editOwnGroupOwnersPermission)) {
+			GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			return false;
 		}
 		
+		// Verify number of arguments
+		if (args.length < 2) {
+			// TODO Error message
+			return false;
+		}
+		
+		// Generate Query
+		String query = null;
+		if (args.length > 2) {
+			query = "";
+			for (int i = 2; i < args.length; i++) {
+				query += " " + args[i];
+			}
+		}
+		
 		// Get the selected area
-		Area area = findAreaWithPermissionSimple(user, (args.length < 3 ? null : args[2]), AreaManager.editGroupOwnersPermission, AreaManager.editOwnGroupOwnersPermission);
+		Area area = findAreaWithPermissionSimple(user, commandLabel, args, query, AreaManager.editGroupOwnersPermission, AreaManager.editOwnGroupOwnersPermission);
 		if (area == null) {
 			return false;
 		}
@@ -480,13 +587,29 @@ public class AreaCommand extends DualSyntaxCommand {
 
 	private boolean onExecuteSimpleAddGuest(GoldenApple instance, User user, String commandLabel, String[] args) {
 
-		// Verify number of arguments
-		if (args.length < 2) {
+		// Make sure user has adequate permissions
+		if (!user.hasPermission(AreaManager.editGuestsPermission) && !user.hasPermission(AreaManager.editOwnGuestsPermission)) {
+			GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			return false;
 		}
 		
+		// Verify number of arguments
+		if (args.length < 2) {
+			// TODO Error message
+			return false;
+		}
+
+		// Generate Query
+		String query = null;
+		if (args.length > 2) {
+			query = "";
+			for (int i = 2; i < args.length; i++) {
+				query += " " + args[i];
+			}
+		}
+		
 		// Get the selected area
-		Area area = findAreaWithPermissionSimple(user, (args.length < 3 ? null : args[2]), AreaManager.editGuestsPermission, AreaManager.editOwnGuestsPermission);
+		Area area = findAreaWithPermissionSimple(user, commandLabel, args, query, AreaManager.editGuestsPermission, AreaManager.editOwnGuestsPermission);
 		if (area == null) {
 			return false;
 		}
@@ -505,13 +628,29 @@ public class AreaCommand extends DualSyntaxCommand {
 
 	private boolean onExecuteSimpleRemoveGuest(GoldenApple instance, User user, String commandLabel, String[] args) {
 
-		// Verify number of arguments
-		if (args.length < 2) {
+		// Make sure user has adequate permissions
+		if (!user.hasPermission(AreaManager.editGuestsPermission) && !user.hasPermission(AreaManager.editOwnGuestsPermission)) {
+			GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			return false;
 		}
 		
+		// Verify number of arguments
+		if (args.length < 2) {
+			// TODO Error message
+			return false;
+		}
+
+		// Generate Query
+		String query = null;
+		if (args.length > 2) {
+			query = "";
+			for (int i = 2; i < args.length; i++) {
+				query += " " + args[i];
+			}
+		}
+		
 		// Get the selected area
-		Area area = findAreaWithPermissionSimple(user, (args.length < 3 ? null : args[2]), AreaManager.editGuestsPermission, AreaManager.editOwnGuestsPermission);
+		Area area = findAreaWithPermissionSimple(user, commandLabel, args, query, AreaManager.editGuestsPermission, AreaManager.editOwnGuestsPermission);
 		if (area == null) {
 			return false;
 		}
@@ -530,13 +669,29 @@ public class AreaCommand extends DualSyntaxCommand {
 
 	private boolean onExecuteSimpleAddGroupGuest(GoldenApple instance, User user, String commandLabel, String[] args) {
 
-		// Verify number of arguments
-		if (args.length < 2) {
+		// Make sure user has adequate permissions
+		if (!user.hasPermission(AreaManager.editGroupGuestsPermission) && !user.hasPermission(AreaManager.editOwnGroupGuestsPermission)) {
+			GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			return false;
 		}
 		
+		// Verify number of arguments
+		if (args.length < 2) {
+			// TODO Error message
+			return false;
+		}
+		
+		// Generate Query
+		String query = null;
+		if (args.length > 2) {
+			query = "";
+			for (int i = 2; i < args.length; i++) {
+				query += " " + args[i];
+			}
+		}
+		
 		// Get the selected area
-		Area area = findAreaWithPermissionSimple(user, (args.length < 3 ? null : args[2]), AreaManager.editGroupGuestsPermission, AreaManager.editOwnGroupGuestsPermission);
+		Area area = findAreaWithPermissionSimple(user, commandLabel, args, query, AreaManager.editGroupGuestsPermission, AreaManager.editOwnGroupGuestsPermission);
 		if (area == null) {
 			return false;
 		}
@@ -555,13 +710,29 @@ public class AreaCommand extends DualSyntaxCommand {
 
 	private boolean onExecuteSimpleRemoveGroupGuest(GoldenApple instance, User user, String commandLabel, String[] args) {
 
-		// Verify number of arguments
-		if (args.length < 2) {
+		// Make sure user has adequate permissions
+		if (!user.hasPermission(AreaManager.editGroupGuestsPermission) && !user.hasPermission(AreaManager.editOwnGroupGuestsPermission)) {
+			GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			return false;
 		}
 		
+		// Verify number of arguments
+		if (args.length < 2) {
+			// TODO Error message
+			return false;
+		}
+		
+		// Generate Query
+		String query = null;
+		if (args.length > 2) {
+			query = "";
+			for (int i = 2; i < args.length; i++) {
+				query += " " + args[i];
+			}
+		}
+		
 		// Get the selected area
-		Area area = findAreaWithPermissionSimple(user, (args.length < 3 ? null : args[2]), AreaManager.editGroupGuestsPermission, AreaManager.editOwnGroupGuestsPermission);
+		Area area = findAreaWithPermissionSimple(user, commandLabel, args, query, AreaManager.editGroupGuestsPermission, AreaManager.editOwnGroupGuestsPermission);
 		if (area == null) {
 			return false;
 		}
@@ -578,6 +749,53 @@ public class AreaCommand extends DualSyntaxCommand {
 		return true;
 	}
 
+	private boolean onExecuteSimpleInfo(GoldenApple instnace, User user, String commandLabel, String[] args) {
+		
+		// Make sure user has adequate permissions
+		if (!user.hasPermission(AreaManager.infoAllPermission) && !user.hasPermission(AreaManager.infoOwnPermission)){
+			GoldenApple.logPermissionFail(user, commandLabel, args, true);
+			return false;
+		}
+		
+		// Variables
+		String query;
+		Area area;
+		
+		// Check if they're selecting a specific area
+		if (args.length > 1) {
+			query = "";
+			for (int i = 1; i < args.length; i++) {
+				query += " " + args[i];
+			}
+			query.trim();
+		} else {
+			query = null;
+		}
+		
+		// Get the selected area
+		if (query == null) {
+			
+			// Make sure user isn't a console
+			user.sendLocalizedMessage("shared.noConsole");
+			
+			// Get area at user's current location
+			area = this.findArea(user, !user.hasPermission(AreaManager.infoAllPermission));
+		} else {
+			
+			// Search for area based on query
+			area = this.findArea(user, query);
+		}
+		
+		// Make sure area was actually found
+		if (area == null) {
+			return false;
+		}
+		
+		// Send area info
+		sendAreaInfo(user, area);
+		return true;
+	}
+
 	/**
 	 * Sub-function of the onExecuteComplex function. Only handles area
 	 * creation. Assumes that the user has requested a new area be
@@ -591,7 +809,7 @@ public class AreaCommand extends DualSyntaxCommand {
 	 * an error occurred that caused this function to return false, command
 	 * execution should be halted immediately.
 	 */
-	private boolean onExecuteComplexCreate(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg) {
+	private boolean onExecuteComplexCreate(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg, String[] args) {
 		
 		// Make sure the user is a player. Required for technical reasons. (i.e. console can't select a region in the world.)
 		if (!(user.getHandle() instanceof Player)) {
@@ -601,7 +819,7 @@ public class AreaCommand extends DualSyntaxCommand {
 		
 		// Make sure user has adequate permissions
 		if (!user.hasPermission(AreaManager.addPermission)) {
-			user.sendLocalizedMessage("shared.noPermission");
+			GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			return false;
 		}
 		
@@ -672,11 +890,11 @@ public class AreaCommand extends DualSyntaxCommand {
 	 * an error occurred that caused this function to return false, command
 	 * execution should be halted immediately.
 	 */
-	private boolean onExecuteComplexDelete(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg) {
+	private boolean onExecuteComplexDelete(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg, String[] args) {
 		
 		// Make sure user has adequate permissions
 		if (!user.hasPermission(AreaManager.removePermission)) {
-			user.sendLocalizedMessage("shared.noPermission");
+			GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			return false;
 		}
 		
@@ -690,13 +908,13 @@ public class AreaCommand extends DualSyntaxCommand {
 		return deleteArea(user, area.getAreaId());
 	}
 
-	private boolean onExecuteComplexList(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg) {
+	private boolean onExecuteComplexList(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg, String[] args) {
 		
 		// Make sure user has adequate permissions
 		if (!user.hasPermission(AreaManager.listLocationPermission)
 				&& !user.hasPermission(AreaManager.listAllPermission)
 				&& !user.hasPermission(AreaManager.listOwnPermission)) {
-			user.sendLocalizedMessage("shared.noPermission");
+			GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			return false;
 		}
 
@@ -710,7 +928,7 @@ public class AreaCommand extends DualSyntaxCommand {
 		
 		if (arg.isDefined("all")) {
 			if (!user.hasPermission(AreaManager.listAllPermission)) {
-				user.sendLocalizedMessage("shared.noPermission");
+				GoldenApple.logPermissionFail(user, commandLabel, args, true);
 				return false;
 			}
 			all = true;
@@ -720,20 +938,20 @@ public class AreaCommand extends DualSyntaxCommand {
 				return false;
 			}
 			if (!user.hasPermission(AreaManager.listLocationPermission)) {
-				user.sendLocalizedMessage("shared.noPermission");
+				GoldenApple.logPermissionFail(user, commandLabel, args, true);
 				return false;
 			}
 			location = true;
 		} else if (arg.isDefined("mine")) {
 			if (!user.hasPermission(AreaManager.listOwnPermission)) {
-				user.sendLocalizedMessage("shared.noPermission");
+				GoldenApple.logPermissionFail(user, commandLabel, args, true);
 				return false;
 			}
 			mine = true;
 			o = user;
 		} else if (arg.isDefined("owner")) {
 			if (!user.hasPermission(AreaManager.listAllPermission)) {
-				user.sendLocalizedMessage("shared.noPermission");
+				GoldenApple.logPermissionFail(user, commandLabel, args, true);
 				return false;
 			}
 			owner = true;
@@ -773,11 +991,19 @@ public class AreaCommand extends DualSyntaxCommand {
 	 * an error occurred that caused this function to return false, command
 	 * execution should be halted immediately.
 	 */
-	private boolean onExecuteComplexAddOwner(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg) {
+	private boolean onExecuteComplexAddOwner(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg, String[] args) {
+		
+		// Make sure user has adequate permissions
+		if (!user.hasPermission(AreaManager.editOwnersPermission) && !user.hasPermission(AreaManager.editOwnOwnersPermission)) {
+			GoldenApple.logPermissionFail(user, commandLabel, args, true);
+			return false;
+		}
+		
+		// Variables
 		int count = 0;
 		
 		// Find selected area while taking given permissions into account
-		Area area = findAreaWithPermissionComplex(user, arg, AreaManager.editOwnersPermission, AreaManager.editOwnOwnersPermission);
+		Area area = findAreaWithPermissionComplex(user, commandLabel, args, arg, AreaManager.editOwnersPermission, AreaManager.editOwnOwnersPermission);
 		if (area == null) {
 			return false;
 		}
@@ -805,11 +1031,19 @@ public class AreaCommand extends DualSyntaxCommand {
 	 * an error occurred that caused this function to return false, command
 	 * execution should be halted immediately.
 	 */
-	private boolean onExecuteComplexRemoveOwner(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg) {
+	private boolean onExecuteComplexRemoveOwner(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg, String[] args) {
+
+		// Make sure user has adequate permissions
+		if (!user.hasPermission(AreaManager.editOwnersPermission) && !user.hasPermission(AreaManager.editOwnOwnersPermission)) {
+			GoldenApple.logPermissionFail(user, commandLabel, args, true);
+			return false;
+		}
+		
+		// Variables
 		int count = 0;
 		
 		// Find selected area while taking given permissions into account
-		Area area = findAreaWithPermissionComplex(user, arg, AreaManager.editOwnersPermission, AreaManager.editOwnOwnersPermission);
+		Area area = findAreaWithPermissionComplex(user, commandLabel, args, arg, AreaManager.editOwnersPermission, AreaManager.editOwnOwnersPermission);
 		if (area == null) {
 			return false;
 		}
@@ -837,11 +1071,19 @@ public class AreaCommand extends DualSyntaxCommand {
 	 * an error occurred that caused this function to return false, command
 	 * execution should be halted immediately.
 	 */
-	private boolean onExecuteComplexAddGroupOwner(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg) {
+	private boolean onExecuteComplexAddGroupOwner(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg, String[] args) {
+
+		// Make sure user has adequate permissions
+		if (!user.hasPermission(AreaManager.editGroupOwnersPermission) && !user.hasPermission(AreaManager.editOwnGroupOwnersPermission)) {
+			GoldenApple.logPermissionFail(user, commandLabel, args, true);
+			return false;
+		}
+		
+		// Variables
 		int count = 0;
 		
 		// Find selected area while taking given permissions into account
-		Area area = findAreaWithPermissionComplex(user, arg, AreaManager.editOwnersPermission, AreaManager.editOwnOwnersPermission);
+		Area area = findAreaWithPermissionComplex(user, commandLabel, args, arg, AreaManager.editOwnersPermission, AreaManager.editOwnOwnersPermission);
 		if (area == null) {
 			return false;
 		}
@@ -869,11 +1111,19 @@ public class AreaCommand extends DualSyntaxCommand {
 	 * an error occurred that caused this function to return false, command
 	 * execution should be halted immediately.
 	 */
-	private boolean onExecuteComplexRemoveGroupOwner(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg) {
+	private boolean onExecuteComplexRemoveGroupOwner(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg, String[] args) {
+
+		// Make sure user has adequate permissions
+		if (!user.hasPermission(AreaManager.editGroupOwnersPermission) && !user.hasPermission(AreaManager.editOwnGroupOwnersPermission)) {
+			GoldenApple.logPermissionFail(user, commandLabel, args, true);
+			return false;
+		}
+		
+		// Variables
 		int count = 0;
 		
 		// Find selected area while taking given permissions into account
-		Area area = findAreaWithPermissionComplex(user, arg, AreaManager.editOwnersPermission, AreaManager.editOwnOwnersPermission);
+		Area area = findAreaWithPermissionComplex(user, commandLabel, args, arg, AreaManager.editOwnersPermission, AreaManager.editOwnOwnersPermission);
 		if (area == null) {
 			return false;
 		}
@@ -901,11 +1151,19 @@ public class AreaCommand extends DualSyntaxCommand {
 	 * an error occurred that caused this function to return false, command
 	 * execution should be halted immediately.
 	 */
-	private boolean onExecuteComplexAddGuest(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg) {
+	private boolean onExecuteComplexAddGuest(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg, String[] args) {
+
+		// Make sure user has adequate permissions
+		if (!user.hasPermission(AreaManager.editGuestsPermission) && !user.hasPermission(AreaManager.editOwnGuestsPermission)) {
+			GoldenApple.logPermissionFail(user, commandLabel, args, true);
+			return false;
+		}
+		
+		// Variables
 		int count = 0;
 		
 		// Find selected area while taking given permissions into account
-		Area area = findAreaWithPermissionComplex(user, arg, AreaManager.editGuestsPermission, AreaManager.editOwnGuestsPermission);
+		Area area = findAreaWithPermissionComplex(user, commandLabel, args, arg, AreaManager.editGuestsPermission, AreaManager.editOwnGuestsPermission);
 		if (area == null) {
 			return false;
 		}
@@ -933,11 +1191,19 @@ public class AreaCommand extends DualSyntaxCommand {
 	 * an error occurred that caused this function to return false, command
 	 * execution should be halted immediately.
 	 */
-	private boolean onExecuteComplexRemoveGuest(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg) {
+	private boolean onExecuteComplexRemoveGuest(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg, String[] args) {
+
+		// Make sure user has adequate permissions
+		if (!user.hasPermission(AreaManager.editGuestsPermission) && !user.hasPermission(AreaManager.editOwnGuestsPermission)) {
+			GoldenApple.logPermissionFail(user, commandLabel, args, true);
+			return false;
+		}
+		
+		// Variables
 		int count = 0;
 		
 		// Find selected area while taking given permissions into account
-		Area area = findAreaWithPermissionComplex(user, arg, AreaManager.editGuestsPermission, AreaManager.editOwnGuestsPermission);
+		Area area = findAreaWithPermissionComplex(user, commandLabel, args, arg, AreaManager.editGuestsPermission, AreaManager.editOwnGuestsPermission);
 		if (area == null) {
 			return false;
 		}
@@ -965,11 +1231,19 @@ public class AreaCommand extends DualSyntaxCommand {
 	 * an error occurred that caused this function to return false, command
 	 * execution should be halted immediately.
 	 */
-	private boolean onExecuteComplexAddGroupGuest(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg) {
+	private boolean onExecuteComplexAddGroupGuest(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg, String[] args) {
+
+		// Make sure user has adequate permissions
+		if (!user.hasPermission(AreaManager.editGroupGuestsPermission) && !user.hasPermission(AreaManager.editOwnGroupGuestsPermission)) {
+			GoldenApple.logPermissionFail(user, commandLabel, args, true);
+			return false;
+		}
+		
+		// Variables
 		int count = 0;
 		
 		// Find selected area while taking given permissions into account
-		Area area = findAreaWithPermissionComplex(user, arg, AreaManager.editGuestsPermission, AreaManager.editOwnGuestsPermission);
+		Area area = findAreaWithPermissionComplex(user, commandLabel, args, arg, AreaManager.editGuestsPermission, AreaManager.editOwnGuestsPermission);
 		if (area == null) {
 			return false;
 		}
@@ -997,11 +1271,19 @@ public class AreaCommand extends DualSyntaxCommand {
 	 * an error occurred that caused this function to return false, command
 	 * execution should be halted immediately.
 	 */
-	private boolean onExecuteComplexRemoveGroupGuest(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg) {
+	private boolean onExecuteComplexRemoveGroupGuest(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg, String[] args) {
+
+		// Make sure user has adequate permissions
+		if (!user.hasPermission(AreaManager.editGroupGuestsPermission) && !user.hasPermission(AreaManager.editOwnGroupGuestsPermission)) {
+			GoldenApple.logPermissionFail(user, commandLabel, args, true);
+			return false;
+		}
+		
+		// Variables
 		int count = 0;
 		
 		// Find selected area while taking given permissions into account
-		Area area = findAreaWithPermissionComplex(user, arg, AreaManager.editGuestsPermission, AreaManager.editOwnGuestsPermission);
+		Area area = findAreaWithPermissionComplex(user, commandLabel, args, arg, AreaManager.editGuestsPermission, AreaManager.editOwnGuestsPermission);
 		if (area == null) {
 			return false;
 		}
@@ -1029,10 +1311,15 @@ public class AreaCommand extends DualSyntaxCommand {
 	 * an error occurred that caused this function to return false, command
 	 * execution should be halted immediately.
 	 */
-	private boolean onExecuteComplexAddFlags(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg) {
+	private boolean onExecuteComplexAddFlags(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg, String[] args) {
 
+		if (!user.hasPermission(AreaManager.editFlagsPermission)) {
+			GoldenApple.logPermissionFail(user, commandLabel, args, true);
+			return false;
+		}
+		
 		// Find selected area while taking given permissions into account
-		Area area = findAreaWithPermissionComplex(user, arg, AreaManager.editFlagsPermission, AreaManager.editOwnFlagsPermission);
+		Area area = findAreaWithPermissionComplex(user, commandLabel, args, arg, AreaManager.editFlagsPermission, AreaManager.editOwnFlagsPermission);
 		if (area == null) {
 			return false;
 		}
@@ -1054,10 +1341,10 @@ public class AreaCommand extends DualSyntaxCommand {
 	 * an error occurred that caused this function to return false, command
 	 * execution should be halted immediately.
 	 */
-	private boolean onExecuteComplexRemoveFlags(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg) {
+	private boolean onExecuteComplexRemoveFlags(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg, String[] args) {
 
 		// Find selected area while taking given permissions into account
-		Area area = findAreaWithPermissionComplex(user, arg, AreaManager.editFlagsPermission, AreaManager.editOwnFlagsPermission);
+		Area area = findAreaWithPermissionComplex(user, commandLabel, args, arg, AreaManager.editFlagsPermission, AreaManager.editOwnFlagsPermission);
 		if (area == null) {
 			return false;
 		}
@@ -1079,11 +1366,11 @@ public class AreaCommand extends DualSyntaxCommand {
 	 * an error occurred that caused this function to return false, command
 	 * execution should be halted immediately.
 	 */
-	private boolean onExecuteComplexSetPriority(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg) {
+	private boolean onExecuteComplexSetPriority(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg, String[] args) {
 		Integer priority;
 		
 		// Find selected area while taking given permissions into account
-		Area area = findAreaWithPermissionComplex(user, arg, AreaManager.editPriorityPermission, AreaManager.editOwnPriorityPermission);
+		Area area = findAreaWithPermissionComplex(user, commandLabel, args, arg, AreaManager.editPriorityPermission, AreaManager.editOwnPriorityPermission);
 		if (area == null) {
 			return false;
 		}
@@ -1108,11 +1395,11 @@ public class AreaCommand extends DualSyntaxCommand {
 	 * an error occurred that caused this function to return false, command
 	 * execution should be halted immediately.
 	 */
-	private boolean onExecuteComplexSetLabel(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg) {
+	private boolean onExecuteComplexSetLabel(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg, String[] args) {
 		String label;
 		
 		// Find selected area while taking given permissions into account
-		Area area = findAreaWithPermissionComplex(user, arg, AreaManager.editLabelPermission, AreaManager.editOwnLabelPermission);
+		Area area = findAreaWithPermissionComplex(user, commandLabel, args, arg, AreaManager.editLabelPermission, AreaManager.editOwnLabelPermission);
 		if (area == null) {
 			return false;
 		}
@@ -1134,10 +1421,10 @@ public class AreaCommand extends DualSyntaxCommand {
 	 * an error occurred that caused this function to return false, command
 	 * execution should be halted immediately.
 	 */
-	private boolean onExecuteComplexInfo(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg) {
+	private boolean onExecuteComplexInfo(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg, String[] args) {
 		
 		if (!user.hasPermission(AreaManager.infoAllPermission) && !user.hasPermission(AreaManager.infoOwnPermission)) {
-			user.sendLocalizedMessage("shared.noPermission");
+			GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			return false;
 		}
 		
@@ -1370,11 +1657,11 @@ public class AreaCommand extends DualSyntaxCommand {
 		}
 	}
 
-	private Area findAreaWithPermissionComplex(User user, ComplexArgumentParser arg, Permission global, Permission own) {
+	private Area findAreaWithPermissionComplex(User user, String commandLabel, String[] args, ComplexArgumentParser arg, Permission global, Permission own) {
 		
 		// Make sure user has adequate permissions
 		if (!user.hasPermission(global) && !user.hasPermission(own)) {
-			user.sendLocalizedMessage("shared.noPermission");
+			GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			return null;
 		}
 		
@@ -1393,11 +1680,11 @@ public class AreaCommand extends DualSyntaxCommand {
 		return area;
 	}
 
-	private Area findAreaWithPermissionSimple(User user, String query, Permission global, Permission own) {
+	private Area findAreaWithPermissionSimple(User user, String commandLabel, String[] args, String query, Permission global, Permission own) {
 		
 		// Make sure user has adequate permissions
 		if (!user.hasPermission(global) && !user.hasPermission(own)) {
-			user.sendLocalizedMessage("shared.noPermission");
+			GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			return null;
 		}
 		

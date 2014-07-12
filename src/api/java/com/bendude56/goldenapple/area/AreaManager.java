@@ -417,7 +417,7 @@ public abstract class AreaManager {
      * @return True if the user can override permissions, false if not.
      */
     public static boolean canOverride(IPermissionUser u) {
-        return (u.hasPermission(AreaManager.editGuestsPermission) || u.hasPermission(AreaManager.overridePermission));
+        return u.hasPermission(AreaManager.overridePermission);
     }
     
     /**
