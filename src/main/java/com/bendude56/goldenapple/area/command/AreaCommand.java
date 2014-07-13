@@ -432,7 +432,7 @@ public class AreaCommand extends DualSyntaxCommand {
 		
 		// Verify number of arguments
 		if (args.length < 2) {
-			// TODO ERROR message
+			user.sendLocalizedMessage("shared.parameterMissing", args[0]);
 			return false;
 		}
 		
@@ -454,7 +454,7 @@ public class AreaCommand extends DualSyntaxCommand {
 		// Get the user
 		IPermissionUser u = PermissionManager.getInstance().findUser(args[1], true);
 		if (u == null) {
-			user.sendLocalizedMessage("shared.userNotFoundError");
+			user.sendLocalizedMessage("shared.userNotFoundError", args[1]);
 			return false;
 		}
 		
@@ -473,7 +473,7 @@ public class AreaCommand extends DualSyntaxCommand {
 		
 		// Verify number of arguments
 		if (args.length < 2) {
-			// TODO Error message
+			user.sendLocalizedMessage("shared.parameterMissing", args[0]);
 			return false;
 		}
 		
@@ -495,8 +495,27 @@ public class AreaCommand extends DualSyntaxCommand {
 		// Get the user
 		IPermissionUser u = PermissionManager.getInstance().findUser(args[1], true);
 		if (u == null) {
-			user.sendLocalizedMessage("shared.userNotFoundError");
+			user.sendLocalizedMessage("shared.userNotFoundError", args[1]);
 			return false;
+		}
+		
+		// Make sure user doesn't remove themselves from the area without any
+		//   way of adding themselves back in
+		if (u.getId() == user.getId()
+				&& area.getUserAccessLevel(u.getId()) == AreaAccessLevel.OWNER
+				&& !user.hasPermission(AreaManager.editOwnersPermission)) {
+
+			// See how many groups own this area that the user belongs to
+			int count = 0;
+			for (IPermissionGroup group : area.getGroups(AreaAccessLevel.OWNER)) {
+				if (group.isMember(user, true)) count++;
+			}
+			
+			// If there are no groups, stop the user
+			if (count == 0) {
+				user.sendLocalizedMessage("error.area.edit.owner.removeSelf");
+				return false;
+			}
 		}
 		
 		removeAreaOwner(user, u, area);
@@ -513,7 +532,7 @@ public class AreaCommand extends DualSyntaxCommand {
 		
 		// Verify number of arguments
 		if (args.length < 2) {
-			// TODO Error message
+			user.sendLocalizedMessage("shared.parameterMissing", args[0]);
 			return false;
 		}
 		
@@ -535,7 +554,7 @@ public class AreaCommand extends DualSyntaxCommand {
 		// Get the user
 		IPermissionGroup g = PermissionManager.getInstance().getGroup(args[1]);
 		if (g == null) {
-			user.sendLocalizedMessage("shared.groupNotFoundError");
+			user.sendLocalizedMessage("shared.groupNotFoundError", args[1]);
 			return false;
 		}
 		
@@ -554,7 +573,7 @@ public class AreaCommand extends DualSyntaxCommand {
 		
 		// Verify number of arguments
 		if (args.length < 2) {
-			// TODO Error message
+			user.sendLocalizedMessage("shared.parameterMissing", args[0]);
 			return false;
 		}
 		
@@ -576,12 +595,32 @@ public class AreaCommand extends DualSyntaxCommand {
 		// Get the user
 		IPermissionGroup g = PermissionManager.getInstance().getGroup(args[1]);
 		if (g == null) {
-			user.sendLocalizedMessage("shared.groupNotFoundError");
+			user.sendLocalizedMessage("shared.groupNotFoundError", args[1]);
 			return false;
 		}
 		
-		removeAreaGroupOwner(user, g, area);
+		// Make sure user doesn't remove themselves from the area without any
+		//   way of adding themselves back in
+		if (g.isMember(user, false)
+				&& area.getGroupAccessLevel(g.getId()) == AreaAccessLevel.OWNER
+				&& !user.hasPermission(AreaManager.editGroupOwnersPermission)
+				&& area.getUserAccessLevel(user.getId()) != AreaAccessLevel.OWNER) {
+			
+			// See how many groups own this area that the user belongs to
+			int count = 0;
+			for (IPermissionGroup group : area.getGroups(AreaAccessLevel.OWNER)) {
+				if (group.isMember(user, true)) count++;
+			}
+			
+			// If this is the only group, stop the user
+			if (count == 1) {
+				user.sendLocalizedMessage("error.area.edit.owner.removeSelf");
+				return false;
+			}
+		}
+				
 		
+		removeAreaGroupOwner(user, g, area);
 		return true;
 	}
 
@@ -595,7 +634,7 @@ public class AreaCommand extends DualSyntaxCommand {
 		
 		// Verify number of arguments
 		if (args.length < 2) {
-			// TODO Error message
+			user.sendLocalizedMessage("shared.parameterMissing", args[0]);
 			return false;
 		}
 
@@ -617,7 +656,7 @@ public class AreaCommand extends DualSyntaxCommand {
 		// Get the user
 		IPermissionUser u = PermissionManager.getInstance().findUser(args[1], true);
 		if (u == null) {
-			user.sendLocalizedMessage("shared.userNotFoundError");
+			user.sendLocalizedMessage("shared.userNotFoundError", args[1]);
 			return false;
 		}
 		
@@ -636,7 +675,7 @@ public class AreaCommand extends DualSyntaxCommand {
 		
 		// Verify number of arguments
 		if (args.length < 2) {
-			// TODO Error message
+			user.sendLocalizedMessage("shared.parameterMissing", args[0]);
 			return false;
 		}
 
@@ -658,7 +697,7 @@ public class AreaCommand extends DualSyntaxCommand {
 		// Get the user
 		IPermissionUser u = PermissionManager.getInstance().findUser(args[1], true);
 		if (u == null) {
-			user.sendLocalizedMessage("shared.userNotFoundError");
+			user.sendLocalizedMessage("shared.userNotFoundError", args[1]);
 			return false;
 		}
 		
@@ -677,7 +716,7 @@ public class AreaCommand extends DualSyntaxCommand {
 		
 		// Verify number of arguments
 		if (args.length < 2) {
-			// TODO Error message
+			user.sendLocalizedMessage("shared.parameterMissing", args[0]);
 			return false;
 		}
 		
@@ -699,7 +738,7 @@ public class AreaCommand extends DualSyntaxCommand {
 		// Get the user
 		IPermissionGroup g = PermissionManager.getInstance().getGroup(args[1]);
 		if (g == null) {
-			user.sendLocalizedMessage("shared.groupNotFoundError");
+			user.sendLocalizedMessage("shared.groupNotFoundError", args[1]);
 			return false;
 		}
 		
@@ -718,7 +757,7 @@ public class AreaCommand extends DualSyntaxCommand {
 		
 		// Verify number of arguments
 		if (args.length < 2) {
-			// TODO Error message
+			user.sendLocalizedMessage("shared.parameterMissing", args[0]);
 			return false;
 		}
 		
@@ -740,7 +779,7 @@ public class AreaCommand extends DualSyntaxCommand {
 		// Get the user
 		IPermissionGroup g = PermissionManager.getInstance().getGroup(args[1]);
 		if (g == null) {
-			user.sendLocalizedMessage("shared.groupNotFoundError");
+			user.sendLocalizedMessage("shared.groupNotFoundError", args[1]);
 			return false;
 		}
 		
@@ -776,7 +815,10 @@ public class AreaCommand extends DualSyntaxCommand {
 		if (query == null) {
 			
 			// Make sure user isn't a console
-			user.sendLocalizedMessage("shared.noConsole");
+			if (!(user.getHandle() instanceof Player)) {
+				user.sendLocalizedMessage("shared.noConsole");
+				return false;
+			}
 			
 			// Get area at user's current location
 			area = this.findArea(user, !user.hasPermission(AreaManager.infoAllPermission));
