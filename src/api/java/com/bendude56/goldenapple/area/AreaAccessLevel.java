@@ -63,7 +63,8 @@ public enum AreaAccessLevel {
      * Returns comparable numeric value. This value could change from version
      * version, so do not store this value. Only meant for comparison.
      * 
-     * @return
+     * @return Returns a numeric value that can be used to gauge which access
+     * levels are more important.
      */
     public int getComparableValue() {
         return this.level;

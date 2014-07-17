@@ -24,6 +24,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.vehicle.VehicleDamageEvent;
 import org.bukkit.plugin.EventExecutor;
 import org.bukkit.plugin.RegisteredListener;
+import org.bukkit.projectiles.ProjectileSource;
 
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.PerformanceMonitor.PerformanceEvent;
@@ -338,23 +339,19 @@ public class AreaListener implements Listener, EventExecutor {
                   // relevant)
         Entity damagee; // Shorthand for damagee
         Entity damager; // Shorthand for damager
+        ProjectileSource source;
         
         damagee = event.getEntity();
         damager = event.getDamager();
         
         // If the damage is caused by a projectile, figure out what shot it
         if (damager instanceof Projectile) {
-            damager = (Entity) ((Projectile) damager).getShooter(); // TODO Fix
-                                                                    // this (To
-                                                                    // Deaboy:
-                                                                    // Check
-                                                                    // that
-                                                                    // Bukkit is
-                                                                    // in your
-                                                                    // build
-                                                                    // path
-                                                                    // BEFORE
-                                                                    // CraftBukkit!)
+            source = ((Projectile) damager).getShooter();
+            if (source instanceof Entity) {
+            	damager = (Entity) source;
+            } else {
+            	return;
+            }
             projectile = true;
         } else {
             projectile = false;

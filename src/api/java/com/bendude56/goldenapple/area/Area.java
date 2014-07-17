@@ -16,7 +16,6 @@ import com.bendude56.goldenapple.permissions.IPermissionGroup;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 
-// TODO Fix problems in Javadoc
 public class Area {
     private final long areaId;
     private String label = null;
@@ -98,7 +97,7 @@ public class Area {
      * Changes a user's access level to the area. Also causes a database update,
      * so use sparingly.
      * 
-     * @param user The permission object representing the user.
+     * @param userId The permission object representing the user.
      * @param level The new access level of the user.
      */
     public void setUserAccessLevel(long userId, AreaAccessLevel level) {
@@ -119,7 +118,7 @@ public class Area {
      * Changes a group's access level to the area. Also causes a database
      * update, so use sparingly.
      * 
-     * @param group The permission object representing the group.
+     * @param groupId The permission object representing the group.
      * @param area The new access level of the group.
      */
     public void setGroupAccessLevel(long groupId, AreaAccessLevel area) {
@@ -139,7 +138,7 @@ public class Area {
     /**
      * Retrieves the access level a certain user has to the area.
      * 
-     * @param user The user to check access level for.
+     * @param userId The user to check access level for.
      * @return The AreaAccessLevel of the user.
      */
     public AreaAccessLevel getUserAccessLevel(long userId) {
@@ -153,7 +152,7 @@ public class Area {
     /**
      * Retrieves the access level a certain group has to the area.
      * 
-     * @param group The group to check access level for.
+     * @param groupId The group to check access level for.
      * @return The AreaAccessLevel of the group.
      */
     public AreaAccessLevel getGroupAccessLevel(long groupId) {
@@ -282,7 +281,7 @@ public class Area {
     /**
      * Gets a list of ids of regions belonging to the area.
      * 
-     * @return
+     * @return List of region ids belonging to the area.
      */
     public List<Long> getRegionIds() {
         if (regions == null) {
@@ -294,7 +293,7 @@ public class Area {
     /**
      * Gets a list of regions assigned to this area.
      * 
-     * @return
+     * @return List of regions  belonging to this area.
      */
     public List<Region> getRegions() {
         List<Region> list = new ArrayList<Region>();

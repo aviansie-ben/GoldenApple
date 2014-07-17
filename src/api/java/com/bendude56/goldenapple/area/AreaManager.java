@@ -12,7 +12,6 @@ import com.bendude56.goldenapple.permissions.IPermissionUser;
 import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
 import com.bendude56.goldenapple.permissions.PermissionManager.PermissionNode;
 
-// TODO Fix problems in Javadoc
 public abstract class AreaManager {
     /**
      * Root permission node for the entire Area module. Parent permission node:
@@ -141,7 +140,7 @@ public abstract class AreaManager {
     /**
      * Gets the active instance of AreaManager.
      * 
-     * @return
+     * @return The active instance of the AreaManager.
      */
     public static AreaManager getInstance() {
         return instance;
@@ -197,7 +196,7 @@ public abstract class AreaManager {
     /**
      * Gets the total number of areas in the database.
      * 
-     * @return
+     * @return Returns the total number of areas that exist on the server.
      */
     public abstract int getTotalAreas();
     
@@ -263,7 +262,7 @@ public abstract class AreaManager {
      * specifications. Adds the area to the database and caches the newly
      * created area.
      * 
-     * @param ownerId The id of the owner of the area.
+     * @param owner The user to be made owner of the area.
      * @param label The label of the area.
      * @param priority The priority of the area.
      * @param shape The shape that the area's region should take.

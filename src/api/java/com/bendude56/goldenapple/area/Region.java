@@ -45,7 +45,7 @@ public abstract class Region {
     /**
      * Gets the ID of the region used for indexing in storage.
      * 
-     * @return
+     * @return The unique identifying number of this region.
      */
     public long getId() {
         return regionId;
@@ -54,7 +54,7 @@ public abstract class Region {
     /**
      * Gets the ID of the area to which the region belongs.
      * 
-     * @return
+     * @return The Id of this region's area.
      */
     public long getAreaId() {
         return areaId;
@@ -93,7 +93,7 @@ public abstract class Region {
     /**
      * Gets the world in which the region exists.
      * 
-     * @return
+     * @return The world the region is in.
      */
     public World getWorld() {
         return min.getWorld();
@@ -120,7 +120,7 @@ public abstract class Region {
     /**
      * Gets the minimum X-coordinate that the region reaches.
      * 
-     * @return
+     * @return The minimum X-coordinate of this region.
      */
     public double getMinX() {
         return min.getX();
@@ -129,7 +129,7 @@ public abstract class Region {
     /**
      * Gets the minimum Y-coordinate that the region reaches.
      * 
-     * @return
+     * @return The maximum Y-coordinate of this region.
      */
     public double getMinY() {
         return (ignoreY ? 0 : min.getY());
@@ -138,7 +138,7 @@ public abstract class Region {
     /**
      * Gets the minimum Z-coordinate that the region reaches.
      * 
-     * @return
+     * @return The minimum Z-coordinate of the region.
      */
     public double getMinZ() {
         return min.getZ();
@@ -147,7 +147,7 @@ public abstract class Region {
     /**
      * Gets the maximum X-coordinate that this region reaches.
      * 
-     * @return
+     * @return The maximum X-coordinate of this region.
      */
     public double getMaxX() {
         return max.getX();
@@ -156,7 +156,7 @@ public abstract class Region {
     /**
      * Gets the maximum Y-coordinate that the region reaches.
      * 
-     * @return
+     * @return The maximum Y-coordinate of this region.
      */
     public double getMaxY() {
         return (ignoreY ? max.getWorld().getMaxHeight() : max.getY());
@@ -165,7 +165,7 @@ public abstract class Region {
     /**
      * Gets the maximum Z-coordinate that the region reaches.
      * 
-     * @return
+     * @return The maximum Z-coordinate of this region.
      */
     public double getMaxZ() {
         return max.getZ();
