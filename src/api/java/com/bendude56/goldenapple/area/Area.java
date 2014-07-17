@@ -271,8 +271,7 @@ public class Area {
         if (set && !getFlagList().contains(flag)) {
             getFlagList().add(flag);
             AreaManager.getInstance().updateAreaFlag(areaId, flag, set);
-        }
-        else if (!set && getFlagList().contains(flag)) {
+        } else if (!set && getFlagList().contains(flag)) {
             getFlagList().remove(flag);
             AreaManager.getInstance().updateAreaFlag(areaId, flag, set);
         }
@@ -293,7 +292,7 @@ public class Area {
     /**
      * Gets a list of regions assigned to this area.
      * 
-     * @return List of regions  belonging to this area.
+     * @return List of regions belonging to this area.
      */
     public List<Region> getRegions() {
         List<Region> list = new ArrayList<Region>();

@@ -348,9 +348,9 @@ public class AreaListener implements Listener, EventExecutor {
         if (damager instanceof Projectile) {
             source = ((Projectile) damager).getShooter();
             if (source instanceof Entity) {
-            	damager = (Entity) source;
+                damager = (Entity) source;
             } else {
-            	return;
+                return;
             }
             projectile = true;
         } else {

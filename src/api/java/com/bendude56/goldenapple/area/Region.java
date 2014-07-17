@@ -31,14 +31,8 @@ public abstract class Region {
     public Region(ResultSet r) throws SQLException {
         this.regionId = r.getLong("ID");
         this.areaId = r.getLong("AreaID");
-        this.min = new Location(Bukkit.getWorld(r.getString("World")),
-            r.getDouble("MinX"),
-            r.getDouble("MinY"),
-            r.getDouble("MinZ"));
-        this.max = new Location(Bukkit.getWorld(r.getString("World")),
-            r.getDouble("MaxX"),
-            r.getDouble("MaxY"),
-            r.getDouble("MaxZ"));
+        this.min = new Location(Bukkit.getWorld(r.getString("World")), r.getDouble("MinX"), r.getDouble("MinY"), r.getDouble("MinZ"));
+        this.max = new Location(Bukkit.getWorld(r.getString("World")), r.getDouble("MaxX"), r.getDouble("MaxY"), r.getDouble("MaxZ"));
         this.ignoreY = r.getBoolean("IgnoreY");
     }
     

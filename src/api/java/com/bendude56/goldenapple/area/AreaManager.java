@@ -31,8 +31,8 @@ public abstract class AreaManager {
      */
     public static PermissionNode areaEditNode;
     /**
-     * Permission node to edit the properties of existing areas that the user
-     * is an owner of.
+     * Permission node to edit the properties of existing areas that the user is
+     * an owner of.
      */
     public static PermissionNode areaEditOwnNode;
     /**
@@ -164,9 +164,9 @@ public abstract class AreaManager {
     public abstract Area getArea(String label);
     
     /**
-     * Fetches a sorted list of Areas that cover the given location, sorted
-     * by the value of their priorities in descending order. Sorting behavior
-     * in regards to areas with matching priorities is undefined.
+     * Fetches a sorted list of Areas that cover the given location, sorted by
+     * the value of their priorities in descending order. Sorting behavior in
+     * regards to areas with matching priorities is undefined.
      * 
      * @param l The location to search for.
      * @return An ArrayList of Areas that cover the given location.
@@ -187,6 +187,7 @@ public abstract class AreaManager {
      * Fetches a sorted list of Areas that are owned either directly or
      * indirectly (through group membership) by the user with the given id.
      * Sorted by area ID in ascending order.
+     * 
      * @param userId The ID of the user to search for.
      * @return An ArrayList of Areas that the given user has ownership rights
      * rights to.
@@ -274,8 +275,7 @@ public abstract class AreaManager {
      * @throws SQLException
      * @throws InvocationTargetException
      */
-    public abstract Area createArea(IPermissionUser owner, String label, int priority, RegionShape shape, Location c1, Location c2, boolean ignoreY)
-        throws SQLException, InvocationTargetException;
+    public abstract Area createArea(IPermissionUser owner, String label, int priority, RegionShape shape, Location c1, Location c2, boolean ignoreY) throws SQLException, InvocationTargetException;
     
     /**
      * Updates an area's label in the database.
@@ -346,8 +346,7 @@ public abstract class AreaManager {
      * @throws SQLException
      * @throws InvocationTargetException
      */
-    protected abstract Region createRegion(long areaId, RegionShape shape, Location c1, Location c2, boolean ignoreY)
-        throws SQLException, InvocationTargetException;
+    protected abstract Region createRegion(long areaId, RegionShape shape, Location c1, Location c2, boolean ignoreY) throws SQLException, InvocationTargetException;
     
     /**
      * Given a region id, will update the region's properties in the database.

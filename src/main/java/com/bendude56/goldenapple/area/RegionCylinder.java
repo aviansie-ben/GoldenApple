@@ -32,12 +32,7 @@ public class RegionCylinder extends Region {
     
     @Override
     public boolean containsLocation(Location loc) {
-        return (loc.getWorld() == getWorld()
-            && ((Math.pow(loc.getX() - x_origin, 2) / (x_rad * x_rad))
-            + (Math.pow(loc.getZ() - z_origin, 2) / (z_rad * z_rad)))
-            <= 1.0
-            && loc.getY() >= getMinY()
-            && loc.getY() <= getMaxY());
+        return (loc.getWorld() == getWorld() && ((Math.pow(loc.getX() - x_origin, 2) / (x_rad * x_rad)) + (Math.pow(loc.getZ() - z_origin, 2) / (z_rad * z_rad))) <= 1.0 && loc.getY() >= getMinY() && loc.getY() <= getMaxY());
     }
     
     /*

@@ -229,36 +229,36 @@ public class SimpleAreaManager extends AreaManager {
             return null;
         }
     }
-
+    
     @Override
     public List<Area> getAreasByOwner(long userId) {
-    	List<Area> areas = new ArrayList<Area>();
-    	Area a;
-    	
-    	String query = "(SELECT Areas.* FROM Areas, AreaUsers WHERE AreaUsers.UserID=? AND AreaUsers.AreaID=Areas.ID AND AreaUsers.AccessLevel=?) UNION DISTINCT (SELECT Areas.* FROM Areas, AreaGroups, GroupUserMembers WHERE GroupUserMembers.MemberID=? AND GroupUserMembers.GroupID=AreaGroups.GroupID AND AreaGroups.AreaID=Areas.ID AND AreaGroups.AccessLevel=?) ORDER BY ID";
-    	
-    	try {
-    		ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery(query, userId, AreaAccessLevel.OWNER.getId(), userId, AreaAccessLevel.OWNER.getId());
-    		try {
-    			while (r.next()) {
-    				a = checkAreaCache(r.getLong("ID"), false);
-    				if (a == null) {
-    					a = loadAreaIntoCache(r);
-    				}
-    				if (a != null) {
-    					areas.add(a);
-    				}
-    			}
-    		} finally {
-    			GoldenApple.getInstanceDatabaseManager().closeResult(r);
-    		}
-    		return areas;
-    	} catch (SQLException e) {
-    		GoldenApple.log(Level.SEVERE, "There was an error while loading an area.");
+        List<Area> areas = new ArrayList<Area>();
+        Area a;
+        
+        String query = "(SELECT Areas.* FROM Areas, AreaUsers WHERE AreaUsers.UserID=? AND AreaUsers.AreaID=Areas.ID AND AreaUsers.AccessLevel=?) UNION DISTINCT (SELECT Areas.* FROM Areas, AreaGroups, GroupUserMembers WHERE GroupUserMembers.MemberID=? AND GroupUserMembers.GroupID=AreaGroups.GroupID AND AreaGroups.AreaID=Areas.ID AND AreaGroups.AccessLevel=?) ORDER BY ID";
+        
+        try {
+            ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery(query, userId, AreaAccessLevel.OWNER.getId(), userId, AreaAccessLevel.OWNER.getId());
+            try {
+                while (r.next()) {
+                    a = checkAreaCache(r.getLong("ID"), false);
+                    if (a == null) {
+                        a = loadAreaIntoCache(r);
+                    }
+                    if (a != null) {
+                        areas.add(a);
+                    }
+                }
+            } finally {
+                GoldenApple.getInstanceDatabaseManager().closeResult(r);
+            }
+            return areas;
+        } catch (SQLException e) {
+            GoldenApple.log(Level.SEVERE, "There was an error while loading an area.");
             GoldenApple.log(Level.SEVERE, "Please report this error to the creator of 'GoldenApple'. Please include the following stack trace:");
             GoldenApple.log(Level.SEVERE, e);
             return null;
-    	}
+        }
     }
     
     @Override
@@ -433,8 +433,7 @@ public class SimpleAreaManager extends AreaManager {
     
     // Create new area
     @Override
-    public Area createArea(IPermissionUser owner, String label, int priority, RegionShape shape, Location c1, Location c2, boolean ignoreY)
-        throws SQLException, InvocationTargetException {
+    public Area createArea(IPermissionUser owner, String label, int priority, RegionShape shape, Location c1, Location c2, boolean ignoreY) throws SQLException, InvocationTargetException {
         long areaId;
         
         // Validate arguments
@@ -591,8 +590,7 @@ public class SimpleAreaManager extends AreaManager {
     
     // Creating a region
     @Override
-    protected Region createRegion(long areaId, RegionShape shape, Location c1, Location c2, boolean ignoreY)
-        throws SQLException, InvocationTargetException {
+    protected Region createRegion(long areaId, RegionShape shape, Location c1, Location c2, boolean ignoreY) throws SQLException, InvocationTargetException {
         
         // Validate arguments
         if (shape == null || c1 == null || c2 == null) {
@@ -604,17 +602,7 @@ public class SimpleAreaManager extends AreaManager {
         
         // Insert into database
         try {
-            GoldenApple.getInstanceDatabaseManager().execute("INSERT INTO AreaRegions (AreaID, World, MinX, MinY, MinZ, MaxX, MaxY, MaxZ, IgnoreY, Shape) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                areaId,
-                c1.getWorld().getName(),
-                Math.min(c1.getX(), c2.getX()),
-                Math.min(c1.getY(), c2.getY()),
-                Math.min(c1.getZ(), c2.getZ()),
-                Math.max(c1.getX(), c2.getX()),
-                Math.max(c1.getY(), c2.getY()),
-                Math.max(c1.getZ(), c2.getZ()),
-                ignoreY,
-                shape.getId());
+            GoldenApple.getInstanceDatabaseManager().execute("INSERT INTO AreaRegions (AreaID, World, MinX, MinY, MinZ, MaxX, MaxY, MaxZ, IgnoreY, Shape) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", areaId, c1.getWorld().getName(), Math.min(c1.getX(), c2.getX()), Math.min(c1.getY(), c2.getY()), Math.min(c1.getZ(), c2.getZ()), Math.max(c1.getX(), c2.getX()), Math.max(c1.getY(), c2.getY()), Math.max(c1.getZ(), c2.getZ()), ignoreY, shape.getId());
             
             // Fetch from database, load into cache, return result
             ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT LAST_INSERT_ID()");
@@ -640,18 +628,7 @@ public class SimpleAreaManager extends AreaManager {
         }
         
         try {
-            GoldenApple.getInstanceDatabaseManager().execute("UPDATE AreaRegions SET AreaID=?, World=?, MinX=?, MinY=?, MinZ=?, MaxX=?, MaxY=?, MaxZ=?, IgnoreY=?, Shape=? WHERE ID=?",
-                region.getAreaId(),
-                region.getWorld().getName(),
-                region.getMinX(),
-                region.getMinY(),
-                region.getMinZ(),
-                region.getMaxX(),
-                region.getMaxY(),
-                region.getMaxZ(),
-                region.ignoreY(),
-                region.getAreaShape().getId(),
-                regionId);
+            GoldenApple.getInstanceDatabaseManager().execute("UPDATE AreaRegions SET AreaID=?, World=?, MinX=?, MinY=?, MinZ=?, MaxX=?, MaxY=?, MaxZ=?, IgnoreY=?, Shape=? WHERE ID=?", region.getAreaId(), region.getWorld().getName(), region.getMinX(), region.getMinY(), region.getMinZ(), region.getMaxX(), region.getMaxY(), region.getMaxZ(), region.ignoreY(), region.getAreaShape().getId(), regionId);
         } catch (SQLException e) {
             GoldenApple.log(Level.SEVERE, "Failed to save changes to region " + regionId + ":");
             GoldenApple.log(Level.SEVERE, e);

@@ -519,3 +519,10 @@ modules:
         # or 'builtin' to use GoldenApple's internal mechanisms for
         # selections.
         provider: 'builtin'
+    
+    area:
+        # When set to true, the area module will be activated.
+        # The area module provides the ability to define certain
+        # regions of space in the world and give them special properties,
+        # such as allowing only certain users to edit blocks in a region.
+        enabled: true

@@ -22,13 +22,7 @@ public class RegionCuboid extends Region {
     
     @Override
     public boolean containsLocation(Location loc) {
-        return (loc.getWorld() == getWorld()
-            && loc.getX() >= getMinX()
-            && loc.getY() >= getMinY()
-            && loc.getZ() >= getMinZ()
-            && loc.getX() <= getMaxX()
-            && loc.getY() <= getMaxY()
-            && loc.getZ() <= getMaxZ());
+        return (loc.getWorld() == getWorld() && loc.getX() >= getMinX() && loc.getY() >= getMinY() && loc.getZ() >= getMinZ() && loc.getX() <= getMaxX() && loc.getY() <= getMaxY() && loc.getZ() <= getMaxZ());
     }
     
     /*
