@@ -841,7 +841,7 @@ public class AreaCommand extends DualSyntaxCommand {
         RegionShape shape = extractShape(arg);
         Integer priority = extractPriority(arg);
         Boolean ignoreY = extractIgnoreY(arg);
-        List<IPermissionUser> owner = null;
+        List<IPermissionUser> owners = extractOwners(arg, user);
         Location c1, c2;
         Area area;
         
@@ -874,16 +874,16 @@ public class AreaCommand extends DualSyntaxCommand {
         }
         
         // Validate owner or set to default value
-        if (owner == null) {
+        if (owners == null || owners.isEmpty()) {
             if (arg.isDefined("owner")) {
                 return false;
             } else {
-                owner = new ArrayList<IPermissionUser>(); // Default value
-                owner.add(user);
+                owners = new ArrayList<IPermissionUser>(); // Default value
+                owners.add(user);
             }
         }
         
-        area = createArea(user, label, priority, owner, shape, c1, c2, ignoreY);
+        area = createArea(user, label, priority, owners, shape, c1, c2, ignoreY);
         return (area != null && (!arg.isDefined("flags") || onExecuteComplexFlags(instance, user, commandLabel, arg, args)));
     }
     
@@ -1280,6 +1280,27 @@ public class AreaCommand extends DualSyntaxCommand {
             }
             return null;
         }
+    }
+    
+    private List<IPermissionUser> extractOwners(ComplexArgumentParser arg, User user) {
+        List<IPermissionUser> list = new ArrayList<IPermissionUser>();
+        if (arg.isDefined("owner")) {
+            for (Entry<String, Object> entry : arg.getKeyValuePairList("owner")) {
+                switch (entry.getKey().toLowerCase()) {
+                    case "add":
+                    case "set":
+                    case "a":
+                    case "s":
+                    case "":
+                        list.add((IPermissionUser) entry.getValue());
+                        break;
+                        
+                    default:
+                        user.sendLocalizedMessage("shared.unknownOption", entry.getKey());
+                }
+            }
+        }
+        return list;
     }
     
     private String extractLabel(ComplexArgumentParser arg) {
@@ -1824,7 +1845,7 @@ public class AreaCommand extends DualSyntaxCommand {
                 ArgumentInfo.newSwitch("ignore-y", "y", "ignorey"),
                 
                 // For existing areas
-                ArgumentInfo.newKeyValuePair(ArgumentInfo.newUserList("owner", "o", "override", false, false)),
+                ArgumentInfo.newKeyValuePair(ArgumentInfo.newUserList("owner", "o", "owner", false, false)),
                 ArgumentInfo.newKeyValuePair(ArgumentInfo.newGroupList("group-owner", "go", "groupowner", false)),
                 ArgumentInfo.newKeyValuePair(ArgumentInfo.newUserList("invite", "in", "invite", false, false)),
                 ArgumentInfo.newKeyValuePair(ArgumentInfo.newGroupList("group-invite", "gin", "groupinvite", false)),
