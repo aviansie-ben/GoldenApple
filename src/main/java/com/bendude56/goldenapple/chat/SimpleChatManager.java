@@ -14,173 +14,154 @@ import org.bukkit.entity.Player;
 
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
-import com.bendude56.goldenapple.chat.ChatChannel.ChatChannelUserLevel;
+import com.bendude56.goldenapple.chat.IChatChannel.ChatChannelAccessLevel;
 
 public class SimpleChatManager extends ChatManager {
-	private HashMap<String, ChatChannel>	activeChannels	= new HashMap<String, ChatChannel>();
-	protected HashMap<User, String>			userChannels	= new HashMap<User, String>();
-
-	private ChatChannel						defaultChannel;
-	private List<User> tellSpy = new ArrayList<User>();
-	private List<User> afkUsers = new ArrayList<User>();
-	
-	private HashMap<User, Long> replyTo = new HashMap<User, Long>();
-	
-	public SimpleChatManager() {
-		activeChannels = new HashMap<String, ChatChannel>();
-		userChannels = new HashMap<User, String>();
-		
-		GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("channels");
-		GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("channelusers");
-		GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("channelgroups");
-		
-		try {
-			ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT * FROM Channels");
-			try {
-				while (r.next()) {
-					ChatChannel c = new DatabaseChatChannel(r, this);
-					activeChannels.put(c.getName(), c);
-				}
-			} finally {
-				GoldenApple.getInstanceDatabaseManager().closeResult(r);
-			}
-		} catch (SQLException e) {
-			GoldenApple.log(Level.SEVERE, "Failed to load channels:");
-			GoldenApple.log(Level.SEVERE, e);
-			throw new RuntimeException(e);
-		}
-		
-		if (!channelExists(GoldenApple.getInstanceMainConfig().getString("modules.chat.defaultChatChannel", "default"))) {
-			defaultChannel = createChannel(GoldenApple.getInstanceMainConfig().getString("modules.chat.defaultChatChannel", "default"));
-		} else {
-			defaultChannel = getChannel(GoldenApple.getInstanceMainConfig().getString("modules.chat.defaultChatChannel", "default"));
-		}
-	}
-	
-	@Override
-	public void postInit() {
-	    for (Player p : Bukkit.getOnlinePlayers()) {
-            User u = User.getUser(p);
-            tryJoinChannel(u, defaultChannel, false);
+    private HashMap<String, IChatChannel> activeChannels = new HashMap<String, IChatChannel>();
+    protected HashMap<User, IChatChannel> userChannels = new HashMap<User, IChatChannel>();
+    
+    private IChatChannel defaultChannel;
+    private List<User> tellSpy = new ArrayList<User>();
+    private List<User> afkUsers = new ArrayList<User>();
+    
+    private HashMap<User, Long> replyTo = new HashMap<User, Long>();
+    
+    public SimpleChatManager() {
+        activeChannels = new HashMap<String, IChatChannel>();
+        userChannels = new HashMap<User, IChatChannel>();
+        
+        GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("channels");
+        GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("channelusers");
+        GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("channelgroups");
+        
+        try {
+            ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT * FROM Channels");
+            try {
+                while (r.next()) {
+                    IChatChannel c = new DatabaseChatChannel(r);
+                    activeChannels.put(c.getName(), c);
+                }
+            } finally {
+                GoldenApple.getInstanceDatabaseManager().closeResult(r);
+            }
+        } catch (SQLException e) {
+            GoldenApple.log(Level.SEVERE, "Failed to load channels:");
+            GoldenApple.log(Level.SEVERE, e);
+            throw new RuntimeException(e);
         }
-	}
-	
-	@Override
-	public void tryJoinChannel(User user, ChatChannel channel, boolean broadcast) {
-		if (userChannels.containsKey(user))
-			leaveChannel(user, broadcast);
-		
-		if (channel.tryJoin(user, broadcast)) {
-			userChannels.put(user, channel.getName());
-		}
-	}
-	
-	@Override
-	public void leaveChannel(User user, boolean broadcast) {
-		if (userChannels.containsKey(user)) {
-			activeChannels.get(userChannels.get(user)).leave(user, broadcast);
-			userChannels.remove(user);
-		}
-	}
-	
-	@Override
-	public void kickFromChannel(User user) {
-		if (userChannels.containsKey(user)) {
-			activeChannels.get(userChannels.get(user)).kick(user);
-			userChannels.remove(user);
-		}
-	}
-	
-	@Override
-	public ChatChannelUserLevel getActiveChannelLevel(User user) {
-		return (userChannels.containsKey(user)) ? activeChannels.get(userChannels.get(user)).connectedUsers.get(user) : ChatChannelUserLevel.UNKNOWN;
-	}
-	
-	@Override
-	public ChatChannel getActiveChannel(User user) {
-		if (userChannels.containsKey(user))
-			return activeChannels.get(userChannels.get(user));
-		else
-			return null;
-	}
-	
-	@Override
-	public List<ChatChannel> getActiveChannels() {
-		return Collections.unmodifiableList(new ArrayList<ChatChannel>(activeChannels.values()));
-	}
-
-	@Override
-	public ChatChannel getDefaultChannel() {
-		return defaultChannel;
-	}
-
-	@Override
-	public ChatChannel createTemporaryChannel(String identifier) {
-		// TODO Temporary chat channel creation
-		return null;
-	}
-	
-	@Override
-	public ChatChannel createChannel(String identifier) {
-		try {
-			GoldenApple.getInstanceDatabaseManager().execute("INSERT INTO Channels (Identifier, DisplayName, MOTD, StrictCensor, DefaultLevel) VALUES (?, ?, NULL, 0, 2)", identifier, ChatColor.WHITE + identifier);
-			
-			ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT * FROM Channels WHERE Identifier=?", identifier);
-			try {
-				if (r.next()) {
-					ChatChannel c = new DatabaseChatChannel(r, this);
-					activeChannels.put(identifier, c);
-					return c;
-				} else {
-					return null;
-				}
-			} finally {
-				GoldenApple.getInstanceDatabaseManager().closeResult(r);
-			}
-		} catch (SQLException e) {
-			GoldenApple.log(Level.SEVERE, "Failed to create channel '" + identifier + "':");
-			GoldenApple.log(Level.SEVERE, e);
-			return null;
-		}
-	}
-	
-	@Override
-	public boolean channelExists(String identifier) {
-		return activeChannels.containsKey(identifier);
-	}
-
-	@Override
-	public ChatChannel getChannel(String identifier) {
-		if (activeChannels.containsKey(identifier)) {
-			return activeChannels.get(identifier);
-		} else {
-			return null;
-		}
-	}
-
-	@Override
-	public void deleteChannel(String identifier) {
-		if (activeChannels.containsKey(identifier)) {
-			activeChannels.get(identifier).delete();
-			activeChannels.remove(identifier);
-		}
-	}
-
-	@Override
-	protected void removeChannelAttachment(User user) {
-		userChannels.remove(user);
-	}
-
-	@Override
-	public ChatCensor getDefaultCensor() {
-		return SimpleChatCensor.defaultChatCensor;
-	}
-
-	@Override
-	public ChatCensor getStrictCensor() {
-		return SimpleChatCensor.strictChatCensor;
-	}
-
+        
+        if (!channelExists(GoldenApple.getInstanceMainConfig().getString("modules.chat.defaultChatChannel", "default"))) {
+            defaultChannel = createChannel(GoldenApple.getInstanceMainConfig().getString("modules.chat.defaultChatChannel", "default"));
+        } else {
+            defaultChannel = getChannel(GoldenApple.getInstanceMainConfig().getString("modules.chat.defaultChatChannel", "default"));
+        }
+    }
+    
+    @Override
+    public void postInit() {
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            User u = User.getUser(p);
+            defaultChannel.join(u, false);
+        }
+    }
+    
+    @Override
+    public void setActiveChannel(User user, IChatChannel channel) {
+        if (userChannels.containsKey(user) && userChannels.get(user).isInChannel(user)) {
+            throw new IllegalStateException("Cannot set active channel of user '" + user + "' because their old channel has not been notified!");
+        } else if (channel != null && !channel.isInChannel(user)) {
+            throw new IllegalStateException("Cannot set active channel of user '" + user + "' because their new channel has not been notified!");
+        }
+        
+        if (channel == null) {
+            userChannels.remove(user);
+        } else {
+            userChannels.put(user, channel);
+        }
+    }
+    
+    @Override
+    public ChatChannelAccessLevel getActiveChannelLevel(User user) {
+        return (userChannels.containsKey(user)) ? userChannels.get(user).getCachedAccessLevel(user) : null;
+    }
+    
+    @Override
+    public IChatChannel getActiveChannel(User user) {
+        if (userChannels.containsKey(user)) {
+            return userChannels.get(user);
+        } else {
+            return null;
+        }
+    }
+    
+    @Override
+    public List<IChatChannel> getActiveChannels() {
+        return Collections.unmodifiableList(new ArrayList<IChatChannel>(activeChannels.values()));
+    }
+    
+    @Override
+    public IChatChannel getDefaultChannel() {
+        return defaultChannel;
+    }
+    
+    @Override
+    public void removeChannel(IChatChannel channel) {
+        activeChannels.remove(channel.getName());
+    }
+    
+    @Override
+    public IChatChannel createChannel(String identifier) {
+        try {
+            GoldenApple.getInstanceDatabaseManager().execute("INSERT INTO Channels (Identifier, DisplayName, MOTD, StrictCensor, DefaultLevel) VALUES (?, ?, NULL, 0, 2)", identifier, ChatColor.WHITE + identifier);
+            
+            ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT * FROM Channels WHERE Identifier=?", identifier);
+            try {
+                if (r.next()) {
+                    IChatChannel c = new DatabaseChatChannel(r);
+                    activeChannels.put(identifier, c);
+                    return c;
+                } else {
+                    return null;
+                }
+            } finally {
+                GoldenApple.getInstanceDatabaseManager().closeResult(r);
+            }
+        } catch (SQLException e) {
+            GoldenApple.log(Level.SEVERE, "Failed to create channel '" + identifier + "':");
+            GoldenApple.log(Level.SEVERE, e);
+            return null;
+        }
+    }
+    
+    @Override
+    public boolean channelExists(String identifier) {
+        return activeChannels.containsKey(identifier);
+    }
+    
+    @Override
+    public IChatChannel getChannel(String identifier) {
+        if (activeChannels.containsKey(identifier)) {
+            return activeChannels.get(identifier);
+        } else {
+            return null;
+        }
+    }
+    
+    @Override
+    protected void removeChannelAttachment(User user) {
+        userChannels.remove(user);
+    }
+    
+    @Override
+    public IChatCensor getDefaultCensor() {
+        return SimpleChatCensor.defaultChatCensor;
+    }
+    
+    @Override
+    public IChatCensor getStrictCensor() {
+        return SimpleChatCensor.strictChatCensor;
+    }
+    
     @Override
     public void setTellSpyStatus(User user, boolean spy) {
         if (spy) {
@@ -194,7 +175,7 @@ public class SimpleChatManager extends ChatManager {
     public boolean getTellSpyStatus(User user) {
         return tellSpy.contains(user);
     }
-
+    
     @Override
     public void sendTellMessage(User sender, User receiver, String message) {
         GoldenApple.log("(" + sender.getDisplayName() + " => " + receiver.getDisplayName() + ") " + message);
@@ -236,17 +217,24 @@ public class SimpleChatManager extends ChatManager {
     public void removeReplyEntry(User user) {
         replyTo.remove(user);
     }
-
+    
     @Override
     public void setAfkStatus(User user, boolean afk, boolean broadcast) {
-        if (afk && afkUsers.contains(user)) return;
-        if (!afk && !afkUsers.contains(user)) return;
+        if (afk && afkUsers.contains(user)) {
+            return;
+        }
+        if (!afk && !afkUsers.contains(user)) {
+            return;
+        }
         
-        ChatChannel channel = ChatManager.getInstance().getActiveChannel(user);
+        IChatChannel channel = ChatManager.getInstance().getActiveChannel(user);
         
-        if (broadcast && channel != null && channel.calculateLevel(user).id >= ChatChannelUserLevel.CHAT.id) {
-            if (afk) channel.broadcastLocalizedMessage("general.channel.afk.on", user.getChatColor() + user.getDisplayName());
-            else channel.broadcastLocalizedMessage("general.channel.afk.off", user.getChatColor() + user.getDisplayName());
+        if (broadcast && channel != null && channel.getCachedAccessLevel(user).canChat()) {
+            if (afk) {
+                channel.broadcastLocalizedMessage("general.channel.afk.on", user.getChatColor() + user.getDisplayName());
+            } else {
+                channel.broadcastLocalizedMessage("general.channel.afk.off", user.getChatColor() + user.getDisplayName());
+            }
         }
         
         if (afk) {
@@ -261,7 +249,7 @@ public class SimpleChatManager extends ChatManager {
             afkUsers.remove(user);
         }
     }
-
+    
     @Override
     public boolean getAfkStatus(User user) {
         return afkUsers.contains(user);

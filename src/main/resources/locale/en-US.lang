@@ -38,9 +38,11 @@ error.ban.noUserSelected=&4ERROR: No user was selected.
 error.ban.tooLong=&4ERROR: The maximum time for a temporary ban is %1.
 
 error.channel.alreadyExists=&4ERROR: A channel with that name already exists!
+error.channel.commandNotSupported=&4ERROR: The channel you are on does not support one or more of the actions you have specified.
 error.channel.defaultLevelTooHigh=&4ERROR: Only None, Join, and Chat can be used as the default level!
 error.channel.invalidLevel=&4ERROR: '%1' is not a valid level!
 error.channel.kick.notInChannel=&4ERROR: Cannot kick '%1' from this channel since he is not in it.
+error.channel.levelBelowMinimum=&4ERROR: That user is being granted permissions above what you specified due to group membership!
 error.channel.muted.perma=&4ERROR: You are permanently muted in this channel.
 error.channel.muted.temp=&4ERROR: You are muted in this channel for %1.
 error.channel.noJoin=&4ERROR: You don't have permission to join that channel.
@@ -218,6 +220,7 @@ general.ban.voidWarn=&eWARNING: This player's active ban was set by '%1'. You ma
 
 general.channel.afk.on=%1&7 is now AFK
 general.channel.afk.off=%1&7 is no longer AFK
+general.channel.channelList=The following chat channels are active:
 general.channel.deleteBroadcast=&eChannel %1&e is being deleted. Everybody will now be kicked from this channel.
 general.channel.deleteWarn=&eWARNING: You are about to permanently delete this chat channel! If you are sure you wish to do this, type /gaverify.
 general.channel.join=&aYou are now in channel %1&a.
@@ -226,7 +229,13 @@ general.channel.kick=&eYou have been kicked from channel %1&e.
 general.channel.kickBroadcast=%1&7 has been kicked from the channel.
 general.channel.leave=&aYou have left channel %1&a.
 general.channel.leaveBroadcast=%1&7 has left the channel.
-general.channel.list=The following chat channels are active:
+general.channel.levelDisplay.none=&8None
+general.channel.levelDisplay.join=&eJoin
+general.channel.levelDisplay.chat=&fChat
+general.channel.levelDisplay.vip=&2VIP
+general.channel.levelDisplay.mod=&3Moderator
+general.channel.levelDisplay.supermod=&1Super Moderator
+general.channel.levelDisplay.admin=&4Administrator
 general.channel.lvlRemoveGroup=&aAccess for group '%1&a' has been removed.
 general.channel.lvlRemoveUser=&aAccess for user '%1&a' has been removed.
 general.channel.lvlSetDefault=&aThe default level has been set to %1&a.
@@ -234,9 +243,25 @@ general.channel.lvlSetGroup=&aThe level for group '%1&a' has been set to %2&a.
 general.channel.lvlSetUser=&aThe level for user '%1&a' has been set to %2&a.
 general.channel.motd.clear=&aThe MOTD has been cleared.
 general.channel.motd.set=&aThe MOTD has been set.
+general.channel.muted.perma=&eNOTE: You are permanently muted in this channel.
+general.channel.muted.temp=&eNOTE: You are muted in this channel for %1.
 general.channel.noTalk=&eNOTE: You aren't allowed to talk in the channel you have joined.
 general.channel.strictOff=&aCensoring on this channel is now set to &eNormal&a.
 general.channel.strictOn=&aCensoring on this channel is now set to &4Strict&a.
+general.channel.userList=The following users are on this chat channel:
+general.channel.whois.head=Whois information for %1:
+general.channel.whois.level.overall= Overall Access Level: %1
+general.channel.whois.level.sourceHead= Permission Sources:
+general.channel.whois.level.sourceGroup=   -<Group: &a%1&f>: %2
+general.channel.whois.level.sourceUser=   -<User: &a%1&f>: %2
+general.channel.whois.level.sourceDefault=   -<Default>: %1
+general.channel.whois.level.sourcePermission=   -<Global>: %1
+general.channel.whois.mute.none= Mute: &8<None>
+general.channel.whois.mute.temp= Mute: &cTemporary (%1) by %2
+general.channel.whois.mute.perma= Mute: &cPermanent by %1
+general.channel.whois.mute.globalTemp= Mute: &4[GLOBAL] Temporary (%1) by %2 
+general.channel.whois.mute.globalPerma= Mute: &4[GLOBAL] Permanent by %1
+general.channel.whois.mute.reason=   Reason: %1
 
 general.complex.successOff=&aNow using simple command syntax
 general.complex.successOn=&aNow using complex command syntax
@@ -490,31 +515,33 @@ help.ban.simple.3=Get information on current bans using &7/%1 <player> info
 help.ban.simple.4=Durations are in form XdXhXmXs
 
 help.channel.inNormal.complex.1=Leave the channel using &7-l
+help.channel.inNormal.complex.2=List users in the channel using &7-uls
 
 help.channel.inNormal.simple.1=Leave the channel using &7/%1 leave
+help.channel.inNormal.simple.2=List users in the channel using &7/%1 list
 
-help.channel.inMod.complex.1=Kick a user using &7-k <user>
-help.channel.inMod.complex.2=Change the MOTD using &7--motd <motd>
-help.channel.inMod.complex.3=View a user's level using &7--whois <user>
+help.channel.inMod.complex.1=View a user's level using &7--whois <user>
+help.channel.inMod.complex.2=Kick a user using &7-k <user>
 
-help.channel.inMod.simple.1=Kick a user using &7/%1 kick <user>
-help.channel.inMod.simple.2=Change the MOTD using &7/%1 motd <motd>
-help.channel.inMod.simple.3=View a user's level using &7/%1 whois <user>
+help.channel.inMod.simple.1=View a user's level using &7/%1 whois <user>
+help.channel.inMod.simple.2=Kick a user using &7/%1 kick <user>
 
-help.channel.inSuperMod.complex.1=Set a user's access level using &7-lvl:{n|j|t|v|m|s|a|r} <user>
-help.channel.inSuperMod.complex.2=Set a group's access level using &7-glvl:{n|j|t|v|m|s|a|r} <group>
+help.channel.inSuperMod.complex.1=Set a user's access level using &7-lvl:{n|j|c|v|m|s|a|r} <user>
+help.channel.inSuperMod.complex.2=Change the MOTD using &7--motd <motd>
 
-help.channel.inSuperMod.simple.1=Change a user's level using &7/%1 level {none|join|talk|vip|mod|supermod|admin|remove} <user>
+help.channel.inSuperMod.simple.1=Change a user's level using &7/%1 level <user> {none|join|chat|vip|mod|supermod|admin|remove}
+help.channel.inSuperMod.simple.2=Change the MOTD using &7/%1 motd <motd>
 
-help.channel.inAdmin.complex.1=Set the default access level using &7-dlvl:{n|j|t}
-help.channel.inAdmin.complex.2=Delete the channel using &7-d
+help.channel.inAdmin.complex.1=Set a group's access level using &7-glvl:{n|j|c|v|m|s|a|r} <group>
+help.channel.inAdmin.complex.2=Set the default access level using &7-dlvl {n|j|c}
 help.channel.inAdmin.complex.3=Toggle strict censoring using &7--strict
+help.channel.inAdmin.complex.4=Delete the channel using &7-d
 
-help.channel.inAdmin.simple.1=Set the default access level using &7/%1 level {none|join|talk} default
-help.channel.inAdmin.simple.2=Delete the channel using &7/%1 delete
-help.channel.inAdmin.simple.3=Toggle strict censoring using &7/%1 strict
+help.channel.inAdmin.simple.1=Set the default access level using &7/%1 level default {none|join|chat}
+help.channel.inAdmin.simple.2=Toggle strict censoring using &7/%1 strict
+help.channel.inAdmin.simple.3=Delete the channel using &7/%1 delete
 
-help.channel.out.complex.1=List available channels using &7--list
+help.channel.out.complex.1=List available channels using &7-cls
 help.channel.out.complex.2=Join a channel using &7-j <name>
 help.channel.out.complex.3=Add a channel using &7-a <name>
 

@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
-import com.bendude56.goldenapple.chat.ChatChannel;
+import com.bendude56.goldenapple.chat.IChatChannel;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
 import com.bendude56.goldenapple.punish.Punishment.RemainingTime;
 
@@ -85,12 +85,12 @@ public class SimplePunishmentManager extends PunishmentManager {
 	}
 	
 	@Override
-	public boolean isMuted(IPermissionUser u, ChatChannel channel) {
+	public boolean isMuted(IPermissionUser u, IChatChannel channel) {
 		return (getActiveMute(u, null) != null) || (getActiveMute(u, channel) != null);
 	}
 	
 	@Override
-	public PunishmentMute getActiveMute(IPermissionUser u, ChatChannel channel) {
+	public PunishmentMute getActiveMute(IPermissionUser u, IChatChannel channel) {
 		for (Punishment p : getPunishments(u, SimplePunishmentMute.class)) {
 			SimplePunishmentMute m = (SimplePunishmentMute)p;
 			

@@ -6,8 +6,8 @@ import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.SimpleCommandManager;
 import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.ModuleLoader.ModuleState;
-import com.bendude56.goldenapple.chat.ChatChannel;
 import com.bendude56.goldenapple.chat.ChatManager;
+import com.bendude56.goldenapple.chat.IChatChannel;
 import com.bendude56.goldenapple.command.GoldenAppleCommand;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
 import com.bendude56.goldenapple.permissions.PermissionManager;
@@ -24,7 +24,7 @@ public class UnMuteCommand extends GoldenAppleCommand {
 			user.sendLocalizedMessage("header.punish");
 			
 			IPermissionUser target = PermissionManager.getInstance().findUser(args[0], false);
-			ChatChannel c = ChatManager.getInstance().getActiveChannel(user);
+			IChatChannel c = ChatManager.getInstance().getActiveChannel(user);
 			
 			if (c == null) {
 				user.sendLocalizedMessage("error.channel.notInChannelCommand");

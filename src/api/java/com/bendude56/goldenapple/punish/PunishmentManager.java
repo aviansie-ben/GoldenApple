@@ -2,7 +2,7 @@ package com.bendude56.goldenapple.punish;
 
 import java.util.ArrayList;
 
-import com.bendude56.goldenapple.chat.ChatChannel;
+import com.bendude56.goldenapple.chat.IChatChannel;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
 import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
 import com.bendude56.goldenapple.permissions.PermissionManager.PermissionNode;
@@ -44,8 +44,8 @@ public abstract class PunishmentManager {
 	public abstract void addMute(IPermissionUser target, IPermissionUser admin, String reason, RemainingTime duration, String channel);
 	public abstract void addBan(IPermissionUser target, IPermissionUser admin, String reason, RemainingTime duration);
 	
-	public abstract boolean isMuted(IPermissionUser u, ChatChannel channel);
-	public abstract PunishmentMute getActiveMute(IPermissionUser u, ChatChannel channel);
+	public abstract boolean isMuted(IPermissionUser u, IChatChannel channel);
+	public abstract PunishmentMute getActiveMute(IPermissionUser u, IChatChannel channel);
 	
 	public abstract Punishment getActivePunishment(IPermissionUser u, Class<? extends Punishment> punishmentType);
 	public abstract boolean hasActivePunishment(IPermissionUser u, Class<? extends Punishment> punishmentType);

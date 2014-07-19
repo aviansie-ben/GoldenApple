@@ -8,9 +8,9 @@ import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.command.GoldenAppleCommand;
 
 public class LemonPledgeCommand extends GoldenAppleCommand {
-	@Override
-	public boolean onExecute(GoldenApple instance, User user, String commandLabel, String[] args) {
-		Bukkit.dispatchCommand(user.getHandle(), "me " + ChatColor.YELLOW + "demands more lemon pledge!");
-		return true;
-	}
+    @Override
+    public boolean onExecute(GoldenApple instance, User user, String commandLabel, String[] args) {
+        Bukkit.dispatchCommand(user.getHandle(), "me " + ChatColor.YELLOW + "demands more lemon pledge!");
+        return true;
+    }
 }

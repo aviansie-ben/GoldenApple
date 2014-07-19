@@ -8,9 +8,10 @@ import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.ModuleLoader.ModuleState;
 import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.audit.AuditLog;
-import com.bendude56.goldenapple.chat.ChatChannel;
-import com.bendude56.goldenapple.chat.ChatChannel.ChatChannelUserLevel;
+import com.bendude56.goldenapple.chat.DatabaseChatChannel;
+import com.bendude56.goldenapple.chat.IChatChannel;
 import com.bendude56.goldenapple.chat.ChatManager;
+import com.bendude56.goldenapple.chat.IChatChannel.ChatChannelFeature;
 import com.bendude56.goldenapple.command.DualSyntaxCommand;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
 import com.bendude56.goldenapple.permissions.PermissionManager;
@@ -53,7 +54,7 @@ public class MuteCommand extends DualSyntaxCommand {
 			}
 			
 			IPermissionUser target = arg.getUser("target");
-			ChatChannel c;
+			IChatChannel c;
 			
 			if (arg.isDefined("channel")) {
 				 c = ChatManager.getInstance().getChannel(arg.getString("channel"));
@@ -66,7 +67,7 @@ public class MuteCommand extends DualSyntaxCommand {
 				c = ChatManager.getInstance().getActiveChannel(user);
 			}
 			
-			if (c.isTemporary()) {
+			if (!c.isFeatureAccessible(user, ChatChannelFeature.MUTE_USER) || !(c instanceof DatabaseChatChannel)) {
 				user.sendLocalizedMessage("error.mute.tempChannel");
 				return;
 			}
@@ -81,8 +82,8 @@ public class MuteCommand extends DualSyntaxCommand {
 		}
 	}
 	
-	public static void muteInfo(IPermissionUser target, ChatChannel c, User user, String commandLabel, String[] args) {
-		if (c.calculateLevel(user).id < ChatChannelUserLevel.MODERATOR.id) {
+	public static void muteInfo(IPermissionUser target, IChatChannel c, User user, String commandLabel, String[] args) {
+		if (c.getAccessLevel(user).isModerator()) {
 			GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			return;
 		}
@@ -104,8 +105,8 @@ public class MuteCommand extends DualSyntaxCommand {
 		}
 	}
 	
-	public static void muteVoid(IPermissionUser target, ChatChannel c, User user, String commandLabel, String[] args) {
-		if (c.calculateLevel(user).id < ChatChannelUserLevel.MODERATOR.id) {
+	public static void muteVoid(IPermissionUser target, IChatChannel c, User user, String commandLabel, String[] args) {
+		if (c.getAccessLevel(user).isModerator()) {
 			GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			return;
 		}
@@ -117,7 +118,7 @@ public class MuteCommand extends DualSyntaxCommand {
 		} else if (m.isGlobal()) {
 			user.sendLocalizedMessage("error.mute.voidGlobal");
 		} else {
-			if (m.getAdminId() != user.getId() && c.calculateLevel(user).id < ChatChannelUserLevel.SUPER_MODERATOR.id) {
+			if (m.getAdminId() != user.getId() && c.getAccessLevel(user).isSuperModerator()) {
 				GoldenApple.logPermissionFail(user, commandLabel, args, true);
 				return;
 			} else {
@@ -131,8 +132,8 @@ public class MuteCommand extends DualSyntaxCommand {
 		}
 	}
 	
-	public static void muteAdd(IPermissionUser target, ChatChannel c, String duration, String reason, User user, String commandLabel, String[] args) {
-		if (c.calculateLevel(user).id < ChatChannelUserLevel.MODERATOR.id) {
+	public static void muteAdd(IPermissionUser target, IChatChannel c, String duration, String reason, User user, String commandLabel, String[] args) {
+		if (c.getAccessLevel(user).isModerator()) {
 			GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			return;
 		}
@@ -144,10 +145,13 @@ public class MuteCommand extends DualSyntaxCommand {
 				User tUser;
 				RemainingTime t = (duration != null) ? RemainingTime.parseTime(duration) : null;
 				
-				if (c.calculateLevel(user).id < ChatChannelUserLevel.SUPER_MODERATOR.id &&
+				if (c.getAccessLevel(user).isSuperModerator() &&
 						GoldenApple.getInstanceMainConfig().getInt("modules.punish.maxTempChannelMuteTime") > 0 &&
 						t != null && t.getTotalSeconds() > GoldenApple.getInstanceMainConfig().getInt("modules.punish.maxTempChannelMuteTime")) {
 					user.sendLocalizedMessage("error.mute.tooLong", new RemainingTime(GoldenApple.getInstanceMainConfig().getInt("modules.punish.maxTempChannelMuteTime")).toString());
+				} else if (!c.getAccessLevel(user).canPunish(c.getAccessLevel(target))) {
+				    GoldenApple.logPermissionFail(user, commandLabel, args, true);
+				    return;
 				} else {
 					if (reason == null)
 						reason = (t == null) ? GoldenApple.getInstanceMainConfig().getString("modules.punish.defaultPermaChannelMuteReason", "You have been silenced from this channel.") :
@@ -190,7 +194,7 @@ public class MuteCommand extends DualSyntaxCommand {
 			user.sendLocalizedMessage("header.punish");
 			
 			IPermissionUser target = PermissionManager.getInstance().findUser(args[0], false);
-			ChatChannel c;
+			IChatChannel c;
 			
 			if (target == null) {
 				user.sendLocalizedMessage("shared.userNotFoundError", args[0]);

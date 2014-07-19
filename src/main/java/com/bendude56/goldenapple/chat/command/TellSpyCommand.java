@@ -6,10 +6,12 @@ import com.bendude56.goldenapple.chat.ChatManager;
 import com.bendude56.goldenapple.command.GoldenAppleCommand;
 
 public class TellSpyCommand extends GoldenAppleCommand {
-
+    
     @Override
     public boolean onExecute(GoldenApple instance, User user, String commandLabel, String[] args) {
-        if (args.length != 1) return false;
+        if (args.length != 1) {
+            return false;
+        }
         
         if (!user.hasPermission(ChatManager.tellSpyPermission)) {
             GoldenApple.logPermissionFail(user, commandLabel, args, true);
@@ -38,5 +40,5 @@ public class TellSpyCommand extends GoldenAppleCommand {
         
         return true;
     }
-
+    
 }

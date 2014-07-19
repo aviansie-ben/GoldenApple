@@ -2,136 +2,107 @@ package com.bendude56.goldenapple.chat;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.logging.Level;
 
 import com.bendude56.goldenapple.GoldenApple;
-import com.bendude56.goldenapple.User;
+import com.bendude56.goldenapple.permissions.IPermissionGroup;
+import com.bendude56.goldenapple.permissions.IPermissionObject;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
+import com.bendude56.goldenapple.permissions.PermissionManager;
 
-public class DatabaseChatChannel extends ChatChannel {
-	
-	public DatabaseChatChannel(ResultSet r, ChatManager instance) throws SQLException {
-		super(r.getString("Identifier"), instance);
-		this.displayName = r.getString("DisplayName");
-		this.motd = r.getString("MOTD");
-		this.defaultLevel = ChatChannelUserLevel.getLevel(r.getInt("DefaultLevel"));
-		this.censor = r.getBoolean("StrictCensor") ? SimpleChatCensor.strictChatCensor : SimpleChatCensor.defaultChatCensor;
-	}
-
-	@Override
-	public boolean isTemporary() {
-		return false;
-	}
-	
-	@Override
-	public void save() {
-		try {
-			GoldenApple.getInstanceDatabaseManager().execute("UPDATE Channels SET DisplayName=?, MOTD=?, StrictCensor=?, DefaultLevel=? WHERE Identifier=?", this.displayName, this.motd, this.censor == SimpleChatCensor.strictChatCensor, this.defaultLevel.id, this.name);
-		} catch (SQLException e) {
-			GoldenApple.log(Level.SEVERE, "Failed to save channel '" + this.name + "' to database:");
-			GoldenApple.log(Level.SEVERE, e);
-		}
-	}
-	
-	@Override
-	public void delete() {
-		try {
-			GoldenApple.getInstanceDatabaseManager().execute("DELETE FROM Channels WHERE Identifier=?", this.name);
-			super.delete();
-		} catch (SQLException e) {
-			GoldenApple.log(Level.SEVERE, "Failed to delete channel '" + this.name + "' from the database:");
-			GoldenApple.log(Level.SEVERE, e);
-		}
-	}
-
-	@Override
-	public ChatChannelUserLevel getSpecificLevel(IPermissionUser user) {
-		try {
-			ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT AccessLevel FROM ChannelUsers WHERE Channel=? AND UserID=?", this.name, user.getId());
-			try {
-				if (r.next()) {
-					return ChatChannelUserLevel.getLevel(r.getInt("AccessLevel"));
-				} else {
-					return ChatChannelUserLevel.UNKNOWN;
-				}
-			} finally {
-				GoldenApple.getInstanceDatabaseManager().closeResult(r);
-			}
-		} catch (SQLException e) {
-			GoldenApple.log(Level.WARNING, "Unable to retrieve channel access level for user '" + user.getName() + "' in channel '" + this.name + "':");
-			GoldenApple.log(Level.WARNING, e);
-			return ChatChannelUserLevel.UNKNOWN;
-		}
-	}
-
-	@Override
-	public ChatChannelUserLevel getGroupLevel(long group) {
-		try {
-			ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT AccessLevel FROM ChannelGroups WHERE Channel=? AND GroupID=?", this.name, group);
-			try {
-				if (r.next()) {
-					return ChatChannelUserLevel.getLevel(r.getInt("AccessLevel"));
-				} else {
-					return ChatChannelUserLevel.UNKNOWN;
-				}
-			} finally {
-				GoldenApple.getInstanceDatabaseManager().closeResult(r);
-			}
-		} catch (SQLException e) {
-			GoldenApple.log(Level.WARNING, "Unable to retrieve channel access level for group '" + group + "' in channel '" + this.name + "':");
-			GoldenApple.log(Level.WARNING, e);
-			return ChatChannelUserLevel.UNKNOWN;
-		}
-	}
-
-	@Override
-	public void setUserLevel(long user, ChatChannelUserLevel level) {
-		try {
-			if (level == ChatChannelUserLevel.UNKNOWN) {
-				GoldenApple.getInstanceDatabaseManager().execute("DELETE FROM ChannelUsers WHERE Channel=? AND UserID=?", this.name, user);
-			} else {
-				ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT NULL FROM ChannelUsers WHERE Channel=? AND UserID=?", this.name, user);
-				try {
-					if (r.next())
-						GoldenApple.getInstanceDatabaseManager().execute("UPDATE ChannelUsers SET AccessLevel=? WHERE Channel=? AND UserID=?", level.id, this.name, user);
-					else
-						GoldenApple.getInstanceDatabaseManager().execute("INSERT INTO ChannelUsers (AccessLevel, Channel, UserID) VALUES (?, ?, ?)", level.id, this.name, user);
-				} finally {
-					GoldenApple.getInstanceDatabaseManager().closeResult(r);
-				}
-				if (User.hasUserInstance(user)) {
-					User u = User.getUser(user);
-					if (connectedUsers.containsKey(u)) {
-						connectedUsers.put(u, level);
-					}
-				}
-			}
-		} catch (SQLException e) {
-			GoldenApple.log(Level.SEVERE, "Failed to update user " + user + " in channel '" + this.name + "' in database:");
-			GoldenApple.log(Level.SEVERE, e);
-		}
-	}
-
-	@Override
-	public void setGroupLevel(long group, ChatChannelUserLevel level) {
-		try {
-			if (level == ChatChannelUserLevel.UNKNOWN) {
-				GoldenApple.getInstanceDatabaseManager().execute("DELETE FROM ChannelGroups WHERE Channel=? AND GroupID=?", this.name, group);
-			} else {
-				ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT NULL FROM ChannelGroups WHERE Channel=? AND GroupID=?", this.name, group);
-				try {
-					if (r.next())
-						GoldenApple.getInstanceDatabaseManager().execute("UPDATE ChannelGroups SET AccessLevel=? WHERE Channel=? AND GroupID=?", level.id, this.name, group);
-					else
-						GoldenApple.getInstanceDatabaseManager().execute("INSERT INTO ChannelGroups (AccessLevel, Channel, GroupID) VALUES (?, ?, ?)", level.id, this.name, group);
-				} finally {
-					GoldenApple.getInstanceDatabaseManager().closeResult(r);
-				}
-			}
-		} catch (SQLException e) {
-			GoldenApple.log(Level.SEVERE, "Failed to update group " + group + " in channel '" + this.name + "' in database:");
-			GoldenApple.log(Level.SEVERE, e);
-		}
-	}
-
+public class DatabaseChatChannel extends BaseAclChatChannel implements IPersistentChatChannel {
+    
+    public DatabaseChatChannel(ResultSet r) throws SQLException {
+        super(r.getString("Identifier"));
+        
+        super.setDisplayName(r.getString("DisplayName"));
+        super.setMotd(r.getString("MOTD"));
+        super.setDefaultAccessLevel(ChatChannelAccessLevel.fromLevelId(r.getInt("DefaultLevel")));
+        super.setCensor((r.getBoolean("StrictCensor")) ? SimpleChatCensor.strictChatCensor : SimpleChatCensor.defaultChatCensor);
+        
+        this.loadGroupLevels();
+        this.loadUserLevels();
+    }
+    
+    private void loadGroupLevels() {
+        try {
+            ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT * FROM ChannelGroups WHERE Channel=?", getName());
+            
+            try {
+                while (r.next()) {
+                    super.setExplicitAccessLevel(PermissionManager.getInstance().getGroup(r.getLong("GroupID")), ChatChannelAccessLevel.fromLevelId(r.getInt("AccessLevel")));
+                }
+            } finally {
+                GoldenApple.getInstanceDatabaseManager().closeResult(r);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to load groups for channel '" + getName() + "'", e);
+        }
+    }
+    
+    private void loadUserLevels() {
+        try {
+            ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT * FROM ChannelUsers WHERE Channel=?", getName());
+            
+            try {
+                while (r.next()) {
+                    super.setExplicitAccessLevel(PermissionManager.getInstance().getUser(r.getLong("UserID")), ChatChannelAccessLevel.fromLevelId(r.getInt("AccessLevel")));
+                }
+            } finally {
+                GoldenApple.getInstanceDatabaseManager().closeResult(r);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to load users for channel '" + getName() + "'", e);
+        }
+    }
+    
+    @Override
+    public void save() {
+        try {
+            GoldenApple.getInstanceDatabaseManager().execute("UPDATE Channels SET DisplayName=?, MOTD=?, StrictCensor=?, DefaultLevel=? WHERE Identifier=?", getDisplayName(), getMotd(), getCensor() == SimpleChatCensor.strictChatCensor, getDefaultAccessLevel().getLevelId(), getName());
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to save channel '" + getName() + "'", e);
+        }
+    }
+    
+    @Override
+    public void setExplicitAccessLevel(IPermissionObject obj, ChatChannelAccessLevel level) {
+        try {
+            if (obj instanceof IPermissionUser) {
+                if (level != null && level != ChatChannelAccessLevel.NO_ACCESS && level.getLevelId() < calculateMinimumAccessLevel((IPermissionUser) obj).getLevelId()) {
+                    throw new IllegalArgumentException("Requested access level is below minimum access level!");
+                }
+                
+                GoldenApple.getInstanceDatabaseManager().execute("DELETE FROM ChannelUsers WHERE Channel=? AND UserID=?", getName(), obj.getId());
+                
+                if (level != null && level != ChatChannelAccessLevel.NO_ACCESS) {
+                    GoldenApple.getInstanceDatabaseManager().execute("INSERT INTO ChannelUsers (Channel, UserID, AccessLevel) VALUES (?, ?, ?)", getName(), obj.getId(), level.getLevelId());
+                }
+                
+                super.setExplicitAccessLevel(obj, level);
+            } else if (obj instanceof IPermissionGroup) {
+                GoldenApple.getInstanceDatabaseManager().execute("DELETE FROM ChannelGroups WHERE Channel=? AND GroupID=?", getName(), obj.getId());
+                
+                if (level != null && level != ChatChannelAccessLevel.NO_ACCESS) {
+                    GoldenApple.getInstanceDatabaseManager().execute("INSERT INTO ChannelGroups (Channel, GroupID, AccessLevel) VALUES (?, ?, ?)", getName(), obj.getId(), level.getLevelId());
+                }
+                
+                super.setExplicitAccessLevel(obj, level);
+            } else {
+                throw new IllegalArgumentException("Unrecognized permission object type!");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to update permissions for channel '" + getName() + "'", e);
+        }
+    }
+    
+    @Override
+    public void delete() {
+        super.delete();
+        
+        try {
+            GoldenApple.getInstanceDatabaseManager().execute("DELETE FROM Channels WHERE Identifier=?", getName());
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to delete channel '" + getName() + "'", e);
+        }
+    }
 }
