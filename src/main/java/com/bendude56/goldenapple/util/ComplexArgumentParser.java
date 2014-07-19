@@ -49,9 +49,15 @@ public class ComplexArgumentParser {
 				// Indicates a short-form switch name
 				for (ArgumentInfo a : parserInfo) {
 					if (args[i].substring(1).equalsIgnoreCase(a.shortSwitch)) {
-						arg = a;
+						if (a.type == ArgumentType.KEY_VALUE_PAIR) {
+						    arg = a.valueArgument;
+						    kvpKey = "";
+						} else {
+						    arg = a;
+						}
+					    
 						break;
-					} else if (args[i].substring(1).startsWith(a.shortSwitch + ":") && args[i].length() > 2 + a.shortSwitch.length()) {
+					} else if (a.type == ArgumentType.KEY_VALUE_PAIR && args[i].substring(1).startsWith(a.shortSwitch + ":") && args[i].length() > 2 + a.shortSwitch.length()) {
                         arg = a.valueArgument;
                         kvpKey = args[i].substring(2 + a.shortSwitch.length());
                         break;
