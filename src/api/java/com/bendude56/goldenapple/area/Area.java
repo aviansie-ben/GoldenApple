@@ -403,11 +403,11 @@ public class Area {
             return true;
         }
         
-        if (u.hasPermission(AreaManager.overridePermission, true) && AreaManager.getInstance().checkOverride(u)) {
+        if (u.hasPermission(AreaManager.overridePermission, true) && AreaManager.getInstance().isOverrideOn(u)) {
             return true;
         }
         
-        if (AreaManager.getInstance().checkOverride(u)) {
+        if (AreaManager.getInstance().isOverrideOn(u)) {
             return true;
         }
         

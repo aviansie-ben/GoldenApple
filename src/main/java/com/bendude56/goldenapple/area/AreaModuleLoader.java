@@ -18,33 +18,40 @@ public class AreaModuleLoader extends ModuleLoader {
     
     @Override
     protected void registerPermissions(PermissionManager permissions) {
+        
+        // Generic area permissions
         AreaManager.areaNode = PermissionManager.goldenAppleNode.createNode("area");
-        AreaManager.areaListNode = AreaManager.areaNode.createNode("list");
-        AreaManager.areaInfoNode = AreaManager.areaNode.createNode("info");
-        AreaManager.areaEditNode = AreaManager.areaNode.createNode("edit");
-        AreaManager.areaEditOwnNode = AreaManager.areaEditNode.createNode("own");
         AreaManager.addPermission = AreaManager.areaNode.createPermission("add");
         AreaManager.removePermission = AreaManager.areaNode.createPermission("remove");
+        AreaManager.overridePermission = AreaManager.areaNode.createPermission("override");
+        
+        // Area listing permissions
+        AreaManager.areaListNode = AreaManager.areaNode.createNode("list");
         AreaManager.listAllPermission = AreaManager.areaListNode.createPermission("all");
         AreaManager.listLocationPermission = AreaManager.areaListNode.createPermission("location");
         AreaManager.listOwnPermission = AreaManager.areaListNode.createPermission("own");
+        
+        // Area information permissions
+        AreaManager.areaInfoNode = AreaManager.areaNode.createNode("info");
         AreaManager.infoAllPermission = AreaManager.areaInfoNode.createPermission("all");
         AreaManager.infoOwnPermission = AreaManager.areaInfoNode.createPermission("own");
-        AreaManager.overridePermission = AreaManager.areaNode.createPermission("override");
-        AreaManager.editLabelPermission = AreaManager.areaEditNode.createPermission("label");
-        AreaManager.editPriorityPermission = AreaManager.areaEditNode.createPermission("priority");
-        AreaManager.editOwnersPermission = AreaManager.areaEditNode.createPermission("owners");
-        AreaManager.editGroupOwnersPermission = AreaManager.areaEditNode.createPermission("groupOwners");
-        AreaManager.editGuestsPermission = AreaManager.areaEditNode.createPermission("guests");
-        AreaManager.editGroupGuestsPermission = AreaManager.areaEditNode.createPermission("groupGuests");
-        AreaManager.editRegionsPermission = AreaManager.areaEditNode.createPermission("regions");
-        AreaManager.editFlagsPermission = AreaManager.areaEditNode.createPermission("flags");
+        
+        // Global area editing permissions
+        AreaManager.areaEditNode = AreaManager.areaNode.createNode("edit");
+        AreaManager.areaEditAllNode = AreaManager.areaEditNode.createNode("all");
+        AreaManager.editAllLabelPermission = AreaManager.areaEditAllNode.createPermission("label");
+        AreaManager.editAllPriorityPermission = AreaManager.areaEditAllNode.createPermission("priority");
+        AreaManager.editAllOwnersPermission = AreaManager.areaEditAllNode.createPermission("owners");
+        AreaManager.editAllGuestsPermission = AreaManager.areaEditAllNode.createPermission("guests");
+        AreaManager.editAllRegionsPermission = AreaManager.areaEditAllNode.createPermission("regions");
+        AreaManager.editAllFlagsPermission = AreaManager.areaEditAllNode.createPermission("flags");
+        
+        // Own area editing permissions
+        AreaManager.areaEditOwnNode = AreaManager.areaEditNode.createNode("own");
         AreaManager.editOwnLabelPermission = AreaManager.areaEditOwnNode.createPermission("label");
         AreaManager.editOwnPriorityPermission = AreaManager.areaEditOwnNode.createPermission("priority");
         AreaManager.editOwnOwnersPermission = AreaManager.areaEditOwnNode.createPermission("owners");
-        AreaManager.editOwnGroupOwnersPermission = AreaManager.areaEditOwnNode.createPermission("groupOwners");
         AreaManager.editOwnGuestsPermission = AreaManager.areaEditOwnNode.createPermission("guests");
-        AreaManager.editOwnGroupGuestsPermission = AreaManager.areaEditOwnNode.createPermission("groupGuests");
         AreaManager.editOwnRegionsPermission = AreaManager.areaEditOwnNode.createPermission("regions");
         AreaManager.editOwnFlagsPermission = AreaManager.areaEditOwnNode.createPermission("flags");
     }
@@ -67,27 +74,32 @@ public class AreaModuleLoader extends ModuleLoader {
     @Override
     protected void unregisterPermissions(PermissionManager permissions) {
         AreaManager.areaNode = null;
-        AreaManager.areaListNode = null;
-        AreaManager.areaInfoNode = null;
-        AreaManager.areaEditNode = null;
-        AreaManager.areaEditOwnNode = null;
         AreaManager.addPermission = null;
         AreaManager.removePermission = null;
         AreaManager.overridePermission = null;
-        AreaManager.editLabelPermission = null;
-        AreaManager.editPriorityPermission = null;
-        AreaManager.editOwnersPermission = null;
-        AreaManager.editGroupOwnersPermission = null;
-        AreaManager.editGuestsPermission = null;
-        AreaManager.editGroupGuestsPermission = null;
-        AreaManager.editRegionsPermission = null;
-        AreaManager.editFlagsPermission = null;
+        
+        AreaManager.areaListNode = null;
+        AreaManager.listAllPermission = null;
+        AreaManager.listLocationPermission = null;
+        AreaManager.listOwnPermission = null;
+        
+        AreaManager.areaInfoNode = null;
+        AreaManager.infoAllPermission = null;
+        AreaManager.infoOwnPermission = null;
+        
+        AreaManager.areaEditNode = null;
+        AreaManager.areaEditAllNode = null;
+        AreaManager.editAllLabelPermission = null;
+        AreaManager.editAllPriorityPermission = null;
+        AreaManager.editAllGuestsPermission = null;
+        AreaManager.editAllRegionsPermission = null;
+        AreaManager.editAllFlagsPermission = null;
+        
+        AreaManager.areaEditOwnNode = null;
         AreaManager.editOwnLabelPermission = null;
         AreaManager.editOwnPriorityPermission = null;
         AreaManager.editOwnOwnersPermission = null;
-        AreaManager.editOwnGroupOwnersPermission = null;
         AreaManager.editOwnGuestsPermission = null;
-        AreaManager.editOwnGroupGuestsPermission = null;
         AreaManager.editOwnRegionsPermission = null;
         AreaManager.editOwnFlagsPermission = null;
     }
@@ -109,8 +121,7 @@ public class AreaModuleLoader extends ModuleLoader {
     
     @Override
     public void clearCache() {
-        // TODO Auto-generated method stub
-        
+        AreaManager.getInstance().clearCache();
     }
     
 }

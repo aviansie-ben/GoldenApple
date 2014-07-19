@@ -31,6 +31,10 @@ public abstract class AreaManager {
      */
     public static PermissionNode areaEditNode;
     /**
+     * Permission node to edit the properties of all areas on the server.
+     */
+    public static PermissionNode areaEditAllNode;
+    /**
      * Permission node to edit the properties of existing areas that the user is
      * an owner of.
      */
@@ -70,35 +74,27 @@ public abstract class AreaManager {
     /**
      * Permission to edit an area's label.
      */
-    public static Permission editLabelPermission;
+    public static Permission editAllLabelPermission;
     /**
      * Permission to change an area's priority.
      */
-    public static Permission editPriorityPermission;
+    public static Permission editAllPriorityPermission;
     /**
      * Permission to change an area's owners.
      */
-    public static Permission editOwnersPermission;
-    /**
-     * Permission to change an area's group owners.
-     */
-    public static Permission editGroupOwnersPermission;
+    public static Permission editAllOwnersPermission;
     /**
      * Permission to change an area's guests.
      */
-    public static Permission editGuestsPermission;
-    /**
-     * Permission to change an area's group guests.
-     */
-    public static Permission editGroupGuestsPermission;
+    public static Permission editAllGuestsPermission;
     /**
      * Permission to add/remove regions to/from an area.
      */
-    public static Permission editRegionsPermission;
+    public static Permission editAllRegionsPermission;
     /**
      * Permission to change an area's flags.
      */
-    public static Permission editFlagsPermission;
+    public static Permission editAllFlagsPermission;
     /**
      * Permission for user to change their own area's label.
      */
@@ -112,17 +108,9 @@ public abstract class AreaManager {
      */
     public static Permission editOwnOwnersPermission;
     /**
-     * Permission for user to change their own area's group owners.
-     */
-    public static Permission editOwnGroupOwnersPermission;
-    /**
      * Permission for user to change their own area's guests.
      */
     public static Permission editOwnGuestsPermission;
-    /**
-     * Permission for user to change their own area's group guests.
-     */
-    public static Permission editOwnGroupGuestsPermission;
     /**
      * Permission for user to modify their own area's regions.
      */
@@ -145,6 +133,11 @@ public abstract class AreaManager {
     public static AreaManager getInstance() {
         return instance;
     }
+    
+    /**
+     * Clears all cached data from memory.
+     */
+    public abstract void clearCache();
     
     /**
      * Gets an area based on id.
@@ -263,7 +256,7 @@ public abstract class AreaManager {
      * specifications. Adds the area to the database and caches the newly
      * created area.
      * 
-     * @param owner The user to be made owner of the area.
+     * @param owners The user to be made owner of the area.
      * @param label The label of the area.
      * @param priority The priority of the area.
      * @param shape The shape that the area's region should take.
@@ -275,7 +268,7 @@ public abstract class AreaManager {
      * @throws SQLException
      * @throws InvocationTargetException
      */
-    public abstract Area createArea(IPermissionUser owner, String label, int priority, RegionShape shape, Location c1, Location c2, boolean ignoreY) throws SQLException, InvocationTargetException;
+    public abstract Area createArea(List<IPermissionUser> owners, String label, int priority, RegionShape shape, Location c1, Location c2, boolean ignoreY) throws SQLException, InvocationTargetException;
     
     /**
      * Updates an area's label in the database.
@@ -380,7 +373,7 @@ public abstract class AreaManager {
             return false;
         }
         
-        if (u.hasPermission(AreaManager.overridePermission) && checkOverride(u)) {
+        if (u.hasPermission(AreaManager.overridePermission) && isOverrideOn(u)) {
             return true;
         }
         
@@ -424,7 +417,7 @@ public abstract class AreaManager {
      * @param u The user to check for.
      * @return True if the user is currently overriding area permissions.
      */
-    public abstract boolean checkOverride(IPermissionUser u);
+    public abstract boolean isOverrideOn(IPermissionUser u);
     
     /**
      * Sets the overriding status of the user.
@@ -433,5 +426,5 @@ public abstract class AreaManager {
      * @param override The new status of the user. True for overriding, false to
      * not.
      */
-    public abstract void setOverride(IPermissionUser u, boolean override);
+    public abstract void setOverrideOn(IPermissionUser u, boolean override);
 }

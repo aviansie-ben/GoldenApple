@@ -40,6 +40,14 @@ public class SimpleAreaManager extends AreaManager {
         GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("arearegions");
     }
     
+    @Override
+    public void clearCache() {
+        areaCache.clear();
+        areaCacheOut.clear();
+        regionCache.clear();
+        regionCacheOut.clear();
+    }
+    
     private Area checkAreaCache(long id, boolean promote) {
         if (areaCache.containsKey(id)) {
             
@@ -433,11 +441,11 @@ public class SimpleAreaManager extends AreaManager {
     
     // Create new area
     @Override
-    public Area createArea(IPermissionUser owner, String label, int priority, RegionShape shape, Location c1, Location c2, boolean ignoreY) throws SQLException, InvocationTargetException {
+    public Area createArea(List<IPermissionUser> owners, String label, int priority, RegionShape shape, Location c1, Location c2, boolean ignoreY) throws SQLException, InvocationTargetException {
         long areaId;
         
         // Validate arguments
-        if (owner == null || shape == null || c1 == null || c2 == null) {
+        if (shape == null || c1 == null || c2 == null) {
             throw new IllegalArgumentException("Arguments cannot be null");
         }
         if (c1.getWorld() != c2.getWorld()) {
@@ -458,7 +466,11 @@ public class SimpleAreaManager extends AreaManager {
         }
         
         // Assign owner to area
-        updateAreaUser(areaId, owner.getId(), AreaAccessLevel.OWNER);
+        if (owners != null) {
+            for (IPermissionUser owner : owners) {
+                updateAreaUser(areaId, owner.getId(), AreaAccessLevel.OWNER);
+            }
+        }
         
         // Create region for area
         createRegion(areaId, shape, c1, c2, ignoreY);
@@ -547,7 +559,7 @@ public class SimpleAreaManager extends AreaManager {
             if (!set) {
                 GoldenApple.getInstanceDatabaseManager().execute("DELETE FROM AreaFlags WHERE AreaID=? AND Flag=?", areaId, flag.getId());
             } else {
-                GoldenApple.getInstanceDatabaseManager().execute("DELETE FROM AreaFlags WHERE AreaID=? AND Flag=?; INSERT INTO AreaFlags (AreaID, Flags) VALUES (?, ?)", areaId, flag.getId(), areaId, flag.getId());
+                GoldenApple.getInstanceDatabaseManager().execute("DELETE FROM AreaFlags WHERE AreaID=? AND Flag=?; INSERT INTO AreaFlags (AreaID, Flag) VALUES (?, ?)", areaId, flag.getId(), areaId, flag.getId());
             }
         } catch (SQLException e) {
             GoldenApple.log(Level.SEVERE, "An error occured while updating flag " + flag.toString() + " on area " + areaId);
@@ -660,16 +672,16 @@ public class SimpleAreaManager extends AreaManager {
     }
     
     @Override
-    public boolean checkOverride(IPermissionUser u) {
-        return !GoldenApple.getInstanceMainConfig().getBoolean("modules.area.explicitOverrideRequired", true) || overrides.contains(u.getId());
+    public boolean isOverrideOn(IPermissionUser u) {
+        return u.getVariableBoolean("goldenapple.area.alwaysOverride") || overrides.contains(u.getId());
     }
     
     @Override
-    public void setOverride(IPermissionUser u, boolean override) {
-        if (override && !this.overrides.contains(u.getId())) {
-            this.overrides.add(u.getId());
-        } else if (!override && this.overrides.contains(u.getId())) {
-            this.overrides.remove(u.getId());
+    public void setOverrideOn(IPermissionUser u, boolean override) {
+        if (override && !overrides.contains(u.getId())) {
+            overrides.add(u.getId());
+        } else if (!override && overrides.contains(u.getId())) {
+            overrides.remove(u.getId());
         }
     }
     

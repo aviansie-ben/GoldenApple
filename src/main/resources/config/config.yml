@@ -520,9 +520,21 @@ modules:
         # selections.
         provider: 'builtin'
     
+    # Area system options
     area:
+    
         # When set to true, the area module will be activated.
         # The area module provides the ability to define certain
         # regions of space in the world and give them special properties,
         # such as allowing only certain users to edit blocks in a region.
         enabled: true
+        
+        # When set to true, administrators will need to explicitly
+        # turn on area overriding to edit another players' protected
+        # areas.
+        explicitOverrideRequired: true
+        
+        # The size of the GoldenApple area and region cache. It is recommended
+        # to keep this above at least 20 in order to minimize
+        # database loading time.
+        cacheSize: 100
