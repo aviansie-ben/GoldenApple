@@ -12,6 +12,7 @@ import org.bukkit.event.EventException;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockExpEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -64,6 +65,9 @@ public class AreaListener implements Listener, EventExecutor {
         BlockPlaceEvent.getHandlerList().unregister(this);
         PlayerBucketFillEvent.getHandlerList().unregister(this);
         PlayerBucketEmptyEvent.getHandlerList().unregister(this);
+        HangingBreakByEntityEvent.getHandlerList().unregister(this);
+        HangingPlaceEvent.getHandlerList().unregister(this);
+        VehicleDamageEvent.getHandlerList().unregister(this);
         PlayerInteractEvent.getHandlerList().unregister(this);
         PlayerInteractEntityEvent.getHandlerList().unregister(this);
         EntityDamageByEntityEvent.getHandlerList().unregister(this);
@@ -96,6 +100,8 @@ public class AreaListener implements Listener, EventExecutor {
             } else if (event instanceof EntityDamageByEntityEvent) {
                 attackEntity((EntityDamageByEntityEvent) event);
             } else if (event instanceof EntityDamageEvent) {
+                // Do nothing
+            } else if (event instanceof BlockExpEvent) {
                 // Do nothing
             } else {
                 GoldenApple.log(Level.WARNING, "Unrecognized event in AreaListener: " + event.getClass().getName());
