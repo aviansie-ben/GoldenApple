@@ -17,6 +17,7 @@ import org.bukkit.Location;
 
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
+import com.bendude56.goldenapple.permissions.PermissionManager;
 
 public class SimpleAreaManager extends AreaManager {
     
@@ -38,6 +39,8 @@ public class SimpleAreaManager extends AreaManager {
         GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("areagroups");
         GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("areaflags");
         GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("arearegions");
+
+        PermissionManager.getInstance().setVariableDefaultValue("goldenapple.area.alwaysOverride", !GoldenApple.getInstanceMainConfig().getBoolean("modules.area.explicitOverrideRequired", true));
     }
     
     @Override
