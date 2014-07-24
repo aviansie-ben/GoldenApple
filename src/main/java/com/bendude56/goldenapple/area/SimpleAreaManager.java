@@ -673,7 +673,9 @@ public class SimpleAreaManager extends AreaManager {
     
     @Override
     public boolean isOverrideOn(IPermissionUser u) {
-        return u.getVariableBoolean("goldenapple.area.alwaysOverride") || overrides.contains(u.getId());
+        if (u == null)
+            return false;
+        return (u.getVariableBoolean("goldenapple.area.alwaysOverride") || overrides.contains(u.getId()));
     }
     
     @Override

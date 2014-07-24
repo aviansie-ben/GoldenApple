@@ -300,6 +300,9 @@ public class AreaListener implements Listener, EventExecutor {
         }
         
         User u = User.getUser(event.getPlayer());
+        if (u == null) {
+            return;
+        }
         
         switch (event.getRightClicked().getType()) {
             case ITEM_FRAME:
