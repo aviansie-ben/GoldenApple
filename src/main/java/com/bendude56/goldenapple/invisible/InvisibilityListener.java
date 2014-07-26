@@ -10,6 +10,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockExpEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -96,6 +97,8 @@ public class InvisibilityListener implements Listener, EventExecutor {
                 maybeCancel((Cancellable) event, User.getUser(((PlayerPickupItemEvent) event).getPlayer()), false);
             } else if (event instanceof ProjectileLaunchEvent) {
                 projectileLaunch((ProjectileLaunchEvent) event);
+            } else if (event instanceof BlockExpEvent) {
+                // Do nothing
             } else {
                 GoldenApple.log(Level.WARNING, "Unrecognized event in InvisibilityListener: " + event.getClass().getName());
             }

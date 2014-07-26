@@ -14,6 +14,11 @@ public class PoofCommand extends DualSyntaxCommand {
         ComplexArgumentParser arg = new ComplexArgumentParser(getArguments());
         boolean turnOn = !InvisibilityManager.getInstance().isInvisible(user);
         
+        if (!user.hasPermission(InvisibilityManager.vanishPermission)) {
+            GoldenApple.logPermissionFail(user, commandLabel, args, true);
+            return;
+        }
+        
         if (!arg.parse(user, args)) return;
         
         if (arg.isDefined("turn-on")) {
