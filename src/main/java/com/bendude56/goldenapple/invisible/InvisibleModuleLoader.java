@@ -20,6 +20,7 @@ public class InvisibleModuleLoader extends ModuleLoader {
     protected void registerPermissions(PermissionManager permissions) {
         InvisibilityManager.invisibleNode = PermissionManager.goldenAppleNode.createNode("invisible");
         InvisibilityManager.vanishPermission = InvisibilityManager.invisibleNode.createPermission("vanish");
+        InvisibilityManager.vanishInteractPermission = InvisibilityManager.invisibleNode.createPermission("vanishInteract");
         InvisibilityManager.seeVanishedPermission = InvisibilityManager.invisibleNode.createPermission("seeVanished");
     }
     

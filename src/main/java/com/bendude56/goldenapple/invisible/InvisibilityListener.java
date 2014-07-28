@@ -84,9 +84,9 @@ public class InvisibilityListener implements Listener, EventExecutor {
             } else if (event instanceof PlayerInteractEvent) {
                 playerInteract((PlayerInteractEvent) event);
             } else if (event instanceof BlockBreakEvent) {
-                maybeCancel((Cancellable) event, User.getUser(((BlockBreakEvent) event).getPlayer()), true);
+                maybeCancel((Cancellable) event, User.getUser(((BlockBreakEvent) event).getPlayer()), "interact", true);
             } else if (event instanceof BlockPlaceEvent) {
-                maybeCancel((Cancellable) event, User.getUser(((BlockPlaceEvent) event).getPlayer()), true);
+                maybeCancel((Cancellable) event, User.getUser(((BlockPlaceEvent) event).getPlayer()), "interact", true);
             } else if (event instanceof EntityTargetEvent) {
                 entityTarget((EntityTargetEvent) event);
             } else if (event instanceof EntityDamageEvent) {
@@ -94,7 +94,7 @@ public class InvisibilityListener implements Listener, EventExecutor {
             } else if (event instanceof HangingBreakEvent) {
                 hangingBreak((HangingBreakEvent) event);
             } else if (event instanceof PlayerPickupItemEvent) {
-                maybeCancel((Cancellable) event, User.getUser(((PlayerPickupItemEvent) event).getPlayer()), false);
+                maybeCancel((Cancellable) event, User.getUser(((PlayerPickupItemEvent) event).getPlayer()), "pickup", false);
             } else if (event instanceof ProjectileLaunchEvent) {
                 projectileLaunch((ProjectileLaunchEvent) event);
             } else if (event instanceof BlockExpEvent) {
@@ -117,44 +117,43 @@ public class InvisibilityListener implements Listener, EventExecutor {
         User user = User.getUser(event.getPlayer());
         
         InvisibilityManager.getInstance().setInvisible(user, false);
-        InvisibilityManager.getInstance().setInteractionEnabled(user, true);
         InvisibilityManager.getInstance().setAllSeeing(user, false);
     }
     
     private void playerInteract(PlayerInteractEvent event) {
-        maybeCancel((Cancellable) event, User.getUser(((PlayerInteractEvent) event).getPlayer()), event.getAction() != Action.PHYSICAL);
+        maybeCancel((Cancellable) event, User.getUser(((PlayerInteractEvent) event).getPlayer()), "interact", event.getAction() != Action.PHYSICAL);
     }
     
     private void entityTarget(EntityTargetEvent event) {
         if (event.getTarget() instanceof Player) {
-            maybeCancel(event, User.getUser((Player) event.getTarget()), false);
+            maybeCancel(event, User.getUser((Player) event.getTarget()), "target", false);
         }
     }
     
     private void entityDamage(EntityDamageEvent event) {
         if (event.getEntity() instanceof Player) {
-            maybeCancel(event, User.getUser((Player) event.getEntity()), false);
+            maybeCancel(event, User.getUser((Player) event.getEntity()), "damage", false);
         }
         
         if (event instanceof EntityDamageByEntityEvent && ((EntityDamageByEntityEvent) event).getDamager() instanceof Player) {
-            maybeCancel(event, User.getUser((Player) ((EntityDamageByEntityEvent) event).getDamager()), true);
+            maybeCancel(event, User.getUser((Player) ((EntityDamageByEntityEvent) event).getDamager()), "interact", true);
         }
     }
     
     private void hangingBreak(HangingBreakEvent event) {
         if (event instanceof HangingBreakByEntityEvent && ((HangingBreakByEntityEvent) event).getRemover() instanceof Player) {
-            maybeCancel(event, User.getUser((Player) ((HangingBreakByEntityEvent) event).getRemover()), true);
+            maybeCancel(event, User.getUser((Player) ((HangingBreakByEntityEvent) event).getRemover()), "interact", true);
         }
     }
     
     private void projectileLaunch(ProjectileLaunchEvent event) {
         if (event.getEntity().getShooter() instanceof Player) {
-            maybeCancel(event, User.getUser((Player) event.getEntity().getShooter()), true);
+            maybeCancel(event, User.getUser((Player) event.getEntity().getShooter()), "interact", true);
         }
     }
     
-    private void maybeCancel(Cancellable event, User user, boolean loud) {
-        if (!InvisibilityManager.getInstance().isInteractionEnabled(user)) {
+    private void maybeCancel(Cancellable event, User user, String flag, boolean loud) {
+        if (InvisibilityManager.getInstance().isInvisible(user) && !InvisibilityManager.getInstance().isInvisibilityFlagSet(user, flag)) {
             event.setCancelled(true);
             
             if (loud) {

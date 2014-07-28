@@ -1,5 +1,6 @@
 package com.bendude56.goldenapple.invisible;
 
+import java.util.HashMap;
 import java.util.HashSet;
 
 import org.bukkit.Bukkit;
@@ -8,13 +9,11 @@ import org.bukkit.entity.Player;
 import com.bendude56.goldenapple.User;
 
 public class SimpleInvisibilityManager extends InvisibilityManager {
-    private HashSet<User> invisibleUsers;
-    private HashSet<User> noInteractionUsers;
+    private HashMap<User, HashSet<String>> invisibleUsers;
     private HashSet<User> allSeeingUsers;
     
     public SimpleInvisibilityManager() {
-        invisibleUsers = new HashSet<User>();
-        noInteractionUsers = new HashSet<User>();
+        invisibleUsers = new HashMap<User, HashSet<String>>();
         allSeeingUsers = new HashSet<User>();
     }
     
@@ -22,7 +21,7 @@ public class SimpleInvisibilityManager extends InvisibilityManager {
     public void setInvisible(User user, boolean invisible) {
         if (invisible) {
             makeInvisible(user);
-            invisibleUsers.add(user);
+            invisibleUsers.put(user, new HashSet<String>());
         } else {
             makeVisible(user);
             invisibleUsers.remove(user);
@@ -31,21 +30,27 @@ public class SimpleInvisibilityManager extends InvisibilityManager {
     
     @Override
     public boolean isInvisible(User user) {
-        return invisibleUsers.contains(user);
+        return invisibleUsers.containsKey(user);
     }
     
     @Override
-    public void setInteractionEnabled(User user, boolean interact) {
-        if (interact) {
-            noInteractionUsers.remove(user);
+    public void setInvisibilityFlag(User user, String flag, boolean value) {
+        if (!invisibleUsers.containsKey(user)) {
+            throw new IllegalArgumentException("Cannot set invisibility flags on user who is not invisible!");
+        } else if (value) {
+            invisibleUsers.get(user).add(flag);
         } else {
-            noInteractionUsers.add(user);
+            invisibleUsers.get(user).remove(flag);
         }
     }
     
     @Override
-    public boolean isInteractionEnabled(User user) {
-        return !noInteractionUsers.contains(user);
+    public boolean isInvisibilityFlagSet(User user, String flag) {
+        if (invisibleUsers.containsKey(user)) {
+            return invisibleUsers.get(user).contains(flag);
+        } else {
+            return false;
+        }
     }
 
     @Override
@@ -79,13 +84,13 @@ public class SimpleInvisibilityManager extends InvisibilityManager {
     }
     
     private void makeAllSeeing(User user) {
-        for (User invisibleUser : invisibleUsers) {
+        for (User invisibleUser : invisibleUsers.keySet()) {
             user.getPlayerHandle().showPlayer(invisibleUser.getPlayerHandle());
         }
     }
     
     private void makeNonAllSeeing(User user) {
-        for (User invisibleUser : invisibleUsers) {
+        for (User invisibleUser : invisibleUsers.keySet()) {
             user.getPlayerHandle().hidePlayer(invisibleUser.getPlayerHandle());
         }
     }

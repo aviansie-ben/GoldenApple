@@ -21,6 +21,11 @@ public class PoofCommand extends DualSyntaxCommand {
         
         if (!arg.parse(user, args)) return;
         
+        if ((arg.isDefined("allow-interact") || arg.isDefined("allow-pickup")) && !user.hasPermission(InvisibilityManager.vanishInteractPermission)) {
+            GoldenApple.logPermissionFail(user, commandLabel, args, true);
+            return;
+        }
+        
         if (arg.isDefined("turn-on")) {
             turnOn = true;
         } else if (arg.isDefined("turn-off")) {
@@ -29,11 +34,13 @@ public class PoofCommand extends DualSyntaxCommand {
         
         if (turnOn) {
             InvisibilityManager.getInstance().setInvisible(user, true);
-            InvisibilityManager.getInstance().setInteractionEnabled(user, arg.isDefined("allow-interact"));
+            InvisibilityManager.getInstance().setInvisibilityFlag(user, "interact", arg.isDefined("allow-interact"));
+            InvisibilityManager.getInstance().setInvisibilityFlag(user, "damage", arg.isDefined("allow-damage"));
+            InvisibilityManager.getInstance().setInvisibilityFlag(user, "target", arg.isDefined("allow-target"));
+            InvisibilityManager.getInstance().setInvisibilityFlag(user, "pickup", arg.isDefined("allow-pickup"));
             user.sendLocalizedMessage("general.poof.on");
         } else {
             InvisibilityManager.getInstance().setInvisible(user, false);
-            InvisibilityManager.getInstance().setInteractionEnabled(user, true);
             user.sendLocalizedMessage("general.poof.off");
         }
     }
@@ -46,6 +53,9 @@ public class PoofCommand extends DualSyntaxCommand {
     private ArgumentInfo[] getArguments() {
         return new ArgumentInfo[] {
             ArgumentInfo.newSwitch("allow-interact", null, "allow-interact"),
+            ArgumentInfo.newSwitch("allow-damage", null, "allow-damage"),
+            ArgumentInfo.newSwitch("allow-target", null, "allow-target"),
+            ArgumentInfo.newSwitch("allow-pickup", null, "allow-pickup"),
             ArgumentInfo.newSwitch("turn-on", null, "on"),
             ArgumentInfo.newSwitch("turn-off", null, "off")
         };
