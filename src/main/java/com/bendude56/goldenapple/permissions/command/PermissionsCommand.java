@@ -19,7 +19,9 @@ import com.bendude56.goldenapple.permissions.PermissionManager;
 import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
 import com.bendude56.goldenapple.permissions.UuidLookupException;
 import com.bendude56.goldenapple.permissions.audit.GroupAddMemberEvent;
+import com.bendude56.goldenapple.permissions.audit.GroupAddOwnerEvent;
 import com.bendude56.goldenapple.permissions.audit.GroupRemoveMemberEvent;
+import com.bendude56.goldenapple.permissions.audit.GroupRemoveOwnerEvent;
 import com.bendude56.goldenapple.permissions.audit.PermissionGrantEvent;
 import com.bendude56.goldenapple.permissions.audit.PermissionRevokeEvent;
 import com.bendude56.goldenapple.util.ComplexArgumentParser;
@@ -284,6 +286,30 @@ public class PermissionsCommand extends DualSyntaxCommand {
             }
         }
         
+        if (arg.isDefined("owner-add")) {
+            for (IPermissionUser member : arg.getUserList("owner-add")) {
+                PermissionAction action = new OwnerAddAction(member);
+                
+                if (action.addValidTargets(targetUsers, targetGroups) > 0) {
+                    actions.add(action);
+                } else {
+                    user.sendLocalizedMessage("error.permissions.noTarget", "-oa");
+                }
+            }
+        }
+        
+        if (arg.isDefined("owner-remove")) {
+            for (IPermissionUser member : arg.getUserList("owner-remove")) {
+                PermissionAction action = new OwnerRemoveAction(member);
+                
+                if (action.addValidTargets(targetUsers, targetGroups) > 0) {
+                    actions.add(action);
+                } else {
+                    user.sendLocalizedMessage("error.permissions.noTarget", "-or");
+                }
+            }
+        }
+        
         if (arg.isDefined("chat-prefix")) {
             PermissionAction action = new ChatPrefixAction(arg.getString("chat-prefix"));
             
@@ -367,6 +393,9 @@ public class PermissionsCommand extends DualSyntaxCommand {
             ArgumentInfo.newUserList("member-user-remove", "ur", null, false, false),
             ArgumentInfo.newGroupList("member-group-add", "ga", null, false),
             ArgumentInfo.newGroupList("member-group-remove", "gr", null, false),
+            
+            ArgumentInfo.newUserList("owner-add", "oa", null, false, false),
+            ArgumentInfo.newUserList("owner-remove", "or", null, false, false),
             
             ArgumentInfo.newString("chat-prefix", "cp", null, true),
             ArgumentInfo.newString("chat-color", "cc", null, false),
@@ -550,7 +579,7 @@ public class PermissionsCommand extends DualSyntaxCommand {
 
         @Override
         public boolean isAllowedToPerformAction(User user, IPermissionObject target) {
-            return user.hasPermission(PermissionManager.groupEditPermission);
+            return user.hasPermission(PermissionManager.groupEditPermission) || (member instanceof IPermissionUser && ((IPermissionGroup) target).isOwner(user));
         }
 
         @Override
@@ -589,7 +618,7 @@ public class PermissionsCommand extends DualSyntaxCommand {
 
         @Override
         public boolean isAllowedToPerformAction(User user, IPermissionObject target) {
-            return user.hasPermission(PermissionManager.groupEditPermission);
+            return user.hasPermission(PermissionManager.groupEditPermission) || (member instanceof IPermissionUser && ((IPermissionGroup) target).isOwner(user));
         }
 
         @Override
@@ -605,6 +634,58 @@ public class PermissionsCommand extends DualSyntaxCommand {
             } else {
                 throw new UnsupportedOperationException();
             }
+        }
+    }
+    
+    private class OwnerAddAction extends PermissionAction {
+        private final IPermissionUser owner;
+        
+        public OwnerAddAction(IPermissionUser owner) {
+            this.owner = owner;
+        }
+
+        @Override
+        public boolean isActionValid(IPermissionObject target) {
+            return (target instanceof IPermissionGroup) && !((IPermissionGroup) target).isOwner(owner);
+        }
+
+        @Override
+        public boolean isAllowedToPerformAction(User user, IPermissionObject target) {
+            return user.hasPermission(PermissionManager.groupEditPermission);
+        }
+
+        @Override
+        public void performAction(User user, IPermissionObject target) {
+            AuditLog.logEvent(new GroupAddOwnerEvent(user.getName(), owner, (IPermissionGroup) target));
+            
+            ((IPermissionGroup) target).addOwner((IPermissionUser) owner);
+            user.sendLocalizedMessage("general.permissions.owner.add", getName(owner), getName(target));
+        }
+    }
+    
+    private class OwnerRemoveAction extends PermissionAction {
+        private final IPermissionUser owner;
+        
+        public OwnerRemoveAction(IPermissionUser owner) {
+            this.owner = owner;
+        }
+
+        @Override
+        public boolean isActionValid(IPermissionObject target) {
+            return (target instanceof IPermissionGroup) && ((IPermissionGroup) target).isOwner(owner);
+        }
+
+        @Override
+        public boolean isAllowedToPerformAction(User user, IPermissionObject target) {
+            return user.hasPermission(PermissionManager.groupEditPermission);
+        }
+
+        @Override
+        public void performAction(User user, IPermissionObject target) {
+            AuditLog.logEvent(new GroupRemoveOwnerEvent(user.getName(), owner, (IPermissionGroup) target));
+            
+            ((IPermissionGroup) target).removeOwner((IPermissionUser) owner);
+            user.sendLocalizedMessage("general.permissions.owner.rem", getName(owner), getName(target));
         }
     }
     

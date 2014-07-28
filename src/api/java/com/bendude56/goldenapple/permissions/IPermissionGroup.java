@@ -146,6 +146,43 @@ public interface IPermissionGroup extends IPermissionObject {
     public boolean isMember(IPermissionUser user, boolean directOnly);
     
     /**
+     * Gets a list of IDs representing users who are considered to be owners of
+     * this group and are capable of adding/removing users from this group's
+     * membership list.
+     * 
+     * @return A list of IDs of all owners of this group.
+     */
+    public List<Long> getOwners();
+    
+    /**
+     * Adds a user to this group's owner list. Group owners are capable of
+     * adding and removing users to this group's membership list. They cannot
+     * modify permissions nor can they add or remove groups from this group's
+     * membership list.
+     * 
+     * @param owner The user to be made an owner of this group.
+     */
+    public void addOwner(IPermissionUser owner);
+    
+    /**
+     * Removes a user from this group's owner list, preventing them from adding
+     * or removing users from this group's membership list.
+     * 
+     * @param owner The user to be removed from this group's owner list.
+     */
+    public void removeOwner(IPermissionUser owner);
+    
+    /**
+     * Checks whether a given user is an owner of this group.
+     * 
+     * @param user The user to check for ownership.
+     * 
+     * @return True if the specified user is an owner of this group. False
+     * otherwise.
+     */
+    public boolean isOwner(IPermissionUser user);
+    
+    /**
      * Gets a list of IDs representing groups that are explicitly part of this
      * group. This function does not check for groups who are indirect members;
      * to list members including indirect members, use {@link #getAllGroups()}.

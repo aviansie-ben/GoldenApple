@@ -33,6 +33,7 @@ public class PermissionGroup implements IPermissionGroup {
     
     private ArrayList<Long> users;
     private ArrayList<Long> groups;
+    private ArrayList<Long> owners;
     private ArrayList<Long> parentGroups;
     private ArrayList<Permission> permissions;
     private HashMap<String, String> variables;
@@ -91,6 +92,21 @@ public class PermissionGroup implements IPermissionGroup {
             }
         } catch (SQLException e) {
             GoldenApple.log(Level.SEVERE, "Failed to retrieve sub-groups for group '" + name + "':");
+            GoldenApple.log(Level.SEVERE, e);
+        }
+        
+        try {
+            owners = new ArrayList<Long>();
+            ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT OwnerID FROM GroupUserOwners WHERE GroupID=?", id);;
+            try {
+                while (r.next()) {
+                    owners.add(r.getLong("OwnerID"));
+                }
+            } finally {
+                r.close();
+            }
+        } catch (SQLException e) {
+            GoldenApple.log(Level.SEVERE, "Failed to retrieve owners for group '" + name + "':");
             GoldenApple.log(Level.SEVERE, e);
         }
         
@@ -266,6 +282,42 @@ public class PermissionGroup implements IPermissionGroup {
         }
         
         return false;
+    }
+    
+    @Override
+    public List<Long> getOwners() {
+        return Collections.unmodifiableList(owners);
+    }
+    
+    @Override
+    public void addOwner(IPermissionUser owner) {
+        if (!isOwner(owner)) {
+            try {
+                owners.add(owner.getId());
+                GoldenApple.getInstanceDatabaseManager().execute("INSERT INTO GroupUserOwners (GroupID, OwnerID) VALUES (?, ?)", id, owner.getId());
+            } catch (SQLException e) {
+                GoldenApple.log(Level.SEVERE, "Failed to add owner '" + owner.getName() + "' to group '" + name + "':");
+                GoldenApple.log(Level.SEVERE, e);
+            }
+        }
+    }
+    
+    @Override
+    public void removeOwner(IPermissionUser owner) {
+        if (isOwner(owner)) {
+            try {
+                owners.remove(owner.getId());
+                GoldenApple.getInstanceDatabaseManager().execute("DELETE FROM GroupUserOwners WHERE GroupID=? AND OwnerID=?", id, owner.getId());
+            } catch (SQLException e) {
+                GoldenApple.log(Level.SEVERE, "Failed to remove owner '" + owner.getName() + "' from group '" + name + "':");
+                GoldenApple.log(Level.SEVERE, e);
+            }
+        }
+    }
+    
+    @Override
+    public boolean isOwner(IPermissionUser user) {
+        return owners.contains(user.getId());
     }
     
     @Override

@@ -44,6 +44,7 @@ public class SimplePermissionManager extends PermissionManager {
         GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("GroupPermissions");
         GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("GroupGroupMembers");
         GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("GroupUserMembers");
+        GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("GroupUserOwners");
         GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("GroupVariables");
         
         setVariableDefaultValue("goldenapple.complexSyntax", GoldenApple.getInstanceMainConfig().getBoolean("modules.permissions.defaultComplexCommands", true));
