@@ -145,6 +145,7 @@ public class ChannelCommand extends DualSyntaxCommand {
         
         if (args.length == 0 || args[0].equals("-?") || args[0].equals("help")) {
             sendHelp(user, commandLabel, false, ChatManager.getInstance().getActiveChannelLevel(user));
+            return;
         }
         
         if (args[0].equalsIgnoreCase("list") && channel == null) {
