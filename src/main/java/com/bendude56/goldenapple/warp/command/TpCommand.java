@@ -1,5 +1,6 @@
 package com.bendude56.goldenapple.warp.command;
 
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
@@ -25,7 +26,7 @@ public class TpCommand extends GoldenAppleCommand {
 			} else {
 				user.sendLocalizedMessage("error.warps.pluginCancel");
 			}
-		} else {
+		} else if (args.length == 2) {
 			User user1 = User.findUser(args[0]);
 			User user2 = User.findUser(args[1]);
 			if (!user.hasPermission(WarpManager.tpOtherToOtherPermission)) {
@@ -39,6 +40,51 @@ public class TpCommand extends GoldenAppleCommand {
 			} else {
 				user.sendLocalizedMessage("error.warps.pluginCancel");
 			}
+		} else if (args.length == 3) {
+		    if (!(user.getHandle() instanceof Player)) {
+                user.sendLocalizedMessage("shared.noConsole");
+		    } else if (!user.hasPermission(WarpManager.tpSelfToCoordPermission)) {
+		        GoldenApple.logPermissionFail(user, commandLabel, args, true);
+		    } else {
+		        Location loc = user.getPlayerHandle().getLocation();
+		        
+		        try {
+		            loc.setX(Double.parseDouble(args[0]));
+		            loc.setY(Double.parseDouble(args[1]));
+		            loc.setZ(Double.parseDouble(args[2]));
+		        } catch (NumberFormatException e) {
+		            user.sendLocalizedMessage("shared.notALocation", args[0], args[1], args[2]);
+		            return true;
+		        }
+		        
+		        if (!user.getPlayerHandle().teleport(loc, TeleportCause.COMMAND)) {
+		            user.sendLocalizedMessage("error.warps.pluginCancel");
+		        }
+		    }
+		} else if (args.length == 4) {
+		    if (!user.hasPermission(WarpManager.tpOtherToCoordPermission)) {
+                GoldenApple.logPermissionFail(user, commandLabel, args, true);
+            } else {
+                User user1 = User.findUser(args[0]);
+                Location loc = user1.getPlayerHandle().getLocation();
+                
+                try {
+                    loc.setX(Double.parseDouble(args[1]));
+                    loc.setY(Double.parseDouble(args[2]));
+                    loc.setZ(Double.parseDouble(args[3]));
+                } catch (NumberFormatException e) {
+                    user.sendLocalizedMessage("shared.notALocation", args[1], args[2], args[3]);
+                    return true;
+                }
+                
+                if (user.getPlayerHandle().teleport(loc, TeleportCause.COMMAND)) {
+                    user1.sendLocalizedMessage("general.warps.teleportBy", user.getName());
+                } else {
+                    user.sendLocalizedMessage("error.warps.pluginCancel");
+                }
+            }
+		} else {
+		    return false;
 		}
 		
 		return true;

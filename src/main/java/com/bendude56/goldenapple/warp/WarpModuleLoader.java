@@ -45,7 +45,9 @@ public class WarpModuleLoader extends ModuleLoader {
 	    WarpManager.overrideCooldownPermission = WarpManager.warpNode.createPermission("overrideCooldown");
 	    
 	    WarpManager.tpNode = WarpManager.warpNode.createNode("tp");
+	    WarpManager.tpSelfToCoordPermission = WarpManager.tpNode.createPermission("selfToCoord");
 	    WarpManager.tpSelfToOtherPermission = WarpManager.tpNode.createPermission("selfToOther");
+	    WarpManager.tpOtherToCoordPermission = WarpManager.tpNode.createPermission("otherToCoord");
 	    WarpManager.tpOtherToSelfPermission = WarpManager.tpNode.createPermission("otherToSelf");
 	    WarpManager.tpOtherToOtherPermission = WarpManager.tpNode.createPermission("otherToOther");
 	    

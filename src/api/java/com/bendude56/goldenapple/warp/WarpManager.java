@@ -21,7 +21,9 @@ public abstract class WarpManager {
     
     // goldenapple.warp.tp
     public static PermissionNode tpNode;
+    public static Permission tpSelfToCoordPermission;
     public static Permission tpSelfToOtherPermission;
+    public static Permission tpOtherToCoordPermission;
     public static Permission tpOtherToSelfPermission;
     public static Permission tpOtherToOtherPermission;
     

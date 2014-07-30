@@ -653,6 +653,7 @@ shared.groupNotFoundWarning=&eWARNING: Failed to find group '%1'
 shared.noConsole=&4ERROR: You cannot execute this command from the console!
 shared.noPermission=&4ERROR: You do not have permission to execute this command! This request has been logged.
 shared.notANumber=&4ERROR: '%1' cannot be converted to a number
+shared.notALocation=&4ERROR: '%1 %2 %3' cannot be converted to a location
 shared.parameterMissing=&eWARNING: Parameter missing from option: %1
 shared.unknownOption=&4ERROR: Unknown option: %1
 shared.userNotFoundError=&4ERROR: Failed to find user '%1'
