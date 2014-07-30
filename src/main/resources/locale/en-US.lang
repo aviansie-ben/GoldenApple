@@ -477,7 +477,7 @@ general.warps.teleportBy=&aYou have been teleported by %1&a.
 general.warps.teleportSpawn=&aYou have been teleported to spawn.
 general.warps.teleportSpawnWorld=&aYou have been teleported to the spawn of world %1.
 
-general.whois.ban.pemanent=&7%1 is banned permanently
+general.whois.ban.permanent=&7%1 is banned permanently
 general.whois.ban.temporary=&7%1 is banned for %2
 general.whois.globalmute.permanent=&7%1 is permanently globally muted
 general.whois.globalmute.temporary=&7%1 is globally muted for %2
