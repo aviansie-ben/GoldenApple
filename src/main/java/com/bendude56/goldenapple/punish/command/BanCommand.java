@@ -191,7 +191,7 @@ public class BanCommand extends DualSyntaxCommand {
 					}
 				}
 				
-				banAdd(target, (args[1].equalsIgnoreCase("permanent")) ? null : args[1], reason, user, commandLabel, args);
+				banAdd(target, (args[1].equalsIgnoreCase("permanent") || args[1].equalsIgnoreCase("perm")) ? null : args[1], reason, user, commandLabel, args);
 			}
 		}
 	}
