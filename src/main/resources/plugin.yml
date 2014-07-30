@@ -98,7 +98,7 @@ commands:
         description: Controls banned players
         aliases: [ban, banish, banhammer]
     gaunban:
-        usage: /<command> <Player>
+        usage: /<command> <Player> [-v]
         description: Shortcut for unbanning players
         aliases: [unban, pardon]
     gamute:

@@ -10,7 +10,7 @@ public class UnBanCommand extends GoldenAppleCommand {
 	
 	@Override
 	public boolean onExecute(GoldenApple instance, User user, String commandLabel, String[] args) {
-		if (args.length != 1) return false;
+		if (args.length != 1 && (args.length != 2 || (!args[1].equalsIgnoreCase("-v") && !args[1].equalsIgnoreCase("--verify")))) return false;
 		
 		user.sendLocalizedMessage("header.punish");
 		
@@ -19,8 +19,8 @@ public class UnBanCommand extends GoldenAppleCommand {
 		if (target == null) {
 			user.sendLocalizedMessage("shared.userNotFoundError", args[0]);
 		} else {
-			if (user.getVariableBoolean("goldenapple.complexSyntax")) BanCommand.banVoid(target, user, "gaban", new String[] { "-u", target.getName(), "-v" }, false);
-			else BanCommand.banVoid(target, user, "gaban", new String[] { target.getName(), "void" }, false);
+			if (user.getVariableBoolean("goldenapple.complexSyntax")) BanCommand.banVoid(target, user, "gaban", new String[] { "-u", target.getName(), "-v" }, args.length >= 2 && (args[1].equalsIgnoreCase("-v") || args[1].equalsIgnoreCase("--verify")));
+			else BanCommand.banVoid(target, user, "gaban", new String[] { target.getName(), "void" }, args.length >= 2 && (args[1].equalsIgnoreCase("-v") || args[1].equalsIgnoreCase("--verify")));
 		}
 		
 		return true;
