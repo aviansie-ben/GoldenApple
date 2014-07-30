@@ -22,12 +22,14 @@ public abstract class PermissionManager {
     public static Permission userAddPermission;
     public static Permission userRemovePermission;
     public static Permission userEditPermission;
+    public static Permission userInfoPermission;
     
     // goldenapple.permissions.group
     public static PermissionNode groupNode;
     public static Permission groupAddPermission;
     public static Permission groupRemovePermission;
     public static Permission groupEditPermission;
+    public static Permission groupInfoPermission;
     
     // goldenapple.module
     public static PermissionNode moduleNode;

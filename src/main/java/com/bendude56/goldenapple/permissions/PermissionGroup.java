@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
 import org.bukkit.ChatColor;
@@ -529,6 +530,11 @@ public class PermissionGroup implements IPermissionGroup {
         this.loadPermissions();
         this.loadUsersAndGroups();
         this.loadVariables();
+    }
+    
+    @Override
+    public Map<String, String> getDefinedVariables() {
+        return Collections.unmodifiableMap(variables);
     }
 
     @Override

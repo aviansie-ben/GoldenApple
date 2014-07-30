@@ -1,6 +1,7 @@
 package com.bendude56.goldenapple.permissions;
 
 import java.util.List;
+import java.util.Map;
 
 import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
 
@@ -155,6 +156,15 @@ public interface IPermissionObject {
      * @return A list of IDs representing groups this object inherits from.
      */
     public List<Long> getParentGroups(boolean directOnly);
+    
+    /**
+     * Gets a map representing all variables that have been explicitly set on
+     * this object. Variables inherited from parents and default variable values
+     * will not be included.
+     * 
+     * @return A map of all variables defined on this object.
+     */
+    public Map<String, String> getDefinedVariables();
     
     /**
      * Gets the value of the specified variable as a string. If this object has

@@ -470,6 +470,15 @@ public class User implements IPermissionUser {
 		else
 			permissions.reloadFromDatabase();
 	}
+	
+	@Override
+	public Map<String, String> getDefinedVariables() {
+	    if (permissions == null) {
+	        return Collections.unmodifiableMap(new HashMap<String, String>());
+	    } else {
+	        return permissions.getDefinedVariables();
+	    }
+	}
 
     @Override
     public String getVariableString(String variableName) {

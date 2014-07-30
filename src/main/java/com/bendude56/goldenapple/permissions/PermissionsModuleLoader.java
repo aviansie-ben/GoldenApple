@@ -31,11 +31,13 @@ public class PermissionsModuleLoader extends ModuleLoader {
         PermissionManager.userAddPermission = PermissionManager.userNode.createPermission("add");
         PermissionManager.userRemovePermission = PermissionManager.userNode.createPermission("remove");
         PermissionManager.userEditPermission = PermissionManager.userNode.createPermission("edit");
+        PermissionManager.userInfoPermission = PermissionManager.userNode.createPermission("info");
         
         PermissionManager.groupNode = PermissionManager.permissionNode.createNode("group");
         PermissionManager.groupAddPermission = PermissionManager.groupNode.createPermission("add");
         PermissionManager.groupRemovePermission = PermissionManager.groupNode.createPermission("remove");
         PermissionManager.groupEditPermission = PermissionManager.groupNode.createPermission("edit");
+        PermissionManager.groupInfoPermission = PermissionManager.groupNode.createPermission("info");
         
         PermissionManager.moduleNode = PermissionManager.goldenAppleNode.createNode("module");
         PermissionManager.moduleLoadPermission = PermissionManager.moduleNode.createPermission("load");

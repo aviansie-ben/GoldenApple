@@ -2,6 +2,7 @@ package com.bendude56.goldenapple.permissions.command;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.ChatColor;
@@ -340,7 +341,15 @@ public class PermissionsCommand extends DualSyntaxCommand {
             }
         }
         
-        // TODO Implement the info argument
+        if (arg.isDefined("info")) {
+            InfoAction action = new InfoAction();
+            
+            if (action.addValidTargets(targetUsers, targetGroups) > 0) {
+                actions.add(action);
+            } else {
+                user.sendLocalizedMessage("error.permissions.noTarget", "-i");
+            }
+        }
     }
     
     private boolean checkPermissions(User user, List<PermissionAction> actions) {
@@ -758,6 +767,149 @@ public class PermissionsCommand extends DualSyntaxCommand {
         public void performAction(User user, IPermissionObject target) {
             ((IPermissionGroup) target).setPriority(priority);
             user.sendLocalizedMessage("general.permissions.priority", getName(target), priority + "");
+        }
+    }
+    
+    private class InfoAction extends PermissionAction {
+        public InfoAction() {
+            // Do nothing
+        }
+        
+        @Override
+        public boolean isActionValid(IPermissionObject target) {
+            return target instanceof IPermissionGroup || target instanceof IPermissionUser;
+        }
+        
+        @Override
+        public boolean isAllowedToPerformAction(User user, IPermissionObject target) {
+            if (target instanceof IPermissionUser) {
+                return user.hasPermission(PermissionManager.userInfoPermission);
+            } else if (target instanceof IPermissionGroup) {
+                return user.hasPermission(PermissionManager.groupInfoPermission);
+            } else {
+                throw new UnsupportedOperationException();
+            }
+        }
+        
+        @Override
+        public void performAction(User user, IPermissionObject target) {
+            if (target instanceof IPermissionUser) {
+                IPermissionUser userTarget = (IPermissionUser) target;
+                List<Long> groups = userTarget.getParentGroups(true);
+                List<Permission> permissions = userTarget.getPermissions(false);
+                Map<String, String> variables = userTarget.getDefinedVariables();
+                
+                user.sendLocalizedMessage("general.permissions.info.user.pre", userTarget.getName());
+                user.sendLocalizedMessage("general.permissions.info.id", userTarget.getId() + "");
+                user.sendLocalizedMessage("general.permissions.info.user.uuid", userTarget.getUuid().toString());
+                
+                user.sendLocalizedMessage("general.permissions.info.user.inGroups");
+                if (groups.size() == 0) {
+                    user.sendLocalizedMessage("general.permissions.info.none");
+                } else if (groups.size() > 20) {
+                    user.sendLocalizedMessage("general.permissions.info.tooMany");
+                } else {
+                    for (Long g : groups) {
+                        user.sendLocalizedMessage("general.permissions.info.user.group", PermissionManager.getInstance().getGroup(g).getName());
+                    }
+                }
+                
+                user.sendLocalizedMessage("general.permissions.info.permissions");
+                if (permissions.size() == 0) {
+                    user.sendLocalizedMessage("general.permissions.info.none");
+                } else if (permissions.size() > 20) {
+                    user.sendLocalizedMessage("general.permissions.info.tooMany");
+                } else {
+                    for (Permission p : permissions) {
+                        user.sendLocalizedMessage("general.permissions.info.permission", p.getFullName());
+                    }
+                }
+                
+                user.sendLocalizedMessage("general.permissions.info.variables");
+                if (variables.size() == 0) {
+                    user.sendLocalizedMessage("general.permissions.info.none");
+                } else if (variables.size() > 20) {
+                    user.sendLocalizedMessage("general.permissions.info.tooMany");
+                } else {
+                    for (Entry<String, String> v : variables.entrySet()) {
+                        user.sendLocalizedMessage("general.permissions.info.variable", v.getKey(), v.getValue());
+                    }
+                }
+            } else if (target instanceof IPermissionGroup) {
+                IPermissionGroup groupTarget = (IPermissionGroup) target;
+                List<Long> owners = groupTarget.getOwners();
+                List<Long> users = groupTarget.getUsers();
+                List<Long> groups = groupTarget.getGroups();
+                List<Permission> permissions = groupTarget.getPermissions(false);
+                Map<String, String> variables = groupTarget.getDefinedVariables();
+                
+                user.sendLocalizedMessage("general.permissions.info.group.pre", groupTarget.getName());
+                user.sendLocalizedMessage("general.permissions.info.id", groupTarget.getId() + "");
+                user.sendLocalizedMessage("general.permissions.info.group.priority", groupTarget.getPriority() + "");
+                
+                if (groupTarget.getPrefix() != null && !groupTarget.getPrefix().isEmpty()) {
+                    user.sendLocalizedMessage("general.permissions.info.group.chat", (groupTarget.isChatColorSet()) ? groupTarget.getChatColor().toString() : "", "[" + groupTarget.getPrefix() + "]");
+                } else {
+                    user.sendLocalizedMessage("general.permissions.info.group.noChat", (groupTarget.isChatColorSet()) ? groupTarget.getChatColor().toString() : "");
+                }
+                
+                user.sendLocalizedMessage("general.permissions.info.group.owners");
+                if (owners.size() == 0) {
+                    user.sendLocalizedMessage("general.permissions.info.none");
+                } else if (owners.size() > 20) {
+                    user.sendLocalizedMessage("general.permissions.info.tooMany");
+                } else {
+                    for (Long o : owners) {
+                        user.sendLocalizedMessage("general.permissions.info.group.member", PermissionManager.getInstance().getUser(o).getName());
+                    }
+                }
+                
+                user.sendLocalizedMessage("general.permissions.info.group.userMembers");
+                if (users.size() == 0) {
+                    user.sendLocalizedMessage("general.permissions.info.none");
+                } else if (users.size() > 20) {
+                    user.sendLocalizedMessage("general.permissions.info.tooMany");
+                } else {
+                    for (Long u : users) {
+                        user.sendLocalizedMessage("general.permissions.info.group.member", PermissionManager.getInstance().getUser(u).getName());
+                    }
+                }
+                
+                user.sendLocalizedMessage("general.permissions.info.group.groupMembers");
+                if (groups.size() == 0) {
+                    user.sendLocalizedMessage("general.permissions.info.none");
+                } else if (groups.size() > 20) {
+                    user.sendLocalizedMessage("general.permissions.info.tooMany");
+                } else {
+                    for (Long g : groups) {
+                        user.sendLocalizedMessage("general.permissions.info.group.member", PermissionManager.getInstance().getGroup(g).getName());
+                    }
+                }
+                
+                user.sendLocalizedMessage("general.permissions.info.permissions");
+                if (permissions.size() == 0) {
+                    user.sendLocalizedMessage("general.permissions.info.none");
+                } else if (permissions.size() > 20) {
+                    user.sendLocalizedMessage("general.permissions.info.tooMany");
+                } else {
+                    for (Permission p : permissions) {
+                        user.sendLocalizedMessage("general.permissions.info.permission", p.getFullName());
+                    }
+                }
+                
+                user.sendLocalizedMessage("general.permissions.info.variables");
+                if (variables.size() == 0) {
+                    user.sendLocalizedMessage("general.permissions.info.none");
+                } else if (variables.size() > 20) {
+                    user.sendLocalizedMessage("general.permissions.info.tooMany");
+                } else {
+                    for (Entry<String, String> v : variables.entrySet()) {
+                        user.sendLocalizedMessage("general.permissions.info.variable", v.getKey(), v.getValue());
+                    }
+                }
+            } else {
+                throw new UnsupportedOperationException();
+            }
         }
     }
 }
