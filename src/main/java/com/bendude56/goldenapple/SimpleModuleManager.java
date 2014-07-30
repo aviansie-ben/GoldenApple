@@ -126,9 +126,15 @@ public class SimpleModuleManager implements ModuleManager {
 	@Override
 	public List<ModuleLoader> getModules() {
 		List<ModuleLoader> modules = new ArrayList<ModuleLoader>();
+		
+		for (String module : loadOrder) {
+		    modules.add(this.modules.get(module));
+		}
 
 		for (Map.Entry<String, ModuleLoader> module : this.modules.entrySet()) {
-			modules.add(module.getValue());
+			if (!modules.contains(module.getValue())) {
+			    modules.add(module.getValue());
+			}
 		}
 
 		return modules;

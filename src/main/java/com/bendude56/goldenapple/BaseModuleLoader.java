@@ -6,7 +6,6 @@ import com.bendude56.goldenapple.command.DebugCommand;
 import com.bendude56.goldenapple.command.ImportCommand;
 import com.bendude56.goldenapple.command.ModuleCommand;
 import com.bendude56.goldenapple.command.VerifyCommand;
-import com.bendude56.goldenapple.permissions.PermissionManager;
 
 public class BaseModuleLoader extends ModuleLoader {
 	
@@ -24,7 +23,7 @@ public class BaseModuleLoader extends ModuleLoader {
 	}
 	
 	@Override
-	protected void registerPermissions(PermissionManager permissions) {
+	public void preregisterPermissions() {
 		// Do nothing since the base module has no permissions to register
 	}
 	
@@ -50,11 +49,6 @@ public class BaseModuleLoader extends ModuleLoader {
 	@Override
 	public void clearCache() {
 		// TODO Reload config
-	}
-	
-	@Override
-	protected void unregisterPermissions(PermissionManager permissions) {
-		// Do nothing since the base module has no permissions to unregister
 	}
 	
 	@Override

@@ -29,7 +29,7 @@ public class PunishModuleLoader extends ModuleLoader {
 	}
 	
 	@Override
-	protected void registerPermissions(PermissionManager permissions) {
+	public void preregisterPermissions() {
 	    PunishmentManager.punishNode = PermissionManager.goldenAppleNode.createNode("punish");
 	    PunishmentManager.whoisPermission = PunishmentManager.punishNode.createPermission("whois");
 	    
@@ -74,18 +74,6 @@ public class PunishModuleLoader extends ModuleLoader {
 	@Override
 	public void clearCache() {
 		PunishmentManager.getInstance().clearCache();
-	}
-	
-	@Override
-	protected void unregisterPermissions(PermissionManager permissions) {
-		PunishmentManager.punishNode = null;
-		
-		PunishmentManager.banNode = null;
-		PunishmentManager.banTempPermission = null;
-		PunishmentManager.banTempOverridePermission = null;
-		PunishmentManager.banPermPermission = null;
-		PunishmentManager.banVoidPermission = null;
-		PunishmentManager.banVoidAllPermission = null;
 	}
 	
 	@Override

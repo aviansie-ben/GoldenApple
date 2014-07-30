@@ -21,7 +21,7 @@ public class SelectModuleLoader extends ModuleLoader {
     }
     
     @Override
-    protected void registerPermissions(PermissionManager permissions) {
+    public void preregisterPermissions() {
         SelectManager.selectNode = PermissionManager.goldenAppleNode.createNode("select");
         SelectManager.builtinNode = SelectManager.selectNode.createNode("builtin");
         SelectManager.builtinSelectPermission = SelectManager.builtinNode.createPermission("select");
@@ -50,16 +50,6 @@ public class SelectModuleLoader extends ModuleLoader {
     @Override
     public void clearCache() {
         // Do nothing
-    }
-    
-    @Override
-    protected void unregisterPermissions(PermissionManager permissions) {
-        SelectManager.selectNode = null;
-        SelectManager.builtinNode = null;
-        SelectManager.builtinSelectPermission = null;
-        SelectManager.builtinExpandPermission = null;
-        SelectManager.builtinContractPermission = null;
-        SelectManager.builtinShiftPermission = null;
     }
     
     @Override

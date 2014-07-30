@@ -470,6 +470,45 @@ public abstract class PermissionManager {
     }
     
     /**
+     * Represents a permission in the GoldenApple permission hierarchy which is
+     * simply an alias of another permission.
+     * 
+     * @author ben_dude56
+     */
+    public static interface PermissionAlias extends Permission {
+        /**
+         * Gets the permission to which this alias refers.
+         * 
+         * @return The permission this alias refers to.
+         */
+        public Permission getAliasOf();
+        
+        /**
+         * Gets the actual name of this alias.
+         * 
+         * @return The name of the alias, rather than the name of the permission
+         * to which it points.
+         */
+        public String getAliasName();
+        
+        /**
+         * Gets the actual full name of this alias.
+         * 
+         * @return The full name of the alias, rather than the name of the
+         * permission to which it points.
+         */
+        public String getAliasFullName();
+        
+        /**
+         * Gets the actual parent node of this alias.
+         * 
+         * @return The parent node of the alias, rather than the name of the
+         * permission to which it points.
+         */
+        public PermissionNode getAliasParentNode();
+    }
+    
+    /**
      * Represents a node in the GoldenApple permission hierarchy. A node can
      * contain child nodes as well as permissions, and is used to organize and
      * differentiate permissions.
@@ -563,6 +602,17 @@ public abstract class PermissionManager {
          * already exists with the same name.
          */
         public Permission createPermission(String name);
+        
+        /**
+         * Creates a permission which is simply an alias to another permission.
+         * Any operations performed using the created alias will actually be
+         * performed on the permission to which it refers.
+         * 
+         * @param name The name of the alias to create.
+         * @return The newly created permission alias, or {@code null} if a node
+         * or permission already exists with the same name.
+         */
+        public PermissionAlias createPermissionAlias(String name, Permission aliasOf);
         
         /**
          * Creates a new node with this node as its parent. If the node already

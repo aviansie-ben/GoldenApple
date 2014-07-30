@@ -1,7 +1,5 @@
 package com.bendude56.goldenapple;
 
-import com.bendude56.goldenapple.permissions.PermissionManager;
-
 /**
  * Interface for module loaders, which are classes designed to load GoldenApple
  * modules into memory, register permissions and commands, and perform
@@ -29,8 +27,8 @@ public abstract class ModuleLoader {
 	}
 	
 	protected abstract void preregisterCommands(CommandManager commands);
+	public abstract void preregisterPermissions();
 	
-	protected abstract void registerPermissions(PermissionManager permissions);
 	protected abstract void registerCommands(CommandManager commands);
 	protected abstract void registerListener();
 	protected abstract void initializeManager();
@@ -41,24 +39,17 @@ public abstract class ModuleLoader {
 	protected abstract void destroyManager();
 	protected abstract void unregisterListener();
 	protected abstract void unregisterCommands(CommandManager commands);
-	protected abstract void unregisterPermissions(PermissionManager permissions);
 	
 	private final void crashCleanup(int stage, GoldenApple instance) {
-		if (stage >= 4) {
+		if (stage >= 3) {
 			try {
 				unregisterListener();
 			} catch (Exception e) { }
 		}
 		
-		if (stage >= 3) {
-			try {
-				unregisterCommands(instance.getCommandManager());
-			} catch (Exception e) { }
-		}
-		
 		if (stage >= 2) {
 			try {
-				unregisterPermissions(PermissionManager.getInstance());
+				unregisterCommands(instance.getCommandManager());
 			} catch (Exception e) { }
 		}
 		
@@ -85,25 +76,13 @@ public abstract class ModuleLoader {
 		}
 		
 		try {
-			registerPermissions(PermissionManager.getInstance());
-		} catch (ModuleLoadException e) {
-			crashCleanup(2, instance);
-			state = ModuleState.UNLOADED_ERROR;
-			throw e;
-		} catch (Exception e) {
-			crashCleanup(2, instance);
-			state = ModuleState.UNLOADED_ERROR;
-			throw new ModuleLoadException(name, "Unhandled exception during permission registration: " + e.getMessage(), e);
-		}
-		
-		try {
 			registerCommands(instance.getCommandManager());
 		} catch (ModuleLoadException e) {
-			crashCleanup(3, instance);
+			crashCleanup(2, instance);
 			state = ModuleState.UNLOADED_ERROR;
 			throw e;
 		} catch (Exception e) {
-			crashCleanup(3, instance);
+			crashCleanup(2, instance);
 			state = ModuleState.UNLOADED_ERROR;
 			throw new ModuleLoadException(name, "Unhandled exception during command registration: " + e.getMessage(), e);
 		}
@@ -111,11 +90,11 @@ public abstract class ModuleLoader {
 		try {
 			registerListener();
 		} catch (ModuleLoadException e) {
-			crashCleanup(4, instance);
+			crashCleanup(3, instance);
 			state = ModuleState.UNLOADED_ERROR;
 			throw e;
 		} catch (Exception e) {
-			crashCleanup(4, instance);
+			crashCleanup(3, instance);
 			state = ModuleState.UNLOADED_ERROR;
 			throw new ModuleLoadException(name, "Unhandled exception during listener registration: " + e.getMessage(), e);
 		}
@@ -144,10 +123,6 @@ public abstract class ModuleLoader {
 		
 		try {
 			unregisterCommands(instance.getCommandManager());
-		} catch (Exception e) { }
-		
-		try {
-			unregisterPermissions(PermissionManager.getInstance());
 		} catch (Exception e) { }
 		
 		try {

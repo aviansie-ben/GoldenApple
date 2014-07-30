@@ -36,7 +36,7 @@ public class WarpModuleLoader extends ModuleLoader {
 	}
 	
 	@Override
-	protected void registerPermissions(PermissionManager permissions) {
+	public void preregisterPermissions() {
 	    WarpManager.warpNode = PermissionManager.goldenAppleNode.createNode("warp");
 	    WarpManager.backPermission = WarpManager.warpNode.createPermission("back");
 	    WarpManager.editPermission = WarpManager.warpNode.createPermission("edit");
@@ -45,11 +45,15 @@ public class WarpModuleLoader extends ModuleLoader {
 	    WarpManager.overrideCooldownPermission = WarpManager.warpNode.createPermission("overrideCooldown");
 	    
 	    WarpManager.tpNode = WarpManager.warpNode.createNode("tp");
-	    WarpManager.tpSelfToCoordPermission = WarpManager.tpNode.createPermission("selfToCoord");
-	    WarpManager.tpSelfToOtherPermission = WarpManager.tpNode.createPermission("selfToOther");
-	    WarpManager.tpOtherToCoordPermission = WarpManager.tpNode.createPermission("otherToCoord");
-	    WarpManager.tpOtherToSelfPermission = WarpManager.tpNode.createPermission("otherToSelf");
-	    WarpManager.tpOtherToOtherPermission = WarpManager.tpNode.createPermission("otherToOther");
+	    
+	    WarpManager.tpSelfNode = WarpManager.tpNode.createNode("self");
+	    WarpManager.tpSelfToCoordPermission = WarpManager.tpSelfNode.createPermission("coord");
+	    WarpManager.tpSelfToPlayerPermission = WarpManager.tpSelfNode.createPermission("player");
+	    
+	    WarpManager.tpOtherNode = WarpManager.tpNode.createNode("other");
+	    WarpManager.tpOtherToCoordPermission = WarpManager.tpOtherNode.createPermission("coord");
+	    WarpManager.tpOtherToSelfPermission = WarpManager.tpOtherNode.createPermission("self");
+	    WarpManager.tpOtherToPlayerPermission = WarpManager.tpOtherNode.createPermission("player");
 	    
 	    WarpManager.spawnNode = WarpManager.warpNode.createNode("spawn");
 	    WarpManager.spawnCurrentPermission = WarpManager.spawnNode.createPermission("current");
@@ -66,10 +70,12 @@ public class WarpModuleLoader extends ModuleLoader {
 	    WarpManager.homeEditOwn = WarpManager.homeEditNode.createPermission("own");
 	    WarpManager.homeEditPublic = WarpManager.homeEditNode.createPermission("public");
 	    WarpManager.homeEditAll = WarpManager.homeEditNode.createPermission("all");
-		
-		User.setGlobalNegative("bukkit.command.teleport");
-		
-		User.setGlobalNegative("minecraft.command.tp");
+	    
+	    WarpManager.tpNode.createPermissionAlias("selfToCoord", WarpManager.tpSelfToCoordPermission);
+	    WarpManager.tpNode.createPermissionAlias("selfToOther", WarpManager.tpSelfToPlayerPermission);
+	    WarpManager.tpNode.createPermissionAlias("otherToCoord", WarpManager.tpOtherToCoordPermission);
+	    WarpManager.tpNode.createPermissionAlias("otherToSelf", WarpManager.tpOtherToSelfPermission);
+	    WarpManager.tpNode.createPermissionAlias("otherToOther", WarpManager.tpOtherToPlayerPermission);
 	}
 
 	@Override
@@ -84,6 +90,10 @@ public class WarpModuleLoader extends ModuleLoader {
 		commands.getCommand("gawarp").register();
 		commands.getCommand("gasetwarp").register();
 		commands.getCommand("gadelwarp").register();
+		
+		User.setGlobalNegative("bukkit.command.teleport");
+        
+        User.setGlobalNegative("minecraft.command.tp");
 	}
 	
 	@Override
@@ -101,38 +111,6 @@ public class WarpModuleLoader extends ModuleLoader {
 	}
 	
 	@Override
-	protected void unregisterPermissions(PermissionManager permissions) {
-		WarpManager.warpNode = null;
-		WarpManager.backPermission = null;
-		WarpManager.editPermission = null;
-		
-		WarpManager.tpNode = null;
-		WarpManager.tpSelfToOtherPermission = null;
-		WarpManager.tpOtherToSelfPermission = null;
-		WarpManager.tpOtherToOtherPermission = null;
-		
-		WarpManager.spawnNode = null;
-		WarpManager.spawnCurrentPermission = null;
-		WarpManager.spawnAllPermission = null;
-		
-		WarpManager.homeNode = null;
-		
-		WarpManager.homeTpNode = null;
-		WarpManager.homeTpOwn = null;
-		WarpManager.homeTpPublic = null;
-		WarpManager.homeTpAll = null;
-		
-		WarpManager.homeEditNode = null;
-		WarpManager.homeEditOwn = null;
-		WarpManager.homeEditPublic = null;
-		WarpManager.homeEditAll = null;
-		
-		User.unsetGlobalNegative("bukkit.command.teleport");
-        
-        User.unsetGlobalNegative("minecraft.command.tp");
-	}
-	
-	@Override
 	protected void unregisterCommands(CommandManager commands) {
 		commands.getCommand("gaspawn").unregister();
 		commands.getCommand("gatp").unregister();
@@ -144,6 +122,10 @@ public class WarpModuleLoader extends ModuleLoader {
 		commands.getCommand("gawarp").unregister();
 		commands.getCommand("gasetwarp").unregister();
 		commands.getCommand("gadelwarp").unregister();
+		
+		User.unsetGlobalNegative("bukkit.command.teleport");
+        
+        User.unsetGlobalNegative("minecraft.command.tp");
 	}
 	
 	@Override

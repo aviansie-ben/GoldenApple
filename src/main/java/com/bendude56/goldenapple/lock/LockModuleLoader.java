@@ -19,7 +19,7 @@ public class LockModuleLoader extends ModuleLoader {
 	}
 	
 	@Override
-	protected void registerPermissions(PermissionManager permissions) {
+	public void preregisterPermissions() {
 	    LockManager.lockNode = PermissionManager.goldenAppleNode.createNode("lock");
 	    LockManager.addPermission = LockManager.lockNode.createPermission("add");
 	    LockManager.usePermission = LockManager.lockNode.createPermission("use");
@@ -47,16 +47,6 @@ public class LockModuleLoader extends ModuleLoader {
 	@Override
 	public void clearCache() {
 		LockManager.getInstance().clearCache();
-	}
-	
-	@Override
-	protected void unregisterPermissions(PermissionManager permissions) {
-		LockManager.lockNode = null;
-		LockManager.addPermission = null;
-		LockManager.usePermission = null;
-		LockManager.invitePermission = null;
-		LockManager.modifyBlockPermission = null;
-		LockManager.fullPermission = null;
 	}
 	
 	@Override

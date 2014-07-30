@@ -21,11 +21,17 @@ public abstract class WarpManager {
     
     // goldenapple.warp.tp
     public static PermissionNode tpNode;
+    
+    // goldenapple.warp.tp.self
+    public static PermissionNode tpSelfNode;
     public static Permission tpSelfToCoordPermission;
-    public static Permission tpSelfToOtherPermission;
+    public static Permission tpSelfToPlayerPermission;
+    
+    // goldenapple.warp.tp.other
+    public static PermissionNode tpOtherNode;
     public static Permission tpOtherToCoordPermission;
     public static Permission tpOtherToSelfPermission;
-    public static Permission tpOtherToOtherPermission;
+    public static Permission tpOtherToPlayerPermission;
     
     // goldenapple.warp.spawn
     public static PermissionNode spawnNode;

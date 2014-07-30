@@ -30,7 +30,7 @@ public class ChatModuleLoader extends ModuleLoader {
     }
     
     @Override
-    protected void registerPermissions(PermissionManager permissions) {
+    public void preregisterPermissions() {
         ChatManager.chatNode = PermissionManager.goldenAppleNode.createNode("chat");
         ChatManager.tellPermission = ChatManager.chatNode.createPermission("tell");
         ChatManager.tellSpyPermission = ChatManager.chatNode.createPermission("tellSpy");
@@ -39,12 +39,6 @@ public class ChatModuleLoader extends ModuleLoader {
         ChatManager.channelAddPermission = ChatManager.channelsNode.createPermission("add");
         ChatManager.channelModPermission = ChatManager.channelsNode.createPermission("mod");
         ChatManager.channelAdminPermission = ChatManager.channelsNode.createPermission("admin");
-        
-        User.setGlobalNegative("bukkit.command.tell");
-        User.setGlobalNegative("bukkit.command.me");
-        
-        User.setGlobalNegative("minecraft.command.tell");
-        User.setGlobalNegative("minecraft.command.me");
     }
     
     @Override
@@ -56,6 +50,12 @@ public class ChatModuleLoader extends ModuleLoader {
         commands.getCommand("gatellspy").register();
         commands.getCommand("gareply").register();
         commands.getCommand("gaafk").register();
+        
+        User.setGlobalNegative("bukkit.command.tell");
+        User.setGlobalNegative("bukkit.command.me");
+        
+        User.setGlobalNegative("minecraft.command.tell");
+        User.setGlobalNegative("minecraft.command.me");
     }
     
     @Override
@@ -80,24 +80,6 @@ public class ChatModuleLoader extends ModuleLoader {
     }
     
     @Override
-    protected void unregisterPermissions(PermissionManager permissions) {
-        ChatManager.chatNode = null;
-        ChatManager.tellPermission = null;
-        ChatManager.tellSpyPermission = null;
-        
-        ChatManager.channelsNode = null;
-        ChatManager.channelAddPermission = null;
-        ChatManager.channelModPermission = null;
-        ChatManager.channelAdminPermission = null;
-        
-        User.unsetGlobalNegative("bukkit.command.tell");
-        User.unsetGlobalNegative("bukkit.command.me");
-        
-        User.unsetGlobalNegative("minecraft.command.tell");
-        User.unsetGlobalNegative("minecraft.command.me");
-    }
-    
-    @Override
     protected void unregisterCommands(CommandManager commands) {
         commands.getCommand("gachannel").unregister();
         commands.getCommand("game").unregister();
@@ -106,6 +88,12 @@ public class ChatModuleLoader extends ModuleLoader {
         commands.getCommand("gatellspy").unregister();
         commands.getCommand("gareply").unregister();
         commands.getCommand("gaafk").unregister();
+        
+        User.unsetGlobalNegative("bukkit.command.tell");
+        User.unsetGlobalNegative("bukkit.command.me");
+        
+        User.unsetGlobalNegative("minecraft.command.tell");
+        User.unsetGlobalNegative("minecraft.command.me");
     }
     
     @Override

@@ -14,6 +14,7 @@ import org.bukkit.ChatColor;
 
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
+import com.bendude56.goldenapple.permissions.PermissionManager.PermissionAlias;
 
 public class PermissionUser implements IPermissionUser {
     private long id;
@@ -53,14 +54,31 @@ public class PermissionUser implements IPermissionUser {
     
     private void loadPermissions() {
         try {
+            List<PermissionAlias> aliasesToCorrect = new ArrayList<PermissionAlias>();
+            
             permissions = new ArrayList<Permission>();
             ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT Permission FROM UserPermissions WHERE UserID=?", id);
             try {
                 while (r.next()) {
-                    permissions.add(PermissionManager.getInstance().getPermissionByName(r.getString("Permission"), true));
+                    Permission p = PermissionManager.getInstance().getPermissionByName(r.getString("Permission"), true);
+                    
+                    if (p instanceof PermissionAlias) {
+                        aliasesToCorrect.add((PermissionAlias) p);
+                    } else {
+                        permissions.add(p);
+                    }
                 }
             } finally {
                 GoldenApple.getInstanceDatabaseManager().closeResult(r);
+            }
+            
+            for (PermissionAlias alias : aliasesToCorrect) {
+                if (permissions.contains(alias.getAliasOf())) {
+                    GoldenApple.getInstanceDatabaseManager().execute("DELETE FROM UserPermissions WHERE UserID=? AND Permission=?", id, alias.getAliasFullName());
+                } else {
+                    permissions.add(alias.getAliasOf());
+                    GoldenApple.getInstanceDatabaseManager().execute("UPDATE UserPermissions SET Permission=? WHERE UserID=? AND Permission=?", alias.getFullName(), id, alias.getAliasFullName());
+                }
             }
         } catch (SQLException e) {
             GoldenApple.log(Level.SEVERE, "An error occurred while calculating permissions for user '" + name + "':");
@@ -146,6 +164,10 @@ public class PermissionUser implements IPermissionUser {
     
     @Override
     public boolean hasPermission(Permission permission, boolean inherited) {
+        if (permission instanceof PermissionAlias) {
+            permission = ((PermissionAlias) permission).getAliasOf();
+        }
+        
         List<Long> parentGroups = getParentGroups(false);
         if (hasPermissionSpecificInheritance(permission, parentGroups, inherited)) {
             return true;
@@ -159,6 +181,10 @@ public class PermissionUser implements IPermissionUser {
     }
     
     private boolean hasPermissionSpecificInheritance(Permission permission, List<Long> groups, boolean inherited) {
+        if (permission instanceof PermissionAlias) {
+            permission = ((PermissionAlias) permission).getAliasOf();
+        }
+        
         if (hasPermissionSpecific(permission)) {
             return true;
         } else if (inherited) {
@@ -193,6 +219,10 @@ public class PermissionUser implements IPermissionUser {
     
     @Override
     public void addPermission(Permission permission) {
+        if (permission instanceof PermissionAlias) {
+            permission = ((PermissionAlias) permission).getAliasOf();
+        }
+        
         if (!hasPermissionSpecific(permission)) {
             try {
                 GoldenApple.getInstanceDatabaseManager().execute("INSERT INTO UserPermissions (UserID, Permission) VALUES (?, ?)", id, permission.getFullName());
@@ -211,6 +241,10 @@ public class PermissionUser implements IPermissionUser {
     
     @Override
     public void removePermission(Permission permission) {
+        if (permission instanceof PermissionAlias) {
+            permission = ((PermissionAlias) permission).getAliasOf();
+        }
+        
         if (hasPermissionSpecific(permission)) {
             try {
                 GoldenApple.getInstanceDatabaseManager().execute("DELETE FROM UserPermissions WHERE UserID=? AND Permission=?", id, permission.getFullName());

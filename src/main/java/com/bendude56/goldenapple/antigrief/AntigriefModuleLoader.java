@@ -20,7 +20,7 @@ public class AntigriefModuleLoader extends ModuleLoader {
 	}
 	
 	@Override
-	protected void registerPermissions(PermissionManager permissions) {
+	public void preregisterPermissions() {
 		antigriefNode = PermissionManager.goldenAppleNode.createNode("antigrief");
 		tntPermission = antigriefNode.createPermission("tnt");
 		lighterPermission = antigriefNode.createPermission("lighter");
@@ -33,12 +33,6 @@ public class AntigriefModuleLoader extends ModuleLoader {
 	@Override
 	protected void registerListener() {
 		AntigriefListener.startListening();
-	}
-	
-	@Override
-	protected void unregisterPermissions(PermissionManager permissions) {
-		antigriefNode = null;
-		tntPermission = null;
 	}
 	
 	@Override

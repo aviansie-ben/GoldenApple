@@ -17,7 +17,7 @@ public class InvisibleModuleLoader extends ModuleLoader {
     }
     
     @Override
-    protected void registerPermissions(PermissionManager permissions) {
+    public void preregisterPermissions() {
         InvisibilityManager.invisibleNode = PermissionManager.goldenAppleNode.createNode("invisible");
         InvisibilityManager.vanishPermission = InvisibilityManager.invisibleNode.createPermission("vanish");
         InvisibilityManager.vanishInteractPermission = InvisibilityManager.invisibleNode.createPermission("vanishInteract");
@@ -42,13 +42,6 @@ public class InvisibleModuleLoader extends ModuleLoader {
     @Override
     public void clearCache() {
         // There's no cache to clear!
-    }
-    
-    @Override
-    protected void unregisterPermissions(PermissionManager permissions) {
-        InvisibilityManager.invisibleNode = null;
-        InvisibilityManager.vanishPermission = null;
-        InvisibilityManager.seeVanishedPermission = null;
     }
     
     @Override

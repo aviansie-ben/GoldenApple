@@ -629,6 +629,19 @@ public class SimplePermissionManager extends PermissionManager {
         }
         
         @Override
+        public PermissionAlias createPermissionAlias(String name, Permission aliasOf) {
+            if (permissions.containsKey(name)) {
+                return (permissions.get(name) instanceof PermissionAlias) ? (PermissionAlias) permissions.get(name) : null;
+            } else if (nodes.containsKey(name)) {
+                return null;
+            } else {
+                SimplePermissionAlias p = new SimplePermissionAlias(aliasOf, name, this);
+                permissions.put(name, p);
+                return p;
+            }
+        }
+        
+        @Override
         public PermissionNode createNode(String name) {
             if (nodes.containsKey(name)) {
                 return nodes.get(name);
@@ -681,6 +694,62 @@ public class SimplePermissionManager extends PermissionManager {
             }
             
             return Collections.unmodifiableCollection(permissions);
+        }
+    }
+    
+    private static class SimplePermissionAlias implements PermissionAlias {
+        private Permission aliasOf;
+        private String name;
+        private SimplePermissionNode parent;
+        
+        private SimplePermissionAlias(Permission aliasOf, String name, SimplePermissionNode parent) {
+            this.aliasOf = aliasOf;
+            this.name = name;
+            this.parent = parent;
+        }
+
+        @Override
+        public String getName() {
+            return aliasOf.getName();
+        }
+
+        @Override
+        public String getFullName() {
+            return aliasOf.getFullName();
+        }
+
+        @Override
+        public PermissionNode getParentNode() {
+            return aliasOf.getParentNode();
+        }
+
+        @Override
+        public Collection<Permission> getEquivalentPermissions() {
+            return aliasOf.getEquivalentPermissions();
+        }
+
+        @Override
+        public Permission getAliasOf() {
+            return aliasOf;
+        }
+
+        @Override
+        public String getAliasName() {
+            return name;
+        }
+
+        @Override
+        public String getAliasFullName() {
+            if (parent == null || parent.getName().isEmpty()) {
+                return name;
+            } else {
+                return parent.getFullName() + "." + name;
+            }
+        }
+
+        @Override
+        public PermissionNode getAliasParentNode() {
+            return parent;
         }
     }
 }

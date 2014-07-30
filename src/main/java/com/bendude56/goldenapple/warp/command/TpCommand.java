@@ -18,7 +18,7 @@ public class TpCommand extends GoldenAppleCommand {
 			User user2 = User.findUser(args[0]);
 			if (!(user.getHandle() instanceof Player)) {
 				user.sendLocalizedMessage("shared.noConsole");
-			} else if (!user.hasPermission(WarpManager.tpSelfToOtherPermission)) {
+			} else if (!user.hasPermission(WarpManager.tpSelfToPlayerPermission)) {
 				GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			} else if (user2 == null) {
 				user.sendLocalizedMessage("shared.userNotFoundError", args[0]);
@@ -29,7 +29,7 @@ public class TpCommand extends GoldenAppleCommand {
 		} else if (args.length == 2) {
 			User user1 = User.findUser(args[0]);
 			User user2 = User.findUser(args[1]);
-			if (!user.hasPermission(WarpManager.tpOtherToOtherPermission)) {
+			if (!user.hasPermission(WarpManager.tpOtherToPlayerPermission)) {
 				GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			} else if (user1 == null) {
 				user.sendLocalizedMessage("shared.userNotFoundError", args[0]);

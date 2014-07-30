@@ -17,8 +17,7 @@ public class AreaModuleLoader extends ModuleLoader {
     }
     
     @Override
-    protected void registerPermissions(PermissionManager permissions) {
-        
+    public void preregisterPermissions() {
         // Generic area permissions
         AreaManager.areaNode = PermissionManager.goldenAppleNode.createNode("area");
         AreaManager.addPermission = AreaManager.areaNode.createPermission("add");
@@ -69,39 +68,6 @@ public class AreaModuleLoader extends ModuleLoader {
     @Override
     protected void initializeManager() {
         AreaManager.instance = new SimpleAreaManager();
-    }
-    
-    @Override
-    protected void unregisterPermissions(PermissionManager permissions) {
-        AreaManager.areaNode = null;
-        AreaManager.addPermission = null;
-        AreaManager.removePermission = null;
-        AreaManager.overridePermission = null;
-        
-        AreaManager.areaListNode = null;
-        AreaManager.listAllPermission = null;
-        AreaManager.listLocationPermission = null;
-        AreaManager.listOwnPermission = null;
-        
-        AreaManager.areaInfoNode = null;
-        AreaManager.infoAllPermission = null;
-        AreaManager.infoOwnPermission = null;
-        
-        AreaManager.areaEditNode = null;
-        AreaManager.areaEditAllNode = null;
-        AreaManager.editAllLabelPermission = null;
-        AreaManager.editAllPriorityPermission = null;
-        AreaManager.editAllGuestsPermission = null;
-        AreaManager.editAllRegionsPermission = null;
-        AreaManager.editAllFlagsPermission = null;
-        
-        AreaManager.areaEditOwnNode = null;
-        AreaManager.editOwnLabelPermission = null;
-        AreaManager.editOwnPriorityPermission = null;
-        AreaManager.editOwnOwnersPermission = null;
-        AreaManager.editOwnGuestsPermission = null;
-        AreaManager.editOwnRegionsPermission = null;
-        AreaManager.editOwnFlagsPermission = null;
     }
     
     @Override

@@ -1,6 +1,7 @@
 package com.bendude56.goldenapple.permissions;
 
 import com.bendude56.goldenapple.CommandManager;
+import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.ModuleLoader;
 import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.permissions.command.LangCommand;
@@ -21,8 +22,8 @@ public class PermissionsModuleLoader extends ModuleLoader {
     }
     
     @Override
-    protected void registerPermissions(PermissionManager permissions) {
-        PermissionManager.goldenAppleNode = permissions.getRootNode().createNode("goldenapple");
+    public void preregisterPermissions() {
+        PermissionManager.goldenAppleNode = PermissionManager.getInstance().getRootNode().createNode("goldenapple");
         PermissionManager.importPermission = PermissionManager.goldenAppleNode.createPermission("import");
         
         PermissionManager.permissionNode = PermissionManager.goldenAppleNode.createNode("permissions");
@@ -62,6 +63,10 @@ public class PermissionsModuleLoader extends ModuleLoader {
     protected void initializeManager() {
         PermissionManager.instance = new SimplePermissionManager();
         
+        for (ModuleLoader module : GoldenApple.getInstance().getModuleManager().getModules()) {
+            module.preregisterPermissions();
+        }
+        
         ((SimplePermissionManager)PermissionManager.instance).loadGroups();
         ((SimplePermissionManager)PermissionManager.instance).checkDefaultGroups();
         
@@ -71,29 +76,6 @@ public class PermissionsModuleLoader extends ModuleLoader {
     @Override
     public void clearCache() {
         PermissionManager.getInstance().clearCache();
-    }
-    
-    @Override
-    protected void unregisterPermissions(PermissionManager permissions) {
-        PermissionManager.goldenAppleNode = null;
-        PermissionManager.importPermission = null;
-        
-        PermissionManager.permissionNode = null;
-        
-        PermissionManager.userNode = null;
-        PermissionManager.userAddPermission = null;
-        PermissionManager.userRemovePermission = null;
-        PermissionManager.userEditPermission = null;
-        
-        PermissionManager.groupNode = null;
-        PermissionManager.groupAddPermission = null;
-        PermissionManager.groupRemovePermission = null;
-        PermissionManager.groupEditPermission = null;
-        
-        PermissionManager.moduleNode = null;
-        PermissionManager.moduleLoadPermission = null;
-        PermissionManager.moduleUnloadPermission = null;
-        PermissionManager.moduleQueryPermission = null;
     }
     
     @Override

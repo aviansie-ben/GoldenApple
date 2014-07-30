@@ -19,7 +19,7 @@ public class RequestModuleLoader extends ModuleLoader {
 	}
 	
 	@Override
-	protected void registerPermissions(PermissionManager permissions) {
+	public void preregisterPermissions() {
 	    RequestManager.requestNode = PermissionManager.goldenAppleNode.createNode("request");
 	    RequestManager.statsPermission = RequestManager.requestNode.createPermission("stats");
 	    RequestManager.viewAllPermission = RequestManager.requestNode.createPermission("viewAll");
@@ -47,15 +47,6 @@ public class RequestModuleLoader extends ModuleLoader {
 	
 	@Override
 	public void clearCache() {
-	}
-	
-	@Override
-	protected void unregisterPermissions(PermissionManager permissions) {
-	    RequestManager.requestNode = null;
-        RequestManager.statsPermission = null;
-        RequestManager.viewAllPermission = null;
-        RequestManager.reassignPermission = null;
-        RequestManager.editQueuePermission = null;
 	}
 	
 	@Override

@@ -14,6 +14,7 @@ import org.bukkit.ChatColor;
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
+import com.bendude56.goldenapple.permissions.PermissionManager.PermissionAlias;
 
 /**
  * Represents a group in the GoldenApple permissions database.
@@ -129,14 +130,31 @@ public class PermissionGroup implements IPermissionGroup {
     
     private void loadPermissions() {
         try {
+            List<PermissionAlias> aliasesToCorrect = new ArrayList<PermissionAlias>();
+            
             permissions = new ArrayList<Permission>();
             ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT Permission FROM GroupPermissions WHERE GroupID=?", id);
             try {
                 while (r.next()) {
-                    permissions.add(PermissionManager.getInstance().getPermissionByName(r.getString("Permission"), true));
+                    Permission p = PermissionManager.getInstance().getPermissionByName(r.getString("Permission"), true);
+                    
+                    if (p instanceof PermissionAlias) {
+                        aliasesToCorrect.add((PermissionAlias) p);
+                    } else {
+                        permissions.add(p);
+                    }
                 }
             } finally {
                 GoldenApple.getInstanceDatabaseManager().closeResult(r);
+            }
+            
+            for (PermissionAlias alias : aliasesToCorrect) {
+                if (permissions.contains(alias.getAliasOf())) {
+                    GoldenApple.getInstanceDatabaseManager().execute("DELETE FROM GroupPermissions WHERE GroupID=? AND Permission=?", id, alias.getAliasFullName());
+                } else {
+                    permissions.add(alias.getAliasOf());
+                    GoldenApple.getInstanceDatabaseManager().execute("UPDATE GroupPermissions SET Permission=? WHERE GroupID=? AND Permission=?", alias.getFullName(), id, alias.getAliasFullName());
+                }
             }
         } catch (SQLException e) {
             GoldenApple.log(Level.SEVERE, "An error occurred while calculating permissions for group '" + name + "':");
@@ -409,6 +427,10 @@ public class PermissionGroup implements IPermissionGroup {
     
     @Override
     public void addPermission(Permission permission) {
+        if (permission instanceof PermissionAlias) {
+            permission = ((PermissionAlias) permission).getAliasOf();
+        }
+        
         if (!hasPermissionSpecific(permission)) {
             try {
                 permissions.add(permission);
@@ -433,6 +455,10 @@ public class PermissionGroup implements IPermissionGroup {
     
     @Override
     public void removePermission(Permission permission) {
+        if (permission instanceof PermissionAlias) {
+            permission = ((PermissionAlias) permission).getAliasOf();
+        }
+        
         if (hasPermissionSpecific(permission)) {
             try {
                 permissions.remove(permission);
@@ -472,6 +498,10 @@ public class PermissionGroup implements IPermissionGroup {
     
     @Override
     public boolean hasPermission(Permission permission, boolean inherited) {
+        if (permission instanceof PermissionAlias) {
+            permission = ((PermissionAlias) permission).getAliasOf();
+        }
+        
         List<Long> parentGroups = getParentGroups(false);
         if (hasPermissionSpecificInheritance(permission, parentGroups, inherited)) {
             return true;
@@ -485,6 +515,10 @@ public class PermissionGroup implements IPermissionGroup {
     }
     
     private boolean hasPermissionSpecificInheritance(Permission permission, List<Long> groups, boolean inherited) {
+        if (permission instanceof PermissionAlias) {
+            permission = ((PermissionAlias) permission).getAliasOf();
+        }
+        
         if (hasPermissionSpecific(permission)) {
             return true;
         } else if (inherited) {
