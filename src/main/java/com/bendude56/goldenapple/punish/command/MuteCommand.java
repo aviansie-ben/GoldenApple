@@ -83,7 +83,7 @@ public class MuteCommand extends DualSyntaxCommand {
 	}
 	
 	public static void muteInfo(IPermissionUser target, IChatChannel c, User user, String commandLabel, String[] args) {
-		if (c.getAccessLevel(user).isModerator()) {
+		if (!c.getAccessLevel(user).isModerator()) {
 			GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			return;
 		}
@@ -106,7 +106,7 @@ public class MuteCommand extends DualSyntaxCommand {
 	}
 	
 	public static void muteVoid(IPermissionUser target, IChatChannel c, User user, String commandLabel, String[] args) {
-		if (c.getAccessLevel(user).isModerator()) {
+		if (!c.getAccessLevel(user).isModerator()) {
 			GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			return;
 		}
