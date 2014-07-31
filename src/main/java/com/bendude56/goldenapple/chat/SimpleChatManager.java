@@ -180,7 +180,7 @@ public class SimpleChatManager extends ChatManager {
     
     @Override
     public void sendTellMessage(User sender, User receiver, String message) {
-        if (PunishmentManager.getInstance() != null) {
+        if (PunishmentManager.getInstance() != null && !sender.hasPermission(ChatManager.tellAlwaysPermission)) {
             PunishmentMute mute = PunishmentManager.getInstance().getActiveMute(sender, null);
             
             if (mute != null) {

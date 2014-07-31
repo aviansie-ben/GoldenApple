@@ -34,6 +34,7 @@ public class ChatModuleLoader extends ModuleLoader {
         ChatManager.chatNode = PermissionManager.goldenAppleNode.createNode("chat");
         ChatManager.tellPermission = ChatManager.chatNode.createPermission("tell");
         ChatManager.tellSpyPermission = ChatManager.chatNode.createPermission("tellSpy");
+        ChatManager.tellAlwaysPermission = ChatManager.chatNode.createPermission("tellAlways");
         
         ChatManager.channelsNode = ChatManager.chatNode.createNode("channels");
         ChatManager.channelAddPermission = ChatManager.channelsNode.createPermission("add");

@@ -12,6 +12,7 @@ public abstract class ChatManager {
     public static PermissionNode chatNode;
     public static Permission tellPermission;
     public static Permission tellSpyPermission;
+    public static Permission tellAlwaysPermission;
     
     // goldenapple.chat.channel
     public static PermissionNode channelsNode;
