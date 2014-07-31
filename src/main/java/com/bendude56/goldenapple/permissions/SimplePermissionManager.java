@@ -554,7 +554,17 @@ public class SimplePermissionManager extends PermissionManager {
     
     @Override
     public void clearCache() {
-        // TODO Clear group/user cache
+        while (!userCacheOut.isEmpty()) {
+            userCache.remove(userCacheOut.pop());
+        }
+        
+        for (PermissionUser user : userCache.values()) {
+            user.reloadFromDatabase();
+        }
+        
+        for (PermissionGroup group : groups.values()) {
+            group.reloadFromDatabase();
+        }
     }
     
     private static class SimplePermissionNode implements PermissionNode {
