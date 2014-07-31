@@ -171,7 +171,7 @@ public class MuteCommand extends DualSyntaxCommand {
 							tUser.sendLocalizedMessage("general.mute.permaKick", user.getName());
 							tUser.getHandle().sendMessage(reason);
 						} else {
-							tUser.sendLocalizedMessage("general.mute.tempKick", target.getName(), t.toString());
+							tUser.sendLocalizedMessage("general.mute.tempKick", user.toString(), t.toString());
 							tUser.getHandle().sendMessage(reason);
 						}
 					}

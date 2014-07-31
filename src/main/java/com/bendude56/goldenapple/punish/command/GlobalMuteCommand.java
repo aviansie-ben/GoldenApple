@@ -137,7 +137,7 @@ public class GlobalMuteCommand extends DualSyntaxCommand {
 							tUser.sendLocalizedMessage("general.globalmute.permaKick", user.getName());
 							tUser.getHandle().sendMessage(reason);
 						} else {
-							tUser.sendLocalizedMessage("general.globalmute.tempKick", target.getName(), t.toString());
+							tUser.sendLocalizedMessage("general.globalmute.tempKick", user.getName(), t.toString());
 							tUser.getHandle().sendMessage(reason);
 						}
 					}

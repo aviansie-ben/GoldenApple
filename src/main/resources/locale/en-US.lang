@@ -276,7 +276,7 @@ general.globalmute.info.tempMuted=&7User '%1' is globally muted for %2 by %3.
 general.globalmute.permaMute=&a%1 has been permanently globally muted.
 general.globalmute.permaKick=You have been permanently globally muted by %1:
 general.globalmute.tempMute=&a%1 has been globally muted for %2.
-general.globalmute.tempKick=You have been globally muted for %1 by %2:
+general.globalmute.tempKick=You have been globally muted for %2 by %1:
 general.globalmute.voidMute=&aThe global mute on %1 has been voided.
 
 general.home.deleteAlias=&aYour home '%1' has been deleted.
@@ -341,7 +341,7 @@ general.mute.info.tempMuted=&7User '%1' is muted for %2 by %3.
 general.mute.permaMute=&a%1 has been permanently muted.
 general.mute.permaKick=You have been permanently muted by %1:
 general.mute.tempMute=&a%1 has been muted for %2.
-general.mute.tempKick=You have been muted for %1 by %2:
+general.mute.tempKick=You have been muted for %2 by %1:
 general.mute.voidMute=&aThe mute on %1 has been voided.
 
 general.own.success=&aYou have been given permission '*'
