@@ -15,6 +15,8 @@ import org.bukkit.entity.Player;
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.chat.IChatChannel.ChatChannelAccessLevel;
+import com.bendude56.goldenapple.punish.PunishmentManager;
+import com.bendude56.goldenapple.punish.PunishmentMute;
 
 public class SimpleChatManager extends ChatManager {
     private HashMap<String, IChatChannel> activeChannels = new HashMap<String, IChatChannel>();
@@ -178,6 +180,20 @@ public class SimpleChatManager extends ChatManager {
     
     @Override
     public void sendTellMessage(User sender, User receiver, String message) {
+        if (PunishmentManager.getInstance() != null) {
+            PunishmentMute mute = PunishmentManager.getInstance().getActiveMute(sender, null);
+            
+            if (mute != null) {
+                if (mute.isPermanent()) {
+                    sender.sendLocalizedMessage("error.tell.muted.perma");
+                } else {
+                    sender.sendLocalizedMessage("error.tell.muted.temp", mute.getRemainingDuration().toString());
+                }
+                
+                return;
+            }
+        }
+        
         GoldenApple.log("(" + sender.getDisplayName() + " => " + receiver.getDisplayName() + ") " + message);
         
         if (sender != User.getConsoleUser()) {

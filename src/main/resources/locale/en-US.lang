@@ -151,6 +151,8 @@ error.select.notBuiltin=&4ERROR: The selection provider is not builtin!
 error.select.unknownDirection=&4ERROR: '%1' is not a valid direction!
 
 error.tell.self=&4ERROR: You cannot send a /tell message to yourself!
+error.tell.muted.perma=&4ERROR: You are permanently muted.
+error.tell.muted.temp=&4ERROR: You are muted for %1.
 
 error.tellspy.alreadyOn=&4ERROR: You are already spying on /tell messages!
 error.tellSpy.alreadyOff=&4ERROR: You are not spying on /tell messages!
