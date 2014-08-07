@@ -538,3 +538,15 @@ modules:
         # to keep this above at least 20 in order to minimize
         # database loading time.
         cacheSize: 100
+    
+    mail:
+        
+        # When set to true the mail module will be activated. The mail module
+        # allows GoldenApple internal systems as well as other players to send
+        # messages to users, even when they are offline.
+        enabled: true
+        
+        # The maximum number of mail messages that will be cached at any given
+        # time. It is recommended to not reduce this number too much, or lag
+        # may result as message lookups must query the database.
+        maxCachedMessages: 50

@@ -168,3 +168,7 @@ commands:
         usage: /<command> <amount> [direction]
         description: Shifts your GoldenApple selection
         aliases: [selshift]
+    gamail:
+        usage: Use /<command> -? for help
+        description: Command for sending and receiving GoldenApple mail
+        aliases: [mail]

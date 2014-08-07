@@ -9,6 +9,7 @@ import com.bendude56.goldenapple.ModuleLoader.ModuleState;
 import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.audit.AuditLog;
 import com.bendude56.goldenapple.command.DualSyntaxCommand;
+import com.bendude56.goldenapple.mail.MailManager;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 import com.bendude56.goldenapple.punish.PunishmentManager;
@@ -96,6 +97,10 @@ public class GlobalMuteCommand extends DualSyntaxCommand {
 				
 				AuditLog.logEvent(new MuteVoidEvent(user.getName(), target.getName(), "GLOBAL"));
 				
+				if (MailManager.getInstance() != null) {
+                    MailManager.getInstance().sendSystemMessage(target, "mail.globalmute.void", user.getName());
+                }
+				
 				user.sendLocalizedMessage("general.globalmute.voidMute", target.getName());
 			}
 		}
@@ -125,6 +130,14 @@ public class GlobalMuteCommand extends DualSyntaxCommand {
 					
 					PunishmentManager.getInstance().addMute(target, user, reason, t, null);
 					AuditLog.logEvent(new MuteEvent(user.getName(), target.getName(), (t == null) ? "PERMANENT" : t.toString(), reason, "GLOBAL"));
+					
+					if (MailManager.getInstance() != null) {
+                        if (t == null) {
+                            MailManager.getInstance().sendSystemMessage(target, "mail.globalmute.perm", user.getName(), reason);
+                        } else {
+                            MailManager.getInstance().sendSystemMessage(target, "mail.globalmute.temp", user.getName(), reason, t.toString());
+                        }
+                    }
 					
 					if (t == null) {
 						user.sendLocalizedMessage("general.globalmute.permaMute", target.getName());

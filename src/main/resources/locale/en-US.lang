@@ -93,6 +93,11 @@ error.lock.unknownAccessLevel=&4ERROR: Unknown access level '%1'!
 error.lock.unknownOverrideMode=&4ERROR: Unknown override mode '%1'!
 error.lock.unknownRedstoneMode=&4ERROR: Unknown redstone mode '%1'!
 
+error.mail.emptySend=&4ERROR: You cannot send an empty message! Use /gamail append <body> to append to the body of the message.
+error.mail.noDraft=&4ERROR: You must have an active draft to do that!
+error.mail.noReplySystem=&4ERROR: You cannot reply to a system message!
+error.mail.notFound=&4ERROR: Message #%1 was not found!
+
 error.module.clearCache.notLoaded=&4ERROR: Module '%1' cannot have its cache cleared because it is disabled!
 error.module.load.alreadyLoaded=&4ERROR: Module '%1' is already enabled!
 error.module.load.dependFail=&4ERROR: Module '%1' cannot be enabled because dependency '%2' failed to load!
@@ -315,6 +320,32 @@ general.lock.info.na=&8N/A
 general.lock.info.private=&8Private
 general.lock.info.public=&fPublic
 
+general.mail.appendDraft=&aThat has been appended to the body of your draft message. Use /gamail draft to read the draft so far or /gamail send to send it.
+general.mail.createDraft=&aYou have created a new draft with the subject '%1'. Use /gamail append <contents> to add to the body.
+general.mail.deleted=&aMessage #%1 has been deleted.
+general.mail.discardDraft=&aYour draft message has been discarded!
+general.mail.inboxUnread=&7You have %1 unread messages. Page %2/%3:
+general.mail.inboxUnreadEmpty=&7You have no unread mail!
+general.mail.inboxAll=&7You have %1 messages. Page %2/%3:
+general.mail.inboxAllEmpty=&7You have no mail!
+general.mail.more=&7Use /gamail all <page> to see more.
+general.mail.readHelp=&7Use /gamail read <id> to read a message.
+general.mail.list.system.unread=&a  [#%1] &6SYSTEM MESSAGE&a: %2
+general.mail.list.system.read=&8  [#%1] &6SYSTEM MESSAGE&8: %2
+general.mail.list.player.unread=&a  [#%1] %3&a: %2
+general.mail.list.player.read=&8  [#%1] %3&8: %2
+general.mail.list.player.replied=&8  [#%1] %3&8: %2 &9<Replied>
+general.mail.read.id=&fMail ID: %1 (#%2)
+general.mail.read.subject=&fSubject: %1
+general.mail.read.from.player=&fFrom: %1 <%2>
+general.mail.read.from.system=&fFrom: &6GoldenApple System Mail
+general.mail.read.to=&fTo: %1 <%2>
+general.mail.read.sent=&fSent: %1
+general.mail.read.replied=&9You have replied to this message
+general.mail.sent=&aYour message has been successfully sent!
+general.mail.joinUnread=&aYou have new mail messages! Use /gamail to view them!
+general.mail.newMail=&aYou have received a new mail message! Use /gamail to view it!
+
 general.module.clearCache=&aModule '%1' has successfully had its cache purged...
 general.module.list=&7The following modules can be queried:
 general.module.load.success=&aModule '%1' loaded successfully...
@@ -493,6 +524,7 @@ header.area=&7-----&6 GoldenApple Areas &7-----
 header.chat=&7-----&6 GoldenApple Chat &7-----
 header.help=&7-----&6 GoldenApple Help &7-----
 header.lock=&7-----&6 GoldenApple Locks &7-----
+header.mail=&7-----&6 GoldenApple Mail &7-----
 header.module=&7-----&6 GoldenApple Module Controller &7-----
 header.permissions=&7-----&6 GoldenApple Permissions &7-----
 header.punish=&7-----&6 GoldenApple Punishment &7-----
@@ -604,6 +636,15 @@ help.lock.simple.7=Use &7/%1 uninvite <user>&f to unshare the block from a playe
 help.lock.simple.8=Use &7/%1 access {public|private}&f to change access level
 help.lock.simple.9=Use &7/%1 redstone {on|off}&f to enable/disable redstone on lock
 
+help.mail.1=List all mail using &7/%1 all <page>
+help.mail.2=List unread mail using &7/%1 unread <page>
+help.mail.3=Read a message using &7/%1 read <id>
+help.mail.4=Delete a message using &7/%1 delete <id>
+help.mail.5=Create a new draft using &7/%1 reply <id> [subject]&f or &7/%1 create <recipient> <subject>
+help.mail.6=Append to a draft message's body using &7/%1 append <message>
+help.mail.7=Read your active draft message using &7/%1 draft
+help.mail.8=Send your active draft message using &7/%1 send&f or discard it using &7/%1 discard
+
 help.mute.complex.1=Select a target using &7-u <user>
 help.mute.complex.2=Select a channel using &7-c <channel>
 help.mute.complex.3=Specify a mute reason using &7-r <reason>
@@ -641,6 +682,30 @@ help.requestqueue.4=Delete an existing queue using /%1 <queue> delete
 help.requestqueue.5=Change send/receive groups using /%1 <queue> {send|receive} <group>
 help.requestqueue.6=Toggle allow offline using /%1 <queue> allowoffline
 help.requestqueue.7=Change maximum requests per sender using /%1 <queue> maxpersender <max>
+
+mail.ban.perm.subject=Ban Record
+mail.ban.perm.contents=You have been permanently banned by %1. If you are reading this message, you have likely already appealed this ban. The reason for your ban was:\n\n%2
+mail.ban.temp.subject=Ban Record
+mail.ban.temp.contents=You were recently temporarily banned by %1 for %3. Continued issues may result in a longer ban or a permanent ban. The reason for your ban was:\n\n%2
+mail.ban.void.subject=Ban Voided
+mail.ban.void.contents=Your recent ban was voided by %1. If you require more information or further assistance, please speak to them.
+
+mail.debug.test.subject=Debug Test: %1
+mail.debug.test.contents=This is a test of the system mail functionality initiated by %1 through the /gadebug command.\n\nTest: %2
+
+mail.globalmute.perm.subject=Global Mute Record
+mail.globalmute.perm.contents=You have been permanently globally muted by %1. You will no longer be able to speak in chat and your usage of /tell will be restricted to administrators only. The reason for your mute was:\n\n%2
+mail.globalmute.temp.subject=Global Mute Record
+mail.globalmute.temp.contents=You havbe been globally muted by %1 for %3. For the duration of this mute, you will not be able to speak in chat and your usage of /tell will be restricted to administrators only. Further issues may result in a longer mute or a permanent mute. The reason for your mute was:\n\n%2
+mail.globalmute.void.subject=Global Mute Voided
+mail.globalmute.void.contents=Your recent global mute was voided by %1. If you require more information or further assistance, please speak to them.
+
+mail.mute.perm.subject=Mute Record - '%2'
+mail.mute.perm.contents=You have been permanently muted from channel '%2' by %1. You will no longer be able to speak in this channel. The reason for your mute was:\n\n%3
+mail.mute.temp.subject=Mute Record - '%2'
+mail.mute.temp.contents=You have been muted from channel '%2' by %1 for %4. You will be unable to speak in this channel for the duration of this mute. Further issues may result in a longer mute or a permanent mute. The reason for your mute was:\n\n%3
+mail.mute.void.subject=Mute Voided - '%2'
+mail.mute.void.contents=Your recent mute from channel '%2' was voided by %1. If you require more information or further assistance, please speak to them.
 
 shared.cmdUnload.generic=&4ERROR: This command has been disabled
 shared.cmdUnload.specific=&4ERROR: This command relies on unloaded module '%1'

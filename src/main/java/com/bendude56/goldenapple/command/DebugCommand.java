@@ -15,6 +15,7 @@ import com.bendude56.goldenapple.ModuleLoader.ModuleState;
 import com.bendude56.goldenapple.antigrief.AntigriefListener;
 import com.bendude56.goldenapple.lock.LockManager;
 import com.bendude56.goldenapple.lock.SimpleLockManager;
+import com.bendude56.goldenapple.mail.MailManager;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 import com.bendude56.goldenapple.permissions.SimplePermissionManager;
 import com.bendude56.goldenapple.punish.PunishmentManager;
@@ -200,6 +201,12 @@ public class DebugCommand extends GoldenAppleCommand {
                 user.getHandle().sendMessage("  Max: (" + max.getBlockX() + ", " + max.getBlockY() + ", " + max.getBlockZ() + ")");
                 user.getHandle().sendMessage("  World: " + min.getWorld().getName());
             }
+		} else if (args[0].equalsIgnoreCase("testmail")) {
+		    if (GoldenApple.getInstance().getModuleManager().getModule("Mail").getCurrentState() != ModuleState.LOADED) {
+                user.getHandle().sendMessage("The 'Mail' module has not been loaded!");
+		    } else {
+		        MailManager.getInstance().sendSystemMessage(user, "mail.debug.test", user.getName(), "THIS IS AN ARGUMENT");
+		    }
 		} else {
 			user.getHandle().sendMessage("Bad command: " + args[0]);
 		}

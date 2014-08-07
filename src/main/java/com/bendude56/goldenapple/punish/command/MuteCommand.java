@@ -13,6 +13,7 @@ import com.bendude56.goldenapple.chat.IChatChannel;
 import com.bendude56.goldenapple.chat.ChatManager;
 import com.bendude56.goldenapple.chat.IChatChannel.ChatChannelFeature;
 import com.bendude56.goldenapple.command.DualSyntaxCommand;
+import com.bendude56.goldenapple.mail.MailManager;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 import com.bendude56.goldenapple.punish.PunishmentManager;
@@ -127,6 +128,10 @@ public class MuteCommand extends DualSyntaxCommand {
 				
 				AuditLog.logEvent(new MuteVoidEvent(user.getName(), target.getName(), c.getName()));
 				
+				if (MailManager.getInstance() != null) {
+                    MailManager.getInstance().sendSystemMessage(target, "mail.mute.void", user.getName(), c.getName());
+                }
+				
 				user.sendLocalizedMessage("general.mute.voidMute", target.getName());
 			}
 		}
@@ -159,6 +164,14 @@ public class MuteCommand extends DualSyntaxCommand {
 					
 					PunishmentManager.getInstance().addMute(target, user, reason, t, c.getName());
 					AuditLog.logEvent(new MuteEvent(user.getName(), target.getName(), (t == null) ? "PERMANENT" : t.toString(), reason, c.getName()));
+					
+					if (MailManager.getInstance() != null) {
+                        if (t == null) {
+                            MailManager.getInstance().sendSystemMessage(target, "mail.mute.perm", user.getName(), c.getName(), reason);
+                        } else {
+                            MailManager.getInstance().sendSystemMessage(target, "mail.ban.temp", user.getName(), c.getName(), reason, t.toString());
+                        }
+                    }
 					
 					if (t == null) {
 						user.sendLocalizedMessage("general.mute.permaMute", target.getName());

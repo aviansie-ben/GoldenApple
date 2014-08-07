@@ -10,6 +10,7 @@ import com.bendude56.goldenapple.ModuleLoader.ModuleState;
 import com.bendude56.goldenapple.audit.AuditLog;
 import com.bendude56.goldenapple.command.DualSyntaxCommand;
 import com.bendude56.goldenapple.command.VerifyCommand;
+import com.bendude56.goldenapple.mail.MailManager;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 import com.bendude56.goldenapple.punish.Punishment.RemainingTime;
@@ -103,6 +104,10 @@ public class BanCommand extends DualSyntaxCommand {
 				
 				AuditLog.logEvent(new BanVoidEvent(user.getName(), target.getName()));
 				
+				if (MailManager.getInstance() != null) {
+				    MailManager.getInstance().sendSystemMessage(target, "mail.ban.void", user.getName());
+				}
+				
 				user.sendLocalizedMessage("general.ban.voidBan", target.getName());
 			}
 		}
@@ -134,6 +139,14 @@ public class BanCommand extends DualSyntaxCommand {
 					
 					PunishmentManager.getInstance().addBan(target, user, reason, t);
 					AuditLog.logEvent(new BanEvent(user.getName(), target.getName(), (t == null) ? "PERMANENT" : t.toString(), reason));
+					
+					if (MailManager.getInstance() != null) {
+					    if (t == null) {
+					        MailManager.getInstance().sendSystemMessage(target, "mail.ban.perm", user.getName(), reason);
+					    } else {
+					        MailManager.getInstance().sendSystemMessage(target, "mail.ban.temp", user.getName(), reason, t.toString());
+					    }
+	                }
 					
 					if (t == null) {
 						user.sendLocalizedMessage("general.ban.permaBan", target.getName());
