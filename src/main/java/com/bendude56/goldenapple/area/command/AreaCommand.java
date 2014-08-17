@@ -41,7 +41,7 @@ public class AreaCommand extends DualSyntaxCommand {
         if (!arg.parse(user, args)) {
             return;
         }
-        user.sendLocalizedMessage("header.area");
+        user.sendLocalizedMessage("module.area.header");
         
         if (arg.isDefined("help")) {
             sendHelp(user, commandLabel, true);
@@ -57,7 +57,7 @@ public class AreaCommand extends DualSyntaxCommand {
                 } else {
                     AreaManager.getInstance().setOverrideOn(user, true);
                     user.setVariable("goldenapple.area.alwaysOverride", true);
-                    user.sendLocalizedMessage("general.area.override.on");
+                    user.sendLocalizedMessage("module.area.override.on");
                 }
             } else if (overrideMode.equalsIgnoreCase("on")) {
                 if (!AreaManager.canOverride(user)) {
@@ -65,7 +65,7 @@ public class AreaCommand extends DualSyntaxCommand {
                 } else {
                     AreaManager.getInstance().setOverrideOn(user, true);
                     user.deleteVariable("goldenapple.area.alwaysOverride");
-                    user.sendLocalizedMessage("general.area.override.on");
+                    user.sendLocalizedMessage("module.area.override.on");
                 }
             } else if (overrideMode.equalsIgnoreCase("off")) {
                 if (!AreaManager.canOverride(user)) {
@@ -73,7 +73,7 @@ public class AreaCommand extends DualSyntaxCommand {
                 } else {
                     AreaManager.getInstance().setOverrideOn(user, false);
                     user.deleteVariable("goldenapple.area.alwaysOverride");
-                    user.sendLocalizedMessage("general.area.override.off");
+                    user.sendLocalizedMessage("module.area.override.off");
                 }
             }
             
@@ -132,7 +132,7 @@ public class AreaCommand extends DualSyntaxCommand {
             return;
         }
         
-        user.sendLocalizedMessage("header.area");
+        user.sendLocalizedMessage("module.area.header");
         
         switch (args[0].toLowerCase()) {
             case "create":
@@ -182,7 +182,7 @@ public class AreaCommand extends DualSyntaxCommand {
             // TODO Create more cases for each action
             
             default:
-                user.sendLocalizedMessage("shared.unknownOption", args[0]);
+                user.sendLocalizedMessage("shared.parser.unknownOption", args[0]);
                 
         }
     }
@@ -192,7 +192,7 @@ public class AreaCommand extends DualSyntaxCommand {
         // Make sure the user is a player. Required for technical reasons. (i.e.
         // console can't select a region in the world.)
         if (!(user.getHandle() instanceof Player)) {
-            user.sendLocalizedMessage("shared.noConsole");
+            user.sendLocalizedMessage("shared.consoleNotAllowed");
             return false;
         }
         
@@ -208,7 +208,7 @@ public class AreaCommand extends DualSyntaxCommand {
         if (args.length > 1) {
             owner.add(PermissionManager.getInstance().findUser(args[1], true));
             if (owner.get(0) == null) {
-                user.sendLocalizedMessage("shared.userNotFoundError", args[1]);
+                user.sendLocalizedMessage("shared.parser.userNotFound.error", args[1]);
                 return false;
             }
         } else {
@@ -221,7 +221,7 @@ public class AreaCommand extends DualSyntaxCommand {
             c1 = SelectManager.getInstance().getSelectionMinimum(user);
             c2 = SelectManager.getInstance().getSelectionMaximum(user);
         } else {
-            user.sendLocalizedMessage("error.area.noSelection");
+            user.sendLocalizedMessage("module.area.error.noSelection");
             return false;
         }
         
@@ -280,7 +280,7 @@ public class AreaCommand extends DualSyntaxCommand {
                     
                     // List-all-areas-at-current-location mode
                     if (!(user.getHandle() instanceof Player)) {
-                        user.sendLocalizedMessage("shared.noConsole");
+                        user.sendLocalizedMessage("shared.consoleNotAllowed");
                         return false;
                     }
                     if (!user.hasPermission(AreaManager.listLocationPermission)) {
@@ -317,7 +317,7 @@ public class AreaCommand extends DualSyntaxCommand {
                         // Get the owner
                         o = PermissionManager.getInstance().findUser(args[2], true);
                         if (o == null) {
-                            user.sendLocalizedMessage("shared.userNotFoundError", args[2]);
+                            user.sendLocalizedMessage("shared.parser.userNotFound.error", args[2]);
                             return false;
                         }
                     }
@@ -331,7 +331,7 @@ public class AreaCommand extends DualSyntaxCommand {
                         if (page < 1)
                             page = 1;
                     } catch (NumberFormatException e) {
-                        user.sendLocalizedMessage("shared.unknownOption", args[1]);
+                        user.sendLocalizedMessage("shared.parser.unknownOption", args[1]);
                         return false;
                     }
                     break;
@@ -348,7 +348,7 @@ public class AreaCommand extends DualSyntaxCommand {
                     if (page < 1)
                         page = 1;
                 } catch (NumberFormatException e) {
-                    user.sendLocalizedMessage("shared.notANumber", args[owner ? 3 : 2]);
+                    user.sendLocalizedMessage("shared.convertError.number", args[owner ? 3 : 2]);
                     return false;
                 }
             } else {
@@ -365,7 +365,7 @@ public class AreaCommand extends DualSyntaxCommand {
                 mine = true;
                 o = user;
             } else {
-                user.sendLocalizedMessage("shared.noConsole");
+                user.sendLocalizedMessage("shared.consoleNotAllowed");
                 return false;
             }
         }
@@ -391,10 +391,10 @@ public class AreaCommand extends DualSyntaxCommand {
         
         // Verify argument length
         if (args.length < 2) {
-            user.sendLocalizedMessage("shared.parameterMissing", args[0]);
+            user.sendLocalizedMessage("shared.parser.parameterMissing", args[0]);
             return false;
         } else if (args.length > 2) {
-            user.sendLocalizedMessage("shared.unknownOption", args[2]);
+            user.sendLocalizedMessage("shared.parser.unknownOption", args[2]);
             return false;
         }
         
@@ -402,16 +402,16 @@ public class AreaCommand extends DualSyntaxCommand {
         switch (args[1].toLowerCase()) {
             case "on": // Turn overide on
                 AreaManager.getInstance().setOverrideOn(user, true);
-                user.sendLocalizedMessage("general.area.override.on");
+                user.sendLocalizedMessage("module.area.override.on");
                 break;
             
             case "off": // Turn override off
                 AreaManager.getInstance().setOverrideOn(user, false);
-                user.sendLocalizedMessage("general.area.override.off");
+                user.sendLocalizedMessage("module.area.override.off");
                 break;
             
             default: // Unknown option
-                user.sendLocalizedMessage("shared.unknownOption", args[1]);
+                user.sendLocalizedMessage("shared.parser.unknownOption", args[1]);
                 return false;
         }
         return true;
@@ -427,7 +427,7 @@ public class AreaCommand extends DualSyntaxCommand {
         
         // Verify number of arguments
         if (args.length < 2) {
-            user.sendLocalizedMessage("shared.parameterMissing", args[0]);
+            user.sendLocalizedMessage("shared.parser.parameterMissing", args[0]);
             return false;
         }
         
@@ -449,7 +449,7 @@ public class AreaCommand extends DualSyntaxCommand {
         // Get the user
         IPermissionUser u = PermissionManager.getInstance().findUser(args[1], true);
         if (u == null) {
-            user.sendLocalizedMessage("shared.userNotFoundError", args[1]);
+            user.sendLocalizedMessage("shared.parser.userNotFound.error", args[1]);
             return false;
         }
         
@@ -467,7 +467,7 @@ public class AreaCommand extends DualSyntaxCommand {
         
         // Verify number of arguments
         if (args.length < 2) {
-            user.sendLocalizedMessage("shared.parameterMissing", args[0]);
+            user.sendLocalizedMessage("shared.parser.parameterMissing", args[0]);
             return false;
         }
         
@@ -489,7 +489,7 @@ public class AreaCommand extends DualSyntaxCommand {
         // Get the user
         IPermissionUser u = PermissionManager.getInstance().findUser(args[1], true);
         if (u == null) {
-            user.sendLocalizedMessage("shared.userNotFoundError", args[1]);
+            user.sendLocalizedMessage("shared.parser.userNotFound.error", args[1]);
             return false;
         }
         
@@ -506,7 +506,7 @@ public class AreaCommand extends DualSyntaxCommand {
             
             // If there are no groups, stop the user
             if (count == 0) {
-                user.sendLocalizedMessage("error.area.edit.owner.removeSelf");
+                user.sendLocalizedMessage("module.area.owner.removeSelfFail");
                 return false;
             }
         }
@@ -525,7 +525,7 @@ public class AreaCommand extends DualSyntaxCommand {
         
         // Verify number of arguments
         if (args.length < 2) {
-            user.sendLocalizedMessage("shared.parameterMissing", args[0]);
+            user.sendLocalizedMessage("shared.parser.parameterMissing", args[0]);
             return false;
         }
         
@@ -547,7 +547,7 @@ public class AreaCommand extends DualSyntaxCommand {
         // Get the user
         IPermissionGroup g = PermissionManager.getInstance().getGroup(args[1]);
         if (g == null) {
-            user.sendLocalizedMessage("shared.groupNotFoundError", args[1]);
+            user.sendLocalizedMessage("shared.parser.groupNotFound.error", args[1]);
             return false;
         }
         
@@ -565,7 +565,7 @@ public class AreaCommand extends DualSyntaxCommand {
         
         // Verify number of arguments
         if (args.length < 2) {
-            user.sendLocalizedMessage("shared.parameterMissing", args[0]);
+            user.sendLocalizedMessage("shared.parser.parameterMissing", args[0]);
             return false;
         }
         
@@ -587,7 +587,7 @@ public class AreaCommand extends DualSyntaxCommand {
         // Get the user
         IPermissionGroup g = PermissionManager.getInstance().getGroup(args[1]);
         if (g == null) {
-            user.sendLocalizedMessage("shared.groupNotFoundError", args[1]);
+            user.sendLocalizedMessage("shared.parser.groupNotFound.error", args[1]);
             return false;
         }
         
@@ -604,7 +604,7 @@ public class AreaCommand extends DualSyntaxCommand {
             
             // If this is the only group, stop the user
             if (count == 1) {
-                user.sendLocalizedMessage("error.area.edit.owner.removeSelf");
+                user.sendLocalizedMessage("module.area.owner.removeSelfFail");
                 return false;
             }
         }
@@ -623,7 +623,7 @@ public class AreaCommand extends DualSyntaxCommand {
         
         // Verify number of arguments
         if (args.length < 2) {
-            user.sendLocalizedMessage("shared.parameterMissing", args[0]);
+            user.sendLocalizedMessage("shared.parser.parameterMissing", args[0]);
             return false;
         }
         
@@ -645,7 +645,7 @@ public class AreaCommand extends DualSyntaxCommand {
         // Get the user
         IPermissionUser u = PermissionManager.getInstance().findUser(args[1], true);
         if (u == null) {
-            user.sendLocalizedMessage("shared.userNotFoundError", args[1]);
+            user.sendLocalizedMessage("shared.parser.userNotFound.error", args[1]);
             return false;
         }
         
@@ -663,7 +663,7 @@ public class AreaCommand extends DualSyntaxCommand {
         
         // Verify number of arguments
         if (args.length < 2) {
-            user.sendLocalizedMessage("shared.parameterMissing", args[0]);
+            user.sendLocalizedMessage("shared.parser.parameterMissing", args[0]);
             return false;
         }
         
@@ -685,7 +685,7 @@ public class AreaCommand extends DualSyntaxCommand {
         // Get the user
         IPermissionUser u = PermissionManager.getInstance().findUser(args[1], true);
         if (u == null) {
-            user.sendLocalizedMessage("shared.userNotFoundError", args[1]);
+            user.sendLocalizedMessage("shared.parser.userNotFound.error", args[1]);
             return false;
         }
         
@@ -703,7 +703,7 @@ public class AreaCommand extends DualSyntaxCommand {
         
         // Verify number of arguments
         if (args.length < 2) {
-            user.sendLocalizedMessage("shared.parameterMissing", args[0]);
+            user.sendLocalizedMessage("shared.parser.parameterMissing", args[0]);
             return false;
         }
         
@@ -725,7 +725,7 @@ public class AreaCommand extends DualSyntaxCommand {
         // Get the user
         IPermissionGroup g = PermissionManager.getInstance().getGroup(args[1]);
         if (g == null) {
-            user.sendLocalizedMessage("shared.groupNotFoundError", args[1]);
+            user.sendLocalizedMessage("shared.parser.groupNotFound.error", args[1]);
             return false;
         }
         
@@ -743,7 +743,7 @@ public class AreaCommand extends DualSyntaxCommand {
         
         // Verify number of arguments
         if (args.length < 2) {
-            user.sendLocalizedMessage("shared.parameterMissing", args[0]);
+            user.sendLocalizedMessage("shared.parser.parameterMissing", args[0]);
             return false;
         }
         
@@ -765,7 +765,7 @@ public class AreaCommand extends DualSyntaxCommand {
         // Get the user
         IPermissionGroup g = PermissionManager.getInstance().getGroup(args[1]);
         if (g == null) {
-            user.sendLocalizedMessage("shared.groupNotFoundError", args[1]);
+            user.sendLocalizedMessage("shared.parser.groupNotFound.error", args[1]);
             return false;
         }
         
@@ -800,7 +800,7 @@ public class AreaCommand extends DualSyntaxCommand {
             
             // Make sure user isn't a console
             if (!(user.getHandle() instanceof Player)) {
-                user.sendLocalizedMessage("shared.noConsole");
+                user.sendLocalizedMessage("shared.consoleNotAllowed");
                 return false;
             }
             
@@ -826,7 +826,7 @@ public class AreaCommand extends DualSyntaxCommand {
         // Make sure the user is a player. Required for technical reasons. (i.e.
         // console can't select a region in the world.)
         if (!(user.getHandle() instanceof Player)) {
-            user.sendLocalizedMessage("shared.noConsole");
+            user.sendLocalizedMessage("shared.consoleNotAllowed");
             return false;
         }
         
@@ -850,14 +850,14 @@ public class AreaCommand extends DualSyntaxCommand {
             c1 = SelectManager.getInstance().getSelectionMinimum(user);
             c2 = SelectManager.getInstance().getSelectionMaximum(user);
         } else {
-            user.sendLocalizedMessage("error.area.noSelection");
+            user.sendLocalizedMessage("module.area.error.noSelection");
             return false;
         }
         
         // Validate shape type or set to default value
         if (shape == null) {
             if (arg.isDefined("shape")) {
-                user.sendLocalizedMessage("error.area.invalidShape", arg.getString("shape"));
+                user.sendLocalizedMessage("module.area.error.invalidShape", arg.getString("shape"));
                 return false;
             } else {
                 shape = RegionShape.CUBOID; // Default value
@@ -928,7 +928,7 @@ public class AreaCommand extends DualSyntaxCommand {
             all = true;
         } else if (arg.isDefined("location")) {
             if (!(user.getHandle() instanceof Player)) {
-                user.sendLocalizedMessage("shared.noConsole");
+                user.sendLocalizedMessage("shared.consoleNotAllowed");
                 return false;
             }
             if (!user.hasPermission(AreaManager.listLocationPermission)) {
@@ -1014,13 +1014,13 @@ public class AreaCommand extends DualSyntaxCommand {
                     break;
                     
                 default:
-                    user.sendLocalizedMessage("shared.unknownOption", entry.getKey());
+                    user.sendLocalizedMessage("shared.parser.unknownOption", entry.getKey());
             }
         }
         
         // check if no changes were made
         if (count == 0) {
-            user.sendLocalizedMessage("general.area.edit.owner.unmodified", area.getAreaId() + "");
+            user.sendLocalizedMessage("module.area.owner.unmodified", area.getAreaId());
         }
         
         return true;
@@ -1059,13 +1059,13 @@ public class AreaCommand extends DualSyntaxCommand {
                     break;
                     
                 default:
-                    user.sendLocalizedMessage("shared.unknownOption", entry.getKey());
+                    user.sendLocalizedMessage("shared.parser.unknownOption", entry.getKey());
             }
         }
 
         // Check if no changes were made
         if (count == 0) {
-            user.sendLocalizedMessage("general.area.edit.groupOwner.unmodified", area.getAreaId() + "");
+            user.sendLocalizedMessage("module.area.groupOwner.unmodified", area.getAreaId());
         }
         
         return true;
@@ -1104,13 +1104,13 @@ public class AreaCommand extends DualSyntaxCommand {
                     break;
                     
                 default:
-                    user.sendLocalizedMessage("shared.unknownOption", entry.getKey());
+                    user.sendLocalizedMessage("shared.parser.unknownOption", entry.getKey());
             }
         }
         
         // Check if no changes were made
         if (count == 0) {
-            user.sendLocalizedMessage("general.area.edit.guest.unmodified", area.getAreaId() + "");
+            user.sendLocalizedMessage("module.area.guest.unmodified", area.getAreaId());
         }
         
         return true;
@@ -1149,13 +1149,13 @@ public class AreaCommand extends DualSyntaxCommand {
                     break;
                     
                 default:
-                    user.sendLocalizedMessage("shared.unknownOption", entry.getKey());
+                    user.sendLocalizedMessage("shared.parser.unknownOption", entry.getKey());
             }
         }
         
         // Check if no changes were made
         if (count == 0) {
-            user.sendLocalizedMessage("general.area.edit.groupGuest.unmodified", area.getAreaId() + "");
+            user.sendLocalizedMessage("module.area.groupGuest.unmodified", area.getAreaId());
         }
         
         return true;
@@ -1189,7 +1189,7 @@ public class AreaCommand extends DualSyntaxCommand {
                         addAreaFlag(user, area, f);
                         count++;
                     } else {
-                        user.sendLocalizedMessage("error.area.edit.flag.unknown", (String) entry.getValue());
+                        user.sendLocalizedMessage("module.area.flag.unknown", (String) entry.getValue());
                     }
                     break;
                     
@@ -1201,17 +1201,17 @@ public class AreaCommand extends DualSyntaxCommand {
                         removeAreaFlag(user, area, f);
                         count++;
                     } else {
-                        user.sendLocalizedMessage("error.area.edit.flag.unknown", (String) entry.getValue());
+                        user.sendLocalizedMessage("module.area.flag.unknown", (String) entry.getValue());
                     }
                     break;
                     
                 default:
-                    user.sendLocalizedMessage("shared.unknownOption", entry.getKey());
+                    user.sendLocalizedMessage("shared.parser.unknownOption", entry.getKey());
             }
         }
         
         if (count == 0) {
-            user.sendLocalizedMessage("general.area.edit.flag.unmodified", area.getAreaId()+"");
+            user.sendLocalizedMessage("module.area.flag.unmodified", area.getAreaId()+"");
         }
         
         return true;
@@ -1276,7 +1276,7 @@ public class AreaCommand extends DualSyntaxCommand {
             return findArea(user, own);
         } else {
             if (user != null) {
-                user.sendLocalizedMessage("error.area.select.missing");
+                user.sendLocalizedMessage("module.area.error.selectMissing");
             }
             return null;
         }
@@ -1296,7 +1296,7 @@ public class AreaCommand extends DualSyntaxCommand {
                         break;
                         
                     default:
-                        user.sendLocalizedMessage("shared.unknownOption", entry.getKey());
+                        user.sendLocalizedMessage("shared.parser.unknownOption", entry.getKey());
                 }
             }
         }
@@ -1363,14 +1363,14 @@ public class AreaCommand extends DualSyntaxCommand {
             // If query is a number, search for by ID
             area = AreaManager.getInstance().getArea(Long.parseLong(query));
             if (area == null) {
-                user.sendLocalizedMessage("error.area.select.id", query);
+                user.sendLocalizedMessage("module.area.error.selectId", query);
             }
         } catch (NumberFormatException e) {
             
             // If query is not a number, search by label
             area = AreaManager.getInstance().getArea(query);
             if (area == null) {
-                user.sendLocalizedMessage("error.area.select.label", query);
+                user.sendLocalizedMessage("module.area.error.selectLabel", query);
             }
         }
         
@@ -1388,7 +1388,7 @@ public class AreaCommand extends DualSyntaxCommand {
         } else if (user.getHandle() instanceof CommandMinecart) {
             location = ((CommandMinecart) user.getHandle()).getLocation();
         } else {
-            user.sendLocalizedMessage("shared.noConsole");
+            user.sendLocalizedMessage("shared.consoleNotAllowed");
             return null;
         }
         
@@ -1396,7 +1396,7 @@ public class AreaCommand extends DualSyntaxCommand {
         List<Area> areas = AreaManager.getInstance().getAreas(location);
         
         if (areas.isEmpty()) {
-            user.sendLocalizedMessage("error.area.select.location");
+            user.sendLocalizedMessage("module.area.error.selectLocation");
             return null; // No areas at current location
         }
         if (own) {
@@ -1405,7 +1405,7 @@ public class AreaCommand extends DualSyntaxCommand {
                     return area;
                 }
             }
-            user.sendLocalizedMessage("error.area.noOwn");
+            user.sendLocalizedMessage("module.area.error.noOwn");
             return null;
         } else {
             return areas.get(0);
@@ -1428,7 +1428,7 @@ public class AreaCommand extends DualSyntaxCommand {
         
         // Make sure user has adequate permissions again
         if (!user.hasPermission(global) && (!user.hasPermission(own) || area.getUserAccessLevel(user.getId()).getComparableValue() < AreaAccessLevel.OWNER.getComparableValue())) {
-            user.sendLocalizedMessage("error.area.select.noOwn");
+            user.sendLocalizedMessage("module.area.error.selectOwn");
             return null;
         }
         
@@ -1453,7 +1453,7 @@ public class AreaCommand extends DualSyntaxCommand {
         
         // Make sure user has adequate permissions again
         if (!user.hasPermission(global) && (!user.hasPermission(own) || area.getUserAccessLevel(user.getId()).getComparableValue() < AreaAccessLevel.OWNER.getComparableValue())) {
-            user.sendLocalizedMessage("error.area.select.noOwn");
+            user.sendLocalizedMessage("module.area.error.selectOwn");
             return null;
         }
         
@@ -1466,7 +1466,7 @@ public class AreaCommand extends DualSyntaxCommand {
         
         // Generate list of owners for user feedback
         if (owners.size() == 0) {
-            ownerList = GoldenApple.getInstance().getLocalizationManager().getMessage(user, "shared.none");
+            ownerList = user.getLocalizedMessage("shared.values.none");
         } else {
             ownerList = "";
             for (IPermissionUser o : owners) {
@@ -1480,15 +1480,16 @@ public class AreaCommand extends DualSyntaxCommand {
         try {
             area = AreaManager.getInstance().createArea(owners, label, priority, shape, c1, c2, ignoreY);
             if (area == null) {
-                user.sendLocalizedMessage("error.area.create");
+                user.sendLocalizedMessage("module.area.create.fail");
                 return null;
             }
-            user.sendLocalizedMultilineMessage("general.area.create", area.getAreaId() + "", (label == null ? "[No label]" : label), priority + "", ownerList);
+            // TODO Localize string here
+            user.sendLocalizedMessage("module.area.create.success", area.getAreaId(), (label == null ? "[No label]" : label), priority, ownerList);
             return area;
         } catch (Exception e) {
             
             // An error has occurred. Notify the user and log the error.
-            user.sendLocalizedMessage("error.area.create");
+            user.sendLocalizedMessage("module.area.create.fail");
             GoldenApple.log(Level.SEVERE, "An error occured while attempting to create a new area.");
             GoldenApple.log(Level.SEVERE, "Please send the following information to the GoldenApple developers:");
             GoldenApple.log(Level.SEVERE, "User:" + user.getName() + " ID:" + user.getId() + ")");
@@ -1502,12 +1503,12 @@ public class AreaCommand extends DualSyntaxCommand {
         try {
             // Attempt to delete the area
             AreaManager.getInstance().deleteArea(areaId);
-            user.sendLocalizedMessage("general.area.delete", areaId + "");
+            user.sendLocalizedMessage("module.area.delete.success", areaId);
             return true;
         } catch (SQLException e) {
             
             // An error has occurred. Notify the user and log the error.
-            user.sendLocalizedMessage("error.area.delete");
+            user.sendLocalizedMessage("module.area.delete.fail");
             GoldenApple.log(Level.SEVERE, "An error occured while attempting to delete area " + areaId);
             GoldenApple.log(Level.SEVERE, e);
             return false;
@@ -1517,10 +1518,10 @@ public class AreaCommand extends DualSyntaxCommand {
     private boolean addAreaOwner(User user, IPermissionUser u, Area area) {
         if (area.getUserAccessLevel(u.getId()).getComparableValue() < AreaAccessLevel.OWNER.getComparableValue()) {
             area.setUserAccessLevel(u.getId(), AreaAccessLevel.OWNER);
-            user.sendLocalizedMessage("general.area.edit.owner.add", area.getAreaId() + "", u.getName());
+            user.sendLocalizedMessage("module.area.owner.add", area.getAreaId(), u.getName());
             return true;
         } else {
-            user.sendLocalizedMessage("error.area.edit.owner.add", area.getAreaId() + "", u.getName(), area.getUserAccessLevel(u.getId()).toString());
+            user.sendLocalizedMessage("module.area.owner.addFail", area.getAreaId(), u.getName(), area.getUserAccessLevel(u.getId()).toString());
             return false;
         }
     }
@@ -1528,10 +1529,10 @@ public class AreaCommand extends DualSyntaxCommand {
     private boolean removeAreaOwner(User user, IPermissionUser u, Area area) {
         if (area.getUserAccessLevel(u.getId()) == AreaAccessLevel.OWNER) {
             area.setUserAccessLevel(u.getId(), AreaAccessLevel.NONE);
-            user.sendLocalizedMessage("general.area.edit.owner.remove", area.getAreaId() + "", u.getName());
+            user.sendLocalizedMessage("module.area.owner.remove", area.getAreaId(), u.getName());
             return true;
         } else {
-            user.sendLocalizedMessage("error.area.edit.owner.remove", area.getAreaId() + "", u.getName());
+            user.sendLocalizedMessage("module.area.owner.removeFail", area.getAreaId(), u.getName());
             return false;
         }
     }
@@ -1539,10 +1540,10 @@ public class AreaCommand extends DualSyntaxCommand {
     private boolean addAreaGroupOwner(User user, IPermissionGroup g, Area area) {
         if (area.getGroupAccessLevel(g.getId()).getComparableValue() < AreaAccessLevel.OWNER.getComparableValue()) {
             area.setGroupAccessLevel(g.getId(), AreaAccessLevel.OWNER);
-            user.sendLocalizedMessage("general.area.edit.groupOwner.add", area.getAreaId() + "", g.getName());
+            user.sendLocalizedMessage("module.area.groupOwner.add", area.getAreaId(), g.getName());
             return true;
         } else {
-            user.sendLocalizedMessage("error.area.edit.groupOwner.add", area.getAreaId() + "", g.getName(), area.getGroupAccessLevel(g.getId()).toString());
+            user.sendLocalizedMessage("module.area.groupOwner.addFail", area.getAreaId(), g.getName(), area.getGroupAccessLevel(g.getId()).toString());
             return false;
         }
     }
@@ -1550,10 +1551,10 @@ public class AreaCommand extends DualSyntaxCommand {
     private boolean removeAreaGroupOwner(User user, IPermissionGroup g, Area area) {
         if (area.getGroupAccessLevel(g.getId()) == AreaAccessLevel.OWNER) {
             area.setGroupAccessLevel(g.getId(), AreaAccessLevel.NONE);
-            user.sendLocalizedMessage("general.area.edit.groupOwner.remove", area.getAreaId() + "", g.getName());
+            user.sendLocalizedMessage("module.area.groupOwner.remove", area.getAreaId(), g.getName());
             return true;
         } else {
-            user.sendLocalizedMessage("error.area.edit.groupOwner.remove", area.getAreaId() + "", g.getName());
+            user.sendLocalizedMessage("module.area.groupOwner.removeFail", area.getAreaId(), g.getName());
             return false;
         }
     }
@@ -1561,10 +1562,10 @@ public class AreaCommand extends DualSyntaxCommand {
     private boolean addAreaGuest(User user, IPermissionUser u, Area area) {
         if (area.getUserAccessLevel(u.getId()).getComparableValue() < AreaAccessLevel.GUEST.getComparableValue()) {
             area.setUserAccessLevel(u.getId(), AreaAccessLevel.GUEST);
-            user.sendLocalizedMessage("general.area.edit.guest.add", area.getAreaId() + "", u.getName());
+            user.sendLocalizedMessage("module.area.guest.add", area.getAreaId(), u.getName());
             return true;
         } else {
-            user.sendLocalizedMessage("error.area.edit.guest.add", area.getAreaId() + "", u.getName(), area.getUserAccessLevel(u.getId()).toString());
+            user.sendLocalizedMessage("module.area.guest.addFail", area.getAreaId(), u.getName(), area.getUserAccessLevel(u.getId()).toString());
             return false;
         }
     }
@@ -1572,10 +1573,10 @@ public class AreaCommand extends DualSyntaxCommand {
     private boolean removeAreaGuest(User user, IPermissionUser u, Area area) {
         if (area.getUserAccessLevel(u.getId()) == AreaAccessLevel.GUEST) {
             area.setUserAccessLevel(u.getId(), AreaAccessLevel.NONE);
-            user.sendLocalizedMessage("general.area.edit.guest.remove", area.getAreaId() + "", u.getName());
+            user.sendLocalizedMessage("module.area.guest.remove", area.getAreaId(), u.getName());
             return true;
         } else {
-            user.sendLocalizedMessage("error.area.edit.guest.remove", area.getAreaId() + "", u.getName());
+            user.sendLocalizedMessage("module.area.guest.removeFail", area.getAreaId(), u.getName());
             return false;
         }
     }
@@ -1583,10 +1584,10 @@ public class AreaCommand extends DualSyntaxCommand {
     private boolean addAreaGroupGuest(User user, IPermissionGroup g, Area area) {
         if (area.getGroupAccessLevel(g.getId()).getComparableValue() < AreaAccessLevel.GUEST.getComparableValue()) {
             area.setGroupAccessLevel(g.getId(), AreaAccessLevel.GUEST);
-            user.sendLocalizedMessage("general.area.edit.groupGuest.add", area.getAreaId() + "", g.getName());
+            user.sendLocalizedMessage("module.area.groupGuest.add", area.getAreaId(), g.getName());
             return true;
         } else {
-            user.sendLocalizedMessage("error.area.edit.groupGuest.add", area.getAreaId() + "", g.getName(), area.getGroupAccessLevel(g.getId()).toString());
+            user.sendLocalizedMessage("module.area.groupGuest.addFail", area.getAreaId(), g.getName(), area.getGroupAccessLevel(g.getId()).toString());
             return false;
         }
     }
@@ -1594,36 +1595,36 @@ public class AreaCommand extends DualSyntaxCommand {
     private boolean removeAreaGroupGuest(User user, IPermissionGroup g, Area area) {
         if (area.getGroupAccessLevel(g.getId()) == AreaAccessLevel.GUEST) {
             area.setGroupAccessLevel(g.getId(), AreaAccessLevel.NONE);
-            user.sendLocalizedMessage("general.area.edit.groupGuest.remove", area.getAreaId() + "", g.getName());
+            user.sendLocalizedMessage("module.area.groupGuest.remove", area.getAreaId(), g.getName());
             return true;
         } else {
-            user.sendLocalizedMessage("error.area.edit.groupGuest.remove", area.getAreaId() + "", g.getName());
+            user.sendLocalizedMessage("module.area.groupGuest.removeFail", area.getAreaId(), g.getName());
             return false;
         }
     }
     
     private boolean setAreaLabel(User user, Area area, String label) {
         area.setLabel(label);
-        user.sendLocalizedMessage("general.area.edit.label", area.getAreaId() + "", (label == null ? "NO LABEL" : label));
+        user.sendLocalizedMessage("module.area.label", area.getAreaId(), (label == null ? "NO LABEL" : label)); // TODO Localize string here
         return true;
     }
     
     private boolean setAreaPriority(User user, Area area, int priority) {
         area.setPriority(priority);
-        user.sendLocalizedMessage("general.area.edit.priority", area.getAreaId() + "", priority + "");
+        user.sendLocalizedMessage("module.area.priority", area.getAreaId(), priority);
         return true;
     }
     
     private boolean addAreaFlag(User user, Area area, AreaFlag flag) {
         area.setFlag(flag, true);
-        user.sendLocalizedMessage("general.area.edit.flag.add", area.getAreaId() + "", flag.toString());
+        user.sendLocalizedMessage("module.area.flag.add", area.getAreaId(), flag.toString());
         
         return true;
     }
     
     private boolean removeAreaFlag(User user, Area area, AreaFlag flag) {
         area.setFlag(flag, false);
-        user.sendLocalizedMessage("general.area.edit.flag.remove", area.getAreaId() + "", flag.toString());
+        user.sendLocalizedMessage("module.area.flag.remove", area.getAreaId(), flag.toString());
         
         return true;
     }
@@ -1646,12 +1647,12 @@ public class AreaCommand extends DualSyntaxCommand {
         
         // Check if no areas are there
         if (areas.isEmpty()) {
-            user.sendLocalizedMessage("error.area.list.none");
+            user.sendLocalizedMessage("module.area.list.none");
             return;
         }
         
         // Print listing header
-        user.sendLocalizedMessage("general.area.list.header", page + "", (total + per - 1) / 6 + "");
+        user.sendLocalizedMessage("module.area.list.header", page, (total + per - 1) / 6);
         
         sendAreaList(user, areas);
     }
@@ -1676,12 +1677,12 @@ public class AreaCommand extends DualSyntaxCommand {
         
         // Check if no areas are there
         if (areas.isEmpty()) {
-            user.sendLocalizedMessage("error.area.list.noneLocation");
+            user.sendLocalizedMessage("module.area.list.noneLocation");
             return;
         }
         
         // Print listing header
-        user.sendLocalizedMessage("general.area.list.headerLocation", page + "", (total + per - 1) / 6 + "");
+        user.sendLocalizedMessage("module.area.list.headerLocation", page, (total + per - 1) / 6);
         
         sendAreaList(user, areas);
     }
@@ -1708,18 +1709,18 @@ public class AreaCommand extends DualSyntaxCommand {
         // Check if no areas are there
         if (areas.isEmpty()) {
             if (same) {
-                user.sendLocalizedMessage("error.area.list.noneOwn");
+                user.sendLocalizedMessage("module.area.list.noneOwn");
             } else {
-                user.sendLocalizedMessage("error.area.list.noneUser", owner.getName());
+                user.sendLocalizedMessage("module.area.list.noneUser", owner.getName());
             }
             return;
         }
         
         // Print listing header
         if (same) {
-            user.sendLocalizedMessage("general.area.list.headerOwn", page + "", (total + per - 1) / per + "");
+            user.sendLocalizedMessage("module.area.list.headerOwn", page, (total + per - 1) / per);
         } else {
-            user.sendLocalizedMessage("general.area.list.headerUser", page + "", (total + per - 1) / per + "", owner.getName());
+            user.sendLocalizedMessage("module.area.list.headerUser", page, (total + per - 1) / per, owner.getName());
         }
         
         sendAreaList(user, areas);
@@ -1728,7 +1729,7 @@ public class AreaCommand extends DualSyntaxCommand {
     
     private void sendAreaList(User user, List<Area> areas) {
         for (Area area : areas) {
-            user.sendLocalizedMessage("general.area.list.item", area.getAreaId() + "", (area.getLabel() == null || area.getLabel().isEmpty()) ? "[No label]" : area.getLabel(), area.getPriority() + "");
+            user.sendLocalizedMessage("module.area.list.item", area.getAreaId(), (area.getLabel() == null || area.getLabel().isEmpty()) ? "[No label]" : area.getLabel(), area.getPriority());
         }
     }
     
@@ -1745,7 +1746,7 @@ public class AreaCommand extends DualSyntaxCommand {
         // Generate flag list
         List<AreaFlag> flaglist = area.getFlags();
         if (flaglist.isEmpty()) {
-            flags = GoldenApple.getInstance().getLocalizationManager().getMessage(user, "shared.none");
+            flags = user.getLocalizedMessage("shared.values.none");
         } else {
             flags = "";
             for (AreaFlag f : flaglist) {
@@ -1758,7 +1759,7 @@ public class AreaCommand extends DualSyntaxCommand {
         // Generate owner list
         List<IPermissionUser> users = area.getUsers(AreaAccessLevel.OWNER);
         if (users.isEmpty()) {
-            owners = GoldenApple.getInstance().getLocalizationManager().getMessage(user, "shared.none");
+            owners = user.getLocalizedMessage("shared.values.none");
         } else {
             owners = "";
             for (IPermissionUser u : users) {
@@ -1771,7 +1772,7 @@ public class AreaCommand extends DualSyntaxCommand {
         // Generate guest list
         users = area.getUsers(AreaAccessLevel.GUEST);
         if (users.isEmpty()) {
-            guests = GoldenApple.getInstance().getLocalizationManager().getMessage(user, "shared.none");
+            guests = user.getLocalizedMessage("shared.values.none");
         } else {
             guests = "";
             for (IPermissionUser u : users) {
@@ -1784,7 +1785,7 @@ public class AreaCommand extends DualSyntaxCommand {
         // Generate group owner list
         List<IPermissionGroup> groups = area.getGroups(AreaAccessLevel.OWNER);
         if (groups.isEmpty()) {
-            gowners = GoldenApple.getInstance().getLocalizationManager().getMessage(user, "shared.none");
+            gowners = user.getLocalizedMessage("shared.values.none");
         } else {
             gowners = "";
             for (IPermissionGroup g : groups) {
@@ -1797,7 +1798,7 @@ public class AreaCommand extends DualSyntaxCommand {
         // Generate group guest list
         groups = area.getGroups(AreaAccessLevel.GUEST);
         if (groups.isEmpty()) {
-            gguests = GoldenApple.getInstance().getLocalizationManager().getMessage(user, "shared.none");
+            gguests = user.getLocalizedMessage("shared.values.none");
         } else {
             gguests = "";
             for (IPermissionGroup g : groups) {
@@ -1810,15 +1811,16 @@ public class AreaCommand extends DualSyntaxCommand {
         if (area.getRegionIds().size() > 0) {
             world = AreaManager.getInstance().getRegion(area.getRegionIds().get(0)).getWorld().getName();
         } else {
-            world = GoldenApple.getInstance().getLocalizationManager().getMessage(user, "shared.none");
+            world = user.getLocalizedMessage("shared.values.none");
         }
         
-        user.sendLocalizedMultilineMessage("general.area.info", area.getAreaId() + "", (area.getLabel() == null ? "[No label]" : area.getLabel()), area.getPriority() + "", flags, owners, guests, gowners, gguests, area.getRegionIds().size() + "", world);
+        // TODO Localize string here
+        user.sendLocalizedMessage("module.area.info", area.getAreaId(), (area.getLabel() == null ? "[No label]" : area.getLabel()), area.getPriority(), flags, owners, guests, gowners, gguests, area.getRegionIds().size(), world);
     }
     
     private void sendHelp(User user, String commandLabel, boolean complex) {
-        user.sendLocalizedMessage("header.help");
-        user.sendLocalizedMultilineMessage((complex) ? "help.area.complex" : "help.area.simple", commandLabel);
+        user.sendLocalizedMessage("module.area.header");
+        user.sendLocalizedMessage((complex) ? "module.area.help.complex" : "module.area.help.simple", commandLabel);
     }
     
     private ArgumentInfo[] getArguments() {

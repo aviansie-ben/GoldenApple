@@ -31,7 +31,7 @@ public abstract class GoldenApple extends JavaPlugin {
 			log(Level.WARNING, "Command performed at: (" + l.getX() + ", " + l.getY() + ", " + l.getZ() + ", " + l.getWorld().getName() + ")");
 		}
 		if (sendMessage) {
-			u.sendLocalizedMessage("shared.noPermission");
+			u.sendLocalizedMessage("shared.permissionFailure");
 		}
 	}
 

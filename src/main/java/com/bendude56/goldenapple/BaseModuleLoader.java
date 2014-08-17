@@ -32,7 +32,6 @@ public class BaseModuleLoader extends ModuleLoader {
 		commands.getCommand("gaverify").register();
 		commands.getCommand("gamodule").register();
 		commands.getCommand("gacomplex").register();
-		commands.getCommand("gaimport").register();
 		commands.getCommand("gadebug").register();
 	}
 	
@@ -56,7 +55,6 @@ public class BaseModuleLoader extends ModuleLoader {
 		commands.getCommand("gaverify").unregister();
 		commands.getCommand("gamodule").unregister();
 		commands.getCommand("gacomplex").unregister();
-		commands.getCommand("gaimport").unregister();
 		commands.getCommand("gadebug").unregister();
 	}
 	

@@ -18,9 +18,9 @@ public class AfkCommand extends GoldenAppleCommand {
         ChatManager.getInstance().setAfkStatus(user, !alreadyAfk, true);
         
         if (!alreadyAfk) {
-            user.sendLocalizedMessage("general.afk.on");
+            user.sendLocalizedMessage("module.chat.afk.success.on");
         } else {
-            user.sendLocalizedMessage("general.afk.off");
+            user.sendLocalizedMessage("module.chat.afk.success.off");
         }
         
         return true;

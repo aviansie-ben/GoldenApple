@@ -12,17 +12,17 @@ public class ComplexCommand extends GoldenAppleCommand {
 			if (args.length == 1 && args[0].equals("-v")) {
 			    if (user.getVariableBoolean("goldenapple.complexSyntax")) {
     				user.setVariable("goldenapple.complexSyntax", false);
-    				user.sendLocalizedMessage("general.complex.successOff");
+    				user.sendLocalizedMessage("module.base.complex.success.off");
 			    } else {
 			        user.setVariable("goldenapple.complexSyntax", true);
-                    user.sendLocalizedMessage("general.complex.successOn");
+                    user.sendLocalizedMessage("module.base.complex.success.on");
 			    }
 			} else {
-				user.sendLocalizedMessage((user.getVariableBoolean("goldenapple.complexSyntax")) ? "general.complex.warnOff" : "general.complex.warnOn");
+				user.sendLocalizedMessage((user.getVariableBoolean("goldenapple.complexSyntax")) ? "module.base.complex.warning.off" : "module.base.complex.warning.on");
 				VerifyCommand.commands.put(user, commandLabel + " -v");
 			}
 		} else {
-			user.sendLocalizedMessage("shared.noConsole");
+			user.sendLocalizedMessage("shared.consoleNotAllowed");
 		}
 		
 		return true;

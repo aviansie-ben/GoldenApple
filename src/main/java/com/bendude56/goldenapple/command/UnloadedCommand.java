@@ -14,9 +14,9 @@ public class UnloadedCommand implements CommandExecutor {
 		User user = User.getUser(sender);
 		
 		if (user.getHandle().isOp() || user.hasPermission(PermissionManager.moduleQueryPermission))
-			user.sendLocalizedMessage("shared.cmdUnload.specific", GoldenApple.getInstance().getCommandManager().getCommand(command.getName()).getModule());
+			user.sendLocalizedMessage("module.base.unloaded.specific", GoldenApple.getInstance().getCommandManager().getCommand(command.getName()).getModule());
 		else
-			user.sendLocalizedMessage("shared.cmdUnload.generic");
+			user.sendLocalizedMessage("module.base.unloaded.generic");
 		
 		return true;
 	}

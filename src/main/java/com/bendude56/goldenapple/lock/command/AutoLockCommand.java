@@ -12,13 +12,13 @@ public class AutoLockCommand extends GoldenAppleCommand {
 		if (user.getHandle() instanceof Player) {
 		    if (user.getVariableBoolean("goldenapple.lock.autoLock")) {
 		        user.setVariable("goldenapple.lock.autoLock", false);
-		        user.sendLocalizedMessage("general.lock.auto.off");
+		        user.sendLocalizedMessage("module.lock.autoLock.disabled");
 		    } else {
 		        user.setVariable("goldenapple.lock.autoLock", true);
-		        user.sendLocalizedMessage("general.lock.auto.on");;
+		        user.sendLocalizedMessage("module.lock.autoLock.enabled");
 		    }
 		} else {
-			user.sendLocalizedMessage("shared.noConsole");
+			user.sendLocalizedMessage("shared.consoleNotAllowed");
 		}
 		
 		return true;

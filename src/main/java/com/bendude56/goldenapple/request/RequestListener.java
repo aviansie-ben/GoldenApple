@@ -67,7 +67,7 @@ public class RequestListener implements Listener, EventExecutor {
 	        if (queue.canReceive(user) && queue.isReceiving(user)) {
 	            queue.addToOnlineReceivers(user);
 	            if (queue.getUnassignedRequests(false, false).size() > 0) {
-	                user.sendLocalizedMessage("general.request.notifyNewLogin", queue.getName());
+	                user.sendLocalizedMessage("module.request.notify.unassignedLogin", queue.getName());
 	            }
 	            
 	            if (queue.isAutoAssign(user)) {

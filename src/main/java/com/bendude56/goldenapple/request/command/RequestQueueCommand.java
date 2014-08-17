@@ -25,42 +25,42 @@ public class RequestQueueCommand extends GoldenAppleCommand {
             return true;
         }
         
-        user.sendLocalizedMessage("header.request");
+        user.sendLocalizedMessage("module.request.header");
         
         RequestQueue queue = RequestManager.getInstance().getRequestQueueByName(args[0]);
         
         if (args[0].equalsIgnoreCase("list")) {
             List<RequestQueue> queues = RequestManager.getInstance().getAllRequestQueues();
-            user.sendLocalizedMessage("general.requestqueue.list.head");
+            user.sendLocalizedMessage("module.request.editQueue.list.header");
             
             if (queues.size() > 0) {
                 for (RequestQueue rq : queues) {
-                    user.sendLocalizedMessage("general.requestqueue.list.entry", rq.getName());
+                    user.sendLocalizedMessage("module.request.editQueue.list.entry", rq.getName());
                 }
             } else {
-                user.sendLocalizedMessage("general.requestqueue.list.empty");
+                user.sendLocalizedMessage("module.request.editQueue.list.empty");
             }
         } else if (args.length > 1 && args[1].equalsIgnoreCase("create")) {
             if (queue != null) {
-                user.sendLocalizedMessage("error.requestqueue.alreadyExists", queue.getName());
+                user.sendLocalizedMessage("module.request.editQueue.create.alreadyExists", queue.getName());
             } else {
                 queue = RequestManager.getInstance().createQueue(args[0]);
-                user.sendLocalizedMessage("general.requestqueue.created", queue.getName());
+                user.sendLocalizedMessage("module.request.editQueue.create.success", queue.getName());
             }
         } else if (queue == null) {
-            user.sendLocalizedMessage("error.request.queueNotFound", args[0]);
+            user.sendLocalizedMessage("module.request.editQueue.error.notFound", args[0]);
         } else if (!queue.canReceive(user) && !queue.canSend(user) && !user.hasPermission(RequestManager.viewAllPermission)) {
             GoldenApple.logPermissionFail(user, commandLabel, args, true);
         } else {
             if (args.length == 1 || args[1].equalsIgnoreCase("info")) {
-                String sendGroup = (queue.getSendingGroup() == null) ? GoldenApple.getInstance().getLocalizationManager().getMessage(user, "general.request.nobody") : queue.getSendingGroup().getName();
-                String receiveGroup = (queue.getReceivingGroup() == null) ? GoldenApple.getInstance().getLocalizationManager().getMessage(user, "general.request.nobody") : queue.getReceivingGroup().getName();
-                String allowOffline = GoldenApple.getInstance().getLocalizationManager().getMessage(user, (queue.getAllowNoReceiver()) ? "shared.yes" : "shared.no");
+                String sendGroup = (queue.getSendingGroup() == null) ? user.getLocalizedMessage("module.request.info.nobody") : queue.getSendingGroup().getName();
+                String receiveGroup = (queue.getReceivingGroup() == null) ? user.getLocalizedMessage("module.request.info.nobody") : queue.getReceivingGroup().getName();
+                String allowOffline = user.getLocalizedMessage((queue.getAllowNoReceiver()) ? "shared.values.yes" : "shared.values.no");
                 
-                user.sendLocalizedMultilineMessage("general.requestqueue.info", queue.getName(), sendGroup, receiveGroup, allowOffline, queue.getMaxRequestsPerSender() + "");
+                user.sendLocalizedMessage("module.request.editQueue.info", queue.getName(), sendGroup, receiveGroup, allowOffline, queue.getMaxRequestsPerSender() );
             } else if (args[1].equalsIgnoreCase("delete")) {
                 if (args.length == 2 || !args[2].equalsIgnoreCase("-v")) {
-                    user.sendLocalizedMessage("general.requestqueue.deleteVerify", queue.getName());
+                    user.sendLocalizedMessage("module.request.editQueue.warning", queue.getName());
                     
                     String cmd = commandLabel;
                     for (String a : args) cmd += " " + a;
@@ -68,57 +68,57 @@ public class RequestQueueCommand extends GoldenAppleCommand {
                     VerifyCommand.commands.put(user, cmd);
                 } else {
                     RequestManager.getInstance().deleteQueue(queue.getId());
-                    user.sendLocalizedMessage("general.requestqueue.deleted", queue.getName());
+                    user.sendLocalizedMessage("module.request.editQueue.success", queue.getName());
                 }
             } else if (args[1].equalsIgnoreCase("send")) {
                 if (args.length == 2) {
-                    user.sendLocalizedMessage("shared.parameterMissing", "send");
+                    user.sendLocalizedMessage("shared.parser.parameterMissing", "send");
                 } else {
                     IPermissionGroup group = PermissionManager.getInstance().getGroup(args[2]);
                     
                     if (group == null) {
-                        user.sendLocalizedMessage("shared.groupNotFoundWarning", args[2]);
+                        user.sendLocalizedMessage("shared.parser.groupNotFound.error", args[2]);
                     } else {
                         queue.setSendingGroup(group);
-                        user.sendLocalizedMessage("general.requestqueue.sendGroupSet", queue.getName(), group.getName());
+                        user.sendLocalizedMessage("module.request.editQueue.setOption.sendGroup", queue.getName(), group.getName());
                     }
                 }
             } else if (args[1].equalsIgnoreCase("receive")) {
                 if (args.length == 2) {
-                    user.sendLocalizedMessage("shared.parameterMissing", "receive");
+                    user.sendLocalizedMessage("shared.parser.parameterMissing", "receive");
                 } else {
                     IPermissionGroup group = PermissionManager.getInstance().getGroup(args[2]);
                     
                     if (group == null) {
-                        user.sendLocalizedMessage("shared.groupNotFoundWarning", args[2]);
+                        user.sendLocalizedMessage("shared.parser.groupNotFound.error", args[2]);
                     } else {
                         queue.setReceivingGroup(group);
-                        user.sendLocalizedMessage("general.requestqueue.receiveGroupSet", queue.getName(), group.getName());
+                        user.sendLocalizedMessage("module.request.editQueue.setOption.receiveGroup", queue.getName(), group.getName());
                     }
                 }
             } else if (args[1].equalsIgnoreCase("allowoffline")) {
                 if (queue.getAllowNoReceiver()) {
                     queue.setAllowNoReceiver(false);
-                    user.sendLocalizedMessage("general.requestqueue.allowOfflineOff", queue.getName());
+                    user.sendLocalizedMessage("module.request.editQueue.setOption.allowOffline.off", queue.getName());
                 } else {
                     queue.setAllowNoReceiver(true);
-                    user.sendLocalizedMessage("general.requestqueue.allowOfflineOn", queue.getName());
+                    user.sendLocalizedMessage("module.request.editQueue.setOption.allowOffline.on", queue.getName());
                 }
             } else if (args[1].equalsIgnoreCase("maxpersender")) {
                 if (args.length == 2) {
-                    user.sendLocalizedMessage("shared.parameterMissing", "maxpersender");
+                    user.sendLocalizedMessage("shared.parser.parameterMissing", "maxpersender");
                 } else {
                     try {
                         int maxRequestsPerSender = Integer.parseInt(args[2]);
                         
                         queue.setMaxRequestsPerSender(maxRequestsPerSender);
-                        user.sendLocalizedMessage("general.requestqueue.maxPerSenderSet", queue.getName(), maxRequestsPerSender + "");
+                        user.sendLocalizedMessage("module.request.editQueue.setOption.maxPerSender", queue.getName(), maxRequestsPerSender );
                     } catch (NumberFormatException e) {
-                        user.sendLocalizedMessage("shared.notANumber", args[2]);
+                        user.sendLocalizedMessage("shared.convertError.number", args[2]);
                     }
                 }
             } else {
-                user.sendLocalizedMessage("shared.unknownOption", args[1]);
+                user.sendLocalizedMessage("shared.parser.unknownOption", args[1]);
             }
         }
         
@@ -126,8 +126,8 @@ public class RequestQueueCommand extends GoldenAppleCommand {
     }
     
     private void sendHelp(User user, String commandLabel) {
-        user.sendLocalizedMessage("header.help");
-        user.sendLocalizedMultilineMessage("help.requestqueue", commandLabel);
+        user.sendLocalizedMessage("module.request.header");
+        user.sendLocalizedMessage("module.request.editQueue.help", commandLabel);
     }
 
 }

@@ -21,15 +21,15 @@ public class UnMuteCommand extends GoldenAppleCommand {
 		} else {
 			if (args.length != 1) return false;
 			
-			user.sendLocalizedMessage("header.punish");
+			user.sendLocalizedMessage("module.punish.header");
 			
 			IPermissionUser target = PermissionManager.getInstance().findUser(args[0], false);
 			IChatChannel c = ChatManager.getInstance().getActiveChannel(user);
 			
 			if (c == null) {
-				user.sendLocalizedMessage("error.channel.notInChannelCommand");
+				user.sendLocalizedMessage("module.chat.error.notInChannel.command");
 			} else if (target == null) {
-				user.sendLocalizedMessage("shared.userNotFoundError", args[0]);
+				user.sendLocalizedMessage("shared.parser.userNotFound.error", args[0]);
 			} else {
 				MuteCommand.muteVoid(target, c, user, commandLabel, args);
 			}

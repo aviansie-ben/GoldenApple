@@ -85,7 +85,7 @@ public class WarpListener implements Listener, EventExecutor {
 		int deathCooldown = WarpManager.getInstance().startDeathCooldown(user);
 		
 		if (deathCooldown > 0) {
-			user.sendLocalizedMessage("general.warps.death", deathCooldown + "");
+			user.sendLocalizedMessage("module.warp.diedCooldown", deathCooldown);
 		}
 	}
 }

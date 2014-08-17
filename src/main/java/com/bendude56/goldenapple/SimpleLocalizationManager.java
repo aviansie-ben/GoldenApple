@@ -1,247 +1,375 @@
 package com.bendude56.goldenapple;
 
+import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.Properties;
+import java.util.List;
 import java.util.logging.Level;
 
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.YamlConfiguration;
 
-/**
- * A simple localization manager for GoldenApple that implements
- * {@link LocalizationManager}. Designed to load localization files from a
- * resources folder and to provide an interface for fetching and sending these
- * messages to users.
- * 
- * @author ben_dude56
- * 
- */
+import com.bendude56.goldenapple.permissions.IPermissionUser;
+import com.bendude56.goldenapple.permissions.PermissionManager;
+
 public class SimpleLocalizationManager implements LocalizationManager {
-	/**
-	 * The name of the default locale.
-	 */
-	public String									defaultLocale;
-	/**
-	 * The messages loaded from the default locale.
-	 */
-	public HashMap<String, String>					messages;
-	/**
-	 * All messages loaded from all locale
-	 */
-	public HashMap<String, HashMap<String, String>>	secondaryMessages;
-	
-	/**
-	 * Constructor for the {@link SimpleLocalizationManager}. Loads up all
-	 * available localization files from the default localization folder.
-	 * 
-	 * @param	loader The ClassLoader to use to access the resource files.
-	 */
-	public SimpleLocalizationManager(ClassLoader loader) {
-		// Get the default language
-		defaultLocale = GoldenApple.getInstanceMainConfig().getString("message.defaultLocale");
-		// Initialize the double hashmap for all secondary languages
-		secondaryMessages = new HashMap<String, HashMap<String, String>>();
-		
-		// Begin loading all available localization files
-		for (String locale : GoldenApple.getInstanceMainConfig().getStringList("message.availableLocales")) {
-			Properties p;
-			
-			// Create a place to store the localization data
-			secondaryMessages.put(locale, new HashMap<String, String>());
-			
-			// Attempt to load localization information from the user-defined language file
-			try {
-				File f = new File(GoldenApple.getInstance().getDataFolder() + "/locale/" + locale + ".lang");
-				
-				if (f.exists()) {
-					p = new Properties();
-					p.load(new FileInputStream(f));
-					
-					for (String entry : p.stringPropertyNames()) {
-						secondaryMessages.get(locale).put(entry, p.getProperty(entry).replace('&', ChatColor.COLOR_CHAR));
-					}
-				}
-			} catch (IOException e) {
-				GoldenApple.log(Level.WARNING, "Failed to load language info from " + locale + ".lang:");
-				GoldenApple.log(Level.WARNING, e);
-			}
-			
-			// Attempt to load the default localization information from the jar resources
-			try {
-				if (loader.getResource("locale/" + locale + ".lang") != null) {
-					p = new Properties();
-					p.load(loader.getResourceAsStream("locale/" + locale + ".lang"));
-					
-					for (String entry : p.stringPropertyNames()) {
-						if (!secondaryMessages.get(locale).containsKey(entry));
-							secondaryMessages.get(locale).put(entry, p.getProperty(entry).replace('&', ChatColor.COLOR_CHAR));
-					}
-				}
-			} catch (IOException e) {
-				GoldenApple.log(Level.WARNING, "Failed to load default language info from " + locale + ".lang:");
-				GoldenApple.log(Level.WARNING, e);
-			}
-		}
-		
-		// Create shortcut to primary language map
-		if (secondaryMessages.containsKey(defaultLocale)) {
-			messages = secondaryMessages.get(defaultLocale);
-		}
-		// If the preferred default locale is not loaded, make "en-US" default
-		else if (secondaryMessages.containsKey("en-US")) {
-			defaultLocale = "en-US";
-			messages = secondaryMessages.get("en-US");
-			GoldenApple.log(Level.WARNING, "Default locale not found. Reverting to en-US...");
-		}
-		// If "en-US" is not loaded, then attempt to make first language default
-		else if (secondaryMessages.size() > 0) {
-			defaultLocale = (String)secondaryMessages.keySet().toArray()[0];
-			messages = secondaryMessages.get(defaultLocale);
-			GoldenApple.log(Level.WARNING, "Default locale and en-US locale not found. Reverting to next available locale...");
-		}
-		// If no languages are loaded, then thrown an error
-		else {
-			throw new RuntimeException("Unable to find valid locale file to load from!");
-		}
-	}
-	
-	@Override
-	public String getMessage(User user, String message) {
-		// Get the user's preferred locale
-		String lang = user.getVariableString("goldenapple.locale");
-		// If the user's preferred locale doesn't exist, use the default
-		if (!secondaryMessages.containsKey(lang))
-			lang = defaultLocale;
-		if (!secondaryMessages.get(lang).containsKey(message) && secondaryMessages.get(lang).containsKey("LANGFALLBACK"))
-			lang = secondaryMessages.get(lang).get("LANGFALLBACK");
-		if (!secondaryMessages.get(lang).containsKey(message))
-			return "???";
-		// Get the message string in the user's locale.
-		return secondaryMessages.get(lang).get(message);
-	}
-	
-	@Override
-	public String processMessageDefaultLocale(String message, String... args) {
-		// Get the message from the default locale based on the given key
-		String msg = messages.get(message);
-		
-		// Replace all placeholder text with the text given in the array
-		for (int i = 0; i < args.length; i++) {
-			if (args[i] == null)
-				throw new IllegalArgumentException("args[" + i + "] cannot be null");
-			msg = msg.replace("%" + (i + 1), args[i]);
-		}
-		
-		return msg;
-	}
-	
-	@Override
-	public String processMessage(String locale, String message, String... args) {
-		// Gets the message from the specified locale based on the given key
-		String msg = secondaryMessages.get(locale).get(message);
-		
-		if (msg == null && locale.equals(defaultLocale)) {
-			if (secondaryMessages.get(locale).containsKey("LANGFALLBACK")) {
-				return processMessage(secondaryMessages.get(locale).get("LANGFALLBACK"), message, args);
-			} else {
-				return "???";
-			}
-		}
-		
-		// Replace all placeholder text with the text given in the array
-		for (int i = 0; i < args.length; i++) {
-			if (args[i] == null)
-				throw new IllegalArgumentException("args[" + i + "] cannot be null");
-			msg = msg.replace("%" + (i + 1), args[i]);
-		}
-		
-		return msg;
-	}
+    private HashMap<String, Locale> locales = new HashMap<String, Locale>();
+    private String defaultLocale;
+    
+    public SimpleLocalizationManager(ClassLoader loader, File customLocaleDirectory) {
+        this.defaultLocale = GoldenApple.getInstanceMainConfig().getString("message.defaultLocale", "en-US");
+        
+        loadLocales(loader, customLocaleDirectory);
+        
+        if (!locales.containsKey(defaultLocale)) {
+            if (locales.containsKey("en-US")) {
+                GoldenApple.log(Level.WARNING, "Default locale '" + defaultLocale + "' not found! Will use en-US instead...");
+            } else {
+                throw new RuntimeException("Neither default locale '" + defaultLocale + "', nor locale 'en-US' were found!");
+            }
+        }
+    }
+    
+    private YamlConfiguration loadJarYaml(ClassLoader loader, String fileName) throws IOException, InvalidConfigurationException {
+        InputStream input = loader.getResourceAsStream(fileName);
+        
+        if (input == null) {
+            GoldenApple.log(Level.WARNING, "Locale file '" + fileName + "' not found in JAR!");
+            return null;
+        }
+        
+        InputStreamReader r = new InputStreamReader(input, "UTF-8");
+        
+        try {
+            YamlConfiguration yaml = new YamlConfiguration();
+            yaml.load(r);
+            
+            return yaml;
+        } finally {
+            r.close();
+            input.close();
+        }
+    }
+    
+    private YamlConfiguration loadFileYaml(File file) throws IOException, InvalidConfigurationException {
+        YamlConfiguration yaml = new YamlConfiguration();
+        yaml.load(file);
+        
+        return yaml;
+    }
+    
+    private void loadLocales(ClassLoader loader, File customLocaleDirectory) {
+        List<String> jarLocales = new ArrayList<String>();
+        
+        try {
+            InputStream input = loader.getResourceAsStream("locale/locales.txt");
+            BufferedReader br = new BufferedReader(new InputStreamReader(input, "UTF-8"));
+            
+            try {
+                String localeFile;
+                
+                while ((localeFile = br.readLine()) != null) {
+                    jarLocales.add(localeFile);
+                }
+            } finally {
+                br.close();
+                input.close();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Error loading locale list from JAR", e);
+        }
+        
+        for (String localeFile : jarLocales) {
+            if (!localeFile.endsWith(".i18n.yml")) {
+                GoldenApple.log(Level.WARNING, "Ignoring bad locale file '" + localeFile + "' in locales.txt!");
+                continue;
+            }
+            
+            YamlConfiguration jarDescription = null;
+            YamlConfiguration customDescription = null;
+            
+            try {
+                jarDescription = loadJarYaml(loader, "locale/" + localeFile);
+            } catch (IOException | InvalidConfigurationException e) {
+                GoldenApple.log(Level.WARNING, "Error while loading locale in JAR from '" + localeFile + "':");
+                GoldenApple.log(Level.WARNING, e);
+            }
+            
+            File customLocaleFile = new File(customLocaleDirectory, localeFile);
+            
+            if (customLocaleFile.isFile()) {
+                try {
+                    customDescription = loadFileYaml(customLocaleFile);
+                } catch (IOException | InvalidConfigurationException e) {
+                    GoldenApple.log(Level.WARNING, "Error while loading custom locale file '" + localeFile + "':");
+                    GoldenApple.log(Level.WARNING, e);
+                }
+            }
+            
+            if (jarDescription != null || customDescription != null) {
+                try {
+                    YamlLocale l = new YamlLocale(jarDescription, customDescription);
+                    String name = localeFile.substring(0, localeFile.length() - 9);
+                    
+                    if (!l.getShortName().equals(name)) {
+                        GoldenApple.log(Level.WARNING, "Locale file '" + localeFile + "' contains locale '" + l.getShortName() + "'? Ignoring locale...");
+                    } else {
+                        locales.put(name, l);
+                    }
+                } catch (InvalidConfigurationException e) {
+                    GoldenApple.log(Level.WARNING, "Failed to load locale from file '" + localeFile + "':");
+                    GoldenApple.log(Level.WARNING, e);
+                }
+            }
+        }
+        
+        if (customLocaleDirectory.isDirectory()) {
+            for (String localeFile : customLocaleDirectory.list()) {
+                if (!localeFile.endsWith(".i18n.yml") || locales.containsKey(localeFile.substring(0, localeFile.length() - 9))) {
+                    continue;
+                }
+                
+                YamlConfiguration customDescription = null;
+                File customLocaleFile = new File(customLocaleDirectory, localeFile);
+                
+                if (customLocaleFile.isFile()) {
+                    try {
+                        customDescription = loadFileYaml(customLocaleFile);
+                    } catch (IOException | InvalidConfigurationException e) {
+                        GoldenApple.log(Level.WARNING, "Error while loading custom locale file '" + localeFile + "':");
+                        GoldenApple.log(Level.WARNING, e);
+                    }
+                }
+                
+                if (customDescription != null) {
+                    try {
+                        YamlLocale l = new YamlLocale(null, customDescription);
+                        String name = localeFile.substring(0, localeFile.length() - 9);
+                        
+                        if (!l.getShortName().equals(name)) {
+                            GoldenApple.log(Level.WARNING, "Locale file '" + localeFile + "' contains locale '" + l.getShortName() + "'? Ignoring locale...");
+                        } else {
+                            locales.put(name, l);
+                        }
+                    } catch (InvalidConfigurationException e) {
+                        GoldenApple.log(Level.WARNING, "Failed to load locale from file '" + localeFile + "':");
+                        GoldenApple.log(Level.WARNING, e);
+                    }
+                }
+            }
+        }
+    }
+    
+    @Override
+    public Locale getDefaultLocale() {
+        return locales.get(defaultLocale);
+    }
+    
+    @Override
+    public boolean isLocalePresent(String localeName) {
+        return locales.containsKey(localeName);
+    }
+    
+    @Override
+    public Locale getLocale(String localeName) {
+        return locales.get(localeName);
+    }
+    
+    @Override
+    public Locale getLocale(IPermissionUser user) {
+        if (PermissionManager.getInstance() != null) {
+            Locale l = getLocale(user.getVariableString("goldenapple.locale"));
+            
+            if (l != null) {
+                return l;
+            } else {
+                return getDefaultLocale();
+            }
+        } else {
+            return getDefaultLocale();
+        }
+    }
+    
+    @Override
+    public Collection<Locale> getLocales() {
+        return Collections.unmodifiableCollection(locales.values());
+    }
 
-	@Override
-	public void sendMessage(User user, String message, boolean multiline) {
-		sendMessage(user, message, multiline, new String[0]);
-	}
+    @Override
+    public void reloadLocales() {
+        throw new UnsupportedOperationException("Not implemented!");
+    }
+    
+    public class YamlLocale implements Locale {
+        private YamlConfiguration jarDefinition;
+        private YamlConfiguration customDefinition;
+        
+        private String shortName;
+        private String longName;
+        private List<String> authors;
+        
+        private List<String> fallbackLanguages;
+        private java.util.Locale javaLocale;
+        
+        public YamlLocale(YamlConfiguration jarDefinition, YamlConfiguration customDefinition) throws InvalidConfigurationException {
+            this.jarDefinition = jarDefinition;
+            this.customDefinition = customDefinition;
+            
+            if ((shortName = getStringValue("meta.shortName")) == null) {
+                throw new InvalidConfigurationException("Metadata missing from locale file: meta.shortName");
+            }
+            
+            if ((longName = getStringValue("meta.longName")) == null) {
+                throw new InvalidConfigurationException("Metadata missing from locale file: meta.longName");
+            }
+            
+            if ((authors = getStringListValue("meta.authors")) == null) {
+                authors = new ArrayList<String>();
+            }
+            
+            if ((fallbackLanguages = getStringListValue("options.fallbackLanguages")) == null) {
+                fallbackLanguages = new ArrayList<String>();
+            }
+            
+            String javaLocale;
+            
+            if ((javaLocale = getStringValue("options.javaLocale")) == null) {
+                this.javaLocale = java.util.Locale.getDefault();
+            } else {
+                this.javaLocale = java.util.Locale.forLanguageTag(javaLocale);
+            }
+        }
+        
+        private String getStringValue(String name) {
+            if (customDefinition != null && customDefinition.isString(name)) {
+                return customDefinition.getString(name);
+            } else if (jarDefinition != null && jarDefinition.isString(name)) {
+                return jarDefinition.getString(name);
+            } else {
+                return null;
+            }
+        }
+        
+        private List<String> getStringListValue(String name) {
+            if (customDefinition != null && customDefinition.isList(name)) {
+                return (List<String>) customDefinition.getList(name);
+            } else if (jarDefinition != null && jarDefinition.isList(name)) {
+                return (List<String>) jarDefinition.getList(name);
+            } else {
+                return null;
+            }
+        }
+        
+        private boolean isStringList(String name) {
+            if (customDefinition != null && customDefinition.contains(name)) {
+                return customDefinition.isList(name);
+            } else if (jarDefinition != null && jarDefinition.contains(name)) {
+                return jarDefinition.isList(name);
+            } else {
+                return false;
+            }
+        }
+        
+        private boolean isString(String name) {
+            if (customDefinition != null && customDefinition.contains(name)) {
+                return customDefinition.isString(name);
+            } else if (jarDefinition != null && jarDefinition.contains(name)) {
+                return jarDefinition.isString(name);
+            } else {
+                return false;
+            }
+        }
 
-	@Override
-	public void sendMessage(User user, String message, boolean multiline, String... args) {
-		// Get the user's preferred locale
-		String lang = user.getVariableString("goldenapple.locale");
-		
-		// If the user's preferred locale doesn't exist, use the default locale
-		if (!secondaryMessages.containsKey(lang))
-			lang = defaultLocale;
-		
-		// In case message spans multiple lines, send multiple messages 
-		if (multiline) {
-			if (!secondaryMessages.get(lang).containsKey(message + ".1") && secondaryMessages.get(lang).containsKey("LANGFALLBACK"))
-				lang = secondaryMessages.get(lang).get("LANGFALLBACK");
-			
-			for (int i = 1; secondaryMessages.get(lang).containsKey(message + "." + i); i++) {
-				sendMessage(user, lang, message + "." + i, args);
-			}
-		} else {
-			// In the case the message spans one line, send single message
-			sendMessage(user, lang, message, args);
-		}
-	}
-	
-	/**
-	 * Sends a localized message to a user, replacing placeholder text for
-	 * that supplied in the string array.
-	 * 
-	 * @param	user The user to send the message to.
-	 * @param	lang The language to use for the message.
-	 * @param	message The key of the message to send.
-	 * @param	args An array of Strings to swap out for placeholder text.
-	 */
-	private void sendMessage(User user, String lang, String message, String... args) {
-		// Get the specified message from the specified locale
-		String msg = secondaryMessages.get(lang).get(message);
-		
-		if (msg == null) {
-			if (secondaryMessages.get(lang).containsKey("LANGFALLBACK")) {
-				sendMessage(user, secondaryMessages.get(lang).get("LANGFALLBACK"), message, args);
-			} else {
-				if (message.equalsIgnoreCase("error.localization.contactAuthor")) {
-					user.getHandle().sendMessage(ChatColor.RED + "Please contact the author of the '" + lang + "' locale to report this error");
-				} else if (message.equalsIgnoreCase("error.localization.missingMessage")) {
-					user.getHandle().sendMessage(ChatColor.RED + "Localized message missing: " + args[0]);
-				} else {
-					sendMessage(user, lang, "error.localization.missingMessage", message);
-					sendMessage(user, lang, "error.localization.contactAuthor", lang);
-				}
-			}
-			return;
-		}
-		
-		// Replace placeholders with given 
-		for (int i = args.length - 1; i >= 0; i--) {
-			if (args[i] == null)
-				throw new IllegalArgumentException("args[" + i + "] cannot be null");
-			msg = msg.replace("%" + (i + 1), args[i]);
-		}
-		
-		// Send the message to the user
-		if (msg != null && msg.length() > 0)
-			user.getHandle().sendMessage(msg);
-	}
+        @Override
+        public String getShortName() {
+            return shortName;
+        }
 
-	
-	@Override
-	public boolean languageExists(String lang) {
-		return secondaryMessages.containsKey(lang);
-	}
+        @Override
+        public String getLongName() {
+            return longName;
+        }
 
-	@Override
-	public boolean messageExists(String message) {
-		return messages.containsKey(message);
-	}
+        @Override
+        public List<String> getAuthors() {
+            return Collections.unmodifiableList(authors);
+        }
 
-	@Override
-	public boolean messageExists(String lang, String message) {
-		return languageExists(lang) && secondaryMessages.get(lang).containsKey(lang);
-	}
+        @Override
+        public List<String> getFallbackLocales() {
+            return Collections.unmodifiableList(fallbackLanguages);
+        }
+
+        @Override
+        public java.util.Locale getJavaLocale() {
+            return javaLocale;
+        }
+        
+        private String getRawString(String name, String rawName) {
+            if (isStringList(rawName)) {
+                StringBuilder result = new StringBuilder();
+                
+                for (String message : getStringListValue(rawName)) {
+                    if (result.length() > 0) {
+                        result.append("\n&f");
+                    }
+                    
+                    result.append(message);
+                }
+                
+                return result.toString();
+            } else if (isString(rawName)) {
+                return getStringValue(rawName);
+            } else {
+                for (String fallbackLanguage : fallbackLanguages) {
+                    if (SimpleLocalizationManager.this.isLocalePresent(fallbackLanguage)) {
+                        String result = SimpleLocalizationManager.this.getLocale(fallbackLanguage).getRawMessage(name);
+                        
+                        if (result != null) {
+                            return result;
+                        }
+                    }
+                }
+                
+                GoldenApple.log(Level.WARNING, "Locale " + shortName + " is missing string " + name + "!");
+                return name;
+            }
+        }
+
+        @Override
+        public String getRawMessage(String messageName) {
+            if (messageName.startsWith("mail:")) {
+                return getRawString(messageName, "mail." + messageName.substring(5));
+            } else if (messageName.startsWith("msg:")) {
+                return getRawString(messageName, "messages." + messageName.substring(4));
+            } else {
+                return getRawString(messageName, "messages." + messageName);
+            }
+        }
+
+        @Override
+        public String processMessage(String message, Object... args) {
+            for (int i = args.length - 1; i >= 0; i--) {
+                message = message.replace("%" + (i + 1), args[i].toString());
+            }
+            
+            for (ChatColor color : ChatColor.values()) {
+                message = message.replace("&" + color.getChar(), color.toString());
+            }
+            
+            return message;
+        }
+
+        @Override
+        public String getMessage(String messageName, Object... args) {
+            return processMessage(getRawMessage(messageName), args);
+        }
+    }
 }

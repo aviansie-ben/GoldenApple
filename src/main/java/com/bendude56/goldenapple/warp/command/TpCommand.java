@@ -17,14 +17,14 @@ public class TpCommand extends GoldenAppleCommand {
 		} else if (args.length == 1) {
 			User user2 = User.findUser(args[0]);
 			if (!(user.getHandle() instanceof Player)) {
-				user.sendLocalizedMessage("shared.noConsole");
+				user.sendLocalizedMessage("shared.consoleNotAllowed");
 			} else if (!user.hasPermission(WarpManager.tpSelfToPlayerPermission)) {
 				GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			} else if (user2 == null) {
-				user.sendLocalizedMessage("shared.userNotFoundError", args[0]);
+				user.sendLocalizedMessage("shared.parser.userNotFound.error", args[0]);
 			} else if (user.getPlayerHandle().teleport(user2.getPlayerHandle(), TeleportCause.COMMAND)) {
 			} else {
-				user.sendLocalizedMessage("error.warps.pluginCancel");
+				user.sendLocalizedMessage("module.warp.error.pluginCancel");
 			}
 		} else if (args.length == 2) {
 			User user1 = User.findUser(args[0]);
@@ -32,17 +32,17 @@ public class TpCommand extends GoldenAppleCommand {
 			if (!user.hasPermission(WarpManager.tpOtherToPlayerPermission)) {
 				GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			} else if (user1 == null) {
-				user.sendLocalizedMessage("shared.userNotFoundError", args[0]);
+				user.sendLocalizedMessage("shared.parser.userNotFound.error", args[0]);
 			} else if (user2 == null) {
-				user.sendLocalizedMessage("shared.userNotFoundError", args[1]);
+				user.sendLocalizedMessage("shared.parser.userNotFound.error", args[1]);
 			} else if (user1.getPlayerHandle().teleport(user2.getPlayerHandle(), TeleportCause.COMMAND)) {
-				user1.sendLocalizedMessage("general.warps.teleportBy", user.getName());
+				user1.sendLocalizedMessage("module.warp.teleportedBy", user.getName());
 			} else {
-				user.sendLocalizedMessage("error.warps.pluginCancel");
+				user.sendLocalizedMessage("module.warp.error.pluginCancel");
 			}
 		} else if (args.length == 3) {
 		    if (!(user.getHandle() instanceof Player)) {
-                user.sendLocalizedMessage("shared.noConsole");
+                user.sendLocalizedMessage("shared.consoleNotAllowed");
 		    } else if (!user.hasPermission(WarpManager.tpSelfToCoordPermission)) {
 		        GoldenApple.logPermissionFail(user, commandLabel, args, true);
 		    } else {
@@ -53,12 +53,12 @@ public class TpCommand extends GoldenAppleCommand {
 		            loc.setY(Double.parseDouble(args[1]));
 		            loc.setZ(Double.parseDouble(args[2]));
 		        } catch (NumberFormatException e) {
-		            user.sendLocalizedMessage("shared.notALocation", args[0], args[1], args[2]);
+		            user.sendLocalizedMessage("shared.convertError.location", args[0], args[1], args[2]);
 		            return true;
 		        }
 		        
 		        if (!user.getPlayerHandle().teleport(loc, TeleportCause.COMMAND)) {
-		            user.sendLocalizedMessage("error.warps.pluginCancel");
+		            user.sendLocalizedMessage("module.warp.error.pluginCancel");
 		        }
 		    }
 		} else if (args.length == 4) {
@@ -73,14 +73,14 @@ public class TpCommand extends GoldenAppleCommand {
                     loc.setY(Double.parseDouble(args[2]));
                     loc.setZ(Double.parseDouble(args[3]));
                 } catch (NumberFormatException e) {
-                    user.sendLocalizedMessage("shared.notALocation", args[1], args[2], args[3]);
+                    user.sendLocalizedMessage("shared.convertError.location", args[1], args[2], args[3]);
                     return true;
                 }
                 
                 if (user.getPlayerHandle().teleport(loc, TeleportCause.COMMAND)) {
-                    user1.sendLocalizedMessage("general.warps.teleportBy", user.getName());
+                    user1.sendLocalizedMessage("module.warp.teleportedBy", user.getName());
                 } else {
-                    user.sendLocalizedMessage("error.warps.pluginCancel");
+                    user.sendLocalizedMessage("module.warp.error.pluginCancel");
                 }
             }
 		} else {

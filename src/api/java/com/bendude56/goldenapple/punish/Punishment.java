@@ -3,6 +3,7 @@ package com.bendude56.goldenapple.punish;
 import java.sql.Timestamp;
 
 import com.bendude56.goldenapple.GoldenApple;
+import com.bendude56.goldenapple.LocalizationManager.Locale;
 import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
 import com.bendude56.goldenapple.permissions.PermissionManager;
@@ -105,28 +106,41 @@ public abstract class Punishment {
 			return (int)(secondsLeft % 60);
 		}
 		
+		public String toString(IPermissionUser target) {
+		    return toString((target == null) ? GoldenApple.getInstance().getLocalizationManager().getDefaultLocale() : GoldenApple.getInstance().getLocalizationManager().getLocale(target));
+		}
+		
+		public String toString(Locale l) {
+		    String result = "";
+            int days = getDays(), hours = getHours(), minutes = getMinutes(), seconds = getSeconds();
+            
+            if (days > 0)
+                result += l.getMessage("shared.time.days", days) + ", ";
+            
+            if (hours > 0)
+                result += l.getMessage("shared.time.hours", hours) + ", ";
+            
+            if (minutes > 0)
+                result += l.getMessage("shared.time.minutes", minutes) + ", ";
+            
+            if (seconds > 0)
+                result += l.getMessage("shared.time.seconds", seconds) + ", ";
+            
+            if (result.length() > 0) {
+                result = result.substring(0, result.length() - 2);
+            }
+            
+            return result;
+		}
+		
+		public String toStringDefault() {
+		    return toString((IPermissionUser) null);
+		}
+		
 		@Override
+		@Deprecated
 		public String toString() {
-			String result = "";
-			int days = getDays(), hours = getHours(), minutes = getMinutes(), seconds = getSeconds();
-			
-			if (days > 0)
-				result += GoldenApple.getInstance().getLocalizationManager().processMessageDefaultLocale("time.days", days + "") + ", ";
-			
-			if (hours > 0)
-				result += GoldenApple.getInstance().getLocalizationManager().processMessageDefaultLocale("time.hours", hours + "") + ", ";
-			
-			if (minutes > 0)
-				result += GoldenApple.getInstance().getLocalizationManager().processMessageDefaultLocale("time.minutes", minutes + "") + ", ";
-			
-			if (seconds > 0)
-				result += GoldenApple.getInstance().getLocalizationManager().processMessageDefaultLocale("time.seconds", seconds + "") + ", ";
-			
-			if (result.length() > 0) {
-				result = result.substring(0, result.length() - 2);
-			}
-			
-			return result;
+			return toString(GoldenApple.getInstance().getLocalizationManager().getDefaultLocale());
 		}
 		
 		public static RemainingTime parseTime(String input) throws NumberFormatException {

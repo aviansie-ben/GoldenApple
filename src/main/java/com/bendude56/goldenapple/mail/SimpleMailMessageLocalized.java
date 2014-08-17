@@ -45,12 +45,12 @@ public class SimpleMailMessageLocalized extends BaseMailMessage implements MailM
     
     @Override
     public String getSubject(User user) {
-        return GoldenApple.getInstance().getLocalizationManager().processMessage(user.getVariableString("goldenapple.locale"), localizedMessage + ".subject", getArguments());
+        return user.getLocalizedMessage("mail:" + localizedMessage + ".subject", (Object[]) getArguments());
     }
     
     @Override
     public String getContents(User user) {
-        return GoldenApple.getInstance().getLocalizationManager().processMessage(user.getVariableString("goldenapple.locale"), localizedMessage + ".contents", getArguments());
+        return user.getLocalizedMessage("mail:" + localizedMessage + ".contents", (Object[]) getArguments());
     }
     
     @Override
@@ -76,12 +76,12 @@ public class SimpleMailMessageLocalized extends BaseMailMessage implements MailM
 
     @Override
     public String getContentMessage() {
-        return localizedMessage + ".contents";
+        return "mail:" + localizedMessage + ".contents";
     }
 
     @Override
     public String getSubjectMessage() {
-        return localizedMessage + ".subject";
+        return "mail:" + localizedMessage + ".subject";
     }
 
     @Override

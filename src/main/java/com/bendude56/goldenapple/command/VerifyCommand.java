@@ -16,7 +16,7 @@ public class VerifyCommand extends GoldenAppleCommand {
 			Bukkit.dispatchCommand(user.getHandle(), commands.get(user));
 			commands.remove(user);
 		} else {
-			user.sendLocalizedMessage("error.verify.noCommand");
+			user.sendLocalizedMessage("module.base.verify.noCommand");
 		}
 		return true;
 	}

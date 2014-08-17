@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.bukkit.Location;
 
-import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
 import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
 import com.bendude56.goldenapple.permissions.PermissionManager.PermissionNode;
@@ -90,6 +89,4 @@ public abstract class WarpManager {
     
     public abstract void startCooldownTimer();
     public abstract void stopCooldownTimer();
-    
-    public abstract void importHomesFromEssentials(User sender);
 }

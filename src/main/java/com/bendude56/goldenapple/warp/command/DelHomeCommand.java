@@ -31,25 +31,25 @@ public class DelHomeCommand extends GoldenAppleCommand {
 			if (homeAlias == null) {
 				h = (HomeWarp)WarpManager.getInstance().getHome(user, homeNumber);
 				if (h == null) {
-					user.sendLocalizedMessage("error.home.notFoundIdSelf", homeNumber + "");
+					user.sendLocalizedMessage("module.warp.home.notFound.id", homeNumber);
 				}
 			} else {
 				h = (HomeWarp)WarpManager.getInstance().getHome(user, homeAlias);
 				if (h == null) {
-					user.sendLocalizedMessage("error.home.notFoundAliasSelf", args[0]);
+					user.sendLocalizedMessage("module.warp.home.notFound.alias", args[0]);
 				}
 			}
 			
 			try {
 				h.delete();
 				if (homeAlias == null)
-					user.sendLocalizedMessage("general.home.deleteId", homeNumber + "");
+					user.sendLocalizedMessage("module.warp.home.delete.id", homeNumber);
 				else
-					user.sendLocalizedMessage("general.home.deleteAlias", homeNumber + "");
+					user.sendLocalizedMessage("module.warp.home.delete.alias", h.getAlias());
 			} catch (SQLException e) {
 				GoldenApple.log(Level.SEVERE, "Failed to edit " + user.getName() + "'s home " + homeNumber + ":");
 				GoldenApple.log(Level.SEVERE, e);
-				user.sendLocalizedMessage("error.home.setFail");
+				user.sendLocalizedMessage("module.warp.error.fail");
 			}
 		}
 		

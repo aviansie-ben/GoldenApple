@@ -1,0 +1,935 @@
+meta:
+    shortName: "en-US"
+    longName: "English (US)"
+    authors: ["ben_dude56", "Deaboy"]
+options:
+    fallbackLanguages: []
+    javaLocale: "en-US"
+mail:
+    base:
+        debug:
+            subject: "Debug Test: %1"
+            contents:
+                - "This is a test of the system mail functionality initiated by %1 through the /gadebug command."
+                - ""
+                - "Test: %2"
+    punish:
+        ban:
+            perm:
+                subject: "Ban Record"
+                contents:
+                    - "You have been permanently banned by %1. If you are reading this message, you have likely already appealed this ban. The reason for your ban was:"
+                    - ""
+                    - "%2"
+            temp:
+                subject: "Ban Record"
+                contents:
+                    - "You were recently temporarily banned by %1 for %3. Continued issues may result in a longer ban or a permanent ban. The reason for your ban was:"
+                    - ""
+                    - "%2"
+            void:
+                subject: "Ban Voided"
+                contents: "Your recent ban was voided by %1. If you require more information or further assistance, please speak to them."
+        globalMute:
+            perm:
+                subject: "Global Mute Record"
+                contents:
+                    - "You have been permanently globally muted by %1. You will no longer be able to speak in chat and your usage of /tell will be restricted to administrators only. The reason for your mute was:"
+                    - ""
+                    - "%2"
+            temp:
+                subject: "Global Mute Record"
+                contents:
+                    - "You have been globally muted by %1 for %3. For the duration of this mute, you will not be able to speak in chat and your usage of /tell will be restricted to administrators only. Further issues may result in a longer mute or a permanent mute. The reason for your mute was:"
+                    - ""
+                    - "%2"
+            void:
+                subject: "Global Mute Voided"
+                contents: "Your recent global mute was voided by %1. If you require more information or further assistance, please speak to them."
+        mute:
+            perm:
+                subject: "Mute Record - '%2'"
+                contents:
+                    - "You have been permanently muted from channel '%2' by %1. You will no longer be able to speak in this channel. The reason for your mute was:"
+                    - ""
+                    - "%3"
+            temp:
+                subject: "Mute Record - '%2'"
+                contents:
+                    - "You have been muted from channel '%2' by %1 for %4. You will be unable to speak in this channel for the duration of this mute. Further issues may result in a longer mute or a permanent mute. The reason for your mute was:"
+                    - ""
+                    - "%3"
+            void:
+                subject: "Mute Voided - '%2'"
+                contents: "Your recent mute from channel '%2' was voided by %1. If you require more information or further assistance, please speak to them."
+messages:
+    module:
+        antigrief:
+            tnt:
+                blocked: "&4ERROR: You are not allowed to ignite TNT! This attempt has been logged."
+        area:
+            create:
+                fail: "&4ERROR: A fatal error occurred while creating a new area! The error has been logged."
+                success:
+                    - "&aArea successfully created."
+                    - "&7  Area ID: &f%1  &7Priority: &f%3"
+                    - "&7  Label:   &f%2"
+                    - "&7  Owners:  &f%4"
+            delete:
+                fail: "&4ERROR: A fatal error occurred while deleting the area! The error has been logged."
+                success: "&aArea with ID &f%1 &adeleted successfully!"
+            error:
+                noAttack: "&4You do not have permission to hurt this creature."
+                noEdit: "&4You do not have permission to edit this area."
+                noOwn: "&4You do not own this area."
+                noSelection: "&4Error: No area selected in current world."
+                selectId: "&4ERROR: No area found with ID &f%1&4."
+                selectLabel: "&4ERROR: No area found matching label &f'%1'&4."
+                selectLocation: "&4ERROR: No valid areas at current location."
+                selectMissing: "&4ERROR: No area specified. Select an area using &7-s <id|label>"
+                selectOwn: "&4Error: You do not own the selected area."
+                invalidFlag: "&4ERROR: &f%1&4 is an invalid flag!"
+                invalidShape: "&4ERROR: &f%1&4 is an invalid shape!"
+            flag:
+                add: "&aFlag set for area &f%1&a: &f%2"
+                remove: "&aFlag reset for area  &f%1&a: &f%2"
+                unmodified: "&7Flag list unmodified for area &f%1&7."
+                unknown: "&eWARNING: Unknown flag type: &f%1"
+            help:
+                complex:
+                    - "Select an area by standing in it, or"
+                    - "Select an area by including &7-s <id|label>&f in command."
+                    - "List areas at current location using &7/%1 -ls&f"
+                    - "Get area info using &7/%1 -i&f"
+                    - "Create a new area using &7/%1 -c <options>&f. Options:"
+                    - "  Owner: &7-o <owner>&f, Priority: &7-p <number>&f"
+                    - "  Label: &7-l <label>&f, IgnoreY: &7-y&f"
+                    - "  Flags: &7-f <pvp|regen|safety>&f (more than one possible)"
+                    - "  Shape: &7-s <cuboid|cylindar|sphere>&f"
+                    - "Delete an area using &7/%1 -d&f"
+                    - "Add/remove owners using &7-o:a <user> &fand &7-o:r <user>&f"
+                    - " ' ' group owners using &7-go:a <group> &fand &7-go:r <group>&f"
+                    - "Add/remove guests using &7-in:f <user> &fand &7-in:n <user>&f"
+                    - " ' ' group guests using &7-gin:f <group> &fand &7-gin:n <group>&f"
+                    - "Change area priority with &7/%1 -p <number>&f"
+                    - "Change area label with &7/%1 -l <label>&f"
+                    - "Add/remove flags with &7-f:a <flags> &fand &7-f:r <flags>&f"
+                simple:
+                    - "Select an area by standing in it or including the ID"
+                    - "List areas at current location using &7/%1 list&f"
+                    - "Get area info by using &7/%1 info&f"
+                    - "Create a new area using &7/%1 create <owner>&f"
+                    - "Delete an area using &7/%1 delete&f"
+                    - "Invite a guest using &7/%1 invite <user>&f"
+                    - "Uninvite a guest using &7/%1 uninvite <user>&f"
+            info:
+                - "  &7Area ID: &f%1  &7Priority: &f%3"
+                - "  Label:   &f%2"
+                - "  Flags:   &f%4"
+                - "  Owners:  &f%5"
+                - "  Guests:  &f%6"
+                - "  Group Owners: &f%7"
+                - "  Group Guests: &f%8"
+                - "  Regions: &f%9  &7World: &f%10"
+            groupGuest:
+                add: "&aGroup &f%2 &aadded as guest to area &f%1&a."
+                addFail: "&4Group &f%2 &4not added as guest to area &f%1&4. (Already &f%3&4)"
+                remove: "&aGroup &f%2 &aremoved as guest from area &f%1&a."
+                removeFail: "&4Group &f%2 &4is not a guest of area &f%1&4."
+                unmodified: "&7Guest list unmodified for area &f%1&7."
+            groupOwner:
+                add: "&aGroup &f%2 &aadded as an owner to area &f%1&a."
+                addFail: "&4Group &f%2 &4not added as owner to area &f%1&4. (Already &f%3&4)"
+                remove: "&aGroup &f%2 &ano longer an owner of area &f%1&a."
+                removeFail: "&4Group &f%2 &4does not own area &f%1&4."
+                unmodified: "&7Owners list unmodified for area &f%1&7."
+            guest:
+                add: "&aUser &f%2 &aadded as guest to area &f%1&a."
+                addFail: "&4User &f%2 &4not added as guest to area &f%1&4. (Already &f%3&4)"
+                remove: "&aUser &f%2 &aremoved as guest from area &f%1&a."
+                removeFail: "&4User &f%2 &4is not a guest of area &f%1&4."
+                umodified: "&7Guest list unmodified for area &f%1&7."
+            label: "&aLabel for area &f%1 &achanged to &f'%2'&a."
+            list:
+                header: "&7List of areas on server. Page &f%1&7/&f%2"
+                headerLocation: "&7List of areas at location. Page &f%1&7/&f%2"
+                headerOwn: "&7List of areas owned by you. Page &f%1&7/&f%2"
+                headerUser: "&7List of areas owned by &f%3&7. Page &f%1&7/&f%2"
+                item: "  &7#%1. %2 (Priority: %3)"
+                invalidPage: "&4ERROR: Invalid page number."
+                none: "&7No areas exist on this server."
+                noneLocation: "&7No areas at current location."
+                noneOwn: "&7You do not own any areas."
+                noneUser: "&f%1 &7does not own any areas."
+            override:
+                'on': "&aArea override enabled!"
+                'off': "&aArea override disabled!"
+            overrideAvailable:
+                complex: "&7You have permission to override this using /gaarea -o:on"
+                simple: "&7You have permission to override this using /gaarea override on"
+            owner:
+                add: "&aUser &f%2 &aadded as an owner to area &f%1&a."
+                addFail: "&4User &f%2 &4not added as owner to area &f%1&4. (Already &f%3&4)"
+                remove: "&aUser &f%2 &ano longer an owner of area &f%1&a."
+                removeFail: "&4User &f%2 &4does not own area &f%1&4."
+                removeSelfFail: "&4You cannot remove yourself as an owner from your area!"
+                unmodified: "&7Owners list unmodified for area &f%1&7."
+            priority: "&aPriority for area &f%1 &aset to &f%2&a."
+            header: "&7-----&6 GoldenApple Areas &7-----"
+        base:
+            complex:
+                success:
+                    'off': "&aNow using simple command syntax"
+                    'on': "&aNow using complex command syntax"
+                warning:
+                    'off': "&eWARNING: You are about to disable complex commands! Some commands will be simplified. If you are sure you want to proceed, use /gaverify!"
+                    'on': "&eWARNING: You are about to enable complex commands! Some commands will be given complex syntax. If you are sure you want to proceed, use /gaverify!"
+            debug:
+                disabled: "&4ERROR: This command has been disabled in the server configuration!"
+            module:
+                clearCache:
+                    notLoaded: "&4ERROR: Module '%1' cannot have its cache cleared because it is disabled!"
+                    success: "&aModule '%1' has successfully had its cache purged..."
+                disable:
+                    unloadError:
+                        dependency: "&4ERROR: Module '%1' cannot be disabled because dependent module '%2' failed to unload!"
+                        self: "&4ERROR: An unknown error occured while stopping module '%1'! Check the server logs for more details."
+                    warning:
+                        header: "&eWARNING: To disable this module, the following modules must also be disabled:"
+                        entry: "&e -%1"
+                        footer: "&eIf you are sure you wish to disable these modules, use /gaverify."
+                    alreadyUnloaded: "&4ERROR: Module '%1' cannot be disabled because it is already disabled!"
+                    busy: "&4ERROR: Module '%1' cannot be disabled because it is executing a background task!"
+                    policyBlock: "&4ERROR: The security policy is blocking you from unloading module '%1'!"
+                    success: "&aModule '%1' unloaded successfully..."
+                enable:
+                    loadError:
+                        dependency: "&4ERROR: Module '%1' cannot be enabled because dependency '%2' failed to load!"
+                        self: "&4ERROR: An unknown error occured while starting module '%1'! Check the server logs for more details."
+                    warning:
+                        header: "&eWARNING: To enable this module, the following dependencies must also be enabled:"
+                        entry: "&e -%1"
+                        footer: "&eIf you are sure you wish to enable these modules, use /gaverify."
+                    alreadyLoaded: "&4ERROR: Module '%1' is already enabled!"
+                    policyBlock: "&4ERROR: The security policy is blocking you from loading module '%1'!"
+                    success: "&aModule '%1' loaded successfully..."
+                help:
+                    - "Use &7/gamodule -ls&f to list modules"
+                    - "Use &7/gamodule <module> -q&f to query module info"
+                    - "Use &7/gamodule <module> -e&f to enable a module"
+                    - "Use &7/gamodule <module> -d&f to disable a module"
+                    - "Use &7/gamodule <module> -cc&f to clear a module's cache"
+                list:
+                    entry:
+                        busy: " -&e%1"
+                        loaded: " -&a%1"
+                        loading: " -&e%1"
+                        unloadedError: " -&4%1"
+                        unloadedUser: " -&7%1"
+                    header: "&7The following modules can be queried:"
+                    lockedSuffix: " &8[Locked]"
+                query:
+                    state:
+                        busy: "&eBusy"
+                        loaded: "&aRunning"
+                        loadedLocked: "&aRunning &8(Policy Locked)"
+                        loading: "&eLoading"
+                        unloadedDepend: "&4Stopped (Error)"
+                        unloadedError: "&4Stopped (Dependency Error)"
+                        unloadedUser: "&7Stopped"
+                        unloadedUserLocked: "&8Policy Disabled"
+                    message:
+                        - "&7Module name: &f%1"
+                        - "&7Status: %2"
+                header: "&7-----&6 GoldenApple Module Controller &7-----"
+                notFound: "&4ERROR: No module was found with the name '%1'"
+            unloaded:
+                generic: "&4ERROR: This command has been disabled"
+                specific: "&4ERROR: This command relies on unloaded module '%1'"
+            verify:
+                noCommand: "&4ERROR: No command to verify!"
+        chat:
+            accessLevel:
+                default:
+                    set: "&aThe default level has been set to %1&a."
+                    tooHigh: "&4ERROR: Only None, Join, and Chat can be used as the default level!"
+                displayName:
+                    none: "&8None"
+                    join: "&eJoin"
+                    chat: "&fChat"
+                    vip: "&2VIP"
+                    moderator: "&3Moderator"
+                    superModerator: "&1Super Moderator"
+                    administrator: "&4Administrator"
+                group:
+                    set: "&aThe level for group '%1&a' has been set to %2&a."
+                    unset: "&aAccess for group '%1&a' has been removed."
+                user:
+                    belowMinimum: "&4ERROR: That user is being granted permissions above what you specified due to group membership!"
+                    set: "&aThe level for user '%1&a' has been set to %2&a."
+                    unset: "&aAccess for user '%1&a' has been removed."
+                unknownLevel: "&4ERROR: '%1' is not a valid level!"
+            afk:
+                broadcast:
+                    'on': "%1&7 is now AFK"
+                    'off': "%1&7 is no longer AFK"
+                success:
+                    'on': "&7You are now marked AFK."
+                    'off': "&7You are no longer marked AFK."
+            censor:
+                normal: "&aCensoring on this channel is now set to &eNormal&a."
+                strict: "&aCensoring on this channel is now set to &4Strict&a."
+            channelList:
+                header: "The following chat channels are active:"
+                entry:
+                    connected: " -&a%1"
+                    grayedOut: " -&8%1"
+                    normal: " -&f%1"
+            delete:
+                broadcast: "&eChannel %1&e is being deleted. Everybody will now be kicked from this channel."
+                warning: "&eWARNING: You are about to permanently delete this chat channel! If you are sure you wish to do this, type /gaverify."
+            error:
+                muted:
+                    chat:
+                        perm: "&4ERROR: You are permanently muted in this channel."
+                        temp: "&4ERROR: You are muted in this channel for %1."
+                    me:
+                        perm: "&4ERROR: You are permanently muted in this channel."
+                        temp: "&4ERROR: You are muted in this channel for %1."
+                    tell:
+                        perm: "&4ERROR: You are permanently muted."
+                        temp: "&4ERROR: You are muted for %1."
+                notAllowed:
+                    chat: "&4ERROR: You don't have permission to talk in this channel."
+                    join: "&4ERROR: You don't have permission to join that channel."
+                    me: "&4ERROR: You don't have permission to talk in this channel."
+                notInChannel:
+                    chat: "&4ERROR: You must join a chat channel to talk."
+                    command: "&4ERROR: You must be in a chat channel to use that command."
+                    me: "&4ERROR: You must join a chat channel to talk."
+                channelAlreadyExists: "&4ERROR: A channel with that name already exists!"
+                channelNotFound: "&4ERROR: Cannot find a channel with identifier '%1'."
+                unsupportedCommand: "&4ERROR: The channel you are on does not support one or more of the actions you have specified."
+            help:
+                inNormal:
+                    complex:
+                        - "Leave the channel using &7-l"
+                        - "List users in the channel using &7-uls"
+                    simple:
+                        - "Leave the channel using &7/%1 leave"
+                        - "List users in the channel using &7/%1 list"
+                inMod:
+                    complex:
+                        - "View a user's level using &7--whois <user>"
+                        - "Kick a user using &7-k <user>"
+                    simple:
+                        - "View a user's level using &7/%1 whois <user>"
+                        - "Kick a user using &7/%1 kick <user>"
+                inSuperMod:
+                    complex:
+                        - "Set a user's access level using &7-lvl:{n|j|c|v|m|s|a} <user>"
+                        - "Change the MOTD using &7--motd <motd>"
+                    simple:
+                        - "Change a user's level using &7/%1 level <user> {none|join|chat|vip|mod|supermod|admin}"
+                        - "Change the MOTD using &7/%1 motd <motd>"
+                inAdmin:
+                    complex:
+                        - "Set a group's access level using &7-glvl:{n|j|c|v|m|s|a} <group>"
+                        - "Set the default access level using &7-dlvl {n|j|c}"
+                        - "Toggle strict censoring using &7--strict"
+                        - "Delete the channel using &7-d"
+                    simple:
+                        - "Set the default access level using &7/%1 level default {none|join|chat}"
+                        - "Toggle strict censoring using &7/%1 strict"
+                        - "Delete the channel using &7/%1 delete"
+                out:
+                    complex:
+                        - "List available channels using &7-cls"
+                        - "Join a channel using &7-j <name>"
+                        - "Add a channel using &7-a <name>"
+                    simple:
+                        - "List available channels using &7/%1 list"
+                        - "Join a channel using &7/%1 join <name>"
+                        - "Add a channel using &7/%1 add <name>"
+            join:
+                warning:
+                    muted:
+                        perm: "&eNOTE: You are permanently muted in this channel."
+                        temp: "&eNOTE: You are muted in this channel for %1."
+                    noTalk: "&eNOTE: You aren't allowed to talk in the channel you have joined."
+                broadcast: "%1&7 has joined the channel."
+                success: "&aYou are now in channel %1&a."
+            kick:
+                broadcast: "%1&7 has been kicked from the channel."
+                notInChannel: "&4ERROR: Cannot kick '%1' from this channel since he is not in it."
+                notify: "&eYou have been kicked from channel %1&e."
+            leave:
+                broadcast: "%1&7 has left the channel."
+                success: "&aYou have left channel %1&a."
+            motd:
+                set: "&aThe MOTD has been set."
+                unset: "&aThe MOTD has been cleared."
+            tell:
+                message:
+                    incoming: "(%1&f => &eYou&f) %2"
+                    outgoing: "(&eYou&f => %1&f) %2"
+                    spy: "(%1&f => %2&f) %3"
+                muted:
+                    perm: "&4ERROR: You are permanently muted."
+                    temp: "&4ERROR: You are muted for %1."
+                spy:
+                    alreadyDisabled: "&4ERROR: You are not spying on /tell messages!"
+                    alreadyEnabled: "&4ERROR: You are already spying on /tell messages!"
+                    disabled: "&aYou are no longer spying on /tell messages."
+                    enabled: "&aYou are now spying on /tell messages."
+                noReply: "&4ERROR: You have nobody to reply to!"
+                self: "&4ERROR: You cannot send a /tell message to yourself!"
+            userList:
+                header: "The following users are on this chat channel:"
+                entry: " -%1"
+            whois:
+                header: "Whois information for %1:"
+                overallLevel: " Overall Access Level: %1"
+                levelSources:
+                    header: " Permission Sources:"
+                    source:
+                        default: "  -<Default>: %1"
+                        global: "  -<Global>: %1"
+                        group: "  -<Group: &a%1&f>: %2"
+                        user: "  -<User: &a%1&f>: %2"
+                mute:
+                    none: " Mute: &8<None>"
+                    perm: " Mute: &cPermanent by %1"
+                    permGlobal: " Mute: &4[GLOBAL] Permanent by %1"
+                    temp: " Mute: &cTemporary (%1) by %2"
+                    tempGlobal: " Mute: &4[GLOBAL] Temporary (%1) by %2 "
+                muteReason: "   Reason: %1"
+            header: "&7-----&6 GoldenApple Chat &7-----"
+        invisible:
+            poof:
+                disabled: "&aYou are now invisible."
+                enabled: "&aYou are no longer invisible."
+            noInteract: "&4ERROR: You cannot interact with the world while invisible!"
+        lock:
+            access:
+                private: "&aLock access changed to &8Private&a successfully."
+                public: "&aLock access changed to &fPublic&a successfully."
+                unknownLevel: "&4ERROR: There is no access level with name &f%1&4!"
+            autoLock:
+                disabled: "&aAuto-lock has been turned off"
+                enabled: "&aAuto-lock has been turned on"
+                locked: "&aThe block you placed has been automatically locked! Use /gaautolock to disable auto-lock."
+            delete:
+                success: "&aThe lock on that block has been deleted successfully!"
+            error:
+                notAllowed:
+                    edit: "&4ERROR: You do not have permission to edit this block. Please contact %1 for permission."
+                    use: "&4ERROR: You do not have permission to use this block. Please contact %1 for permission."
+                alreadyLocked: "&4ERROR: A lock already exists on that block!"
+                invalidBlock: "&4ERROR: You are not pointing at a valid block!"
+                invalidRegisteredBlock: "&4ERROR: Plugin '%1' has an invalid &1RegisteredBlock&4! Contact an administrator!"
+                lockNotFound: "&4ERROR: No lock found with ID %1!"
+                notLocked: "&4ERROR: The block you are pointing at is not locked!"
+                sqlError: "&4ERROR: Failed to write changes to the database!"
+            help:
+                complex:
+                    - "Select a block by pointing at it or use &7-s <id>"
+                    - "Get lock info using &7-i"
+                    - "Create a new lock using &7-c"
+                    - "  -Add &7-p&f for public lock"
+                    - "Delete an existing lock using &7-d" 
+                    - "Change a user's access level using &7-in:<lvl> <usr>"
+                    - "Valid levels are &7n&f (none), &7u&f (use), &7i&f (invite), &7m&f (modify), and &7f&f (full)"
+                    - "Change lock access using &7-a {public|private}"
+                    - "Enable/disable redstone to lock using &7-r:{on|off}"
+                simple:
+                    - "Select a block by pointing at it"
+                    - "Get lock info using &7/%1 info&f"
+                    - "Create a new lock using &7/%1 create&f"
+                    - "  -Use &7/%1 create public&f for a public lock"
+                    - "Delete a lock using &7/%1 delete&f"
+                    - "Use &7/%1 invite <user>&f to allow another player to use the locked block"
+                    - "Use &7/%1 uninvite <user>&f to unshare the block from a player"
+                    - "Use &7/%1 access {public|private}&f to change access level"
+                    - "Use &7/%1 redstone {on|off}&f to enable/disable redstone on lock"
+            info:
+                id: "&7Lock ID: &f%1"
+                owner: "&7Owner: &f%1"
+                access:
+                    private: "&7Lock Access: &8Private"
+                    public: "&7Lock Access: &fPublic"
+                external:
+                    both:
+                        disabled: "&7Hopper/Redstone Access: &aEnabled"
+                        enabled: "&7Hopper/Redstone Access: &4Disabled"
+                    hopper:
+                        disabled: "&7Hopper Access: &aEnabled"
+                        enabled: "&7Hopper Access: &4Disabled"
+                    redstone:
+                        disabled: "&7Redstone Access: &aEnabled"
+                        enabled: "&7Redstone Access: &4Disabled"
+                type: "&7Lock Type: &f%1"
+            share:
+                successAdd: "&aLock shared with '%1' successfully."
+                successRemove: "&aLock unshared from '%1' successfully."
+                ownerEdit: "&4ERROR: Owner permissions cannot be changed directly!"
+                unknownLevel: "&4ERROR: Unknown access level '%1'!"
+            override:
+                available:
+                    complex: "&7You have permission to override this using /galock -o:on"
+                    simple: "&7You have permission to override this using /galock override on"
+                always: "&aLock override permanently enabled!"
+                disabled: "&aLock override disabled!"
+                enabled: "&aLock override enabled!"
+                unknownMode: "&4ERROR: Unknown override mode '%1'!"
+            redstone:
+                disabled: "&aRedstone/Hopper access to this block has been disabled."
+                enabled: "&aRedstone/Hopper access to this block has been enabled."
+                unknownMode: "&4ERROR: Unknown redstone mode '%1'!"
+            header: "&7-----&6 GoldenApple Locks &7-----"
+        mail:
+            draft:
+                append: "&aThat has been appended to the body of your draft message. Use /gamail draft to read the draft so far or /gamail send to send it."
+                create: "&aYou have created a new draft with the subject '%1'. Use /gamail append <contents> to add to the body."
+                discard: "&aYour draft message has been discarded!"
+                send: "&aYour message has been successfully sent!"
+            error:
+                emptyDraft: "&4ERROR: You cannot send an empty message! Use /gamail append <body> to append to the body of the message."
+                noDraft: "&4ERROR: You must have an active draft to do that!"
+                notFound: "&4ERROR: Message #%1 was not found!"
+                replyToSystem: "&4ERROR: You cannot reply to a system message!"
+            help:
+                - "List all mail using &7/%1 all <page>"
+                - "List unread mail using &7/%1 unread <page>"
+                - "Read a message using &7/%1 read <id>"
+                - "Delete a message using &7/%1 delete <id>"
+                - "Create a new draft using &7/%1 reply <id> [subject]&f or &7/%1 create <recipient> <subject>"
+                - "Append to a draft message's body using &7/%1 append <message>"
+                - "Read your active draft message using &7/%1 draft"
+                - "Send your active draft message using &7/%1 send&f or discard it using &7/%1 discard"
+            inbox:
+                header:
+                    all: "&7You have %1 messages. Page %2/%3:"
+                    unread: "&7You have %1 unread messages. Page %2/%3:"
+                empty:
+                    all: "&7You have no mail!"
+                    unread: "&7You have no unread mail!"
+                entry:
+                    player:
+                        read: "&8  [#%1] %3&8: %2"
+                        replied: "&8  [#%1] %3&8: %2 &9<Replied>"
+                        unread: "&a  [#%1] %3&a: %2"
+                    system:
+                        read: "&8  [#%1] &6SYSTEM MESSAGE&8: %2"
+                        unread: "&a  [#%1] &6SYSTEM MESSAGE&a: %2"
+                moreHint: "&7Use /gamail all <page> to see more."
+                readHint: "&7Use /gamail read <id> to read a message."
+            notify:
+                joinUnread: "&aYou have new mail messages! Use /gamail to view them!"
+                newMail: "&aYou have received a new mail message! Use /gamail to view it!"
+            read:
+                id: "&fMail ID: %1 (#%2)"
+                subject: "&fSubject: %1"
+                from:
+                    player: "&fFrom: %1 <%2>"
+                    system: "&fFrom: &6GoldenApple System Mail"
+                to: "&fTo: %1 <%2>"
+                sent: "&fSent: %1"
+                replied: "&9You have replied to this message"
+            deleted: "&aMessage #%1 has been deleted."
+            header: "&7-----&6 GoldenApple Mail &7-----"
+        permissions:
+            locale:
+                notFound: "&4ERROR: No locale with the name '%1' was found!"
+                set: "&aYour locale has been set to '%1'"
+            own:
+                warning:
+                    after: "&eWARNING: You may want to disable this command in config.yml to prevent other ops from using this command"
+                    before: "&eWARNING: You are about to give yourself full permissions! If you are sure you wish to continue, use /gaverify"
+                disabled: "&4ERROR: This command has been disabled by an administrator for security reasons!"
+                success: "&aYou have been given permission '*'"
+            permissions:
+                add:
+                    error:
+                        uuidConflict: "&4ERROR: Failed to add user '%1': Weird UUID conflict!"
+                        uuidNotFound: "&4ERROR: Failed to add user '%1': UUID lookup failure!"
+                    group: "&aGroup '%1' added successfully..."
+                    user: "&aUser '%1' added successfully..."
+                error:
+                    conflict: "&4ERROR: There is an option conflict. Make sure you're not trying to modify a group/user as you remove them."
+                    noValidActions: "&4ERROR: No valid actions were specified"
+                    noValidTargets: "&4ERROR: No valid targets were specified for option: %1"
+                group:
+                    chatColor: "&aGroup '%1' has had its chat color set to '%2&a' successfully..."
+                    prefix: "&aGroup '%1' has had its prefix set to '%2' successfully..."
+                    priority: "&aGroup '%1' has had its priority set to '%2' successfully..."
+                help:
+                    complex:
+                        - "Select users and groups using &7-u <user>&f and &7-g <group>"
+                        - "Add new users and groups based on selection using &7-a"
+                        - "Delete selected users and groups using &7-r"
+                        - "Add permissions using &7-pa <permission>&f and remove using &7-pr <permission>"
+                        - "Add users/groups to a group using &7-ua <user>&f and &7-ga <group>"
+                        - "Remove users/groups from a group using &7-ur <user>&f and &7-gr <group>"
+                        - "Add owners to a group using &7-oa <user>&f and remove them using &7-or <user>"
+                        - "Set user/group variables using &7-var:<variable> <value>"
+                info:
+                    group:
+                        header: "Information for group %1:"
+                        priority: " Group Priority: %1"
+                        chat:
+                            set: " Chat Prefix: %1%2"
+                            unset: " Chat Prefix: %1<No Prefix>"
+                        owners:
+                            header: " Owners:"
+                            entry: "  -%1"
+                        members:
+                            header: " Members:"
+                            entry:
+                                group: "  -Group: %1"
+                                user: "  -User: %1"
+                    shared:
+                        id: " Database ID: %1"
+                        permissions:
+                            header: " Permissions:"
+                            entry: "  -%1"
+                        variables:
+                            header: " Variables:"
+                            entry: "  -%1: %2"
+                    user:
+                        header: "Information for user %1:"
+                        uuid: " UUID: %1"
+                        groups:
+                            header: " Groups:"
+                            entry: "  -%1"
+                    none: "  (None)"
+                    tooMany: "  (Too many to list)"
+                member:
+                    add:
+                        group: "&aGroup '%1' added to group '%2' successfully..."
+                        user: "&aUser '%1' added to group '%2' successfully..."
+                    remove:
+                        group: "&aGroup '%1' removed from group '%2' successfully..."
+                        user: "&aUser '%1' removed from group '%2' successfully..."
+                owner:
+                    add: "&aUser '%1' has been added as an owner of group '%2' successfully..."
+                    remove: "&aUser '%1' has been removed as an owner of group '%2' successfully..."
+                permission:
+                    add: "&aPermission '%1' given to '%2' successfully..."
+                    notFound: "&eWARNING: Failed to find permission '%1'! Use --force to override."
+                    remove: "&aPermission '%1' removed from '%2' successfully..."
+                remove:
+                    error:
+                        groupProtected: "&4ERROR: Failed to remove group '%1': Group is referenced in the config file!"
+                        userOnline: "&4ERROR: Failed to remove user '%1': Cannot remove user while online!"
+                    warning:
+                        header: "&eWARNING: You are about to permanently remove the following groups and users:"
+                        entry:
+                            group: "&e   Group: %1"
+                            user: "&e   User: %1"
+                        footer: "&eIf you are sure you wish to permanently remove these groups and users, use /gaverify."
+                    group: "&aGroup '%1' removed successfully..."
+                    user: "&aUser '%1' removed successfully..."
+                variable:
+                    group: "&aGroup '%1' has had variable '%2' set to '%3' successfully..."
+                    user: "&aUser '%1' has had variable '%2' set to '%3' successfully..."
+            header: "&7-----&6 GoldenApple Permissions &7-----"
+        punish:
+            ban:
+                error:
+                    alreadyBanned: "&4ERROR: That user is already banned!"
+                    notBanned: "&4ERROR: That user is not banned!"
+                    tooLong: "&4ERROR: The maximum time for a temporary ban is %1."
+                help:
+                    complex:
+                        - "Select a target using &7-u <user>"
+                        - "Specify a ban reason using &7-r <reason>"
+                        - "Specify ban duration using &7-t <duration>"
+                        - "Void a previous ban using &7-v"
+                        - "Get information on current bans using &7-i"
+                        - "Durations are in form XdXhXmXs"
+                    simple:
+                        - "Ban a user using &7/%1 <player> [{<duration>|permanent}] [reason]"
+                        - "Void a previous ban using &7/%1 <player> void"
+                        - "Get information on current bans using &7/%1 <player> info"
+                        - "Durations are in form XdXhXmXs"
+                info:
+                    none: "&7User '%1' is not currently banned."
+                    perm: "&7User '%1' is permanently banned by %2."
+                    temp: "&7User '%1' is banned for %2 by %3."
+                kick:
+                    perm: "You have been permanently banned by %1:"
+                    temp: "You have been banned for %1 by %2:"
+                success:
+                    perm: "&a%1 has been permanently banned."
+                    temp: "&a%1 has been banned for %2."
+                    void: "&aThe ban on %1 has been voided."
+                voidWarning: "&eWARNING: This player's active ban was set by '%1'. You may wish to talk to them before voiding this ban. If you are sure you wish to continue, type /gaverify."
+            error:
+                invalidDuration: "&4ERROR: Cannot convert '%1' to a duration!"
+                noUserSelected: "&4ERROR: No user was selected."
+            globalMute:
+                error:
+                    alreadyMuted: "&4ERROR: That user is already globally muted!"
+                    notMuted: "&4ERROR: That user is not globally muted!"
+                    tooLong: "&4ERROR: The maximum time for a temporary global mute is %1."
+                help:
+                    complex:
+                        - "Select a target using &7-u <user>"
+                        - "Specify a mute reason using &7-r <reason>"
+                        - "Specify mute duration using &7-t <duration>"
+                        - "Void a previous global mute using &7-v"
+                        - "Get information on current global mutes using &7-i"
+                        - "Durations are in form XdXhXmXs"
+                    simple:
+                        - "Globally mute a user using &7/%1 <player> [{<duration>|permanent}] [reason]"
+                        - "Void a previous global mute using &7/%1 <player> void"
+                        - "Get information on current global mutes using &7/%1 <player> info"
+                        - "Durations are in form XdXhXmXs"
+                info:
+                    none: "&7User '%1' is not currently globally muted."
+                    perm: "&7User '%1' is permanently globally muted by %2."
+                    temp: "&7User '%1' is globally muted for %2 by %3."
+                notify:
+                    perm: "You have been permanently globally muted by %1:"
+                    temp: "You have been globally muted for %2 by %1:"
+                success:
+                    perm: "&a%1 has been permanently globally muted."
+                    temp: "&a%1 has been globally muted for %2."
+                    void: "&aThe global mute on %1 has been voided."
+            mute:
+                error:
+                    alreadyMuted: "&4ERROR: That user is already muted!"
+                    noChannel: "&4ERROR: No channel was selected."
+                    notAllowed: "&4ERROR: The channel you have selected does not support mutes!"
+                    notMuted: "&4ERROR: That user is not muted!"
+                    tooLong: "&4ERROR: The maximum time for a temporary mute is %1."
+                    voidGlobal: "&4ERROR: Cannot void a global mute using /mute!"
+                help:
+                    complex:
+                        - "Select a target using &7-u <user>"
+                        - "Select a channel using &7-c <channel>"
+                        - "Specify a mute reason using &7-r <reason>"
+                        - "Specify mute duration using &7-t <duration>"
+                        - "Void a previous mute using &7-v"
+                        - "Get information on current mutes using &7-i"
+                        - "Durations are in form XdXhXmXs"
+                    simple:
+                        - "Mute a user using &7/%1 <player> [{<duration>|permanent}] [reason]"
+                        - "Void a previous mute using &7/%1 <player> void"
+                        - "Get information on current mutes using &7/%1 <player> info"
+                        - "Durations are in form XdXhXmXs"
+                info:
+                    global: "&7This mute has been applied globally."
+                    none: "&7User '%1' is not currently muted."
+                    perm: "&7User '%1' is permanently muted by %2."
+                    temp: "&7User '%1' is muted for %2 by %3."
+                notify:
+                    perm: "You have been permanently muted by %1:"
+                    temp: "You have been muted for %2 by %1:"
+                success:
+                    perm: "&a%1 has been permanently muted."
+                    temp: "&a%1 has been muted for %2."
+                    void: "&aThe mute on %1 has been voided."
+            whois:
+                ban:
+                    perm: "&7%1 is banned permanently"
+                    temp: "&7%1 is banned for %2"
+                globalMute:
+                    perm: "&7%1 is permanently globally muted"
+                    temp: "&7%1 is globally muted for %2"
+                mute:
+                    perm: "&7%1 is permanently muted in %2"
+                    temp: "&7%1 is muted in %2 for %3"
+                unknown:
+                    perm: "&7%1 has punishment type %2"
+                    temp: "&7%1 has punishment type %2 for %3"
+                none: "&7%1 doesn't currently have any punishments against them"
+            header: "&7-----&6 GoldenApple Punishment &7-----"
+        request:
+            assign:
+                maxAssigned:
+                    other: "&4ERROR: %1 has the maximum number of requests assigned to them!"
+                    self: "&4ERROR: You have been assigned the maximum number of requests! Hold or close one before starting another!"
+                alreadyAssigned: "&4ERROR: Another admin is assigned to this request and you do not have permission to reassign!"
+                cannotReceive: "&4ERROR: %1 cannot receive requests on this queue!"
+                notAssigned: "&4ERROR: This request is not assigned to anybody!"
+                success: "&aRequest #%1 is now assigned to %2&a."
+            autoAssign:
+                request:
+                    begin: "&eThe auto-assigner would like to assign you to request %2 in queue %1. Use &7/garequest %1 %2 own&e to accept."
+                    end: "&eYou have not been assigned request %2 in queue %1 because you didn't accept in time."
+                assigned: "&eYou have been automatically assigned to request %2 in queue %1. Use &7/garequest %1 %2 info&e to see it."
+                disabled: "&aYou will no longer be automatically assigned requests on queue %1."
+                enabled: "&aYou can now be automatically assigned requests on queue %1."
+            close:
+                alreadyClosed: "&4ERROR: That request is already closed!"
+                success: "&aRequest #%1 has been closed."
+            editQueue:
+                create:
+                    alreadyExists: "&4ERROR: Queue %1 already exists!"
+                    success: "&aQueue %1 has been created."
+                delete:
+                    success: "&aQueue %1 has been deleted."
+                    warning: "&eWARNING: You are about to delete queue %1! If you are sure you wish to do this, use /gaverify."
+                error:
+                    notFound: "&4ERROR: Queue '%1' was not found!"
+                help:
+                    - "List all queues using /%1 list"
+                    - "Create a new queue using /%1 <queue> create"
+                    - "Get queue information using /%1 <queue> info"
+                    - "Delete an existing queue using /%1 <queue> delete"
+                    - "Change send/receive groups using /%1 <queue> {send|receive} <group>"
+                    - "Toggle allow offline using /%1 <queue> allowoffline"
+                    - "Change maximum requests per sender using /%1 <queue> maxpersender <max>"
+                info:
+                    - "&7Queue %1:"
+                    - "&7  Send Group: %2"
+                    - "&7  Receive Group: %3"
+                    - "&7  Allow Offline: %4"
+                    - "&7  Max Requests/Sender: %5"
+                list:
+                    header: "&7All request queues:"
+                    empty: "&7  There are no request queues!"
+                    entry: "&7  -%1"
+                setOption:
+                    allowOffline:
+                        'off': "&aQueue %1 will no longer accept requests when no receivers are online."
+                        'on': "&aQueue %1 will now accept requests when no receivers are online."
+                    receiveGroup: "&aQueue %1 has had its receive group set to %2."
+                    sendGroup: "&aQueue %1 has had its send group set to %2."
+                    maxPerSender: "&aQueue %1 has had its maximum open requests per sender set to %2."
+            error:
+                notYours: "&4ERROR: You can only do this to a request assigned to you!"
+                queueNotFound: "&4ERROR: Queue '%1' was not found!"
+                requestNotFound: "&4ERROR: Request #%1 was not found! It may have been deleted or it may be in another queue!"
+            help:
+                - "List available queues using /%1 list"
+                - "List a queue's open requests using /%1 <queue> list"
+                - "Send a request using /%1 <queue> send <message>"
+                - "Toggle auto-assign or notifications using /%1 <queue> {notify|autoassign}"
+                - "View a request using /%1 <queue> <request> info"
+                - "Change assignment of a request using /%1 <queue> <request> {own|disown|assign <user>}"
+                - "Change the state of a request using /%1 <queue> <request> {close|hold|open}"
+            hold:
+                alreadyOnHold: "&4ERROR: That request is already on hold!"
+                success: "&aRequest #%1 has been marked as on hold."
+            info:
+                message:
+                    - "&7Request #%1:"
+                    - "&7  Sender: %2"
+                    - "&7  Assigned to: %3"
+                    - "&7  Message: %4"
+                    - "&7  Created at %5"
+                    - "&7  Status: %6"
+                status:
+                    closed: "&4Closed&7 at %1"
+                    hold: "&eOn Hold"
+                    open: "&aOpen"
+                nobody: "&8Nobody"
+            notify:
+                disabled: "&aYou will no longer be notified of new requests on queue %1."
+                enabled: "&aYou will now be notified of new requests on queue %1."
+                newRequest: "&eA new request has been sent to queue %1! Use &7/garequest %1 %2 info&e to see it."
+                unassignedLogin: "&eThere are unassigned requests on queue %1! Use &7/garequest %1 list&e to see them."
+            open:
+                alreadyOpen: "&4ERROR: That request is already open!"
+                maxAssigned: "&4ERROR: You have been assigned the maximum number of requests! Hold or close one before starting another!"
+                success: "&aRequest #%1 has been reopened."
+            queueList:
+                entry:
+                    S: "&7  [&1S&8--&7] %1"
+                    R: "&7  [&8-&2R&8-&7] %1"
+                    V: "&7  [&8--&3V&7] %1"
+                    SR: "&7  [&1S&2R&8-&7] %1"
+                    SV: "&7  [&1S&8-&3V&7] %1"
+                    RV: "&7  [&8-&2R&3V&7] %1"
+                    SRV: "&7  [&1S&2R&3V&7] %1"
+                header: "&7Available queues:"
+                empty: "&7  You do not have permission to see any queues"
+            requestList:
+                header:
+                    assignedToOther: "&7Requests assigned to others:"
+                    assignedToYou: "&7Requests assigned to you:"
+                    unassigned: "&7Unassigned requests:"
+                    yours: "&7Your open requests:"
+                empty: "&7  No requests to display"
+                entry: "&7  [%2] #%1 - %3"
+            send:
+                maxOpen: "&4ERROR: You already have the maximum number of requests open on this queue!"
+                success: "&aYour request has been sent. Use &7/garequest %2 %1 info&a to check the status of your request."
+            header: "&7-----&6 GoldenApple Requests &7-----"
+        select:
+            error:
+                noSelection: "&4ERROR: You must make a selection first!"
+                notBuiltin: "&4ERROR: The selection provider is not builtin!"
+                unknownDirection: "&4ERROR: '%1' is not a valid direction!"
+            update:
+                contract: "&aYour selected region has been contracted %1 blocks %2."
+                expand: "&aYour selected region has been expanded %1 blocks %2."
+                set1: "&aYour selection #1 has been set to (%1, %2, %3)."
+                set2: "&aYour selection #2 has been set to (%1, %2, %3)."
+                shift: "&aYour selected region has been shifted %1 blocks %2."
+        warp:
+            error:
+                cooldown:
+                    death: "&4ERROR: You have recently died! You will be able to teleport again in %1 seconds!"
+                    normal: "&4ERROR: You have just teleported! You will be able to teleport again in %1 seconds!"
+                fail: "&4ERROR: An internal error occurred while modifying warps!"
+                noBack: "&4ERROR: You have nowhere to go back to!"
+                notFound: "&4ERROR: Warp '%1' was not found!"
+                pluginCancel: "&4ERROR: Teleport was cancelled by another plugin!"
+            home:
+                delete:
+                    alias: "&aYour home '%1' has been deleted."
+                    id: "&aYour home #%1 has been deleted."
+                notFound:
+                    other:
+                        alias: "&4ERROR: Player '%1' doesn't have a home with name '%2'."
+                        id: "&4ERROR: Player '%1' doesn't have a home with ID %2."
+                    alias: "&4ERROR: You don't have a home with name '%1'."
+                    id: "&4ERROR: You don't have a home with ID %1."
+                aboveMax: "&4ERROR: You cannot have more than %1 homes!"
+                set: "&aYour home #%1 has been set here."
+            list:
+                header: "&7The following named warps are available to you:"
+                entry: "&7  %1"
+                none: "&7You have no named warps available to you!"
+            spawn:
+                default: "&aYou have been teleported to spawn."
+                other: "&aYou have been teleported to the spawn of world %1."
+            delete: "&aWarp '%1' has been deleted."
+            diedCooldown: "&4You have died and teleportation will be unavailable for %1 seconds!"
+            header: "&7-----&6 GoldenApple Warps &7-----"
+            set: "&aWarp '%1' has been set here."
+            teleportedBy: "&aYou have been teleported by %1&a."
+    shared:
+        parser:
+            groupNotFound:
+                error: "&4ERROR: Failed to find group '%1'"
+                warning: "&eWARNING: Failed to find group '%1'"
+            userNotFound:
+                error: "&4ERROR: Failed to find user '%1'"
+                warning: "&eWARNING: Failed to find user '%1'"
+            worldNotFound:
+                error: "&4ERROR: Failed to find world '%1'"
+                warning: "&eWARNING: Failed to find world '%1'"
+            parameterMissing: "&4ERROR: Parameter missing from option: %1"
+            unknownOption: "&4ERROR: Unknown option: %1"
+        convertError:
+            location: "&4ERROR: '%1 %2 %3' cannot be converted to a location"
+            number: "&4ERROR: '%1' cannot be converted to a number"
+        time:
+            days: "%1 day(s)"
+            hours: "%1 hour(s)"
+            minutes: "%1 minute(s)"
+            seconds: "%1 second(s)"
+        unloadedCommand:
+            generic: "&4ERROR: This command has been disabled"
+            specific: "&4ERROR: This command relies on unloaded module '%1'"
+        values:
+            'no': "&4No"
+            none: "&7None"
+            'yes': "&aYes"
+        consoleNotAllowed: "&4ERROR: You cannot execute this command from the console!"
+        permissionFailure: "&4ERROR: You do not have permission to execute this command! This request has been logged."

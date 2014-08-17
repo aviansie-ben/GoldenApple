@@ -112,7 +112,7 @@ public class AntigriefListener implements Listener, EventExecutor {
 			Location l = event.getClickedBlock().getLocation();
 			if (GoldenApple.getInstanceMainConfig().getBoolean("modules.antigrief.noLightTnt", true) && (PermissionManager.getInstance() == null || !u.hasPermission(AntigriefModuleLoader.tntPermission))) {
 				event.setCancelled(true);
-				u.sendLocalizedMessage("error.antigrief.tnt");
+				u.sendLocalizedMessage("module.antigrief.tnt.blocked");
 				GoldenApple.log(Level.WARNING, u.getName() + " attempted to ignite TNT at (" + l.getBlockX() + ", " + l.getBlockY() + ", " + l.getBlockZ() + ", " + l.getWorld().getName() + ")");
 			} else {
 				GoldenApple.log(Level.WARNING, u.getName() + " has ignited TNT at (" + l.getBlockX() + ", " + l.getBlockY() + ", " + l.getBlockZ() + ", " + l.getWorld().getName() + ")");

@@ -2,8 +2,6 @@ package com.bendude56.goldenapple.warp.command;
 
 import java.util.List;
 
-import org.bukkit.ChatColor;
-
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.command.GoldenAppleCommand;
@@ -26,29 +24,29 @@ public class WarpCommand extends GoldenAppleCommand {
 		if (args.length == 0 || args[0].equalsIgnoreCase("list")) {
 		    List<PermissibleWarp> available = WarpManager.getInstance().getAvailableNamedWarps(user);
 		    
-		    user.sendLocalizedMessage("header.warps");
+		    user.sendLocalizedMessage("module.warp.header");
 		    
 		    if (available.size() > 0) {
-		        user.sendLocalizedMessage("general.warp.list");
+		        user.sendLocalizedMessage("module.warp.list.header");
 		        
 		        for (PermissibleWarp w : available) {
-		            user.getHandle().sendMessage(ChatColor.GRAY + "  " + w.getDisplayName());
+		            user.sendLocalizedMessage("module.warp.list.entry", w.getDisplayName());
 		        }
 		    } else {
-		        user.sendLocalizedMessage("general.warp.listNone");
+		        user.sendLocalizedMessage("module.warp.list.none");
 		    }
 		} else if (args.length == 1) {
     		int deathCooldown = WarpManager.getInstance().getDeathCooldown(user), teleportCooldown = WarpManager.getInstance().getTeleportCooldown(user);
     		PermissibleWarp w = WarpManager.getInstance().getNamedWarp(args[0]);
     		
     		if (w == null) {
-    			user.sendLocalizedMessage("error.warp.notFound", args[0]);
+    			user.sendLocalizedMessage("module.warp.error.notFound", args[0]);
     		} else if (!w.canTeleport(user)) {
     			GoldenApple.logPermissionFail(user, commandLabel, args, true);
     		} else if (deathCooldown > 0) {
-    			user.sendLocalizedMessage("error.warps.cooldownDeath", deathCooldown + "");
+    			user.sendLocalizedMessage("module.warp.error.cooldown.death", deathCooldown);
     		} else if (teleportCooldown > 0) {
-    			user.sendLocalizedMessage("error.warps.cooldown", teleportCooldown + "");
+    			user.sendLocalizedMessage("module.warp.error.cooldown.normal", teleportCooldown);
     		} else {
     			w.teleport(user);
     			WarpManager.getInstance().startTeleportCooldown(user);
@@ -58,14 +56,14 @@ public class WarpCommand extends GoldenAppleCommand {
 		    User u = User.findUser(args[1]);
 		    
 		    if (w == null) {
-		        user.sendLocalizedMessage("error.warp.notFound", args[0]);
+		        user.sendLocalizedMessage("module.warp.error.notFound", args[0]);
 		    } else if (!w.canTeleport(user)) {
 		        GoldenApple.logPermissionFail(user, commandLabel, args, true);
 		    } else if (u == null) {
-		        user.sendLocalizedMessage("shared.userNotFoundError", args[1]);
+		        user.sendLocalizedMessage("shared.parser.userNotFound.error", args[1]);
 		    } else {
 		        w.teleport(u);
-		        u.sendLocalizedMessage("general.warps.teleportBy", user.getDisplayName());
+		        u.sendLocalizedMessage("module.warp.teleportedBy", user.getDisplayName());
 		    }
 		}
 		

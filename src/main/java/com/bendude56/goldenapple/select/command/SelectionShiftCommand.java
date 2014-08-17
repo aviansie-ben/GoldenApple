@@ -18,10 +18,10 @@ public class SelectionShiftCommand extends GoldenAppleCommand {
 		    GoldenApple.logPermissionFail(user, commandLabel, args, true);
 		    return true;
 		} else if (!(SelectManager.getInstance().getSelectionProvider() instanceof SimpleSelectionProvider)) {
-		    user.sendLocalizedMessage("error.select.notBuiltin");
+		    user.sendLocalizedMessage("module.select.error.notBuiltin");
 		    return true;
 		} else if (!SelectManager.getInstance().isSelectionMade(user)) {
-		    user.sendLocalizedMessage("error.select.noSelection");
+		    user.sendLocalizedMessage("module.select.error.noSelection");
 		    return true;
 		}
 
@@ -32,7 +32,7 @@ public class SelectionShiftCommand extends GoldenAppleCommand {
 		try {
 		    amount = Integer.parseInt(args[0]);
 		} catch (NumberFormatException e) {
-		    user.sendLocalizedMessage("shared.notANumber", args[0]);
+		    user.sendLocalizedMessage("shared.convertError.number", args[0]);
 		    return true;
 		}
 
@@ -43,7 +43,7 @@ public class SelectionShiftCommand extends GoldenAppleCommand {
 			d = Direction.fromYawPitch(user.getPlayerHandle().getLocation().getYaw(), user.getPlayerHandle().getLocation().getPitch());
 		}
 		if (d == null) {
-		    user.sendLocalizedMessage("error.select.unknownDirection", args[1]);
+		    user.sendLocalizedMessage("module.select.error.unknownDirection", args[1]);
 		    return true;
 		}
 
@@ -55,7 +55,7 @@ public class SelectionShiftCommand extends GoldenAppleCommand {
 
 		// Perform operation and provide feedback
 		amount = ((SimpleSelectionProvider) SelectManager.getInstance().getSelectionProvider()).shiftSelection(user, amount, d);
-		user.sendLocalizedMessage("general.select.shift", amount + "", d.getFriendlyName(user));
+		user.sendLocalizedMessage("module.select.update.shift", amount , d.getFriendlyName(user));
 		return true;
 	}
 }

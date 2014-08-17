@@ -15,18 +15,18 @@ public class OwnCommand extends GoldenAppleCommand {
 		}
 		
 		if (GoldenApple.getInstanceMainConfig().getBoolean("securityPolicy.disableOwn")) {
-			user.sendLocalizedMessage("error.own.disabled");
+			user.sendLocalizedMessage("module.permissions.own.disabled");
 			GoldenApple.logPermissionFail(user, commandLabel, args, false);
 			return true;
 		}
 		
 		if (args.length == 0 || !args[0].equals("-v")) {
-			user.sendLocalizedMessage("general.own.warnBefore");
+			user.sendLocalizedMessage("module.permissions.own.warning.before");
 			VerifyCommand.commands.put(user, "gaown -v");
 		} else {
 			user.addPermission(PermissionManager.getInstance().getRootNode().getStarPermission());
-			user.sendLocalizedMessage("general.own.success");
-			user.sendLocalizedMessage("general.own.warnAfter");
+			user.sendLocalizedMessage("module.permissions.own.success");
+			user.sendLocalizedMessage("module.permissions.own.warning.after");
 		}
 		
 		return true;

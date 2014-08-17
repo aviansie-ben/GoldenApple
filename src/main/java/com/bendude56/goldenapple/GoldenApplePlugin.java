@@ -119,7 +119,7 @@ public class GoldenApplePlugin extends GoldenApple {
 		// Instantiates all of the managers necessary for base system functions
 		commands = new SimpleCommandManager();
 		database = new SimpleDatabaseManager();
-		locale = new SimpleLocalizationManager(getClassLoader());
+		locale = new SimpleLocalizationManager(getClassLoader(), new File(getDataFolder(), "locale"));
 		modules = new SimpleModuleManager();
 		monitor = new SimplePerformanceMonitor(this);
 		

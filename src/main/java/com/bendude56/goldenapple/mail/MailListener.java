@@ -59,7 +59,7 @@ public class MailListener implements Listener, EventExecutor {
 	    List<MailMessageSent> messages = MailManager.getInstance().getMessages(user, true);
 	    
 	    if (messages.size() > 0) {
-	        user.sendLocalizedMessage("general.mail.joinUnread", messages.size() + "");
+	        user.sendLocalizedMessage("module.mail.notify.joinUnread", messages.size());
 	    }
 	}
 }

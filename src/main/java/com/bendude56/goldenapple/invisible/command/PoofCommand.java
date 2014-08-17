@@ -38,10 +38,10 @@ public class PoofCommand extends DualSyntaxCommand {
             InvisibilityManager.getInstance().setInvisibilityFlag(user, "damage", arg.isDefined("allow-damage"));
             InvisibilityManager.getInstance().setInvisibilityFlag(user, "target", arg.isDefined("allow-target"));
             InvisibilityManager.getInstance().setInvisibilityFlag(user, "pickup", arg.isDefined("allow-pickup"));
-            user.sendLocalizedMessage("general.poof.on");
+            user.sendLocalizedMessage("module.invisible.poof.enable");
         } else {
             InvisibilityManager.getInstance().setInvisible(user, false);
-            user.sendLocalizedMessage("general.poof.off");
+            user.sendLocalizedMessage("module.invisible.poof.disable");
         }
     }
     

@@ -5,7 +5,6 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.logging.Level;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -32,7 +31,7 @@ public class LockCommand extends DualSyntaxCommand {
 		
 		if (!arg.parse(user, args)) return;
 		
-		user.sendLocalizedMessage("header.lock");
+		user.sendLocalizedMessage("module.lock.header");
 		
 		LockedBlock target = null;
 		
@@ -45,7 +44,7 @@ public class LockCommand extends DualSyntaxCommand {
 	            } else {
 	                LockManager.getInstance().setOverrideOn(user, false);
 	                user.setVariable("goldenapple.lock.alwaysOverride", true);
-	                user.sendLocalizedMessage("general.lock.override.alwaysOn");
+	                user.sendLocalizedMessage("module.lock.override.always");
 	            }
 	        } else if (overrideMode.equalsIgnoreCase("on")) {
 	            if (!LockManager.getInstance().canOverride(user)) {
@@ -53,7 +52,7 @@ public class LockCommand extends DualSyntaxCommand {
 	            } else {
 	                LockManager.getInstance().setOverrideOn(user, true);
 	                user.deleteVariable("goldenapple.lock.alwaysOverride");
-	                user.sendLocalizedMessage("general.lock.override.on");
+	                user.sendLocalizedMessage("module.lock.override.enabled");
 	            }
 	        } else if (overrideMode.equalsIgnoreCase("off")) {
 	            if (!LockManager.getInstance().canOverride(user)) {
@@ -61,10 +60,10 @@ public class LockCommand extends DualSyntaxCommand {
 	            } else {
 	                LockManager.getInstance().setOverrideOn(user, false);
 	                user.deleteVariable("goldenapple.lock.alwaysOverride");
-	                user.sendLocalizedMessage("general.lock.override.off");
+	                user.sendLocalizedMessage("module.lock.override.disabled");
 	            }
 	        } else {
-	            user.sendLocalizedMessage("error.lock.unknownOverrideMode", overrideMode);
+	            user.sendLocalizedMessage("module.lock.override.unknownMode", overrideMode);
 	        }
 		    
 		    return;
@@ -75,10 +74,10 @@ public class LockCommand extends DualSyntaxCommand {
 			if (!user.hasPermission(LockManager.addPermission)) {
 				GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			} else if (lockLocation == null) {
-				user.sendLocalizedMessage("error.lock.invalidBlock");
+				user.sendLocalizedMessage("module.lock.error.invalidBlock");
 				return;
 			} else if ((target = LockManager.getInstance().getLock(lockLocation)) != null) {
-				user.sendLocalizedMessage("error.lock.create.alreadyExists");
+				user.sendLocalizedMessage("module.lock.error.alreadyLocked");
 			} else {
 				target = createLock(instance, user, (arg.isDefined("public")) ? LockLevel.PUBLIC : LockLevel.PRIVATE, lockLocation);
 			}
@@ -88,14 +87,14 @@ public class LockCommand extends DualSyntaxCommand {
 			target = LockManager.getInstance().getLock(arg.getLong("select"));
 			
 			if (target == null) {
-				user.sendLocalizedMessage("error.lock.selectNotFound", arg.getLong("select") + "");
+				user.sendLocalizedMessage("module.lock.error.lockNotFound", arg.getLong("select"));
 				return;
 			}
 		} else if (target == null) {
 			target = findLock(user, 10);
 			
 			if (target == null) {
-				user.sendLocalizedMessage("error.lock.notFound");
+				user.sendLocalizedMessage("module.lock.error.notLocked");
 				return;
 			}
 		}
@@ -137,7 +136,7 @@ public class LockCommand extends DualSyntaxCommand {
 	            
 	            setHopperAllow(user, target, false);
 		    } else {
-		        user.sendLocalizedMessage("error.lock.unknownRedstoneMode", redstoneMode);
+		        user.sendLocalizedMessage("module.lock.redstone.unknownMode", redstoneMode);
 		    }
 		}
 		
@@ -158,22 +157,22 @@ public class LockCommand extends DualSyntaxCommand {
 		        } else if (accessLevel.equalsIgnoreCase("f") || accessLevel.equalsIgnoreCase("full")) {
 		            l = GuestLevel.FULL;
 		        } else {
-		            user.sendLocalizedMessage("error.lock.unknownAccessLevel", accessLevel);
+		            user.sendLocalizedMessage("module.lock.share.unknownLevel", accessLevel);
 		            continue;
 		        }
 		        
 		        if (!target.canInvite(user)) {
 		            GoldenApple.logPermissionFail(user, commandLabel, args, true);
 		            if (target.getOverrideLevel(user).levelId >= GuestLevel.ALLOW_INVITE.levelId) {
-                        user.sendLocalizedMessage("general.lock.overrideAvailable.complex");
+                        user.sendLocalizedMessage("module.lock.override.available.complex");
                     }
 		            return;
 		        } else if (target.getOwner() == guest.getId()) {
-                    user.sendLocalizedMessage("error.lock.inviteOwner");
+                    user.sendLocalizedMessage("module.lock.share.ownerEdit");
 		        } else if (!target.hasFullControl(user) && ((l == GuestLevel.NONE && target.getActualLevel(guest).levelId >= GuestLevel.ALLOW_INVITE.levelId) || l.levelId >= GuestLevel.ALLOW_INVITE.levelId)) {
 		            GoldenApple.logPermissionFail(user, commandLabel, args, true);
 		            if (target.getOverrideLevel(user).levelId >= GuestLevel.FULL.levelId) {
-                        user.sendLocalizedMessage("general.lock.overrideAvailable.complex");
+                        user.sendLocalizedMessage("module.lock.override.available.complex");
                     }
                     return;
 		        } else if (l == GuestLevel.NONE) {
@@ -201,14 +200,14 @@ public class LockCommand extends DualSyntaxCommand {
                 } else if (accessLevel.equalsIgnoreCase("f") || accessLevel.equalsIgnoreCase("full")) {
                     l = GuestLevel.FULL;
                 } else {
-                    user.sendLocalizedMessage("error.lock.unknownAccessLevel", accessLevel);
+                    user.sendLocalizedMessage("module.lock.share.unknownLevel", accessLevel);
                     continue;
                 }
                 
                 if (!target.hasFullControl(user)) {
                     GoldenApple.logPermissionFail(user, commandLabel, args, true);
                     if (target.getOverrideLevel(user).levelId >= GuestLevel.FULL.levelId) {
-                        user.sendLocalizedMessage("general.lock.overrideAvailable.complex");
+                        user.sendLocalizedMessage("module.lock.override.available.complex");
                     }
                     return;
                 } else if (l == GuestLevel.NONE) {
@@ -227,31 +226,31 @@ public class LockCommand extends DualSyntaxCommand {
 	@Override
 	public void onExecuteSimple(GoldenApple instance, User user, String commandLabel, String[] args) {
 		if (!(user.getHandle() instanceof Player))
-			user.sendLocalizedMessage("shared.noConsole");
+			user.sendLocalizedMessage("shared.consoleNotAllowed");
 
 		if (args.length == 0 || args[0].equals("-?") || args[0].equals("help")) {
 			sendHelp(user, commandLabel, false);
 			return;
 		}
 
-		user.sendLocalizedMessage("header.lock");
+		user.sendLocalizedMessage("module.lock.header");
 
 		if (args[0].equalsIgnoreCase("create")) {
 			Location lockLocation = findLockableBlock(user, 10);
 			if (!user.hasPermission(LockManager.addPermission)) {
 				GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			} else if (lockLocation == null) {
-				user.sendLocalizedMessage("error.lock.invalidBlock");
+				user.sendLocalizedMessage("module.lock.error.invalidBlock");
 			} else if (LockManager.getInstance().getLock(lockLocation) != null) {
-				user.sendLocalizedMessage("error.lock.create.alreadyExists");
+				user.sendLocalizedMessage("module.lock.error.alreadyLocked");
 			} else if (args.length > 2) {
-				user.sendLocalizedMessage("shared.unknownOption", args[2]);
+				user.sendLocalizedMessage("shared.parser.unknownOption", args[2]);
 			} else if (args.length == 1) {
 				createLock(instance, user, LockLevel.PRIVATE, lockLocation);
 			} else if (args.length == 2 && args[1].equalsIgnoreCase("public")) {
 				createLock(instance, user, LockLevel.PUBLIC, lockLocation);
 			} else {
-				user.sendLocalizedMessage("shared.unknownOption", args[1]);
+				user.sendLocalizedMessage("shared.parser.unknownOption", args[1]);
 			}
 		} else if (args[0].equalsIgnoreCase("override")) {
 			if (args.length == 1) {
@@ -263,14 +262,14 @@ public class LockCommand extends DualSyntaxCommand {
 							GoldenApple.logPermissionFail(user, commandLabel, args, true);
 						} else {
 							LockManager.getInstance().setOverrideOn(user, false);
-							user.sendLocalizedMessage("general.lock.override.off");
+							user.sendLocalizedMessage("module.lock.override.disabled");
 						}
 					} else {
 						if (!LockManager.getInstance().canOverride(user)) {
 							GoldenApple.logPermissionFail(user, commandLabel, args, true);
 						} else {
 							LockManager.getInstance().setOverrideOn(user, true);
-							user.sendLocalizedMessage("general.lock.override.on");
+							user.sendLocalizedMessage("module.lock.override.enabled");
 						}
 					}
 				}
@@ -279,46 +278,46 @@ public class LockCommand extends DualSyntaxCommand {
 					GoldenApple.logPermissionFail(user, commandLabel, args, true);
 				} else {
 					LockManager.getInstance().setOverrideOn(user, true);
-					user.sendLocalizedMessage("general.lock.override.on");
+					user.sendLocalizedMessage("module.lock.override.enabled");
 				}
 			} else if (args[1].equalsIgnoreCase("off")) {
 				if (!LockManager.getInstance().canOverride(user)) {
 					GoldenApple.logPermissionFail(user, commandLabel, args, true);
 				} else {
 					LockManager.getInstance().setOverrideOn(user, false);
-					user.sendLocalizedMessage("general.lock.override.off");
+					user.sendLocalizedMessage("module.lock.override.disabled");
 				}
 			} else {
-				user.sendLocalizedMessage("shared.unknownOption", args[1]);
+				user.sendLocalizedMessage("module.lock.override.unknownMode", args[1]);
 			}
 		} else {
 			LockedBlock lock = findLock(user, 10);
 
 			if (lock == null) {
-				user.sendLocalizedMessage("error.lock.notFound");
+				user.sendLocalizedMessage("module.lock.error.notLocked");
 				return;
 			}
 
 			if (args[0].equalsIgnoreCase("delete")) {
 				if (args.length > 1) {
-					user.sendLocalizedMessage("shared.unknownOption", args[1]);
+					user.sendLocalizedMessage("shared.parser.unknownOption", args[1]);
 				} else if (!lock.canModifyBlock(user)) {
 					GoldenApple.logPermissionFail(user, commandLabel, args, true);
 					if (lock.getOverrideLevel(user).levelId >= GuestLevel.ALLOW_BLOCK_MODIFY.levelId) {
-						user.sendLocalizedMessage("general.lock.overrideAvailable.simple");
+						user.sendLocalizedMessage("module.lock.override.available.simple");
 					}
 				} else {
 					deleteLock(instance, user, lock.getLockId());
 				}
 			} else if (args[0].equalsIgnoreCase("invite")) {
 				if (args.length == 1) {
-					user.sendLocalizedMessage("shared.parameterMissing", "invite");
+					user.sendLocalizedMessage("shared.parser.parameterMissing", "invite");
 				} else if (args.length > 2) {
-					user.sendLocalizedMessage("shared.unknownOption", args[2]);
+					user.sendLocalizedMessage("shared.parser.unknownOption", args[2]);
 				} else if (!lock.canInvite(user)) {
 					GoldenApple.logPermissionFail(user, commandLabel, args, true);
 					if (lock.getOverrideLevel(user).levelId >= GuestLevel.ALLOW_INVITE.levelId) {
-						user.sendLocalizedMessage("general.lock.overrideAvailable.simple");
+						user.sendLocalizedMessage("module.lock.override.available.simple");
 					}
 					return;
 				} else {
@@ -326,13 +325,13 @@ public class LockCommand extends DualSyntaxCommand {
 				}
 			} else if (args[0].equalsIgnoreCase("uninvite")) {
 				if (args.length == 1) {
-					user.sendLocalizedMessage("shared.parameterMissing", "uninvite");
+					user.sendLocalizedMessage("shared.parser.parameterMissing", "uninvite");
 				} else if (args.length > 2) {
-					user.sendLocalizedMessage("shared.unknownOption", args[2]);
+					user.sendLocalizedMessage("shared.parser.unknownOption", args[2]);
 				} else if (!lock.canInvite(user)) {
 					GoldenApple.logPermissionFail(user, commandLabel, args, true);
 					if (lock.getOverrideLevel(user).levelId >= GuestLevel.FULL.levelId) {
-						user.sendLocalizedMessage("general.lock.overrideAvailable.simple");
+						user.sendLocalizedMessage("module.lock.override.available.simple");
 					}
 					return;
 				} else {
@@ -340,13 +339,13 @@ public class LockCommand extends DualSyntaxCommand {
 				}
 			} else if (args[0].equalsIgnoreCase("access")) {
 				if (args.length == 1) {
-					user.sendLocalizedMessage("shared.parameterMissing", "share");
+					user.sendLocalizedMessage("shared.parser.parameterMissing", "access");
 				} else if (args.length > 2) {
-					user.sendLocalizedMessage("shared.unknownOption", args[2]);
+					user.sendLocalizedMessage("shared.parser.unknownOption", args[2]);
 				} else if (!lock.canModifyBlock(user)) {
 					GoldenApple.logPermissionFail(user, commandLabel, args, true);
 					if (lock.getOverrideLevel(user).levelId >= GuestLevel.ALLOW_BLOCK_MODIFY.levelId) {
-						user.sendLocalizedMessage("general.lock.overrideAvailable.simple");
+						user.sendLocalizedMessage("module.lock.override.available.simple");
 					}
 					return;
 				} else {
@@ -354,13 +353,13 @@ public class LockCommand extends DualSyntaxCommand {
 				}
 			} else if (args[0].equalsIgnoreCase("redstone")) {
 				if (args.length == 1) {
-					user.sendLocalizedMessage("shared.parameterMissing", "redstone");
+					user.sendLocalizedMessage("shared.parser.parameterMissing", "redstone");
 				} else if (args.length > 2) {
-					user.sendLocalizedMessage("shared.unknownOption", args[2]);
+					user.sendLocalizedMessage("shared.parser.unknownOption", args[2]);
 				} else if (!lock.canModifyBlock(user)) {
 					GoldenApple.logPermissionFail(user, commandLabel, args, true);
 					if (lock.getOverrideLevel(user).levelId >= GuestLevel.ALLOW_BLOCK_MODIFY.levelId) {
-						user.sendLocalizedMessage("general.lock.overrideAvailable.simple");
+						user.sendLocalizedMessage("module.lock.override.available.simple");
 					}
 					return;
 				} else {
@@ -369,7 +368,7 @@ public class LockCommand extends DualSyntaxCommand {
 			} else if (args[0].equalsIgnoreCase("info")) {
 				getInfo(instance, user, lock);
 			} else {
-				user.sendLocalizedMessage("shared.unknownOption", args[0]);
+				user.sendLocalizedMessage("shared.parser.unknownOption", args[0]);
 			}
 		}
 	}
@@ -407,12 +406,14 @@ public class LockCommand extends DualSyntaxCommand {
 			getInfo(instance, user, lock);
 			return lock;
 		} catch (InvocationTargetException e) {
-			user.sendLocalizedMessage("error.lock.create.invalidRegistered", LockedBlock.getBlock(loc.getBlock().getType()).plugin.getName());
+			user.sendLocalizedMessage("module.lock.error.invalidRegisteredBlock", LockedBlock.getBlock(loc.getBlock().getType()).plugin.getName());
 			GoldenApple.log(Level.SEVERE, "Failed to lock block due to RegisteredBlock failure (Plugin: " + LockedBlock.getBlock(loc.getBlock().getType()).plugin.getName() + ")");
 			GoldenApple.log(Level.SEVERE, e);
 			return null;
 		} catch (SQLException e) {
-			user.sendLocalizedMessage("error.lock.create.ioError");
+			user.sendLocalizedMessage("module.lock.error.sqlError");
+			GoldenApple.log(Level.SEVERE, "Failed to lock block due to SQL error:");
+			GoldenApple.log(Level.SEVERE, e);
 			return null;
 		}
 	}
@@ -420,9 +421,11 @@ public class LockCommand extends DualSyntaxCommand {
 	private void deleteLock(GoldenApple instance, User user, long id) {
 		try {
 			LockManager.getInstance().deleteLock(id);
-			user.sendLocalizedMessage("general.lock.delete.success");
+			user.sendLocalizedMessage("module.lock.delete.success");
 		} catch (SQLException e) {
-			user.sendLocalizedMessage("error.lock.delete.ioError");
+			user.sendLocalizedMessage("module.lock.error.sqlError");
+			GoldenApple.log(Level.SEVERE, "Failed to unlock block due to SQL error:");
+            GoldenApple.log(Level.SEVERE, e);
 		}
 	}
 
@@ -430,7 +433,7 @@ public class LockCommand extends DualSyntaxCommand {
 		IPermissionUser gUser = PermissionManager.getInstance().findUser(guest, false);
 
 		if (gUser == null) {
-			user.sendLocalizedMessage("shared.userNotFoundWarning", guest);
+			user.sendLocalizedMessage("shared.parser.userNotFound.warning", guest);
 		} else {
 			addUser(instance, user, lock, gUser, level);
 		}
@@ -438,14 +441,14 @@ public class LockCommand extends DualSyntaxCommand {
 	
 	private void addUser(GoldenApple instance, User user, LockedBlock lock, IPermissionUser guest, GuestLevel level) {
 		lock.addUser(guest, level);
-		user.sendLocalizedMessage("general.lock.guest.add.success", guest.getName());
+		user.sendLocalizedMessage("module.lock.share.successAdd", guest.getName());
 	}
 
 	private void removeUser(GoldenApple instance, User user, LockedBlock lock, String guest, String commandLabel, String[] args) {
 		IPermissionUser gUser = PermissionManager.getInstance().findUser(guest, false);
 
 		if (gUser == null) {
-			user.sendLocalizedMessage("shared.userNotFoundWarning", guest);
+			user.sendLocalizedMessage("shared.parser.userNotFound.warning", guest);
 		} else if (lock.getActualLevel(gUser).levelId > GuestLevel.USE.levelId && !lock.hasFullControl(user)) {
 			GoldenApple.logPermissionFail(user, commandLabel, args, true);
 		} else {
@@ -455,68 +458,73 @@ public class LockCommand extends DualSyntaxCommand {
 	
 	private void removeUser(GoldenApple instance, User user, LockedBlock lock, IPermissionUser guest) {
 		lock.remUser(guest);
-		user.sendLocalizedMessage("general.lock.guest.remove.success", guest.getName());
+		user.sendLocalizedMessage("module.lock.share.successRemove", guest.getName());
 	}
 	
 	private void addGroup(GoldenApple instance, User user, LockedBlock lock, IPermissionGroup guest, GuestLevel level) {
 		lock.addGroup(guest, level);
-		user.sendLocalizedMessage("general.lock.guest.add.success", guest.getName());
+		user.sendLocalizedMessage("module.lock.share.successAdd", guest.getName());
 	}
 	
 	private void removeGroup(GoldenApple instance, User user, LockedBlock lock, IPermissionGroup guest) {
 		lock.remGroup(guest);
-		user.sendLocalizedMessage("general.lock.guest.remove.success", guest.getName());
+		user.sendLocalizedMessage("module.lock.share.successRemove", guest.getName());
 	}
 
 	private void changeAccess(GoldenApple instance, User user, LockedBlock lock, String access) {
 		LockLevel accessLevel;
 		if (access.equalsIgnoreCase("private")) {
 			accessLevel = LockLevel.PRIVATE;
-			access = GoldenApple.getInstance().getLocalizationManager().getMessage(user, "general.lock.info.private");
 		} else if (access.equalsIgnoreCase("public")) {
 			accessLevel = LockLevel.PUBLIC;
-			access = GoldenApple.getInstance().getLocalizationManager().getMessage(user, "general.lock.info.public");
 		} else {
-			user.sendLocalizedMessage("error.lock.access.unknown", access);
+			user.sendLocalizedMessage("module.lock.access.unknownLevel", access);
 			return;
 		}
 
 		lock.setLevel(accessLevel);
-		user.sendLocalizedMessage("general.lock.access.success", access);
+		
+		if (accessLevel == LockLevel.PRIVATE) {
+		    user.sendLocalizedMessage("module.lock.access.private");
+		} else if (accessLevel == LockLevel.PUBLIC) {
+		    user.sendLocalizedMessage("module.lock.access.public");
+		}
 	}
 
 	private void getInfo(GoldenApple instance, User user, LockedBlock b) {
-		String access = ChatColor.RED + "???";
-		String redstone;
+		user.sendLocalizedMessage("module.lock.info.id", b.getLockId());
+		user.sendLocalizedMessage("module.lock.info.owner", PermissionManager.getInstance().getUser(b.getOwner()).getName());
 		
 		switch (b.getLevel()) {
 			case PUBLIC:
-				access = GoldenApple.getInstance().getLocalizationManager().getMessage(user, "general.lock.info.public");
+				user.sendLocalizedMessage("module.lock.info.access.public");
 				break;
 			case PRIVATE:
-				access = GoldenApple.getInstance().getLocalizationManager().getMessage(user, "general.lock.info.private");
-				break;
-			default:
+			    user.sendLocalizedMessage("module.lock.info.access.private");
 				break;
 		}
 		
-		if (b.isRedstoneAccessApplicable() || b.isHopperAccessApplicable())
-			redstone = GoldenApple.getInstance().getLocalizationManager().getMessage(user, (b.getAllowExternal()) ? "general.lock.info.enabled" : "general.lock.info.disabled");
-		else
-			redstone = GoldenApple.getInstance().getLocalizationManager().getMessage(user, "general.lock.info.na");
+		if (b.isRedstoneAccessApplicable() && b.isHopperAccessApplicable()) {
+		    user.sendLocalizedMessage((b.getAllowExternal()) ? "module.lock.info.external.both.enabled" : "module.lock.info.external.both.disabled");
+		} else if (b.isHopperAccessApplicable()) {
+		    user.sendLocalizedMessage((b.getAllowExternal()) ? "module.lock.info.external.hopper.enabled" : "module.lock.info.external.hopper.disabled");
+		} else if (b.isRedstoneAccessApplicable()) {
+		    user.sendLocalizedMessage((b.getAllowExternal()) ? "module.lock.info.external.redstone.enabled" : "module.lock.info.external.redstone.disabled");
+		}
 		
-		user.sendLocalizedMultilineMessage("general.lock.info", String.valueOf(b.getLockId()), PermissionManager.getInstance().getUser(b.getOwner()).getName(), access, b.getTypeIdentifier(), redstone);
+		// TODO Only display when enabled in config
+		user.sendLocalizedMessage("module.lock.info.type", b.getTypeIdentifier());
 	}
 	
 	private void setHopperAllow(User user, LockedBlock lock, boolean allow) {
 		lock.setAllowExternal(allow);
 		lock.save();
-		user.sendLocalizedMessage((allow) ? "general.lock.redstone.on" : "general.lock.redstone.off");
+		user.sendLocalizedMessage((allow) ? "module.lock.redstone.enabled" : "module.lock.redstone.disabled");
 	}
 	
 	private void sendHelp(User user, String commandLabel, boolean complex) {
-		user.sendLocalizedMessage("header.help");
-		user.sendLocalizedMultilineMessage((complex) ? "help.lock.complex" : "help.lock.simple", commandLabel);
+		user.sendLocalizedMessage("module.lock.header");
+		user.sendLocalizedMessage((complex) ? "module.lock.help.complex" : "module.lock.help.simple", commandLabel);
 	}
 	
 	private ArgumentInfo[] getArguments() {

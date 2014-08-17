@@ -23,16 +23,16 @@ public class TellSpyCommand extends GoldenAppleCommand {
         if (args[0].equalsIgnoreCase("on")) {
             if (!spy) {
                 ChatManager.getInstance().setTellSpyStatus(user, true);
-                user.sendLocalizedMessage("general.tellspy.on");
+                user.sendLocalizedMessage("module.chat.tell.spy.enabled");
             } else {
-                user.sendLocalizedMessage("error.tellspy.alreadyOn");
+                user.sendLocalizedMessage("module.chat.tell.spy.alreadyEnabled");
             }
         } else if (args[0].equalsIgnoreCase("off")) {
             if (spy) {
                 ChatManager.getInstance().setTellSpyStatus(user, false);
-                user.sendLocalizedMessage("general.tellspy.off");
+                user.sendLocalizedMessage("module.chat.tell.spy.disabled");
             } else {
-                user.sendLocalizedMessage("error.tellspy.alreadyOff");
+                user.sendLocalizedMessage("module.chat.tell.spy.alreadyDisabled");
             }
         } else {
             return false;

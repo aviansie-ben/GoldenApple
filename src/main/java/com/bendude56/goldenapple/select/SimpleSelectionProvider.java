@@ -5,7 +5,6 @@ import java.util.HashMap;
 import org.bukkit.Location;
 import org.bukkit.World;
 
-import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
 
 public class SimpleSelectionProvider implements ISelectionProvider {
@@ -316,7 +315,7 @@ public class SimpleSelectionProvider implements ISelectionProvider {
         }
         
         public String getFriendlyName(User user) {
-            return GoldenApple.getInstance().getLocalizationManager().getMessage(user, friendlyName);
+            return user.getLocalizedMessage(friendlyName);
         }
         
         public String getCommandName(User user) {

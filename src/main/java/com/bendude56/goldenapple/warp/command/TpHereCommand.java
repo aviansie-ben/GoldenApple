@@ -16,15 +16,15 @@ public class TpHereCommand extends GoldenAppleCommand {
 		} else {
 			User user2 = User.findUser(args[0]);
 			if (!(user.getHandle() instanceof Player)) {
-				user.sendLocalizedMessage("shared.noConsole");
+				user.sendLocalizedMessage("shared.consoleNotAllowed");
 			} else if (!user.hasPermission(WarpManager.tpOtherToSelfPermission)) {
 				GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			} else if (user2 == null) {
-				user.sendLocalizedMessage("shared.userNotFoundError", args[0]);
+				user.sendLocalizedMessage("shared.parser.userNotFound.error", args[0]);
 			} else if (user2.getPlayerHandle().teleport(user.getPlayerHandle(), TeleportCause.COMMAND)) {
-				user2.sendLocalizedMessage("general.warps.teleportBy", user.getName());
+				user2.sendLocalizedMessage("shared.warp.teleportedBy", user.getName());
 			} else {
-				user.sendLocalizedMessage("error.warps.pluginCancel");
+				user.sendLocalizedMessage("module.warp.error.pluginCancel");
 			}
 		}
 		

@@ -16,22 +16,22 @@ public class BackCommand extends GoldenAppleCommand {
 			if (!user.hasPermission(WarpManager.backPermission)) {
 				GoldenApple.logPermissionFail(user, commandLabel, args, true);
 			} else if (!WarpListener.backLocation.containsKey(user)) {
-				user.sendLocalizedMessage("error.warps.noBack");
+				user.sendLocalizedMessage("module.warp.error.noBack");
 			} else {
 				int deathCooldown = WarpManager.getInstance().getDeathCooldown(user), teleportCooldown = WarpManager.getInstance().getTeleportCooldown(user);
 				
 				if (deathCooldown > 0) {
-					user.sendLocalizedMessage("error.warps.cooldownDeath", deathCooldown + "");
+					user.sendLocalizedMessage("module.warp.error.cooldown.death", deathCooldown );
 				} else if (teleportCooldown > 0) {
-					user.sendLocalizedMessage("error.warps.cooldown", teleportCooldown + "");
+					user.sendLocalizedMessage("module.warp.error.cooldown.normal", teleportCooldown );
 				} else if (!user.getPlayerHandle().teleport(WarpListener.backLocation.get(user), TeleportCause.COMMAND)) {
-					user.sendLocalizedMessage("error.warps.pluginCancel");
+					user.sendLocalizedMessage("module.warp.error.pluginCancel");
 				} else {
 					WarpManager.getInstance().startTeleportCooldown(user);
 				}
 			}
 		} else {
-			user.sendLocalizedMessage("shared.noConsole");
+			user.sendLocalizedMessage("shared.consoleNotAllowed");
 		}
 		
 		return true;

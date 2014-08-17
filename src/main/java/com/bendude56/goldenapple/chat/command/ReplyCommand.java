@@ -19,7 +19,7 @@ public class ReplyCommand extends GoldenAppleCommand {
         }
         
         if (!ChatManager.getInstance().sendReplyMessage(user, message)) {
-            user.sendLocalizedMessage("error.reply.nobody");
+            user.sendLocalizedMessage("module.chat.tell.noReply");
         }
         
         return true;

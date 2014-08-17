@@ -23,16 +23,16 @@ public class SpawnCommand extends GoldenAppleCommand {
 					World world = (w.equals("current")) ? user.getPlayerHandle().getWorld() : Bukkit.getWorld(w);
 					
 					if (world == null) {
-						user.sendLocalizedMessage("shared.worldNotFoundError", w);
+						user.sendLocalizedMessage("shared.parser.worldNotFound.error", w);
 					} else if (deathCooldown > 0) {
-						user.sendLocalizedMessage("error.warps.cooldownDeath", deathCooldown + "");
+						user.sendLocalizedMessage("module.warp.error.cooldown.death", deathCooldown);
 					} else if (teleportCooldown > 0) {
-						user.sendLocalizedMessage("error.warps.cooldown", teleportCooldown + "");
+						user.sendLocalizedMessage("module.warp.error.cooldown.normal", teleportCooldown);
 					} else if (user.getPlayerHandle().teleport(world.getSpawnLocation(), TeleportCause.COMMAND)) {
-						user.sendLocalizedMessage("general.warps.teleportSpawn");
+						user.sendLocalizedMessage("module.warp.spawn.default");
 						WarpManager.getInstance().startTeleportCooldown(user);
 					} else {
-						user.sendLocalizedMessage("error.warps.pluginCancel");
+						user.sendLocalizedMessage("module.warp.error.pluginCancel");
 					}
 				}
 			} else {
@@ -41,20 +41,20 @@ public class SpawnCommand extends GoldenAppleCommand {
 				if (!user.hasPermission(WarpManager.spawnAllPermission)) {
 					GoldenApple.logPermissionFail(user, commandLabel, args, true);
 				} else if (w == null) {
-					user.sendLocalizedMessage("shared.worldNotFoundError", args[0]);
+					user.sendLocalizedMessage("shared.parser.worldNotFound.rrror", args[0]);
 				} else if (deathCooldown > 0) {
-					user.sendLocalizedMessage("error.warps.cooldownDeath", deathCooldown + "");
+					user.sendLocalizedMessage("module.warp.error.cooldown.death", deathCooldown);
 				} else if (teleportCooldown > 0) {
-					user.sendLocalizedMessage("error.warps.cooldown", teleportCooldown + "");
+					user.sendLocalizedMessage("module.warp.error.cooldown.normal", teleportCooldown);
 				} else if (user.getPlayerHandle().teleport(w.getSpawnLocation(), TeleportCause.COMMAND)) {
-					user.sendLocalizedMessage("general.warps.teleportSpawnWorld", w.getName());
+					user.sendLocalizedMessage("module.warp.spawn.other", w.getName());
 					WarpManager.getInstance().startTeleportCooldown(user);
 				} else {
-					user.sendLocalizedMessage("error.warps.pluginCancel");
+					user.sendLocalizedMessage("module.warp.error.pluginCancel");
 				}
 			}
 		} else {
-			user.sendLocalizedMessage("shared.noConsole");
+			user.sendLocalizedMessage("shared.consoleNotAllowed");
 		}
 		
 		return true;

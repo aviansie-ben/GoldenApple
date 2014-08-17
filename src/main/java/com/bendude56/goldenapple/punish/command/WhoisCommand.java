@@ -17,7 +17,7 @@ public class WhoisCommand extends GoldenAppleCommand {
 		if (args.length != 1) return false;
 		
 		if (user.hasPermission(PunishmentManager.whoisPermission)) {
-			user.sendLocalizedMessage("header.punish");
+			user.sendLocalizedMessage("module.punish.header");
 			
 			IPermissionUser target = PermissionManager.getInstance().findUser(args[0], false);
 			
@@ -30,25 +30,25 @@ public class WhoisCommand extends GoldenAppleCommand {
 					none = false;
 					
 					if (p instanceof PunishmentBan) {
-						if (p.isPermanent()) user.sendLocalizedMessage("general.whois.ban.permanent", target.getName());
-						else user.sendLocalizedMessage("general.whois.ban.temporary", target.getName(), p.getRemainingDuration().toString());
+						if (p.isPermanent()) user.sendLocalizedMessage("module.punish.whois.ban.perm", target.getName());
+						else user.sendLocalizedMessage("module.punish.whois.ban.temp", target.getName(), p.getRemainingDuration().toString(user));
 					} else if (p instanceof PunishmentMute) {
 						if (((PunishmentMute)p).isGlobal()) {
-							if (p.isPermanent()) user.sendLocalizedMessage("general.whois.globalmute.permanent", target.getName());
-							else user.sendLocalizedMessage("general.whois.globalmute.temporary", target.getName(), p.getRemainingDuration().toString());
+							if (p.isPermanent()) user.sendLocalizedMessage("module.punish.whois.globalMute.perm", target.getName());
+							else user.sendLocalizedMessage("module.punish.whois.globalMute.temp", target.getName(), p.getRemainingDuration().toString(user));
 						} else {
-							if (p.isPermanent()) user.sendLocalizedMessage("general.whois.mute.permanent", target.getName(), ((PunishmentMute)p).getChannelIdentifier());
-							else user.sendLocalizedMessage("general.whois.mute.temporary", target.getName(), ((PunishmentMute)p).getChannelIdentifier(), p.getRemainingDuration().toString());
+							if (p.isPermanent()) user.sendLocalizedMessage("module.punish.whois.mute.perm", target.getName(), ((PunishmentMute)p).getChannelIdentifier());
+							else user.sendLocalizedMessage("module.punish.whois.mute.temp", target.getName(), ((PunishmentMute)p).getChannelIdentifier(), p.getRemainingDuration().toString(user));
 						}
 					} else {
-						if (p.isPermanent()) user.sendLocalizedMessage("general.whois.unknown.permanent", target.getName(), p.getClass().getName());
-						else user.sendLocalizedMessage("general.whois.unknown.temporary", target.getName(), p.getClass().getName(), p.getRemainingDuration().toString());
+						if (p.isPermanent()) user.sendLocalizedMessage("module.punish.whois.unknown.perm", target.getName(), p.getClass().getName());
+						else user.sendLocalizedMessage("module.punish.whois.unknown.temp", target.getName(), p.getClass().getName(), p.getRemainingDuration().toString(user));
 					}
 				}
 				
-				if (none) user.sendLocalizedMessage("general.whois.none", target.getName());
+				if (none) user.sendLocalizedMessage("module.punish.whois.none", target.getName());
 			} else {
-				user.sendLocalizedMessage("shared.userNotFoundError", args[0]);
+				user.sendLocalizedMessage("shared.parser.userNotFound.error", args[0]);
 			}
 		} else {
 			GoldenApple.logPermissionFail(user, commandLabel, args, true);

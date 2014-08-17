@@ -157,7 +157,7 @@ public class InvisibilityListener implements Listener, EventExecutor {
             event.setCancelled(true);
             
             if (loud) {
-                user.sendLocalizedMessage("error.poof.noInteract");
+                user.sendLocalizedMessage("module.invisible.noInteract");
             }
         }
     }

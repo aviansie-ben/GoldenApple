@@ -25,7 +25,7 @@ public class MailCommand extends GoldenAppleCommand {
             return true;
         }
         
-        user.sendLocalizedMessage("header.mail");
+        user.sendLocalizedMessage("module.mail.header");
         
         if (args.length == 0 || args[0].equalsIgnoreCase("all") || args[0].equalsIgnoreCase("list") || args[0].equalsIgnoreCase("unread")) {
             boolean unreadOnly = args.length != 0 && args[0].equalsIgnoreCase("unread");
@@ -38,7 +38,7 @@ public class MailCommand extends GoldenAppleCommand {
                 try {
                     page = Integer.parseInt(args[1]);
                 } catch (NumberFormatException e) {
-                    user.sendLocalizedMessage("shared.notANumber", args[1]);
+                    user.sendLocalizedMessage("shared.convertError.number", args[1]);
                     return true;
                 }
             }
@@ -50,42 +50,42 @@ public class MailCommand extends GoldenAppleCommand {
             }
             
             if (messages.size() > 0) {
-                user.sendLocalizedMessage((unreadOnly) ? "general.mail.inboxUnread" : "general.mail.inboxAll", messages.size() + "", page + "", maxPage + "");
+                user.sendLocalizedMessage((unreadOnly) ? "module.mail.inbox.header.unread" : "module.mail.inbox.header.unread", messages.size(), page, maxPage);
                 
                 for (int i = ((page - 1) * 5); i < (page * 5) && i < messages.size(); i++) {
                     MailMessageSent message = messages.get(i);
                     
                     if (message.getSenderId() == -1) {
                         if (message.getStatus() == MailStatus.UNREAD) {
-                            user.sendLocalizedMessage("general.mail.list.system.unread", MailManager.getInstance().getUserSpecificNumber(message) + "", message.getSubject(user));
+                            user.sendLocalizedMessage("module.mail.inbox.entry.system.unread", MailManager.getInstance().getUserSpecificNumber(message), message.getSubject(user));
                         } else {
-                            user.sendLocalizedMessage("general.mail.list.system.read", MailManager.getInstance().getUserSpecificNumber(message) + "", message.getSubject(user));
+                            user.sendLocalizedMessage("module.mail.inbox.entry.system.read", MailManager.getInstance().getUserSpecificNumber(message), message.getSubject(user));
                         }
                     } else {
                         if (message.getStatus() == MailStatus.UNREAD) {
-                            user.sendLocalizedMessage("general.mail.list.player.unread", MailManager.getInstance().getUserSpecificNumber(message) + "", message.getSubject(user), message.getSender().getName());
+                            user.sendLocalizedMessage("module.mail.inbox.entry.player.unread", MailManager.getInstance().getUserSpecificNumber(message), message.getSubject(user), message.getSender().getName());
                         } else if (message.getStatus() == MailStatus.REPLIED) {
-                            user.sendLocalizedMessage("general.mail.list.player.replied", MailManager.getInstance().getUserSpecificNumber(message) + "", message.getSubject(user), message.getSender().getName());
+                            user.sendLocalizedMessage("module.mail.inbox.entry.player.replied", MailManager.getInstance().getUserSpecificNumber(message), message.getSubject(user), message.getSender().getName());
                         } else {
-                            user.sendLocalizedMessage("general.mail.list.player.read", MailManager.getInstance().getUserSpecificNumber(message) + "", message.getSubject(user), message.getSender().getName());
+                            user.sendLocalizedMessage("module.mail.inbox.entry.player.read", MailManager.getInstance().getUserSpecificNumber(message), message.getSubject(user), message.getSender().getName());
                         }
                     }
                 }
                 
                 if (args.length == 0) {
                     if (maxPage > 1) {
-                        user.sendLocalizedMessage("general.mail.more");
+                        user.sendLocalizedMessage("module.mail.inbox.moreHint");
                     }
                     
-                    user.sendLocalizedMessage("general.mail.readHelp");
+                    user.sendLocalizedMessage("module.mail.inbox.readHint");
                 }
                 
             } else {
-                user.sendLocalizedMessage((unreadOnly) ? "general.mail.inboxUnreadEmpty" : "general.mail.inboxAllEmpty");
+                user.sendLocalizedMessage((unreadOnly) ? "module.mail.inbox.empty.unread" : "module.mail.inbox.empty.unread");
             }
         } else if (args[0].equalsIgnoreCase("read")) {
             if (args.length < 2) {
-                user.sendLocalizedMessage("shared.parameterMissing", "read");
+                user.sendLocalizedMessage("shared.parser.parameterMissing", "read");
                 return true;
             }
             
@@ -94,35 +94,35 @@ public class MailCommand extends GoldenAppleCommand {
             try {
                 id = Integer.parseInt(args[1]);
             } catch (NumberFormatException e) {
-                user.sendLocalizedMessage("shared.notANumber", args[1]);
+                user.sendLocalizedMessage("shared.convertError.number", args[1]);
                 return true;
             }
             
             MailMessageSent message = MailManager.getInstance().getByUserSpecificNumber(user, id);
             
             if (message == null || message.getReceiverId() != user.getId()) {
-                user.sendLocalizedMessage("error.mail.notFound", args[1]);
+                user.sendLocalizedMessage("module.mail.error.notFound", args[1]);
                 return true;
             }
             
             IPermissionUser sender = message.getSender();
             
-            user.sendLocalizedMessage("general.mail.read.id", message.getId() + "", id + "");
-            user.sendLocalizedMessage("general.mail.read.subject", message.getSubject(user));
+            user.sendLocalizedMessage("module.mail.read.id", message.getId(), id);
+            user.sendLocalizedMessage("module.mail.read.subject", message.getSubject(user));
             
             if (sender == null) {
-                user.sendLocalizedMessage("general.mail.read.from.system");
+                user.sendLocalizedMessage("module.mail.read.from.system");
             } else {
-                user.sendLocalizedMessage("general.mail.read.from.player", sender.getName(), sender.getUuid().toString());
+                user.sendLocalizedMessage("module.mail.read.from.player", sender.getName(), sender.getUuid().toString());
             }
             
-            user.sendLocalizedMessage("general.mail.read.sent", DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(message.getSentTime()));
+            user.sendLocalizedMessage("module.mail.read.sent", DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(message.getSentTime()));
             
             if (message.getStatus() == MailStatus.REPLIED) {
-                user.sendLocalizedMessage("general.mail.read.replied");
+                user.sendLocalizedMessage("module.mail.read.replied");
             }
             
-            user.getHandle().sendMessage("");
+            user.sendMessage("");
             
             for (String messageLine : message.getContents(user).split("\n")) {
                 user.getHandle().sendMessage(messageLine);
@@ -133,7 +133,7 @@ public class MailCommand extends GoldenAppleCommand {
             }
         } else if (args[0].equalsIgnoreCase("delete")) {
             if (args.length < 2) {
-                user.sendLocalizedMessage("shared.parameterMissing", "read");
+                user.sendLocalizedMessage("shared.paraser.parameterMissing", "read");
                 return true;
             }
             
@@ -142,19 +142,19 @@ public class MailCommand extends GoldenAppleCommand {
             try {
                 id = Integer.parseInt(args[1]);
             } catch (NumberFormatException e) {
-                user.sendLocalizedMessage("shared.notANumber", args[1]);
+                user.sendLocalizedMessage("shared.convertError.number", args[1]);
                 return true;
             }
             
             MailMessageSent message = MailManager.getInstance().getByUserSpecificNumber(user, id);
             
             if (message == null || message.getReceiverId() != user.getId()) {
-                user.sendLocalizedMessage("error.mail.notFound", args[1]);
+                user.sendLocalizedMessage("module.mail.error.notFound", args[1]);
                 return true;
             }
             
             message.delete();
-            user.sendLocalizedMessage("general.mail.deleted", id + "");
+            user.sendLocalizedMessage("module.mail.deleted", id);
         } else if (args[0].equalsIgnoreCase("reply")) {
             if (!user.hasPermission(MailManager.mailReplyPermission)) {
                 GoldenApple.logPermissionFail(user, commandLabel, args, true);
@@ -162,7 +162,7 @@ public class MailCommand extends GoldenAppleCommand {
             }
             
             if (args.length < 2) {
-                user.sendLocalizedMessage("shared.parameterMissing", "reply");
+                user.sendLocalizedMessage("shared.paraser.parameterMissing", "reply");
                 return true;
             }
             
@@ -171,17 +171,17 @@ public class MailCommand extends GoldenAppleCommand {
             try {
                 id = Integer.parseInt(args[1]);
             } catch (NumberFormatException e) {
-                user.sendLocalizedMessage("shared.notANumber", args[1]);
+                user.sendLocalizedMessage("shared.convertError.number", args[1]);
                 return true;
             }
             
             MailMessageSent message = MailManager.getInstance().getByUserSpecificNumber(user, id);
             
             if (message == null || message.getReceiverId() != user.getId()) {
-                user.sendLocalizedMessage("error.mail.notFound", args[1]);
+                user.sendLocalizedMessage("module.mail.error.notFound", args[1]);
                 return true;
             } else if (message.getSender() == null) {
-                user.sendLocalizedMessage("error.mail.noReplySystem");
+                user.sendLocalizedMessage("module.mail.error.replyToSystem");
                 return true;
             }
             
@@ -202,7 +202,7 @@ public class MailCommand extends GoldenAppleCommand {
             activeDrafts.put(user.getId(), MailManager.getInstance().createTemporaryMessage(user, message.getSender(), subject));
             draftReplyTo.put(user.getId(), message.getId());
             
-            user.sendLocalizedMessage("general.mail.createDraft", subject);
+            user.sendLocalizedMessage("module.mail.draft.create", subject);
         } else if (args[0].equalsIgnoreCase("create")) {
             if (!user.hasPermission(MailManager.mailSendPermission)) {
                 GoldenApple.logPermissionFail(user, commandLabel, args, true);
@@ -210,14 +210,14 @@ public class MailCommand extends GoldenAppleCommand {
             }
             
             if (args.length < 3) {
-                user.sendLocalizedMessage("shared.parameterMissing", "create");
+                user.sendLocalizedMessage("shared.paraser.parameterMissing", "create");
                 return true;
             }
             
             IPermissionUser receiver = PermissionManager.getInstance().findUser(args[1], false);
             
             if (receiver == null) {
-                user.sendLocalizedMessage("shared.userNotFoundError", args[1]);
+                user.sendLocalizedMessage("shared.parser.userNotFound.error", args[1]);
                 return true;
             }
             
@@ -233,17 +233,17 @@ public class MailCommand extends GoldenAppleCommand {
             
             activeDrafts.put(user.getId(), MailManager.getInstance().createTemporaryMessage(user, receiver, subject));
             
-            user.sendLocalizedMessage("general.mail.createDraft", subject);
+            user.sendLocalizedMessage("module.mail.draft.create", subject);
         } else if (args[0].equalsIgnoreCase("draft")) {
             if (!activeDrafts.containsKey(user.getId())) {
-                user.sendLocalizedMessage("error.mail.noDraft");
+                user.sendLocalizedMessage("module.mail.error.noDraft");
                 return true;
             }
             
             MailMessageEditable message = activeDrafts.get(user.getId());
             
-            user.sendLocalizedMessage("general.mail.read.subject", message.getSubject(user));
-            user.sendLocalizedMessage("general.mail.read.to", message.getReceiver().getName(), message.getReceiver().getUuid().toString());
+            user.sendLocalizedMessage("module.mail.read.subject", message.getSubject(user));
+            user.sendLocalizedMessage("module.mail.read.to", message.getReceiver().getName(), message.getReceiver().getUuid().toString());
             
             user.getHandle().sendMessage("");
             
@@ -252,10 +252,10 @@ public class MailCommand extends GoldenAppleCommand {
             }
         } else if (args[0].equalsIgnoreCase("append")) {
             if (!activeDrafts.containsKey(user.getId())) {
-                user.sendLocalizedMessage("error.mail.noDraft");
+                user.sendLocalizedMessage("module.mail.error.noDraft");
                 return true;
             } else if (args.length < 2) {
-                user.sendLocalizedMessage("shared.parameterMissing", "append");
+                user.sendLocalizedMessage("shared.paraser.parameterMissing", "append");
                 return true;
             }
             
@@ -272,17 +272,17 @@ public class MailCommand extends GoldenAppleCommand {
             
             message.setContents(contents);
             
-            user.sendLocalizedMessage("general.mail.appendDraft");
+            user.sendLocalizedMessage("module.mail.draft.append");
         } else if (args[0].equalsIgnoreCase("send")) {
             if (!activeDrafts.containsKey(user.getId())) {
-                user.sendLocalizedMessage("error.mail.noDraft");
+                user.sendLocalizedMessage("module.mail.error.noDraft");
                 return true;
             }
             
             MailMessageEditable message = activeDrafts.get(user.getId());
             
             if (message.getContents(user).isEmpty()) {
-                user.sendLocalizedMessage("error.mail.emptySend");
+                user.sendLocalizedMessage("module.mail.error.emptyDraft");
                 return true;
             }
             
@@ -299,26 +299,26 @@ public class MailCommand extends GoldenAppleCommand {
             activeDrafts.remove(user.getId());
             draftReplyTo.remove(user.getId());
             
-            user.sendLocalizedMessage("general.mail.sent");
+            user.sendLocalizedMessage("module.mail.draft.send");
         } else if (args[0].equalsIgnoreCase("discard")) {
             if (!activeDrafts.containsKey(user.getId())) {
-                user.sendLocalizedMessage("error.mail.noDraft");
+                user.sendLocalizedMessage("module.mail.error.noDraft");
                 return true;
             }
             
             activeDrafts.remove(user.getId());
             draftReplyTo.remove(user.getId());
             
-            user.sendLocalizedMessage("general.mail.discardDraft");
+            user.sendLocalizedMessage("module.mail.draft.discard");
         } else {
-            user.sendLocalizedMessage("shared.unknownOption", args[0]);
+            user.sendLocalizedMessage("shared.parser.unknownOption", args[0]);
         }
         
         return true;
     }
     
     private void sendHelp(User user, String commandLabel) {
-        user.sendLocalizedMessage("header.help");
-        user.sendLocalizedMultilineMessage("help.mail", commandLabel);
+        user.sendLocalizedMessage("module.mail.header");
+        user.sendLocalizedMessage("module.mail.help", commandLabel);
     }
 }

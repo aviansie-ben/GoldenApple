@@ -37,12 +37,12 @@ public class GlobalMuteCommand extends DualSyntaxCommand {
 				ArgumentInfo.newSwitch("info", "i", "info")
 			});
 			
-			user.sendLocalizedMessage("header.punish");
+			user.sendLocalizedMessage("module.punish.header");
 			
 			if (!arg.parse(user, args)) return;
 			
 			if (!arg.isDefined("target")) {
-				user.sendLocalizedMessage("error.globalmute.noUserSelected");
+				user.sendLocalizedMessage("module.punish.error.noUserSelected");
 				return;
 			}
 			
@@ -67,12 +67,12 @@ public class GlobalMuteCommand extends DualSyntaxCommand {
 		PunishmentMute m = PunishmentManager.getInstance().getActiveMute(target, null);
 		
 		if (m == null) {
-			user.sendLocalizedMessage("general.globalmute.info.notMuted", target.getName());
+			user.sendLocalizedMessage("module.punish.globalMute.info.none", target.getName());
 		} else if (m.isPermanent()) {
-			user.sendLocalizedMessage("general.globalmute.info.permMuted", target.getName(), m.getAdmin().getName());
+			user.sendLocalizedMessage("module.punish.globalMute.info.perm", target.getName(), m.getAdmin().getName());
 			user.getHandle().sendMessage(ChatColor.GRAY + m.getReason());
 		} else {
-			user.sendLocalizedMessage("general.globalmute.info.tempMuted", target.getName(), m.getRemainingDuration().toString(), m.getAdmin().getName());
+			user.sendLocalizedMessage("module.punish.globalMute.info.temp", target.getName(), m.getRemainingDuration().toString(user), m.getAdmin().getName());
 			user.getHandle().sendMessage(ChatColor.GRAY + m.getReason());
 		}
 	}
@@ -86,7 +86,7 @@ public class GlobalMuteCommand extends DualSyntaxCommand {
 		PunishmentMute m = PunishmentManager.getInstance().getActiveMute(target, null);
 		
 		if (m == null) {
-			user.sendLocalizedMessage("error.globalmute.notMuted");
+			user.sendLocalizedMessage("module.punish.globalMute.error.notMuted");
 		} else {
 			if (m.getAdminId() != user.getId() && !user.hasPermission(PunishmentManager.globalMuteVoidAllPermission)) {
 				GoldenApple.logPermissionFail(user, commandLabel, args, true);
@@ -98,10 +98,10 @@ public class GlobalMuteCommand extends DualSyntaxCommand {
 				AuditLog.logEvent(new MuteVoidEvent(user.getName(), target.getName(), "GLOBAL"));
 				
 				if (MailManager.getInstance() != null) {
-                    MailManager.getInstance().sendSystemMessage(target, "mail.globalmute.void", user.getName());
+                    MailManager.getInstance().sendSystemMessage(target, "punish.globalMute.void", user.getName());
                 }
 				
-				user.sendLocalizedMessage("general.globalmute.voidMute", target.getName());
+				user.sendLocalizedMessage("module.punish.globalMute.success.void", target.getName());
 			}
 		}
 	}
@@ -122,44 +122,44 @@ public class GlobalMuteCommand extends DualSyntaxCommand {
 				if (!user.hasPermission(PunishmentManager.globalMuteTempOverridePermission) &&
 						GoldenApple.getInstanceMainConfig().getInt("modules.punish.maxTempChannelMuteTime") > 0 &&
 						t != null && t.getTotalSeconds() > GoldenApple.getInstanceMainConfig().getInt("modules.punish.maxTempGlobalMuteTime")) {
-					user.sendLocalizedMessage("error.globalmute.tooLong", new RemainingTime(GoldenApple.getInstanceMainConfig().getInt("modules.punish.maxTempGlobalMuteTime")).toString());
+					user.sendLocalizedMessage("module.punish.globalMute.error.tooLong", new RemainingTime(GoldenApple.getInstanceMainConfig().getInt("modules.punish.maxTempGlobalMuteTime")).toString(user));
 				} else {
 					if (reason == null)
 						reason = (t == null) ? GoldenApple.getInstanceMainConfig().getString("modules.punish.defaultPermaGlobalMuteReason", "You have been silenced!") :
 							GoldenApple.getInstanceMainConfig().getString("modules.punish.defaultTempGlobalMuteReason", "An administrator has temporarily silenced you!");
 					
 					PunishmentManager.getInstance().addMute(target, user, reason, t, null);
-					AuditLog.logEvent(new MuteEvent(user.getName(), target.getName(), (t == null) ? "PERMANENT" : t.toString(), reason, "GLOBAL"));
+					AuditLog.logEvent(new MuteEvent(user.getName(), target.getName(), (t == null) ? "PERMANENT" : t.toStringDefault(), reason, "GLOBAL"));
 					
 					if (MailManager.getInstance() != null) {
                         if (t == null) {
-                            MailManager.getInstance().sendSystemMessage(target, "mail.globalmute.perm", user.getName(), reason);
+                            MailManager.getInstance().sendSystemMessage(target, "punish.globalMute.perm", user.getName(), reason);
                         } else {
-                            MailManager.getInstance().sendSystemMessage(target, "mail.globalmute.temp", user.getName(), reason, t.toString());
+                            MailManager.getInstance().sendSystemMessage(target, "punish.globalMute.temp", user.getName(), reason, t.toString(target));
                         }
                     }
 					
 					if (t == null) {
-						user.sendLocalizedMessage("general.globalmute.permaMute", target.getName());
+						user.sendLocalizedMessage("module.punish.globalMute.success.perm", target.getName());
 					} else {
-						user.sendLocalizedMessage("general.globalmute.tempMute", target.getName(), t.toString());
+						user.sendLocalizedMessage("module.punish.globalMute.success.temp", target.getName(), t.toString(target));
 					}
 					
 					if ((tUser = User.getUser(target.getId())) != null) {
 						if (t == null) {
-							tUser.sendLocalizedMessage("general.globalmute.permaKick", user.getName());
+							tUser.sendLocalizedMessage("module.punish.globalMute.notify.perm", user.getName());
 							tUser.getHandle().sendMessage(reason);
 						} else {
-							tUser.sendLocalizedMessage("general.globalmute.tempKick", user.getName(), t.toString());
+							tUser.sendLocalizedMessage("module.punish.globalMute.notify.temp", user.getName(), t.toString(tUser));
 							tUser.getHandle().sendMessage(reason);
 						}
 					}
 				}
 			} catch (NumberFormatException e) {
-				user.sendLocalizedMessage("error.globalmute.invalidDuration", duration);
+				user.sendLocalizedMessage("module.punish.error.invalidDuration", duration);
 			}
 		} else {
-			user.sendLocalizedMessage("error.globalmute.alreadyMuted");
+			user.sendLocalizedMessage("module.punish.globalMute.error.alreadyMuted");
 		}
 	}
 
@@ -170,12 +170,12 @@ public class GlobalMuteCommand extends DualSyntaxCommand {
 		} else if (args.length == 0 || args[0].equalsIgnoreCase("-?") || args[0].equalsIgnoreCase("help")) {
 			sendHelp(user, commandLabel, false);
 		} else {
-			user.sendLocalizedMessage("header.punish");
+			user.sendLocalizedMessage("module.punish.header");
 			
 			IPermissionUser target = PermissionManager.getInstance().findUser(args[0], false);
 			
 			if (target == null) {
-				user.sendLocalizedMessage("shared.userNotFoundError", args[0]);
+				user.sendLocalizedMessage("shared.parser.userNotFound.error", args[0]);
 				return;
 			}
 			
@@ -201,8 +201,8 @@ public class GlobalMuteCommand extends DualSyntaxCommand {
 	}
 	
 	private void sendHelp(User user, String commandLabel, boolean complex) {
-		user.sendLocalizedMessage("header.help");
-		user.sendLocalizedMultilineMessage((complex) ? "help.globalmute.complex" : "help.globalmute.simple", commandLabel);
+		user.sendLocalizedMessage("module.punish.header");
+		user.sendLocalizedMessage((complex) ? "module.punish.globalMute.help.complex" : "module.punish.globalMute.help.simple", commandLabel);
 	}
 
 }

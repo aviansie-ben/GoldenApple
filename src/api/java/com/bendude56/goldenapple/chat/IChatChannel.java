@@ -2,7 +2,6 @@ package com.bendude56.goldenapple.chat;
 
 import java.util.List;
 
-import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
 
@@ -217,8 +216,7 @@ public interface IChatChannel {
      * Broadcasts an unlocalized message to users on this channel.
      * <p />
      * This type of broadcast should only be used for user-sent messages.
-     * Control messages should be localized and sent through either
-     * {@link #broadcastLocalizedMessage(String)} or
+     * Control messages should be localized and sent through
      * {@link #broadcastLocalizedMessage(String, String...)}.
      * 
      * @param message The message that should be broadcast on this channel.
@@ -231,19 +229,10 @@ public interface IChatChannel {
      * 
      * @param message The localization name of the message to be broadcast on
      * this channel.
-     */
-    public void broadcastLocalizedMessage(String message);
-    
-    /**
-     * Broadcasts a localized message to user's on this channel. The message
-     * will be automatically translated individually for each user.
-     * 
-     * @param message The localization name of the message to be broadcast on
-     * this channel.
      * @param arguments The arguments to be used in the localization of the
      * message.
      */
-    public void broadcastLocalizedMessage(String message, String... arguments);
+    public void broadcastLocalizedMessage(String message, Object... arguments);
     
     /**
      * Sends a chat message on behalf of a user. A user's permissions will be
@@ -312,13 +301,13 @@ public interface IChatChannel {
     }
     
     public enum ChatChannelAccessLevel {
-        NO_ACCESS(0, "n", "none", "general.channel.levelDisplay.none"),
-        JOIN(1, "j", "join", "general.channel.levelDisplay.join"),
-        CHAT(2, "c", "chat", "general.channel.levelDisplay.chat"),
-        VIP(3, "v", "vip", "general.channel.levelDisplay.vip"),
-        MODERATOR(4, "m", "mod", "general.channel.levelDisplay.mod"),
-        SUPER_MODERATOR(5, "s", "supermod", "general.channel.levelDisplay.supermod"),
-        ADMINISTRATOR(6, "a", "admin", "general.channel.levelDisplay.admin");
+        NO_ACCESS(0, "n", "none", "module.chat.accessLevel.displayNames.none"),
+        JOIN(1, "j", "join", "module.chat.accessLevel.displayName.join"),
+        CHAT(2, "c", "chat", "module.chat.accessLevel.displayName.chat"),
+        VIP(3, "v", "vip", "module.chat.accessLevel.displayName.vip"),
+        MODERATOR(4, "m", "mod", "module.chat.accessLevel.displayName.moderator"),
+        SUPER_MODERATOR(5, "s", "supermod", "module.chat.accessLevel.displayName.superModerator"),
+        ADMINISTRATOR(6, "a", "admin", "module.chat.accessLevel.displayName.administrator");
         
         private final int levelId;
         private final String complexName;
@@ -399,7 +388,7 @@ public interface IChatChannel {
         }
         
         public String getDisplayName(User user) {
-            return GoldenApple.getInstance().getLocalizationManager().getMessage(user, displayName);
+            return user.getLocalizedMessage(displayName);
         }
         
         public static ChatChannelAccessLevel fromLevelId(int levelId) {

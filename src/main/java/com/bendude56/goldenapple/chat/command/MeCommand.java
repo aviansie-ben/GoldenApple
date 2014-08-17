@@ -11,7 +11,7 @@ public class MeCommand extends GoldenAppleCommand {
     public boolean onExecute(GoldenApple instance, User user, String commandLabel, String[] args) {
         IChatChannel channel = ChatManager.getInstance().getActiveChannel(user);
         if (channel == null) {
-            user.sendLocalizedMessage("error.channel.notInChannel");
+            user.sendLocalizedMessage("module.chat.error.notInChannel.me");
         } else if (args.length > 0) {
             String msg = "";
             for (String arg : args) {

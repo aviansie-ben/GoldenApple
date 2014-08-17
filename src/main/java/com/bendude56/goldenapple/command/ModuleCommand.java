@@ -3,8 +3,6 @@ package com.bendude56.goldenapple.command;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 
-import org.bukkit.ChatColor;
-
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.ModuleLoader;
 import com.bendude56.goldenapple.ModuleLoader.ModuleState;
@@ -16,74 +14,76 @@ public class ModuleCommand extends GoldenAppleCommand {
 	public boolean onExecute(GoldenApple instance, User user, String commandLabel, String[] args) {
 		if (user.getHandle().isOp() || user.hasPermission(PermissionManager.moduleQueryPermission)) {
 			if (args.length == 0 || args[0].equalsIgnoreCase("-ls") || args[0].equalsIgnoreCase("--list")) {
-				user.sendLocalizedMessage("header.module");
-				user.sendLocalizedMessage("general.module.list");
+				user.sendLocalizedMessage("module.base.module.header");
+				user.sendLocalizedMessage("module.base.module.list.header");
 				for (ModuleLoader module : GoldenApple.getInstance().getModuleManager().getModules()) {
 					String suffix = "";
 					if (!module.canPolicyLoad() || (module.getCurrentState() == ModuleState.LOADED && !module.canPolicyUnload())) {
-						suffix += ChatColor.DARK_GRAY + " [!]";
+						suffix += user.getLocalizedMessage("module.base.module.list.lockedSuffix");
 					}
 					switch (module.getCurrentState()) {
 						case BUSY:
-							user.getHandle().sendMessage(ChatColor.YELLOW + module.getModuleName() + suffix);
+						    user.sendLocalizedMessage("module.base.module.list.entry.busy", module.getModuleName() + suffix);
 							break;
 						case LOADED:
-							user.getHandle().sendMessage(ChatColor.GREEN + module.getModuleName() + suffix);
+						    user.sendLocalizedMessage("module.base.module.list.entry.loaded", module.getModuleName() + suffix);
 							break;
 						case LOADING:
-							user.getHandle().sendMessage(ChatColor.YELLOW + module.getModuleName() + suffix);
+						    user.sendLocalizedMessage("module.base.module.list.entry.loading", module.getModuleName() + suffix);
 							break;
 						case UNLOADED_USER:
-							user.getHandle().sendMessage(ChatColor.GRAY + module.getModuleName() + suffix);
+						    user.sendLocalizedMessage("module.base.module.list.entry.unloadedUser", module.getModuleName() + suffix);
 							break;
 						case UNLOADED_ERROR:
 						case UNLOADED_MISSING_DEPENDENCY:
-							user.getHandle().sendMessage(ChatColor.RED + module.getModuleName() + suffix);
+						    user.sendLocalizedMessage("module.base.module.list.entry.unloadedError", module.getModuleName() + suffix);
 							break;
 					}
 				}
 			} else if (args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("-?")) {
-				// TODO Implement help
+			    user.sendLocalizedMessage("module.base.module.header");
+				user.sendLocalizedMessage("module.base.module.help");
 			} else if (GoldenApple.getInstance().getModuleManager().getModule(args[0]) != null) {
-				user.sendLocalizedMessage("header.module");
+				user.sendLocalizedMessage("module.base.module.header");
 				ModuleLoader module = GoldenApple.getInstance().getModuleManager().getModule(args[0]);
 				if (args.length == 1 || args[1].equalsIgnoreCase("-q") || args[1].equalsIgnoreCase("--query")) {
 					String status = "???";
-					if (module.canPolicyLoad()) {
-						switch (module.getCurrentState()) {
-							case BUSY:
-								status = GoldenApple.getInstance().getLocalizationManager().getMessage(user, "general.module.query.busy");
-								break;
-							case LOADED:
-								if (module.canPolicyUnload())
-									status = GoldenApple.getInstance().getLocalizationManager().getMessage(user, "general.module.query.loaded");
-								else
-									status = GoldenApple.getInstance().getLocalizationManager().getMessage(user, "general.module.query.loadedLocked");
-								break;
-							case LOADING:
-								status = GoldenApple.getInstance().getLocalizationManager().getMessage(user, "general.module.query.loading");
-								break;
-							case UNLOADED_USER:
-								status = GoldenApple.getInstance().getLocalizationManager().getMessage(user, "general.module.query.unloadedUser");
-								break;
-							case UNLOADED_ERROR:
-								status = GoldenApple.getInstance().getLocalizationManager().getMessage(user, "general.module.query.unloadedError");
-								break;
-							case UNLOADED_MISSING_DEPENDENCY:
-								status = GoldenApple.getInstance().getLocalizationManager().getMessage(user, "general.module.query.unloadedDepend");
-								break;
-						}
-					} else {
-						status = GoldenApple.getInstance().getLocalizationManager().getMessage(user, "general.module.query.unloadedLocked");
+					switch (module.getCurrentState()) {
+						case BUSY:
+							status = user.getLocalizedMessage("module.base.module.query.state.busy");
+							break;
+						case LOADED:
+							if (module.canPolicyUnload()) {
+								status = user.getLocalizedMessage("module.base.module.query.state.loaded");
+							} else {
+								status = user.getLocalizedMessage("module.base.module.query.state.loadedLocked");
+							}
+							break;
+						case LOADING:
+							status = user.getLocalizedMessage("module.base.module.query.state.loading");
+							break;
+						case UNLOADED_USER:
+						    if (module.canPolicyLoad()) {
+						        status = user.getLocalizedMessage("module.base.module.query.state.unloadedUser");
+						    } else {
+						        status = user.getLocalizedMessage("module.base.module.query.state.unloadedUserLocked");
+						    }
+							break;
+						case UNLOADED_ERROR:
+							status = user.getLocalizedMessage("module.base.module.query.state.unloadedError");
+							break;
+						case UNLOADED_MISSING_DEPENDENCY:
+							status = user.getLocalizedMessage("module.base.module.query.state.unloadedDepend");
+							break;
 					}
-					user.sendLocalizedMultilineMessage("general.module.query", module.getModuleName(), status);
+					user.sendLocalizedMessage("module.base.module.query.message", module.getModuleName(), status);
 				} else if (args[1].equalsIgnoreCase("-e") || args[1].equalsIgnoreCase("--enable")) {
 					if (!user.hasPermission(PermissionManager.moduleLoadPermission)) {
 						GoldenApple.logPermissionFail(user, commandLabel, args, true);
 					} else if (module.getCurrentState() == ModuleState.LOADED || module.getCurrentState() == ModuleState.LOADING) {
-						user.sendLocalizedMessage("error.module.load.alreadyLoaded", module.getModuleName());
+						user.sendLocalizedMessage("module.base.module.enable.alreadyLoaded", module.getModuleName());
 					} else if (!module.canPolicyLoad()) {
-						user.sendLocalizedMessage("error.module.load.policy", module.getModuleName());
+						user.sendLocalizedMessage("module.base.module.enable.policyBlock", module.getModuleName());
 					} else {
 						ArrayDeque<ModuleLoader> depend = new ArrayDeque<ModuleLoader>();
 						ArrayList<ModuleLoader> oldDepend = new ArrayList<ModuleLoader>();
@@ -93,10 +93,10 @@ public class ModuleCommand extends GoldenAppleCommand {
 							for (ModuleLoader m : oldDepend) {
 								for (String d : m.getModuleDependencies()) {
 									if (GoldenApple.getInstance().getModuleManager().getModule(d) == null) {
-										user.sendLocalizedMessage("error.module.load.dependFail", module.getModuleName(), d);
+										user.sendLocalizedMessage("module.base.module.enable.loadError.dependency", module.getModuleName(), d);
 										return true;
 									} else if (!GoldenApple.getInstance().getModuleManager().getModule(d).canPolicyLoad()) {
-										user.sendLocalizedMessage("error.module.load.dependFail", module.getModuleName(), d);
+										user.sendLocalizedMessage("module.base.module.enable.loadError.dependency", module.getModuleName(), d);
 										return true;
 									} else if (GoldenApple.getInstance().getModuleManager().getModule(d).getCurrentState() != ModuleState.LOADED) {
 										newDepend.add(GoldenApple.getInstance().getModuleManager().getModule(d));
@@ -112,24 +112,22 @@ public class ModuleCommand extends GoldenAppleCommand {
 								for (ModuleLoader mLoad = depend.pollLast(); mLoad != null; mLoad = depend.pollLast()) {
 									try {
 										if (!GoldenApple.getInstance().getModuleManager().enableModule(mLoad.getModuleName(), false, user.getName())) {
-											user.sendLocalizedMessage("error.module.load.dependFail", module.getModuleName(), mLoad.getModuleName());
+											user.sendLocalizedMessage("module.base.module.enable.loadError.dependency", module.getModuleName(), mLoad.getModuleName());
 											return true;
 										} else {
-											user.sendLocalizedMessage("general.module.load.success", mLoad.getModuleName());
+											user.sendLocalizedMessage("module.base.module.enable.success", mLoad.getModuleName());
 										}
 									} catch (Throwable t) {
-										user.sendLocalizedMessage("error.module.load.dependFail", module.getModuleName(), mLoad.getModuleName());
+										user.sendLocalizedMessage("module.base.module.enable.loadError.dependency", module.getModuleName(), mLoad.getModuleName());
 										return true;
 									}
 								}
 							} else {
-								user.sendLocalizedMessage("general.module.load.warnStart");
-								String dependStr = depend.pollLast().getModuleName();
+								user.sendLocalizedMessage("module.base.module.enable.warning.header");
 								for (ModuleLoader mLoad = depend.pollLast(); mLoad != null; mLoad = depend.pollLast()) {
-									dependStr += ", " + mLoad.getModuleName();
+								    user.sendLocalizedMessage("module.base.module.enable.warning.entry", mLoad.getModuleName());
 								}
-								user.getHandle().sendMessage(dependStr);
-								user.sendLocalizedMessage("general.module.load.warnEnd");
+								user.sendLocalizedMessage("module.base.module.enable.warning.footer");
 								String cmd = commandLabel;
 								for (String arg : args)
 									cmd += " " + arg;
@@ -140,23 +138,25 @@ public class ModuleCommand extends GoldenAppleCommand {
 						}
 						try {
 							if (!GoldenApple.getInstance().getModuleManager().enableModule(module.getModuleName(), false, user.getName())) {
-								user.sendLocalizedMessage("error.module.load.unknown", module.getModuleName());
+								user.sendLocalizedMessage("module.base.module.enable.loadError.self", module.getModuleName());
 								return true;
 							} else {
-								user.sendLocalizedMessage("general.module.load.success", module.getModuleName());
+								user.sendLocalizedMessage("module.base.module.enable.success", module.getModuleName());
 							}
 						} catch (Throwable t) {
-							user.sendLocalizedMessage("error.module.load.unknown", module.getModuleName());
+							user.sendLocalizedMessage("module.base.module.enable.loadError.self", module.getModuleName());
 							return true;
 						}
 					}
 				} else if (args[1].equalsIgnoreCase("-d") || args[1].equalsIgnoreCase("--disable")) {
 					if (!user.hasPermission(PermissionManager.moduleUnloadPermission)) {
 						GoldenApple.logPermissionFail(user, commandLabel, args, true);
+					} else if (module.getCurrentState() == ModuleState.BUSY) {
+					    user.sendLocalizedMessage("module.base.module.disable.busy", module.getModuleName());
 					} else if (module.getCurrentState() != ModuleState.LOADED) {
-						user.sendLocalizedMessage("error.module.unload.notLoaded", module.getModuleName());
+						user.sendLocalizedMessage("module.base.module.disable.alreadyUnloaded", module.getModuleName());
 					} else if (!module.canPolicyUnload()) {
-						user.sendLocalizedMessage("error.module.unload.policy", module.getModuleName());
+						user.sendLocalizedMessage("module.base.module.disable.policyBlock", module.getModuleName());
 					} else {
 						ArrayDeque<ModuleLoader> depend = new ArrayDeque<ModuleLoader>();
 						ArrayList<ModuleLoader> oldDepend = new ArrayList<ModuleLoader>();
@@ -173,7 +173,7 @@ public class ModuleCommand extends GoldenAppleCommand {
 											newDepend.add(m);
 											depend.addFirst(m);
 											if (!m.canPolicyUnload()) {
-												user.sendLocalizedMessage("error.module.unload.dependFail", module.getModuleName(), m.getModuleName());
+												user.sendLocalizedMessage("module.base.module.disable.unloadError.dependency", module.getModuleName(), m.getModuleName());
 												return true;
 											}
 										}
@@ -188,24 +188,22 @@ public class ModuleCommand extends GoldenAppleCommand {
 								for (ModuleLoader mUnload = depend.pollLast(); mUnload != null; mUnload = depend.pollLast()) {
 									try {
 										if (!GoldenApple.getInstance().getModuleManager().disableModule(mUnload.getModuleName(), false, user.getName())) {
-											user.sendLocalizedMessage("error.module.unload.dependFail", module.getModuleName(), mUnload.getModuleName());
+											user.sendLocalizedMessage("module.base.module.disable.unloadError.dependency", module.getModuleName(), mUnload.getModuleName());
 											return true;
 										} else {
-											user.sendLocalizedMessage("general.module.unload.success", mUnload.getModuleName());
+											user.sendLocalizedMessage("module.base.module.disable.success", mUnload.getModuleName());
 										}
 									} catch (Throwable t) {
-										user.sendLocalizedMessage("error.module.unload.dependFail", module.getModuleName(), mUnload.getModuleName());
+										user.sendLocalizedMessage("module.base.module.disable.unloadError.dependency", module.getModuleName(), mUnload.getModuleName());
 										return true;
 									}
 								}
 							} else {
-								user.sendLocalizedMessage("general.module.unload.warnStart");
-								String dependStr = depend.pollLast().getModuleName();
+								user.sendLocalizedMessage("module.base.module.disable.warning.header");
 								for (ModuleLoader mUnload = depend.pollLast(); mUnload != null; mUnload = depend.pollLast()) {
-									dependStr += ", " + mUnload.getModuleName();
+									user.sendLocalizedMessage("module.base.module.disable.warning.entry", mUnload.getModuleName());
 								}
-								user.getHandle().sendMessage(dependStr);
-								user.sendLocalizedMessage("general.module.unload.warnEnd");
+								user.sendLocalizedMessage("module.base.module.disable.warning.footer");
 								String cmd = commandLabel;
 								for (String arg : args)
 									cmd += " " + arg;
@@ -216,13 +214,13 @@ public class ModuleCommand extends GoldenAppleCommand {
 						}
 						try {
 							if (!GoldenApple.getInstance().getModuleManager().disableModule(module.getModuleName(), false, user.getName())) {
-								user.sendLocalizedMessage("error.module.unload.unknown", module.getModuleName());
+								user.sendLocalizedMessage("module.base.module.disable.unloadError.self", module.getModuleName());
 								return true;
 							} else {
-								user.sendLocalizedMessage("general.module.unload.success", module.getModuleName());
+								user.sendLocalizedMessage("module.base.module.disable.success", module.getModuleName());
 							}
 						} catch (Throwable t) {
-							user.sendLocalizedMessage("error.module.unload.unknown", module.getModuleName());
+							user.sendLocalizedMessage("module.base.module.disable.unloadError.self", module.getModuleName());
 							return true;
 						}
 					}
@@ -230,16 +228,16 @@ public class ModuleCommand extends GoldenAppleCommand {
 					if (!user.hasPermission(PermissionManager.moduleClearCachePermission)) {
 						GoldenApple.logPermissionFail(user, commandLabel, args, true);
 					} else if (module.getCurrentState() != ModuleState.LOADED) {
-						user.sendLocalizedMessage("error.module.clearCache.notLoaded", module.getModuleName());
+						user.sendLocalizedMessage("module.base.module.clearCache.notLoaded", module.getModuleName());
 					} else {
 						module.clearCache();
-						user.sendLocalizedMessage("general.module.clearCache", module.getModuleName());
+						user.sendLocalizedMessage("module.base.module.clearCache.success", module.getModuleName());
 					}
 				} else {
-					user.sendLocalizedMessage("shared.unknownOption", args[1]);
+					user.sendLocalizedMessage("shared.parser.unknownOption", args[1]);
 				}
 			} else {
-				user.sendLocalizedMessage("error.module.notFound", args[0]);
+				user.sendLocalizedMessage("module.base.module.notFound", args[0]);
 			}
 		} else {
 			GoldenApple.logPermissionFail(user, commandLabel, args, true);

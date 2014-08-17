@@ -48,7 +48,7 @@ public class SimplePermissionManager extends PermissionManager {
         GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("GroupVariables");
         
         setVariableDefaultValue("goldenapple.complexSyntax", GoldenApple.getInstanceMainConfig().getBoolean("modules.permissions.defaultComplexCommands", true));
-        setVariableDefaultValue("goldenapple.locale", ((SimpleLocalizationManager) GoldenApple.getInstance().getLocalizationManager()).defaultLocale);
+        setVariableDefaultValue("goldenapple.locale", ((SimpleLocalizationManager) GoldenApple.getInstance().getLocalizationManager()).getDefaultLocale().getShortName());
     }
     
     public int getUserCacheCurrentSize() {

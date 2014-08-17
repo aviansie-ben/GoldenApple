@@ -18,15 +18,15 @@ public class DelWarpCommand extends GoldenAppleCommand {
 			PermissibleWarp w = WarpManager.getInstance().getNamedWarp(args[0]);
 			
 			if (w == null) {
-				user.sendLocalizedMessage("error.warp.notFound", args[0]);
+				user.sendLocalizedMessage("module.warp.error.notFound", args[0]);
 			} else {
 				try {
 					w.delete();
-					user.sendLocalizedMessage("general.warp.delete", args[0]);
+					user.sendLocalizedMessage("module.warp.delete", args[0]);
 				} catch (SQLException e) {
 					GoldenApple.log(Level.SEVERE, "Failed to edit warp '" + args[0] + "':");
 					GoldenApple.log(Level.SEVERE, e);
-					user.sendLocalizedMessage("error.warp.setFail");
+					user.sendLocalizedMessage("module.warp.error.fail");
 				}
 			}
 			

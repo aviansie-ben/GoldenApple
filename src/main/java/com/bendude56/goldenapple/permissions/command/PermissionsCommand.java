@@ -42,7 +42,7 @@ public class PermissionsCommand extends DualSyntaxCommand {
             return;
         }
         
-        user.sendLocalizedMessage("header.permissions");
+        user.sendLocalizedMessage("module.permissions.header");
         
         if (!arg.parse(user, args)) {
             return;
@@ -61,7 +61,7 @@ public class PermissionsCommand extends DualSyntaxCommand {
             GoldenApple.logPermissionFail(user, commandLabel, args, true);
             return;
         } else if (arg.isDefined("add") && arg.isDefined("remove")) {
-            user.sendLocalizedMessage("error.permissions.conflict");
+            user.sendLocalizedMessage("module.permissions.permissions.error.conflict");
             return;
         }
         
@@ -77,8 +77,8 @@ public class PermissionsCommand extends DualSyntaxCommand {
             }
         } else {
             if (targetUsers.isEmpty() && targetGroups.isEmpty()) {
-                user.sendLocalizedMessage("error.permissions.noTarget", "-r");
-                user.sendLocalizedMessage("error.permissions.noAction");
+                user.sendLocalizedMessage("module.permissions.permissions.error.noValidTargets", "-r");
+                user.sendLocalizedMessage("module.permissions.permissions.error.noValidActions");
                 return;
             }
             
@@ -86,32 +86,32 @@ public class PermissionsCommand extends DualSyntaxCommand {
                 for (IPermissionUser target : targetUsers) {
                     if (!PermissionManager.getInstance().isUserSticky(target.getId())) {
                         PermissionManager.getInstance().deleteUser(target.getId());
-                        user.sendLocalizedMessage("general.permissions.remove.user", target.getName());
+                        user.sendLocalizedMessage("module.permissions.permissions.remove.user", target.getName());
                     } else {
-                        user.sendLocalizedMessage("error.permissions.remove.userOnline", target.getName());
+                        user.sendLocalizedMessage("module.permissions.permissions.remove.error.userOnline", target.getName());
                     }
                 }
                 
                 for (IPermissionGroup target : targetGroups) {
                     if (!PermissionManager.getInstance().isGroupProtected(target)) {
                         PermissionManager.getInstance().deleteGroup(target.getId());
-                        user.sendLocalizedMessage("general.permissions.remove.group", target.getName());
+                        user.sendLocalizedMessage("module.permissions.permissions.remove.group", target.getName());
                     } else {
-                        user.sendLocalizedMessage("error.permissions.remove.groupProtected", target.getName());
+                        user.sendLocalizedMessage("module.permissions.permissions.remove.error.groupProtected", target.getName());
                     }
                 }
             } else {
-                user.sendLocalizedMessage("general.permissions.remove.warnStart");
+                user.sendLocalizedMessage("module.permissions.permissions.remove.warning.header");
                 
                 for (IPermissionUser target : targetUsers) {
-                    user.sendLocalizedMessage("general.permissions.remove.warnUser", target.getName());
+                    user.sendLocalizedMessage("module.permissions.permissions.remove.warning.entry.user", target.getName());
                 }
                 
                 for (IPermissionGroup target : targetGroups) {
-                    user.sendLocalizedMessage("general.permissions.remove.warnGroup", target.getName());
+                    user.sendLocalizedMessage("module.permissions.permissions.remove.warning.entry.group", target.getName());
                 }
                 
-                user.sendLocalizedMessage("general.permissions.remove.warnEnd");
+                user.sendLocalizedMessage("module.permissions.permissions.remove.warning.footer");
                 
                 String cmd = commandLabel;
                 for (String a : args) {
@@ -133,11 +133,11 @@ public class PermissionsCommand extends DualSyntaxCommand {
                     if (target == null) {
                         try {
                             target = PermissionManager.getInstance().createUser(targetName);
-                            user.sendLocalizedMessage("general.permissions.add.user", target.getName());
+                            user.sendLocalizedMessage("module.permissions.permissions.add.user", target.getName());
                         } catch (UuidLookupException e) {
-                            user.sendLocalizedMessage("error.permissions.add.userNoUuid", targetName);
+                            user.sendLocalizedMessage("module.permissions.permissions.add.error.uuidNotFound", targetName);
                         } catch (DuplicateNameException e) {
-                            user.sendLocalizedMessage("error.permissions.add.userUnknown", targetName);
+                            user.sendLocalizedMessage("module.permissions.permissions.add.error.uuidConflict", targetName);
                         }
                     }
                     
@@ -153,7 +153,7 @@ public class PermissionsCommand extends DualSyntaxCommand {
                     
                     if (target == null) {
                         target = PermissionManager.getInstance().createGroup(targetName);
-                        user.sendLocalizedMessage("general.permissions.add.group", target.getName());
+                        user.sendLocalizedMessage("module.permissions.permissions.add.group", target.getName());
                     }
                     
                     if (target != null) {
@@ -169,7 +169,7 @@ public class PermissionsCommand extends DualSyntaxCommand {
                     if (target != null) {
                         targetUsers.add(target);
                     } else {
-                        user.sendLocalizedMessage("shared.userNotFoundWarning", targetName);
+                        user.sendLocalizedMessage("shared.parser.userNotFound.warning", targetName);
                     }
                 }
             }
@@ -181,7 +181,7 @@ public class PermissionsCommand extends DualSyntaxCommand {
                     if (target != null) {
                         targetGroups.add(target);
                     } else {
-                        user.sendLocalizedMessage("shared.groupNotFoundWarning", targetName);
+                        user.sendLocalizedMessage("shared.parser.groupNotFound.warning", targetName);
                     }
                 }
             }
@@ -201,10 +201,10 @@ public class PermissionsCommand extends DualSyntaxCommand {
                     if (action.addValidTargets(targetUsers, targetGroups) > 0) {
                         actions.add(action);
                     } else {
-                        user.sendLocalizedMessage("error.permissions.noTarget", "-pa");
+                        user.sendLocalizedMessage("module.permissions.permissions.error.noValidTargets", "-pa");
                     }
                 } else {
-                    user.sendLocalizedMessage("error.permissions.perm.notFound", permissionName);
+                    user.sendLocalizedMessage("module.permissions.permissions.permission.notFound", permissionName);
                 }
             }
         }
@@ -219,10 +219,10 @@ public class PermissionsCommand extends DualSyntaxCommand {
                     if (action.addValidTargets(targetUsers, targetGroups) > 0) {
                         actions.add(action);
                     } else {
-                        user.sendLocalizedMessage("error.permissions.noTarget", "-pr");
+                        user.sendLocalizedMessage("module.permissions.permissions.error.noValidTargets", "-pr");
                     }
                 } else {
-                    user.sendLocalizedMessage("error.permissions.perm.notFound", permissionName);
+                    user.sendLocalizedMessage("module.permissions.permissions.permission.notFound", permissionName);
                 }
             }
         }
@@ -234,7 +234,7 @@ public class PermissionsCommand extends DualSyntaxCommand {
                 if (action.addValidTargets(targetUsers, targetGroups) > 0) {
                     actions.add(action);
                 } else {
-                    user.sendLocalizedMessage("error.permissions.noTarget", "-var:" + variable.getKey());
+                    user.sendLocalizedMessage("module.permissions.permissions.error.noValidTargets", "-var:" + variable.getKey());
                 }
             }
         }
@@ -246,7 +246,7 @@ public class PermissionsCommand extends DualSyntaxCommand {
                 if (action.addValidTargets(targetUsers, targetGroups) > 0) {
                     actions.add(action);
                 } else {
-                    user.sendLocalizedMessage("error.permissions.noTarget", "-ua");
+                    user.sendLocalizedMessage("module.permissions.permissions.error.noValidTargets", "-ua");
                 }
             }
         }
@@ -258,7 +258,7 @@ public class PermissionsCommand extends DualSyntaxCommand {
                 if (action.addValidTargets(targetUsers, targetGroups) > 0) {
                     actions.add(action);
                 } else {
-                    user.sendLocalizedMessage("error.permissions.noTarget", "-ur");
+                    user.sendLocalizedMessage("module.permissions.permissions.error.noValidTargets", "-ur");
                 }
             }
         }
@@ -270,7 +270,7 @@ public class PermissionsCommand extends DualSyntaxCommand {
                 if (action.addValidTargets(targetUsers, targetGroups) > 0) {
                     actions.add(action);
                 } else {
-                    user.sendLocalizedMessage("error.permissions.noTarget", "-ga");
+                    user.sendLocalizedMessage("module.permissions.permissions.error.noValidTargets", "-ga");
                 }
             }
         }
@@ -282,7 +282,7 @@ public class PermissionsCommand extends DualSyntaxCommand {
                 if (action.addValidTargets(targetUsers, targetGroups) > 0) {
                     actions.add(action);
                 } else {
-                    user.sendLocalizedMessage("error.permissions.noTarget", "-gr");
+                    user.sendLocalizedMessage("module.permissions.permissions.error.noValidTargets", "-gr");
                 }
             }
         }
@@ -294,7 +294,7 @@ public class PermissionsCommand extends DualSyntaxCommand {
                 if (action.addValidTargets(targetUsers, targetGroups) > 0) {
                     actions.add(action);
                 } else {
-                    user.sendLocalizedMessage("error.permissions.noTarget", "-oa");
+                    user.sendLocalizedMessage("module.permissions.permissions.error.noValidTargets", "-oa");
                 }
             }
         }
@@ -306,7 +306,7 @@ public class PermissionsCommand extends DualSyntaxCommand {
                 if (action.addValidTargets(targetUsers, targetGroups) > 0) {
                     actions.add(action);
                 } else {
-                    user.sendLocalizedMessage("error.permissions.noTarget", "-or");
+                    user.sendLocalizedMessage("module.permissions.permissions.error.noValidTargets", "-or");
                 }
             }
         }
@@ -317,7 +317,7 @@ public class PermissionsCommand extends DualSyntaxCommand {
             if (action.addValidTargets(targetUsers, targetGroups) > 0) {
                 actions.add(action);
             } else {
-                user.sendLocalizedMessage("error.permissions.noTarget", "-cp");
+                user.sendLocalizedMessage("module.permissions.permissions.error.noValidTargets", "-cp");
             }
         }
         
@@ -327,7 +327,7 @@ public class PermissionsCommand extends DualSyntaxCommand {
             if (action.addValidTargets(targetUsers, targetGroups) > 0) {
                 actions.add(action);
             } else {
-                user.sendLocalizedMessage("error.permissions.noTarget", "-cc");
+                user.sendLocalizedMessage("module.permissions.permissions.error.noValidTargets", "-cc");
             }
         }
         
@@ -337,7 +337,7 @@ public class PermissionsCommand extends DualSyntaxCommand {
             if (action.addValidTargets(targetUsers, targetGroups) > 0) {
                 actions.add(action);
             } else {
-                user.sendLocalizedMessage("error.permissions.noTarget", "-gp");
+                user.sendLocalizedMessage("module.permissions.permissions.error.noValidTargets", "-gp");
             }
         }
         
@@ -347,7 +347,7 @@ public class PermissionsCommand extends DualSyntaxCommand {
             if (action.addValidTargets(targetUsers, targetGroups) > 0) {
                 actions.add(action);
             } else {
-                user.sendLocalizedMessage("error.permissions.noTarget", "-i");
+                user.sendLocalizedMessage("module.permissions.permissions.error.noValidTargets", "-i");
             }
         }
     }
@@ -368,7 +368,7 @@ public class PermissionsCommand extends DualSyntaxCommand {
                 action.performAction(user);
             }
         } else if (errorOnNoActions) {
-            user.sendLocalizedMessage("error.permissions.noAction");
+            user.sendLocalizedMessage("module.permissions.permissions.error.noValidActions");
         }
     }
     
@@ -379,8 +379,8 @@ public class PermissionsCommand extends DualSyntaxCommand {
     }
     
     private void sendHelp(User user, String commandLabel, boolean complex) {
-        user.sendLocalizedMessage("header.help");
-        user.sendLocalizedMultilineMessage((complex) ? "help.permissions.complex" : "help.permissions.simple", commandLabel);
+        user.sendLocalizedMessage("module.permissions.header");
+        user.sendLocalizedMessage("module.permissions.permissions.help.complex", commandLabel);
     }
     
     private ArgumentInfo[] getArguments() {
@@ -490,7 +490,7 @@ public class PermissionsCommand extends DualSyntaxCommand {
         public void performAction(User user, IPermissionObject target) {
             AuditLog.logEvent(new PermissionGrantEvent(user.getName(), target, permission.getFullName()));
             target.addPermission(permission);
-            user.sendLocalizedMessage("general.permissions.perm.add", permission.getFullName(), getName(target));
+            user.sendLocalizedMessage("module.permissions.permissions.permission.add", permission.getFullName(), getName(target));
         }
     }
     
@@ -521,7 +521,7 @@ public class PermissionsCommand extends DualSyntaxCommand {
         public void performAction(User user, IPermissionObject target) {
             AuditLog.logEvent(new PermissionRevokeEvent(user.getName(), target, permission.getFullName()));
             target.removePermission(permission);
-            user.sendLocalizedMessage("general.permissions.perm.rem", permission.getFullName(), getName(target));
+            user.sendLocalizedMessage("module.permissions.permissions.permission.remove", permission.getFullName(), getName(target));
         }
     }
     
@@ -559,9 +559,9 @@ public class PermissionsCommand extends DualSyntaxCommand {
             }
             
             if (target instanceof IPermissionUser) {
-                user.sendLocalizedMessage("general.permissions.varSet.user", getName(target), variableName, (variableValue == null) ? "<null>" : variableValue);
+                user.sendLocalizedMessage("module.permissions.permissions.variable.user", getName(target), variableName, (variableValue == null) ? "<null>" : variableValue);
             } else if (target instanceof IPermissionGroup) {
-                user.sendLocalizedMessage("general.permissions.varSet.group", getName(target), variableName, (variableValue == null) ? "<null>" : variableValue);
+                user.sendLocalizedMessage("module.permissions.permissions.variable.group", getName(target), variableName, (variableValue == null) ? "<null>" : variableValue);
             } else {
                 throw new UnsupportedOperationException();
             }
@@ -597,10 +597,10 @@ public class PermissionsCommand extends DualSyntaxCommand {
             
             if (member instanceof IPermissionGroup) {
                 ((IPermissionGroup) target).addGroup((IPermissionGroup) member);
-                user.sendLocalizedMessage("general.permissions.member.addGroup", getName(member), getName(target));
+                user.sendLocalizedMessage("module.permissions.permissions.member.add.group", getName(member), getName(target));
             } else if (member instanceof IPermissionUser) {
                 ((IPermissionGroup) target).addUser((IPermissionUser) member);
-                user.sendLocalizedMessage("general.permissions.member.addUser", getName(member), getName(target));
+                user.sendLocalizedMessage("module.permissions.permissions.member.add.user", getName(member), getName(target));
             } else {
                 throw new UnsupportedOperationException();
             }
@@ -636,10 +636,10 @@ public class PermissionsCommand extends DualSyntaxCommand {
             
             if (member instanceof IPermissionGroup) {
                 ((IPermissionGroup) target).removeGroup((IPermissionGroup) member);
-                user.sendLocalizedMessage("general.permissions.member.remGroup", getName(member), getName(target));
+                user.sendLocalizedMessage("module.permissions.permissions.member.remove.group", getName(member), getName(target));
             } else if (member instanceof IPermissionUser) {
                 ((IPermissionGroup) target).removeUser((IPermissionUser) member);
-                user.sendLocalizedMessage("general.permissions.member.remUser", getName(member), getName(target));
+                user.sendLocalizedMessage("module.permissions.permissions.member.remove.user", getName(member), getName(target));
             } else {
                 throw new UnsupportedOperationException();
             }
@@ -668,7 +668,7 @@ public class PermissionsCommand extends DualSyntaxCommand {
             AuditLog.logEvent(new GroupAddOwnerEvent(user.getName(), owner, (IPermissionGroup) target));
             
             ((IPermissionGroup) target).addOwner((IPermissionUser) owner);
-            user.sendLocalizedMessage("general.permissions.owner.add", getName(owner), getName(target));
+            user.sendLocalizedMessage("module.permissions.permissions.owner.add", getName(owner), getName(target));
         }
     }
     
@@ -694,7 +694,7 @@ public class PermissionsCommand extends DualSyntaxCommand {
             AuditLog.logEvent(new GroupRemoveOwnerEvent(user.getName(), owner, (IPermissionGroup) target));
             
             ((IPermissionGroup) target).removeOwner((IPermissionUser) owner);
-            user.sendLocalizedMessage("general.permissions.owner.rem", getName(owner), getName(target));
+            user.sendLocalizedMessage("module.permissions.permissions.owner.remove", getName(owner), getName(target));
         }
     }
     
@@ -718,7 +718,7 @@ public class PermissionsCommand extends DualSyntaxCommand {
         @Override
         public void performAction(User user, IPermissionObject target) {
             ((IPermissionGroup) target).setPrefix(prefix);
-            user.sendLocalizedMessage("general.permissions.prefix", getName(target), (prefix == null) ? "<null>" : prefix);
+            user.sendLocalizedMessage("module.permissions.permissions.group.prefix", getName(target), (prefix == null) ? "<null>" : prefix);
         }
     }
     
@@ -742,7 +742,7 @@ public class PermissionsCommand extends DualSyntaxCommand {
         @Override
         public void performAction(User user, IPermissionObject target) {
             ((IPermissionGroup) target).setChatColor(color != null, (color == null) ? ChatColor.WHITE : color);
-            user.sendLocalizedMessage("general.permissions.chatColor", getName(target), (color == null) ? "<null>" : (color.toString() + color.getChar()));
+            user.sendLocalizedMessage("module.permissions.permissions.group.chatColor", getName(target), (color == null) ? "<null>" : (color.toString() + color.getChar()));
         }
     }
     
@@ -766,7 +766,7 @@ public class PermissionsCommand extends DualSyntaxCommand {
         @Override
         public void performAction(User user, IPermissionObject target) {
             ((IPermissionGroup) target).setPriority(priority);
-            user.sendLocalizedMessage("general.permissions.priority", getName(target), priority + "");
+            user.sendLocalizedMessage("module.permissions.permissions.group.priority", getName(target), priority);
         }
     }
     
@@ -799,40 +799,40 @@ public class PermissionsCommand extends DualSyntaxCommand {
                 List<Permission> permissions = userTarget.getPermissions(false);
                 Map<String, String> variables = userTarget.getDefinedVariables();
                 
-                user.sendLocalizedMessage("general.permissions.info.user.pre", userTarget.getName());
-                user.sendLocalizedMessage("general.permissions.info.id", userTarget.getId() + "");
-                user.sendLocalizedMessage("general.permissions.info.user.uuid", userTarget.getUuid().toString());
+                user.sendLocalizedMessage("module.permissions.permissions.info.user.header", userTarget.getName());
+                user.sendLocalizedMessage("module.permissions.permissions.info.shared.id", userTarget.getId());
+                user.sendLocalizedMessage("module.permissions.permissions.info.user.uuid", userTarget.getUuid().toString());
                 
-                user.sendLocalizedMessage("general.permissions.info.user.inGroups");
+                user.sendLocalizedMessage("module.permissions.permissions.info.user.groups.header");
                 if (groups.size() == 0) {
-                    user.sendLocalizedMessage("general.permissions.info.none");
+                    user.sendLocalizedMessage("module.permissions.permissions.info.none");
                 } else if (groups.size() > 20) {
-                    user.sendLocalizedMessage("general.permissions.info.tooMany");
+                    user.sendLocalizedMessage("module.permissions.permissions.info.tooMany");
                 } else {
                     for (Long g : groups) {
-                        user.sendLocalizedMessage("general.permissions.info.user.group", PermissionManager.getInstance().getGroup(g).getName());
+                        user.sendLocalizedMessage("module.permissions.permissions.info.user.groups.entry", PermissionManager.getInstance().getGroup(g).getName());
                     }
                 }
                 
-                user.sendLocalizedMessage("general.permissions.info.permissions");
+                user.sendLocalizedMessage("module.permissions.permissions.info.shared.permissions.header");
                 if (permissions.size() == 0) {
-                    user.sendLocalizedMessage("general.permissions.info.none");
+                    user.sendLocalizedMessage("module.permissions.permissions.info.none");
                 } else if (permissions.size() > 20) {
-                    user.sendLocalizedMessage("general.permissions.info.tooMany");
+                    user.sendLocalizedMessage("module.permissions.permissions.info.tooMany");
                 } else {
                     for (Permission p : permissions) {
-                        user.sendLocalizedMessage("general.permissions.info.permission", p.getFullName());
+                        user.sendLocalizedMessage("module.permissions.permissions.info.shared.permissions.entry", p.getFullName());
                     }
                 }
                 
-                user.sendLocalizedMessage("general.permissions.info.variables");
+                user.sendLocalizedMessage("module.permissions.permissions.info.shared.variables.header");
                 if (variables.size() == 0) {
-                    user.sendLocalizedMessage("general.permissions.info.none");
+                    user.sendLocalizedMessage("module.permissions.permissions.info.none");
                 } else if (variables.size() > 20) {
-                    user.sendLocalizedMessage("general.permissions.info.tooMany");
+                    user.sendLocalizedMessage("module.permissions.permissions.info.tooMany");
                 } else {
                     for (Entry<String, String> v : variables.entrySet()) {
-                        user.sendLocalizedMessage("general.permissions.info.variable", v.getKey(), v.getValue());
+                        user.sendLocalizedMessage("module.permissions.permissions.info.shared.variables.entry", v.getKey(), v.getValue());
                     }
                 }
             } else if (target instanceof IPermissionGroup) {
@@ -843,68 +843,65 @@ public class PermissionsCommand extends DualSyntaxCommand {
                 List<Permission> permissions = groupTarget.getPermissions(false);
                 Map<String, String> variables = groupTarget.getDefinedVariables();
                 
-                user.sendLocalizedMessage("general.permissions.info.group.pre", groupTarget.getName());
-                user.sendLocalizedMessage("general.permissions.info.id", groupTarget.getId() + "");
-                user.sendLocalizedMessage("general.permissions.info.group.priority", groupTarget.getPriority() + "");
+                user.sendLocalizedMessage("module.permissions.permissions.info.group.header", groupTarget.getName());
+                user.sendLocalizedMessage("module.permissions.permissions.info.shared.id", groupTarget.getId());
+                user.sendLocalizedMessage("module.permissions.permissions.info.group.priority", groupTarget.getPriority());
                 
                 if (groupTarget.getPrefix() != null && !groupTarget.getPrefix().isEmpty()) {
-                    user.sendLocalizedMessage("general.permissions.info.group.chat", (groupTarget.isChatColorSet()) ? groupTarget.getChatColor().toString() : "", "[" + groupTarget.getPrefix() + "]");
+                    user.sendLocalizedMessage("module.permissions.permissions.info.group.chat.set", (groupTarget.isChatColorSet()) ? groupTarget.getChatColor().toString() : "", "[" + groupTarget.getPrefix() + "]");
                 } else {
-                    user.sendLocalizedMessage("general.permissions.info.group.noChat", (groupTarget.isChatColorSet()) ? groupTarget.getChatColor().toString() : "");
+                    user.sendLocalizedMessage("module.permissions.permissions.info.group.chat.unset", (groupTarget.isChatColorSet()) ? groupTarget.getChatColor().toString() : "");
                 }
                 
-                user.sendLocalizedMessage("general.permissions.info.group.owners");
+                user.sendLocalizedMessage("module.permissions.permissions.info.group.owners.header");
                 if (owners.size() == 0) {
-                    user.sendLocalizedMessage("general.permissions.info.none");
+                    user.sendLocalizedMessage("module.permissions.permissions.info.none");
                 } else if (owners.size() > 20) {
-                    user.sendLocalizedMessage("general.permissions.info.tooMany");
+                    user.sendLocalizedMessage("module.permissions.permissions.info.tooMany");
                 } else {
                     for (Long o : owners) {
-                        user.sendLocalizedMessage("general.permissions.info.group.member", PermissionManager.getInstance().getUser(o).getName());
+                        user.sendLocalizedMessage("module.permissions.permissions.info.group.owners.entry", PermissionManager.getInstance().getUser(o).getName());
                     }
                 }
                 
-                user.sendLocalizedMessage("general.permissions.info.group.userMembers");
-                if (users.size() == 0) {
-                    user.sendLocalizedMessage("general.permissions.info.none");
-                } else if (users.size() > 20) {
-                    user.sendLocalizedMessage("general.permissions.info.tooMany");
-                } else {
-                    for (Long u : users) {
-                        user.sendLocalizedMessage("general.permissions.info.group.member", PermissionManager.getInstance().getUser(u).getName());
-                    }
-                }
-                
-                user.sendLocalizedMessage("general.permissions.info.group.groupMembers");
-                if (groups.size() == 0) {
-                    user.sendLocalizedMessage("general.permissions.info.none");
-                } else if (groups.size() > 20) {
-                    user.sendLocalizedMessage("general.permissions.info.tooMany");
+                user.sendLocalizedMessage("module.permissions.permissions.info.group.members.header");
+                if (users.size() == 0 && groups.size() == 0) {
+                    user.sendLocalizedMessage("module.permissions.permissions.info.none");
+                } else if (groups.size() > 40) {
+                    user.sendLocalizedMessage("module.permissions.permissions.info.tooMany");
                 } else {
                     for (Long g : groups) {
-                        user.sendLocalizedMessage("general.permissions.info.group.member", PermissionManager.getInstance().getGroup(g).getName());
+                        user.sendLocalizedMessage("module.permissions.permissions.info.group.members.entry.group", PermissionManager.getInstance().getGroup(g).getName());
+                    }
+                    
+                    if ((groups.size() + users.size()) <= 40) {
+                        for (Long u : users) {
+                            user.sendLocalizedMessage("module.permissions.permissions.info.group.members.entry.user", PermissionManager.getInstance().getUser(u).getName());
+                        }
+                    } else {
+                        user.sendLocalizedMessage("module.permissions.permissions.info.tooMany");
                     }
                 }
                 
-                user.sendLocalizedMessage("general.permissions.info.permissions");
+                user.sendLocalizedMessage("module.permissions.permissions.info.shared.permissions.header");
                 if (permissions.size() == 0) {
-                    user.sendLocalizedMessage("general.permissions.info.none");
+                    user.sendLocalizedMessage("module.permissions.permissions.info.none");
                 } else if (permissions.size() > 20) {
-                    user.sendLocalizedMessage("general.permissions.info.tooMany");
+                    user.sendLocalizedMessage("module.permissions.permissions.info.tooMany");
                 } else {
                     for (Permission p : permissions) {
-                        user.sendLocalizedMessage("general.permissions.info.permission", p.getFullName());
+                        user.sendLocalizedMessage("module.permissions.permissions.info.shared.permissions.entry", p.getFullName());
                     }
                 }
                 
-                user.sendLocalizedMessage("general.permissions.info.variables");
+                user.sendLocalizedMessage("module.permissions.permissions.info.shared.variables.header");
                 if (variables.size() == 0) {
-                    user.sendLocalizedMessage("general.permissions.info.none");
+                    user.sendLocalizedMessage("module.permissions.permissions.info.none");
                 } else if (variables.size() > 20) {
-                    user.sendLocalizedMessage("general.permissions.info.tooMany");
+                    user.sendLocalizedMessage("module.permissions.permissions.info.tooMany");
                 } else {
                     for (Entry<String, String> v : variables.entrySet()) {
-                        user.sendLocalizedMessage("general.permissions.info.variable", v.getKey(), v.getValue());
+                        user.sendLocalizedMessage("module.permissions.permissions.info.shared.variables.entry", v.getKey(), v.getValue());
                     }
                 }
             } else {

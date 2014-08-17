@@ -19,12 +19,12 @@ public class UnGlobalMuteCommand extends GoldenAppleCommand {
 		} else {
 			if (args.length != 1) return false;
 			
-			user.sendLocalizedMessage("header.punish");
+			user.sendLocalizedMessage("module.punish.header");
 			
 			IPermissionUser target = PermissionManager.getInstance().findUser(args[0], false);
 			
 			if (target == null) {
-				user.sendLocalizedMessage("shared.userNotFoundError", args[0]);
+				user.sendLocalizedMessage("shared.parser.userNotFound.error", args[0]);
 			} else {
 				GlobalMuteCommand.muteVoid(target, user, commandLabel, args);
 			}

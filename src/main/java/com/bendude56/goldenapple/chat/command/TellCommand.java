@@ -16,9 +16,9 @@ public class TellCommand extends GoldenAppleCommand {
         User receiver = (args[0].equalsIgnoreCase("server")) ? User.getConsoleUser() : User.findUser(args[0]);
         
         if (receiver == null) {
-            user.sendLocalizedMessage("shared.userNotFoundError", args[0]);
+            user.sendLocalizedMessage("shared.parser.userNotFound.error", args[0]);
         } else if (receiver == user) {
-            user.sendLocalizedMessage("error.tell.self");
+            user.sendLocalizedMessage("module.chat.tell.self");
         } else {
             String message = args[1];
             

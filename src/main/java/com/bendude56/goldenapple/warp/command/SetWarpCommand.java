@@ -16,11 +16,11 @@ public class SetWarpCommand extends GoldenAppleCommand {
 		if (user.hasPermission(WarpManager.editPermission)) {
 			try {
 				WarpManager.getInstance().setNamedWarp(args[0], user.getPlayerHandle().getLocation());
-				user.sendLocalizedMessage("general.warp.set", args[0]);
+				user.sendLocalizedMessage("module.warp.set", args[0]);
 			} catch (SQLException e) {
 				GoldenApple.log(Level.SEVERE, "Failed to edit warp '" + args[0] + "':");
 				GoldenApple.log(Level.SEVERE, e);
-				user.sendLocalizedMessage("error.warp.setFail");
+				user.sendLocalizedMessage("module.warp.error.fail");
 			}
 		} else {
 			GoldenApple.logPermissionFail(user, commandLabel, args, true);

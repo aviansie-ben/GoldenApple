@@ -2,8 +2,6 @@ package com.bendude56.goldenapple.chat.command;
 
 import java.util.Map.Entry;
 
-import org.bukkit.ChatColor;
-
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.chat.ChatManager;
@@ -35,7 +33,7 @@ public class ChannelCommand extends DualSyntaxCommand {
             return;
         }
         
-        user.sendLocalizedMessage("header.chat");
+        user.sendLocalizedMessage("module.chat.header");
         
         if (arg.isDefined("channellist")) {
             sendChannelList(user);
@@ -46,7 +44,7 @@ public class ChannelCommand extends DualSyntaxCommand {
                 GoldenApple.logPermissionFail(user, commandLabel, args, true);
                 return;
             } else if (ChatManager.getInstance().channelExists(arg.getString("add"))) {
-                user.sendLocalizedMessage("error.channel.alreadyExists", arg.getString("add"));
+                user.sendLocalizedMessage("module.chat.error.channelAlreadyExists", arg.getString("add"));
                 return;
             } else {
                 channel = ChatManager.getInstance().createChannel(arg.getString("add"));
@@ -57,7 +55,7 @@ public class ChannelCommand extends DualSyntaxCommand {
             }
         } else if (arg.isDefined("join")) {
             if (!ChatManager.getInstance().channelExists(arg.getString("join"))) {
-                user.sendLocalizedMessage("error.channel.notFound", arg.getString("join"));
+                user.sendLocalizedMessage("module.chat.error.channelNotFound", arg.getString("join"));
             } else {
                 channel = ChatManager.getInstance().getChannel(arg.getString("join"));
                 
@@ -131,7 +129,7 @@ public class ChannelCommand extends DualSyntaxCommand {
         
         if (arg.isDefined("leave")) {
             if (channel == null) {
-                user.sendLocalizedMessage("error.channel.notInChannelCommand");
+                user.sendLocalizedMessage("module.chat.error.notInChannel.command");
                 return;
             } else {
                 channel.leave(user, true);
@@ -160,7 +158,7 @@ public class ChannelCommand extends DualSyntaxCommand {
             } else if (args.length != 2) {
                 sendHelp(user, commandLabel, false, (channel == null) ? null : channel.getAccessLevel(user));
             } else if (ChatManager.getInstance().channelExists(args[1])) {
-                user.sendLocalizedMessage("error.channel.alreadyExists", args[1]);
+                user.sendLocalizedMessage("module.chat.error.channelAlreadyExists", args[1]);
             } else {
                 channel = ChatManager.getInstance().createChannel(args[1]);
                 channel.join(user, true);
@@ -169,7 +167,7 @@ public class ChannelCommand extends DualSyntaxCommand {
             if (args.length != 2) {
                 sendHelp(user, commandLabel, false, (channel == null) ? null : channel.getAccessLevel(user));
             } else if (!ChatManager.getInstance().channelExists(args[1])) {
-                user.sendLocalizedMessage("error.channel.notFound", args[1]);
+                user.sendLocalizedMessage("module.chat.error.channelNotFound", args[1]);
             } else {
                 channel = ChatManager.getInstance().getChannel(args[1]);
                 channel.join(user, true);
@@ -187,7 +185,7 @@ public class ChannelCommand extends DualSyntaxCommand {
                 IPermissionUser target = PermissionManager.getInstance().findUser(args[1], true);
                 
                 if (target == null) {
-                    user.sendLocalizedMessage("shared.userNotFoundError", args[1]);
+                    user.sendLocalizedMessage("shared.parser.userNotFound.error", args[1]);
                 } else {
                     sendWhoisInformation(user, target, channel, commandLabel, args);
                 }
@@ -199,7 +197,7 @@ public class ChannelCommand extends DualSyntaxCommand {
                 User target = User.findUser(args[1]);
                 
                 if (target == null) {
-                    user.sendLocalizedMessage("shared.userNotFoundError", args[1]);
+                    user.sendLocalizedMessage("shared.parser.userNotFound.error", args[1]);
                 } else {
                     kickUser(user, target, channel, commandLabel, args);
                 }
@@ -213,7 +211,7 @@ public class ChannelCommand extends DualSyntaxCommand {
                 IPermissionUser target = PermissionManager.getInstance().findUser(args[1], true);
                 
                 if (target == null) {
-                    user.sendLocalizedMessage("shared.userNotFoundError", args[1]);
+                    user.sendLocalizedMessage("shared.parser.userNotFound.error", args[1]);
                 } else {
                     setUserLevel(user, target, args[2], false, channel, commandLabel, args);
                 }
@@ -251,7 +249,7 @@ public class ChannelCommand extends DualSyntaxCommand {
                 sendHelp(user, commandLabel, false, (channel == null) ? null : channel.getAccessLevel(user));
             } else {
                 if (channel == null) {
-                    user.sendLocalizedMessage("error.channel.notInChannelCommand");
+                    user.sendLocalizedMessage("module.chat.error.notInChannel.command");
                     return;
                 } else {
                     channel.leave(user, true);
@@ -263,18 +261,18 @@ public class ChannelCommand extends DualSyntaxCommand {
     }
     
     private boolean sendChannelList(User user) {
-        user.sendLocalizedMessage("general.channel.channelList");
+        user.sendLocalizedMessage("module.chat.channelList.header");
         
         for (IChatChannel c : ChatManager.getInstance().getActiveChannels()) {
             switch (c.getDisplayType(user)) {
                 case CONNECTED:
-                    user.getHandle().sendMessage(" -" + ChatColor.GREEN + c.getListedName());
+                    user.sendLocalizedMessage("module.chat.channelList.entry.connected", c.getListedName());
                     break;
                 case NORMAL:
-                    user.getHandle().sendMessage(" -" + ChatColor.WHITE + c.getListedName());
+                    user.sendLocalizedMessage("module.chat.channelList.entry.normal", c.getListedName());
                     break;
                 case GRAYED_OUT:
-                    user.getHandle().sendMessage(" -" + ChatColor.DARK_GRAY + c.getListedName());
+                    user.sendLocalizedMessage("module.chat.channelList.entry.grayedOut", c.getListedName());
                     break;
             }
         }
@@ -284,16 +282,16 @@ public class ChannelCommand extends DualSyntaxCommand {
     
     private boolean sendUserList(User user, IChatChannel channel) {
         if (channel == null) {
-            user.sendLocalizedMessage("error.channel.notInChannelCommand");
+            user.sendLocalizedMessage("module.chat.error.notInChannel.command");
             return false;
         } else if (!channel.isFeatureAccessible(user, ChatChannelFeature.LIST_USERS)) {
-            user.sendLocalizedMessage("error.channel.commandNotSupported");
+            user.sendLocalizedMessage("module.chat.error.unsupportedCommand");
             return false;
         } else {
-            user.sendLocalizedMessage("general.channel.userList");
+            user.sendLocalizedMessage("module.chat.userList.header");
             
             for (User online : channel.getActiveUsers()) {
-                user.getHandle().sendMessage(" -" + online.getChatDisplayName());
+                user.sendLocalizedMessage("module.chat.userList.entry", online.getChatDisplayName());
             }
             
             return true;
@@ -302,10 +300,10 @@ public class ChannelCommand extends DualSyntaxCommand {
     
     private boolean sendWhoisInformation(User user, IPermissionUser target, IChatChannel channel, String commandLabel, String[] args) {
         if (channel == null) {
-            user.sendLocalizedMessage("error.channel.notInChannelCommand");
+            user.sendLocalizedMessage("module.chat.error.notInChannel.command");
             return false;
         } else if (!channel.isFeatureAccessible(user, ChatChannelFeature.WHOIS)) {
-            user.sendLocalizedMessage("error.channel.commandNotSupported");
+            user.sendLocalizedMessage("module.chat.error.unsupportedCommand");
             return false;
         } else if (!channel.getAccessLevel(user).isModerator()) {
             GoldenApple.logPermissionFail(user, commandLabel, args, true);
@@ -318,14 +316,14 @@ public class ChannelCommand extends DualSyntaxCommand {
     
     private boolean kickUser(User user, User target, IChatChannel channel, String commandLabel, String[] args) {
         if (channel == null) {
-            user.sendLocalizedMessage("error.channel.notInChannelCommand");
+            user.sendLocalizedMessage("module.chat.error.notInChannel.command");
             return false;
         } else if (!channel.isFeatureAccessible(user, ChatChannelFeature.KICK_USER)) {
-            user.sendLocalizedMessage("error.channel.commandNotSupported");
+            user.sendLocalizedMessage("module.chat.error.unsupportedCommand");
             return false;
         } else {
             if (!channel.isInChannel(target)) {
-                user.sendLocalizedMessage("error.channel.kick.notInChannel");
+                user.sendLocalizedMessage("module.chat.kick.notInChannel");
             } else if (!channel.getAccessLevel(user).canPunish(channel.getAccessLevel(target))) {
                 GoldenApple.logPermissionFail(user, commandLabel, args, true);
                 return false;
@@ -339,16 +337,16 @@ public class ChannelCommand extends DualSyntaxCommand {
     
     private boolean setUserLevel(User user, IPermissionUser target, String levelName, boolean complex, IChatChannel channel, String commandLabel, String[] args) {
         if (channel == null) {
-            user.sendLocalizedMessage("error.channel.notInChannelCommand");
+            user.sendLocalizedMessage("module.chat.error.notInChannel.command");
             return false;
         } else if (!(channel instanceof IAclChatChannel) || !channel.isFeatureAccessible(user, ChatChannelFeature.SET_ACCESS_LEVELS)) {
-            user.sendLocalizedMessage("error.channel.commandNotSupported");
+            user.sendLocalizedMessage("module.chat.error.unsupportedCommand");
             return false;
         } else {
             ChatChannelAccessLevel level = (complex) ? ChatChannelAccessLevel.fromComplexCommandArgument(user, levelName) : ChatChannelAccessLevel.fromSimpleCommandArgument(user, levelName);
             
             if (level == null) {
-                user.sendLocalizedMessage("error.channel.invalidLevel", levelName);
+                user.sendLocalizedMessage("module.chat.accessLevel.unknownLevel", levelName);
             } else if (!channel.getAccessLevel(user).canGrant(level)) {
                 GoldenApple.logPermissionFail(user, commandLabel, args, true);
                 return false;
@@ -356,14 +354,14 @@ public class ChannelCommand extends DualSyntaxCommand {
                 GoldenApple.logPermissionFail(user, commandLabel, args, true);
                 return false;
             } else if (level != ChatChannelAccessLevel.NO_ACCESS && level.getLevelId() < ((IAclChatChannel) channel).calculateMinimumAccessLevel(target).getLevelId()) {
-                user.sendLocalizedMessage("error.channel.levelBelowMinimum");
+                user.sendLocalizedMessage("module.chat.accessLevel.user.belowMinimum");
             } else {
                 ((IAclChatChannel) channel).setExplicitAccessLevel(target, level);
                 
                 if (level == ChatChannelAccessLevel.NO_ACCESS) {
-                    user.sendLocalizedMessage("general.channel.lvlRemoveUser", target.getName());
+                    user.sendLocalizedMessage("module.chat.accessLevel.user.unset", target.getName());
                 } else {
-                    user.sendLocalizedMessage("general.channel.lvlSetUser", target.getName(), level.getDisplayName(user));
+                    user.sendLocalizedMessage("module.chat.accessLevel.user.set", target.getName(), level.getDisplayName(user));
                 }
             }
             
@@ -373,10 +371,10 @@ public class ChannelCommand extends DualSyntaxCommand {
     
     private boolean setGroupLevel(User user, IPermissionGroup target, String levelName, boolean complex, IChatChannel channel, String commandLabel, String[] args) {
         if (channel == null) {
-            user.sendLocalizedMessage("error.channel.notInChannelCommand");
+            user.sendLocalizedMessage("module.chat.error.notInChannel.command");
             return false;
         } else if (!(channel instanceof IAclChatChannel) || !channel.isFeatureAccessible(user, ChatChannelFeature.SET_ACCESS_LEVELS)) {
-            user.sendLocalizedMessage("error.channel.commandNotSupported");
+            user.sendLocalizedMessage("module.chat.error.unsupportedCommand");
             return false;
         } else if (!channel.getAccessLevel(user).isAdministrator()) {
             GoldenApple.logPermissionFail(user, commandLabel, args, true);
@@ -385,14 +383,14 @@ public class ChannelCommand extends DualSyntaxCommand {
             ChatChannelAccessLevel level = (complex) ? ChatChannelAccessLevel.fromComplexCommandArgument(user, levelName) : ChatChannelAccessLevel.fromSimpleCommandArgument(user, levelName);
             
             if (level == null) {
-                user.sendLocalizedMessage("error.channel.invalidLevel", levelName);
+                user.sendLocalizedMessage("module.chat.accessLevel.unknownLevel", levelName);
             } else {
                 ((IAclChatChannel) channel).setExplicitAccessLevel(target, level);
                 
                 if (level == ChatChannelAccessLevel.NO_ACCESS) {
-                    user.sendLocalizedMessage("general.channel.lvlRemoveGroup", target.getName());
+                    user.sendLocalizedMessage("module.chat.accessLevel.group.unset", target.getName());
                 } else {
-                    user.sendLocalizedMessage("general.channel.lvlSetGroup", target.getName(), level.getDisplayName(user));
+                    user.sendLocalizedMessage("module.chat.accessLevel.group.set", target.getName(), level.getDisplayName(user));
                 }
             }
             
@@ -402,10 +400,10 @@ public class ChannelCommand extends DualSyntaxCommand {
     
     private boolean setDefaultLevel(User user, String levelName, boolean complex, IChatChannel channel, String commandLabel, String[] args) {
         if (channel == null) {
-            user.sendLocalizedMessage("error.channel.notInChannelCommand");
+            user.sendLocalizedMessage("module.chat.error.notInChannel.command");
             return false;
         } else if (!channel.isFeatureAccessible(user, ChatChannelFeature.SET_ACCESS_LEVELS)) {
-            user.sendLocalizedMessage("error.channel.commandNotSupported");
+            user.sendLocalizedMessage("module.chat.error.unsupportedCommand");
             return false;
         } else if (!channel.getAccessLevel(user).isAdministrator()) {
             GoldenApple.logPermissionFail(user, commandLabel, args, true);
@@ -414,13 +412,13 @@ public class ChannelCommand extends DualSyntaxCommand {
             ChatChannelAccessLevel level = (complex) ? ChatChannelAccessLevel.fromComplexCommandArgument(user, levelName) : ChatChannelAccessLevel.fromSimpleCommandArgument(user, levelName);
             
             if (level == null) {
-                user.sendLocalizedMessage("error.channel.notInChannelCommand");
+                user.sendLocalizedMessage("module.chat.error.notInChannel.command");
             } else if (level.isVip()) {
-                user.sendLocalizedMessage("error.channel.defaultLevelTooHigh");
+                user.sendLocalizedMessage("module.chat.accessLevel.default.tooHigh");
             } else {
                 channel.setDefaultAccessLevel(level);
                 
-                user.sendLocalizedMessage("general.channel.lvlSetDefault", level.getDisplayName(user));
+                user.sendLocalizedMessage("module.chat.accessLevel.default.set", level.getDisplayName(user));
             }
             
             return true;
@@ -429,10 +427,10 @@ public class ChannelCommand extends DualSyntaxCommand {
     
     private boolean setMotd(User user, String motd, IChatChannel channel, String commandLabel, String[] args) {
         if (channel == null) {
-            user.sendLocalizedMessage("error.channel.notInChannelCommand");
+            user.sendLocalizedMessage("module.chat.error.notInChannel.command");
             return false;
         } else if (!channel.isFeatureAccessible(user, ChatChannelFeature.SET_MOTD)) {
-            user.sendLocalizedMessage("error.channel.commandNotSupported");
+            user.sendLocalizedMessage("module.chat.error.unsupportedCommand");
             return false;
         } else if (!channel.getAccessLevel(user).isSuperModerator()) {
             GoldenApple.logPermissionFail(user, commandLabel, args, true);
@@ -445,7 +443,7 @@ public class ChannelCommand extends DualSyntaxCommand {
                     ((IPersistentChatChannel) channel).save();
                 }
                 
-                user.sendLocalizedMessage("general.channel.motd.clear");
+                user.sendLocalizedMessage("module.chat.motd.unset");
             } else {
                 channel.setMotd(motd);
                 
@@ -453,7 +451,7 @@ public class ChannelCommand extends DualSyntaxCommand {
                     ((IPersistentChatChannel) channel).save();
                 }
                 
-                user.sendLocalizedMessage("general.channel.motd.set");
+                user.sendLocalizedMessage("module.chat.motd.set");
             }
             
             return true;
@@ -462,10 +460,10 @@ public class ChannelCommand extends DualSyntaxCommand {
     
     private boolean toggleStrictCensoring(User user, IChatChannel channel, String commandLabel, String[] args) {
         if (channel == null) {
-            user.sendLocalizedMessage("error.channel.notInChannelCommand");
+            user.sendLocalizedMessage("module.chat.error.notInChannel.command");
             return false;
         } else if (!channel.isFeatureAccessible(user, ChatChannelFeature.SET_CENSOR)) {
-            user.sendLocalizedMessage("error.channel.commandNotSupported");
+            user.sendLocalizedMessage("module.chat.error.unsupportedCommand");
             return false;
         } else if (!channel.getAccessLevel(user).isAdministrator()) {
             GoldenApple.logPermissionFail(user, commandLabel, args, true);
@@ -474,11 +472,11 @@ public class ChannelCommand extends DualSyntaxCommand {
             if (channel.getCensor() == ChatManager.getInstance().getStrictCensor()) {
                 channel.setCensor(ChatManager.getInstance().getDefaultCensor());
                 
-                user.sendLocalizedMessage("general.channel.strictOff");
+                user.sendLocalizedMessage("module.chat.censor.normal");
             } else {
                 channel.setCensor(ChatManager.getInstance().getStrictCensor());
                 
-                user.sendLocalizedMessage("general.channel.strictOn");
+                user.sendLocalizedMessage("module.chat.censor.strict");
             }
             
             if (channel instanceof IPersistentChatChannel) {
@@ -491,10 +489,10 @@ public class ChannelCommand extends DualSyntaxCommand {
     
     private boolean deleteChannel(User user, boolean verified, boolean complex, IChatChannel channel, String commandLabel, String[] args) {
         if (channel == null) {
-            user.sendLocalizedMessage("error.channel.notInChannelCommand");
+            user.sendLocalizedMessage("module.chat.error.notInChannel.command");
             return false;
         } else if (!channel.isFeatureAccessible(user, ChatChannelFeature.DELETE)) {
-            user.sendLocalizedMessage("error.channel.commandNotSupported");
+            user.sendLocalizedMessage("module.chat.error.unsupportedCommand");
             return false;
         } else if (!channel.getAccessLevel(user).isAdministrator()) {
             GoldenApple.logPermissionFail(user, commandLabel, args, true);
@@ -504,7 +502,7 @@ public class ChannelCommand extends DualSyntaxCommand {
                 channel.delete();
             } else {
                 VerifyCommand.commands.put(user, (complex) ? "gachannel -d -v" : "gachannel delete -v");
-                user.sendLocalizedMessage("general.channel.deleteWarn");
+                user.sendLocalizedMessage("module.chat.delete.warning");
             }
             
             return true;
@@ -512,7 +510,7 @@ public class ChannelCommand extends DualSyntaxCommand {
     }
     
     private void sendHelp(User user, String commandLabel, boolean complex, ChatChannelAccessLevel level) {
-        user.sendLocalizedMessage("header.help");
+        user.sendLocalizedMessage("module.chat.header");
         if (level == null) {
             showHelpSection(user, commandLabel, "out", complex);
         } else {
@@ -530,7 +528,7 @@ public class ChannelCommand extends DualSyntaxCommand {
     }
     
     private void showHelpSection(User user, String commandLabel, String section, boolean complex) {
-        user.sendLocalizedMultilineMessage((complex) ? "help.channel." + section + ".complex" : "help.channel." + section + ".simple", commandLabel);
+        user.sendLocalizedMessage((complex) ? "module.chat.help." + section + ".complex" : "module.chat.help." + section + ".simple", commandLabel);
     }
     
     private ArgumentInfo[] getArguments() {

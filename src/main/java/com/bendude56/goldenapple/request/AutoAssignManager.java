@@ -89,7 +89,7 @@ public class AutoAssignManager {
                 assigner.findNextReceiver();
             } else {
                 assigned.assignTo(user);
-                user.sendLocalizedMessage("general.request.auto.assigned", assigned.getQueue().getName(), assigned.getId() + "");
+                user.sendLocalizedMessage("module.request.autoAssign.assigned", assigned.getQueue().getName(), assigned.getId() );
             }
         }
     }
@@ -129,7 +129,7 @@ public class AutoAssignManager {
             
             if (assignTo != null) {
                 r.assignTo(assignTo);
-                assignTo.sendLocalizedMessage("general.request.auto.assigned", r.getQueue().getName(), r.getId() + "");
+                assignTo.sendLocalizedMessage("module.request.autoAssign.assigned", r.getQueue().getName(), r.getId() );
             } else {
                 requestBacklog.add(r);
             }
@@ -206,7 +206,7 @@ public class AutoAssignManager {
                 user = users.remove();
                 
                 if (canAutoAssign(user) && !request.isOnDoNotAssign(user)) {
-                    user.sendLocalizedMessage("general.request.auto.requested", request.getQueue().getName(), request.getId() + "");
+                    user.sendLocalizedMessage("module.request.autoAssign.request.begin", request.getQueue().getName(), request.getId() );
                     waitTask = Bukkit.getScheduler().runTaskLater(GoldenApple.getInstance(), new Runnable() {
                         @Override
                         public void run() {
@@ -226,7 +226,7 @@ public class AutoAssignManager {
             waitTask.cancel();
             
             if (request.getAssignedReceiver().getId() != user.getId()) {
-                user.sendLocalizedMessage("general.request.auto.requestedEnd", request.getQueue().getName(), request.getId() + "");
+                user.sendLocalizedMessage("module.request.autoAssign.request.end", request.getQueue().getName(), request.getId() );
             } else {
                 request.getQueue().removeFromAutoAssignQueue(user);
                 request.getQueue().addToAutoAssignQueue(user);
@@ -247,7 +247,7 @@ public class AutoAssignManager {
         }
         
         private void notifyTimeout() {
-            user.sendLocalizedMessage("general.request.auto.requestedEnd", request.getQueue().getName(), request.getId() + "");
+            user.sendLocalizedMessage("module.request.autoAssign.request.end", request.getQueue().getName(), request.getId() );
             findNextReceiver();
         }
     }

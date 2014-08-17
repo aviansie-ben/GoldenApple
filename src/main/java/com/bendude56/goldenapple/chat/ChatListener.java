@@ -67,7 +67,7 @@ public class ChatListener implements Listener, EventExecutor {
         User u = User.getUser(event.getPlayer());
         IChatChannel channel = ChatManager.getInstance().getActiveChannel(u);
         if (channel == null) {
-            u.sendLocalizedMessage("error.channel.notInChannel");
+            u.sendLocalizedMessage("module.chat.error.notInChannel.chat");
         } else {
             synchronized (channel) {
                 channel.sendMessage(u, event.getMessage());

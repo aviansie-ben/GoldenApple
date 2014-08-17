@@ -393,7 +393,7 @@ public class DatabaseRequestQueue implements RequestQueue {
                 requestQueue.add(request);
                 
                 for (User receiver : onlineReceivers) {
-                    receiver.sendLocalizedMessage("general.request.notifyNew", name, requestId + "");
+                    receiver.sendLocalizedMessage("module.request.notify.newRequest", name, requestId );
                 }
                 
                 RequestManager.getInstance().notifyAutoAssignRequestEvent(request, AutoAssignRequestEvent.CREATE);

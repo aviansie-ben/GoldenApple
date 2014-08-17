@@ -12,12 +12,12 @@ public class UnBanCommand extends GoldenAppleCommand {
 	public boolean onExecute(GoldenApple instance, User user, String commandLabel, String[] args) {
 		if (args.length != 1 && (args.length != 2 || (!args[1].equalsIgnoreCase("-v") && !args[1].equalsIgnoreCase("--verify")))) return false;
 		
-		user.sendLocalizedMessage("header.punish");
+		user.sendLocalizedMessage("module.punish.header");
 		
 		IPermissionUser target = PermissionManager.getInstance().findUser(args[0], false);
 		
 		if (target == null) {
-			user.sendLocalizedMessage("shared.userNotFoundError", args[0]);
+			user.sendLocalizedMessage("shared.parser.userNotFound.error", args[0]);
 		} else {
 			if (user.getVariableBoolean("goldenapple.complexSyntax")) BanCommand.banVoid(target, user, "gaban", new String[] { "-u", target.getName(), "-v" }, args.length >= 2 && (args[1].equalsIgnoreCase("-v") || args[1].equalsIgnoreCase("--verify")));
 			else BanCommand.banVoid(target, user, "gaban", new String[] { target.getName(), "void" }, args.length >= 2 && (args[1].equalsIgnoreCase("-v") || args[1].equalsIgnoreCase("--verify")));

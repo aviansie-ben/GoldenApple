@@ -20,7 +20,7 @@ public class HomeCommand extends GoldenAppleCommand {
 		} else {
 			userHome = PermissionManager.getInstance().findUser(args[1], false);
 			if (userHome == null) {
-				user.sendLocalizedMessage("shared.userNotFoundError", args[1]);
+				user.sendLocalizedMessage("shared.parser.userNotFound.error", args[1]);
 				return true;
 			}
 		}
@@ -40,19 +40,19 @@ public class HomeCommand extends GoldenAppleCommand {
 		if (homeAlias == null) {
 			h = (HomeWarp)WarpManager.getInstance().getHome(userHome, homeNumber);
 			if (h == null && user == userHome) {
-				user.sendLocalizedMessage("error.home.notFoundIdSelf", homeNumber + "");
+				user.sendLocalizedMessage("module.warp.home.notFound.id", homeNumber);
 				return true;
 			} else if (h == null) {
-				user.sendLocalizedMessage("error.home.notFoundIdOther", userHome.getName(), homeNumber + "");
+				user.sendLocalizedMessage("module.warp.home.notFound.other.id", userHome.getName(), homeNumber);
 				return true;
 			}
 		} else {
 			h = (HomeWarp)WarpManager.getInstance().getHome(userHome, homeAlias);
 			if (h == null && user == userHome) {
-				user.sendLocalizedMessage("error.home.notFoundAliasSelf", args[0]);
+				user.sendLocalizedMessage("module.warp.home.notFound.alias", args[0]);
 				return true;
 			} else if (h == null) {
-				user.sendLocalizedMessage("error.home.notFoundAliasOther", userHome.getName(), args[0]);
+				user.sendLocalizedMessage("module.warp.home.notFound.other.alias", userHome.getName(), args[0]);
 				return true;
 			}
 		}
@@ -61,9 +61,9 @@ public class HomeCommand extends GoldenAppleCommand {
 			int deathCooldown = WarpManager.getInstance().getDeathCooldown(user), teleportCooldown = WarpManager.getInstance().getTeleportCooldown(user);
 			
 			if (deathCooldown > 0) {
-				user.sendLocalizedMessage("error.warps.cooldownDeath", deathCooldown + "");
+				user.sendLocalizedMessage("module.warp.error.cooldown.death", deathCooldown);
 			} else if (teleportCooldown > 0) {
-				user.sendLocalizedMessage("error.warps.cooldown", teleportCooldown + "");
+				user.sendLocalizedMessage("module.warp.error.cooldown.normal", teleportCooldown);
 			} else {
 				h.teleport(user);
 				WarpManager.getInstance().startTeleportCooldown(user);

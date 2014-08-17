@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -447,20 +448,25 @@ public class User implements IPermissionUser {
 		return permissions == null;
 	}
 	
-	public void sendLocalizedMessage(String message) {
-		GoldenApple.getInstance().getLocalizationManager().sendMessage(this, message, false);
+	public String getLocalizedMessage(String message, Object... args) {
+	    return GoldenApple.getInstance().getLocalizationManager().getLocale(this).getMessage(message, args);
 	}
 	
-	public void sendLocalizedMessage(String message, String... args) {
-		GoldenApple.getInstance().getLocalizationManager().sendMessage(this, message, false, args);
+	public void sendMessage(String message) {
+	    if (isServer()) {
+	        GoldenApple.log(Level.INFO, message);
+	    } else {
+	        getPlayerHandle().sendMessage(message);
+	    }
 	}
 	
-	public void sendLocalizedMultlineMessage(String message) {
-		GoldenApple.getInstance().getLocalizationManager().sendMessage(this, message, true);
+	public void sendLocalizedMessage(String message, Object... args) {
+	    sendMessage(getLocalizedMessage(message, args));
 	}
 	
-	public void sendLocalizedMultilineMessage(String message, String... args) {
-		GoldenApple.getInstance().getLocalizationManager().sendMessage(this, message, true, args);
+	@Deprecated
+	public void sendLocalizedMultilineMessage(String message, Object... args) {
+		sendLocalizedMessage(message, args);
 	}
 
 	@Override

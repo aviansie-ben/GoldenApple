@@ -85,33 +85,33 @@ public abstract class BaseAclChatChannel extends BaseChatChannel implements IAcl
         super.sendWhoisInformation(user, target);
         
         if (getAccessLevel(target) != ChatChannelAccessLevel.NO_ACCESS) {
-            user.sendLocalizedMessage("general.channel.whois.level.sourceHead");
+            user.sendLocalizedMessage("module.chat.whois.levelSources.header");
             
             for (Long groupId : target.getParentGroups(false)) {
                 IPermissionGroup group = PermissionManager.getInstance().getGroup(groupId);
                 level = getExplicitAccessLevel(group);
                 
                 if (level != null && level != ChatChannelAccessLevel.NO_ACCESS) {
-                    user.sendLocalizedMessage("general.channel.whois.level.sourceGroup", group.getName(), level.getDisplayName(user));
+                    user.sendLocalizedMessage("module.chat.whois.levelSources.source.group", group.getName(), level.getDisplayName(user));
                 }
             }
             
             level = getExplicitAccessLevel(target);
             
             if (level != null && level != ChatChannelAccessLevel.NO_ACCESS) {
-                user.sendLocalizedMessage("general.channel.whois.level.sourceUser", target.getName(), level.getDisplayName(user));
+                user.sendLocalizedMessage("module.chat.whois.levelSources.source.user", target.getName(), level.getDisplayName(user));
             }
             
             level = getDefaultAccessLevel();
             
             if (level != null && level != ChatChannelAccessLevel.NO_ACCESS) {
-                user.sendLocalizedMessage("general.channel.whois.level.sourceDefault", level.getDisplayName(user));
+                user.sendLocalizedMessage("module.chat.whois.levelSources.source.default", level.getDisplayName(user));
             }
             
             if (target.hasPermission(ChatManager.channelAdminPermission)) {
-                user.sendLocalizedMessage("general.channel.whois.level.sourcePermission", ChatChannelAccessLevel.ADMINISTRATOR.getDisplayName(user));
+                user.sendLocalizedMessage("module.chat.whois.levelSources.source.global", ChatChannelAccessLevel.ADMINISTRATOR.getDisplayName(user));
             } else if (target.hasPermission(ChatManager.channelModPermission)) {
-                user.sendLocalizedMessage("general.channel.whois.level.sourcePermission", ChatChannelAccessLevel.MODERATOR.getDisplayName(user));
+                user.sendLocalizedMessage("module.chat.whois.levelSources.source.global", ChatChannelAccessLevel.MODERATOR.getDisplayName(user));
             }
         }
     }

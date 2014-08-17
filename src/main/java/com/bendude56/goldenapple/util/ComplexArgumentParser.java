@@ -67,7 +67,7 @@ public class ComplexArgumentParser {
 			
 			if (arg == null) {
 				// Not a valid switch
-				if (u != null) u.sendLocalizedMessage("shared.unknownOption", args[i]);
+				if (u != null) u.sendLocalizedMessage("shared.parser.unknownOption", args[i]);
 				return false;
 			} else if (arg.type == ArgumentType.SWITCH) {
 			    if (kvpKey != null) {
@@ -78,7 +78,7 @@ public class ComplexArgumentParser {
 			    }
 			} else if (++i >= offset + length) {
 				// No value was defined
-				if (u != null) u.sendLocalizedMessage("shared.parameterMissing", args[i - 1]);
+				if (u != null) u.sendLocalizedMessage("shared.parser.parameterMissing", args[i - 1]);
 				return false;
 			} else {
 				Object value = args[i];
@@ -95,7 +95,7 @@ public class ComplexArgumentParser {
 					try {
 						value = Integer.parseInt((String)value);
 					} catch (NumberFormatException e) {
-						if (u != null) u.sendLocalizedMessage("shared.notANumber", (String)value);
+						if (u != null) u.sendLocalizedMessage("shared.convertError.number", (String)value);
 						return false;
 					}
 				} else if (arg.type == ArgumentType.LONG) {
@@ -103,7 +103,7 @@ public class ComplexArgumentParser {
 					try {
 						value = Long.parseLong((String)value);
 					} catch (NumberFormatException e) {
-						if (u != null) u.sendLocalizedMessage("shared.notANumber", (String)value);
+						if (u != null) u.sendLocalizedMessage("shared.convertError.number", (String)value);
 						return false;
 					}
 				} else if (arg.type == ArgumentType.USER) {
@@ -113,7 +113,7 @@ public class ComplexArgumentParser {
 					value = PermissionManager.getInstance().findUser(name, false);
 					
 					if (value == null) {
-						if (u != null) u.sendLocalizedMessage((arg.errorIfNotFound) ? "shared.userNotFoundError" : "shared.userNotFoundWarning", name);
+						if (u != null) u.sendLocalizedMessage((arg.errorIfNotFound) ? "shared.parser.userNotFound.error" : "shared.parser.userNotFound.warning", name);
 						if (arg.errorIfNotFound) return false;
 						else continue;
 					}
@@ -123,7 +123,7 @@ public class ComplexArgumentParser {
 					value = User.findUser(name);
 					
 					if (value == null) {
-						if (u != null) u.sendLocalizedMessage((arg.errorIfNotFound) ? "shared.userNotFoundError" : "shared.userNotFoundWarning", name);
+						if (u != null) u.sendLocalizedMessage((arg.errorIfNotFound) ? "shared.parser.userNotFound.error" : "shared.parser.userNotFound.warning", name);
 						if (arg.errorIfNotFound) return false;
 						else continue;
 					}
@@ -133,7 +133,7 @@ public class ComplexArgumentParser {
 					value = PermissionManager.getInstance().getGroup(name);
 					
 					if (value == null) {
-						if (u != null) u.sendLocalizedMessage( (arg.errorIfNotFound) ? "shared.groupNotFoundError" : "shared.groupNotFoundWarning", name);
+						if (u != null) u.sendLocalizedMessage( (arg.errorIfNotFound) ? "shared.parser.groupNotFound.error" : "shared.parser.groupNotFound.warning", name);
 						if (arg.errorIfNotFound) return false;
 						else continue;
 					}
@@ -143,7 +143,7 @@ public class ComplexArgumentParser {
 					value = Bukkit.getWorld(name);
 					
 					if (value == null) {
-						if (u != null) u.sendLocalizedMessage((arg.errorIfNotFound) ? "shared.worldNotFoundError" : "shared.worldNotFoundWarning", name);
+						if (u != null) u.sendLocalizedMessage((arg.errorIfNotFound) ? "shared.parser.worldNotFound.error" : "shared.parser.worldNotFound.warning", name);
 						if (arg.errorIfNotFound) return false;
 						else continue;
 					}

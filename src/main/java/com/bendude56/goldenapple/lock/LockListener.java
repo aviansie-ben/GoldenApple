@@ -101,9 +101,9 @@ public class LockListener implements Listener, EventExecutor {
 			return;
 
 		if (!lock.canUse(u)) {
-			u.sendLocalizedMessage("error.lock.noUse", PermissionManager.getInstance().getUser(lock.getOwner()).getName());
+			u.sendLocalizedMessage("module.lock.error.notAllowed.use", PermissionManager.getInstance().getUser(lock.getOwner()).getName());
 			if (lock.getOverrideLevel(u).levelId >= GuestLevel.USE.levelId) {
-				u.sendLocalizedMessage((u.getVariableBoolean("goldenapple.complexSyntax")) ? "general.lock.overrideAvailable.complex" : "general.lock.overrideAvailable.simple");
+				u.sendLocalizedMessage((u.getVariableBoolean("goldenapple.complexSyntax")) ? "module.lock.override.available.complex" : "module.lock.override.available.simple");
 			}
 			event.setCancelled(true);
 			return;
@@ -119,9 +119,9 @@ public class LockListener implements Listener, EventExecutor {
 			return;
 
 		if (!lock.canModifyBlock(u)) {
-			u.sendLocalizedMessage("error.lock.noEdit");
+			u.sendLocalizedMessage("module.lock.error.notAllowed.edit", PermissionManager.getInstance().getUser(lock.getOwner()).getName());
 			if (lock.getOverrideLevel(u).levelId >= GuestLevel.ALLOW_BLOCK_MODIFY.levelId) {
-				u.sendLocalizedMessage((u.getVariableBoolean("goldenapple.complexSyntax")) ? "general.lock.overrideAvailable.complex" : "general.lock.overrideAvailable.simple");
+				u.sendLocalizedMessage((u.getVariableBoolean("goldenapple.complexSyntax")) ? "module.lock.override.available.complex" : "module.lock.override.available.simple");
 			}
 			event.setCancelled(true);
 			return;
@@ -130,10 +130,10 @@ public class LockListener implements Listener, EventExecutor {
 				return;
 			try {
 				LockManager.getInstance().deleteLock(lock.getLockId());
-				u.sendLocalizedMessage("general.lock.delete.success");
+				u.sendLocalizedMessage("module.lock.delete.success");
 			} catch (SQLException e) {
 				event.setCancelled(true);
-				u.sendLocalizedMessage("error.lock.delete.ioError");
+				u.sendLocalizedMessage("module.lock.error.sqlError");
 			}
 		}
 	}
@@ -202,7 +202,7 @@ public class LockListener implements Listener, EventExecutor {
 		if (user.getVariableBoolean("goldenapple.lock.autoLock") && user.hasPermission(LockManager.addPermission) && GoldenApple.getInstanceMainConfig().getIntegerList("modules.lock.autoLockBlocks").contains(event.getBlock().getTypeId()) && LockManager.getInstance().getLock(event.getBlock().getLocation()) == null) {
 			try {
 				LockManager.getInstance().createLock(event.getBlock().getLocation(), LockLevel.PRIVATE, user);
-				user.sendLocalizedMessage("general.lock.auto");
+				user.sendLocalizedMessage("module.lock.autoLock.locked");
 			} catch (Exception e) {
 			}
 		}

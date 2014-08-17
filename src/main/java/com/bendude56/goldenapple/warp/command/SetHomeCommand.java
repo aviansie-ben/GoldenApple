@@ -20,11 +20,11 @@ public class SetHomeCommand extends GoldenAppleCommand {
 			try {
 				homeNumber = Integer.parseInt(args[0]);
 			} catch (NumberFormatException e) {
-				user.sendLocalizedMessage("shared.notANumber", args[0]);
+				user.sendLocalizedMessage("shared.convertError.number", args[0]);
 				return true;
 			}
 			if (homeNumber <= 0) {
-				user.sendLocalizedMessage("shared.notANumber", args[0]);
+				user.sendLocalizedMessage("shared.convertError.number", args[0]);
 				return true;
 			}
 		}
@@ -41,7 +41,7 @@ public class SetHomeCommand extends GoldenAppleCommand {
 		    int maxHomes = user.getVariableInteger("goldenapple.warp.maxHomes");
 		    
 			if (homeNumber > maxHomes) {
-				user.sendLocalizedMessage("error.home.setMax", user.getVariableInteger("goldenapple.warp.maxHomes") + "");
+				user.sendLocalizedMessage("module.warp.home.aboveMax", user.getVariableInteger("goldenapple.warp.maxHomes") );
 				return true;
 			}
 			
@@ -49,11 +49,11 @@ public class SetHomeCommand extends GoldenAppleCommand {
 			try {
 				h.delete();
 				h.insert();
-				user.sendLocalizedMessage("general.home.set", homeNumber + "");
+				user.sendLocalizedMessage("module.warp.home.set", homeNumber);
 			} catch (SQLException e) {
 				GoldenApple.log(Level.SEVERE, "Failed to edit " + user.getName() + "'s home " + homeNumber + ":");
 				GoldenApple.log(Level.SEVERE, e);
-				user.sendLocalizedMessage("error.home.setFail");
+				user.sendLocalizedMessage("module.warp.error.fail");
 			}
 		} else {
 			GoldenApple.logPermissionFail(user, commandLabel, args, true);

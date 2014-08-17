@@ -185,9 +185,9 @@ public class SimpleChatManager extends ChatManager {
             
             if (mute != null) {
                 if (mute.isPermanent()) {
-                    sender.sendLocalizedMessage("error.tell.muted.perma");
+                    sender.sendLocalizedMessage("module.chat.error.muted.tell.perm");
                 } else {
-                    sender.sendLocalizedMessage("error.tell.muted.temp", mute.getRemainingDuration().toString());
+                    sender.sendLocalizedMessage("module.chat.error.muted.tell.temp", mute.getRemainingDuration().toString(sender));
                 }
                 
                 return;
@@ -197,18 +197,18 @@ public class SimpleChatManager extends ChatManager {
         GoldenApple.log("(" + sender.getDisplayName() + " => " + receiver.getDisplayName() + ") " + message);
         
         if (sender != User.getConsoleUser()) {
-            sender.getHandle().sendMessage("(" + ChatColor.YELLOW + "You" + ChatColor.WHITE + " => " + receiver.getChatColor() + receiver.getDisplayName() + ChatColor.WHITE + ") " + message);
+            sender.sendLocalizedMessage("module.chat.tell.message.outgoing", receiver.getChatColor() + receiver.getDisplayName(), message);
         }
         
         if (receiver != User.getConsoleUser()) {
-            receiver.getHandle().sendMessage("(" + sender.getChatColor() + sender.getDisplayName() + ChatColor.WHITE + " => " + ChatColor.YELLOW + "You" + ChatColor.WHITE + ") " + message);
+            receiver.sendLocalizedMessage("module.chat.tell.message.incoming", sender.getChatColor() + sender.getDisplayName(), message);
         }
         
         replyTo.put(receiver, sender.getId());
         
         for (User spy : tellSpy) {
             if (spy != sender && spy != receiver) {
-                spy.getHandle().sendMessage("(" + sender.getChatColor() + sender.getDisplayName() + ChatColor.WHITE + " => " + receiver.getChatColor() + receiver.getDisplayName() + ChatColor.WHITE + ") " + message);
+                spy.sendLocalizedMessage("module.chat.tell.message.spy", sender.getChatColor() + sender.getDisplayName(), receiver.getChatColor() + receiver.getDisplayName(), message);
             }
         }
     }
@@ -247,9 +247,9 @@ public class SimpleChatManager extends ChatManager {
         
         if (broadcast && channel != null && channel.getCachedAccessLevel(user).canChat()) {
             if (afk) {
-                channel.broadcastLocalizedMessage("general.channel.afk.on", user.getChatColor() + user.getDisplayName());
+                channel.broadcastLocalizedMessage("module.chat.afk.broadcast.on", user.getChatColor() + user.getDisplayName());
             } else {
-                channel.broadcastLocalizedMessage("general.channel.afk.off", user.getChatColor() + user.getDisplayName());
+                channel.broadcastLocalizedMessage("module.chat.afk.broadcast.off", user.getChatColor() + user.getDisplayName());
             }
         }
         

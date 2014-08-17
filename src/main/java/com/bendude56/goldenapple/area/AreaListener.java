@@ -124,7 +124,7 @@ public class AreaListener implements Listener, EventExecutor {
         }
         
         event.setCancelled(true);
-        u.sendLocalizedMessage("error.area.noEdit");
+        u.sendLocalizedMessage("module.area.error.noEdit");
     }
     
     private void blockPlace(BlockPlaceEvent event) {
@@ -139,7 +139,7 @@ public class AreaListener implements Listener, EventExecutor {
         }
         
         event.setCancelled(true);
-        u.sendLocalizedMessage("error.area.noEdit");
+        u.sendLocalizedMessage("module.area.error.noEdit");
     }
     
     private void bucketFill(PlayerBucketFillEvent event) {
@@ -154,7 +154,7 @@ public class AreaListener implements Listener, EventExecutor {
         }
         
         event.setCancelled(true);
-        u.sendLocalizedMessage("error.area.noEdit");
+        u.sendLocalizedMessage("module.area.error.noEdit");
     }
     
     private void bucketEmpty(PlayerBucketEmptyEvent event) {
@@ -169,7 +169,7 @@ public class AreaListener implements Listener, EventExecutor {
         }
         
         event.setCancelled(true);
-        u.sendLocalizedMessage("error.area.noEdit");
+        u.sendLocalizedMessage("module.area.error.noEdit");
     }
     
     private void hangingBreak(HangingBreakByEntityEvent event) {
@@ -196,7 +196,7 @@ public class AreaListener implements Listener, EventExecutor {
         }
         
         event.setCancelled(true);
-        u.sendLocalizedMessage("error.area.noEdit");
+        u.sendLocalizedMessage("module.area.error.noEdit");
     }
     
     private void hangingPlace(HangingPlaceEvent event) {
@@ -215,7 +215,7 @@ public class AreaListener implements Listener, EventExecutor {
         }
         
         event.setCancelled(true);
-        u.sendLocalizedMessage("error.area.noEdit");
+        u.sendLocalizedMessage("module.area.error.noEdit");
     }
     
     private void vehicleDamage(VehicleDamageEvent event) {
@@ -246,7 +246,7 @@ public class AreaListener implements Listener, EventExecutor {
         }
         
         event.setCancelled(true);
-        u.sendLocalizedMessage("error.area.noEdit");
+        u.sendLocalizedMessage("module.area.error.noEdit");
     }
     
     private void blockInteract(PlayerInteractEvent event) {
@@ -291,7 +291,7 @@ public class AreaListener implements Listener, EventExecutor {
         }
         
         event.setCancelled(true);
-        u.sendLocalizedMessage("error.area.noEdit");
+        u.sendLocalizedMessage("module.area.error.noEdit");
     }
     
     private void entityInteract(PlayerInteractEntityEvent event) {
@@ -333,7 +333,7 @@ public class AreaListener implements Listener, EventExecutor {
         }
         
         event.setCancelled(true);
-        u.sendLocalizedMessage("error.area.noEdit");
+        u.sendLocalizedMessage("module.area.error.noEdit");
     }
     
     private void attackEntity(EntityDamageByEntityEvent event) {
@@ -414,7 +414,7 @@ public class AreaListener implements Listener, EventExecutor {
         
         event.setCancelled(true);
         if (!projectile && !victim) {
-            u.sendLocalizedMessage((e.getType() == EntityType.ITEM_FRAME ? "error.area.noEdit" : "error.area.noAttack"));
+            u.sendLocalizedMessage((e.getType() == EntityType.ITEM_FRAME ? "module.area.error.noEdit" : "module.area.error.noAttack"));
         }
     }
     

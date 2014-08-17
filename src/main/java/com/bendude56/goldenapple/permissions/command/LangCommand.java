@@ -2,6 +2,7 @@ package com.bendude56.goldenapple.permissions.command;
 
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
+import com.bendude56.goldenapple.LocalizationManager.Locale;
 import com.bendude56.goldenapple.command.GoldenAppleCommand;
 
 public class LangCommand extends GoldenAppleCommand {
@@ -12,12 +13,14 @@ public class LangCommand extends GoldenAppleCommand {
 			return false;
 		
 		if (user.isServer()) {
-			user.sendLocalizedMessage("shared.noConsole");
-		} else if (GoldenApple.getInstance().getLocalizationManager().languageExists(args[0])) {
-			user.setVariable("goldenapple.locale", args[0]);
-			user.sendLocalizedMessage("general.lang.set", args[0]);
+			user.sendLocalizedMessage("shared.consoleNotAllowed");
+		} else if (GoldenApple.getInstance().getLocalizationManager().isLocalePresent(args[0])) {
+		    Locale l = GoldenApple.getInstance().getLocalizationManager().getLocale(args[0]);
+			
+		    user.setVariable("goldenapple.locale", l.getShortName());
+			user.sendLocalizedMessage("module.permissions.locale.set", l.getLongName());
 		} else {
-			user.sendLocalizedMessage("error.lang.notFound", args[0]);
+			user.sendLocalizedMessage("module.permissions.locale.notFound", args[0]);
 		}
 		
 		return true;

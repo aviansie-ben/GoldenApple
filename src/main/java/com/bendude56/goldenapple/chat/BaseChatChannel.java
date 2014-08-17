@@ -59,7 +59,7 @@ public abstract class BaseChatChannel implements IChatChannel {
         ChatChannelAccessLevel level = calculateAccessLevel(user);
         
         if (!level.canJoin()) {
-            user.sendLocalizedMessage("error.channel.noJoin");
+            user.sendLocalizedMessage("module.chat.error.notAllowed.join");
             return false;
         }
         
@@ -67,22 +67,22 @@ public abstract class BaseChatChannel implements IChatChannel {
             ChatManager.getInstance().getActiveChannel(user).leave(user, true);
         }
         
-        user.sendLocalizedMessage("general.channel.join", getDisplayName());
+        user.sendLocalizedMessage("module.chat.join.success", getDisplayName());
         
         if (broadcast) {
-            broadcastLocalizedMessage("general.channel.joinBroadcast", user.getChatDisplayName());
+            broadcastLocalizedMessage("module.chat.join.broadcast", user.getChatDisplayName());
         }
         
         if (!level.canChat()) {
-            user.sendLocalizedMessage("general.channel.noTalk");
+            user.sendLocalizedMessage("module.chat.join.warning.noTalk");
         }
         
         if (PunishmentManager.getInstance() != null && PunishmentManager.getInstance().isMuted(user, this)) {
             PunishmentMute m = PunishmentManager.getInstance().getActiveMute(user, this);
             if (m.isPermanent()) {
-                user.sendLocalizedMessage("general.channel.muted.perma");
+                user.sendLocalizedMessage("module.chat.join.warning.muted.perm");
             } else {
-                user.sendLocalizedMessage("general.channel.muted.temp", m.getRemainingDuration().toString());
+                user.sendLocalizedMessage("module.chat.join.warning.muted.temp", m.getRemainingDuration().toString(user));
             }
         }
         
@@ -109,10 +109,10 @@ public abstract class BaseChatChannel implements IChatChannel {
         
         ChatManager.getInstance().setActiveChannel(user, null);
         
-        user.sendLocalizedMessage("general.channel.leave", getDisplayName());
+        user.sendLocalizedMessage("module.chat.leave.success", getDisplayName());
         
         if (broadcast) {
-            broadcastLocalizedMessage("general.channel.leaveBroadcast", user.getChatDisplayName());
+            broadcastLocalizedMessage("module.chat.leave.broadcast", user.getChatDisplayName());
         }
     }
     
@@ -127,10 +127,10 @@ public abstract class BaseChatChannel implements IChatChannel {
         
         ChatManager.getInstance().setActiveChannel(user, null);
         
-        user.sendLocalizedMessage("general.channel.kick", getDisplayName());
+        user.sendLocalizedMessage("module.chat.kick.notify", getDisplayName());
         
         if (broadcast) {
-            broadcastLocalizedMessage("general.channel.kickBroadcast", user.getChatDisplayName());
+            broadcastLocalizedMessage("module.chat.kick.broadcast", user.getChatDisplayName());
         }
     }
     
@@ -195,19 +195,19 @@ public abstract class BaseChatChannel implements IChatChannel {
     public void sendWhoisInformation(User user, IPermissionUser target) {
         PunishmentMute m = (PunishmentManager.getInstance() == null) ? null : PunishmentManager.getInstance().getActiveMute(target, this);
         
-        user.sendLocalizedMessage("general.channel.whois.head", target.getName());
-        user.sendLocalizedMessage("general.channel.whois.level.overall", getAccessLevel(target).getDisplayName(user));
+        user.sendLocalizedMessage("module.chat.whois.header", target.getName());
+        user.sendLocalizedMessage("module.chat.whois.overallLevel", getAccessLevel(target).getDisplayName(user));
         
         if (m == null) {
-            user.sendLocalizedMessage("general.channel.whois.mute.none");
+            user.sendLocalizedMessage("module.chat.whois.mute.none");
         } else {
             if (m.isPermanent()) {
-                user.sendLocalizedMessage((m.isGlobal()) ? "general.channel.whois.mute.globalPerma" : "general.channel.whois.mute.perma", m.getAdmin().getName());
+                user.sendLocalizedMessage((m.isGlobal()) ? "module.chat.whois.mute.permGlobal" : "module.chat.whois.mute.perm", m.getAdmin().getName());
             } else {
-                user.sendLocalizedMessage((m.isGlobal()) ? "general.channel.whois.mute.globalTemp" : "general.channel.whois.mute.temp", m.getRemainingDuration().toString(), m.getAdmin().getName());
+                user.sendLocalizedMessage((m.isGlobal()) ? "module.chat.whois.mute.tempGlobal" : "module.chat.whois.mute.temp", m.getRemainingDuration().toString(user), m.getAdmin().getName());
             }
             
-            user.sendLocalizedMessage("general.channel.whois.mute.reason", m.getReason());
+            user.sendLocalizedMessage("module.chat.whois.muteReason", m.getReason());
         }
     }
     
@@ -249,34 +249,29 @@ public abstract class BaseChatChannel implements IChatChannel {
     }
     
     @Override
-    public void broadcastLocalizedMessage(String message) {
-        broadcastLocalizedMessage(message, new String[0]);
-    }
-    
-    @Override
-    public void broadcastLocalizedMessage(String message, String... arguments) {
-        GoldenApple.log(Level.INFO, "[" + getName() + "] " + GoldenApple.getInstance().getLocalizationManager().processMessageDefaultLocale(message, arguments));
+    public void broadcastLocalizedMessage(String message, Object... arguments) {
+        GoldenApple.log(Level.INFO, "[" + getName() + "] " + User.getConsoleUser().getLocalizedMessage(message, arguments));
         
         for (User user : activeUsers) {
             user.sendLocalizedMessage(message, arguments);
         }
         
         for (User user : listeningUsers) {
-            user.getHandle().sendMessage("[" + getName() + "] " + GoldenApple.getInstance().getLocalizationManager().processMessage(user.getVariableString("Locale"), message, arguments));
+            user.getHandle().sendMessage("[" + getName() + "] " + user.getLocalizedMessage(message, arguments));
         }
     }
     
     @Override
     public void sendMessage(User user, String message) {
         if (!getCachedAccessLevel(user).canChat()) {
-            user.sendLocalizedMessage("error.channel.noTalk");
+            user.sendLocalizedMessage("module.chat.error.notAllowed.chat");
         } else if (PunishmentManager.getInstance() != null && PunishmentManager.getInstance().isMuted(user, this)) {
             PunishmentMute m = PunishmentManager.getInstance().getActiveMute(user, this);
             
             if (m.isPermanent()) {
-                user.sendLocalizedMessage("error.channel.muted.perma");
+                user.sendLocalizedMessage("module.chat.error.muted.chat.perm");
             } else {
-                user.sendLocalizedMessage("error.channel.muted.temp", m.getRemainingDuration().toString());
+                user.sendLocalizedMessage("module.chat.error.muted.chat.temp", m.getRemainingDuration().toString(user));
             }
         } else {
             message = getCensor().censorMessage(message);
@@ -287,14 +282,14 @@ public abstract class BaseChatChannel implements IChatChannel {
     @Override
     public void sendMeMessage(User user, String message) {
         if (!getCachedAccessLevel(user).canChat()) {
-            user.sendLocalizedMessage("error.channel.noTalk");
+            user.sendLocalizedMessage("module.chat.error.notAllowed.me");
         } else if (PunishmentManager.getInstance() != null && PunishmentManager.getInstance().isMuted(user, this)) {
             PunishmentMute m = PunishmentManager.getInstance().getActiveMute(user, this);
             
             if (m.isPermanent()) {
-                user.sendLocalizedMessage("error.channel.muted.perma");
+                user.sendLocalizedMessage("module.chat.error.muted.me.perm");
             } else {
-                user.sendLocalizedMessage("error.channel.muted.temp", m.getRemainingDuration().toString());
+                user.sendLocalizedMessage("module.chat.error.muted.me.temp", m.getRemainingDuration().toString(user));
             }
         } else {
             message = censor.censorMessage(message);
@@ -314,7 +309,7 @@ public abstract class BaseChatChannel implements IChatChannel {
     
     @Override
     public void delete() {
-        broadcastLocalizedMessage("general.channel.deleteBroadcast", displayName);
+        broadcastLocalizedMessage("module.chat.delete.broadcast", displayName);
         
         for (User user : activeUsers) {
             ChatManager.getInstance().removeChannelAttachment(user);

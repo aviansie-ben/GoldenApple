@@ -90,7 +90,6 @@ public class PunishmentListener implements Listener, EventExecutor {
 	}
 
 	private void playerLogin(PlayerLoginEvent event) {
-		GoldenApple instance = GoldenApple.getInstance();
 		User u = User.getUser(event.getPlayer());
 		
 		PunishmentManager.getInstance().loadIntoCache(u);
@@ -98,13 +97,13 @@ public class PunishmentListener implements Listener, EventExecutor {
 		
 		if (ban != null) {
 			if (ban.isPermanent()) {
-				String msg = instance.getLocalizationManager().processMessageDefaultLocale("general.ban.permaKick", ban.getAdmin().getName());
+				String msg = u.getLocalizedMessage("module.punish.ban.kick.perm", ban.getAdmin().getName());
 				msg += "\n" + ban.getReason();
 				msg += "\n" + GoldenApple.getInstanceMainConfig().getString("modules.punish.banAppealMessage", "Contact an administrator to dispute this ban.");
 				event.setResult(Result.KICK_BANNED);
 				event.setKickMessage(msg);
 			} else {
-				String msg = instance.getLocalizationManager().processMessageDefaultLocale("general.ban.tempKick", ban.getRemainingDuration().toString(), ban.getAdmin().getName());
+				String msg = u.getLocalizedMessage("module.punish.ban.kick.temp", ban.getRemainingDuration().toString(u), ban.getAdmin().getName());
 				msg += "\n" + ban.getReason();
 				msg += "\n" + GoldenApple.getInstanceMainConfig().getString("modules.punish.banAppealMessage", "Contact an administrator to dispute this ban.");
 				event.setResult(Result.KICK_BANNED);

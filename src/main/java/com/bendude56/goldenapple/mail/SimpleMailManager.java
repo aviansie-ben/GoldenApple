@@ -168,7 +168,7 @@ public class SimpleMailManager extends MailManager {
         User user = User.getUser(message.getReceiverId());
         
         if (user != null) {
-            user.sendLocalizedMessage("general.mail.newMail");
+            user.sendLocalizedMessage("module.mail.notify.newMail");
         }
         
         return message;
