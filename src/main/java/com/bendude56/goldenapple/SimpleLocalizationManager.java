@@ -201,7 +201,7 @@ public class SimpleLocalizationManager implements LocalizationManager {
     public Collection<Locale> getLocales() {
         return Collections.unmodifiableCollection(locales.values());
     }
-
+    
     @Override
     public void reloadLocales() {
         throw new UnsupportedOperationException("Not implemented!");
@@ -286,27 +286,27 @@ public class SimpleLocalizationManager implements LocalizationManager {
                 return false;
             }
         }
-
+        
         @Override
         public String getShortName() {
             return shortName;
         }
-
+        
         @Override
         public String getLongName() {
             return longName;
         }
-
+        
         @Override
         public List<String> getAuthors() {
             return Collections.unmodifiableList(authors);
         }
-
+        
         @Override
         public List<String> getFallbackLocales() {
             return Collections.unmodifiableList(fallbackLanguages);
         }
-
+        
         @Override
         public java.util.Locale getJavaLocale() {
             return javaLocale;
@@ -342,7 +342,7 @@ public class SimpleLocalizationManager implements LocalizationManager {
                 return name;
             }
         }
-
+        
         @Override
         public String getRawMessage(String messageName) {
             if (messageName.startsWith("mail:")) {
@@ -353,7 +353,7 @@ public class SimpleLocalizationManager implements LocalizationManager {
                 return getRawString(messageName, "messages." + messageName);
             }
         }
-
+        
         @Override
         public String processMessage(String message, Object... args) {
             for (int i = args.length - 1; i >= 0; i--) {
@@ -366,7 +366,7 @@ public class SimpleLocalizationManager implements LocalizationManager {
             
             return message;
         }
-
+        
         @Override
         public String getMessage(String messageName, Object... args) {
             return processMessage(getRawMessage(messageName), args);

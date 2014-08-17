@@ -222,7 +222,7 @@ public class MailCommand extends GoldenAppleCommand {
             }
             
             String subject = args[2];
-                
+            
             for (int i = 3; i < args.length; i++) {
                 subject += " " + args[i];
             }

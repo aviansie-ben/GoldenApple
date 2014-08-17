@@ -87,7 +87,7 @@ public class SimpleMailManager extends MailManager {
         
         return getMessage(receiverMessageCache.get(receiver.getId()).get(receiverMessageCache.get(receiver.getId()).size() - userNum));
     }
-
+    
     @Override
     public List<MailMessageSent> getMessages(IPermissionUser receiver, boolean unreadOnly) {
         List<MailMessageSent> messages = new ArrayList<MailMessageSent>();
@@ -136,7 +136,7 @@ public class SimpleMailManager extends MailManager {
         
         return receiverMessageCache.get(message.getReceiverId()).size() - receiverMessageCache.get(message.getReceiverId()).indexOf(message.getId());
     }
-
+    
     @Override
     public void uncacheMessage(MailMessageSent message) {
         messageCache.remove(message.getId());
@@ -156,7 +156,7 @@ public class SimpleMailManager extends MailManager {
         
         return message;
     }
-
+    
     private <T extends MailMessageSent> T sendMessage(T message) {
         message.insert();
         cacheMessage(message);
@@ -173,7 +173,7 @@ public class SimpleMailManager extends MailManager {
         
         return message;
     }
-
+    
     @Override
     public MailMessageLocalized sendSystemMessage(IPermissionUser receiver, String localeMessage, String... args) {
         return sendMessage(new SimpleMailMessageLocalized(0, new Date(), MailStatus.UNREAD, receiver.getId(), -1, localeMessage, args));
@@ -183,7 +183,7 @@ public class SimpleMailManager extends MailManager {
     public MailMessageSent sendMessage(IPermissionUser receiver, IPermissionUser sender, String subject, String contents) {
         return sendMessage(new SimpleMailMessage(0, new Date(), MailStatus.UNREAD, receiver.getId(), (sender == null) ? -1 : sender.getId(), subject, contents));
     }
-
+    
     @Override
     public void clearCache() {
         messageCache.clear();

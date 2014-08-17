@@ -471,7 +471,7 @@ public class SimplePermissionManager extends PermissionManager {
     public boolean isGroupProtected(IPermissionGroup group) {
         return defaultGroups.contains(group) || opGroups.contains(group) || devGroups.contains(group) || requiredGroup == group;
     }
-
+    
     @Override
     public void deleteUser(long id) {
         if (id < 0) {
@@ -524,27 +524,27 @@ public class SimplePermissionManager extends PermissionManager {
             }
         }
     }
-
+    
     @Override
     public String getVariableDefaultValue(String variableName) {
         return variableDefaults.get(variableName);
     }
-
+    
     @Override
     public void setVariableDefaultValue(String variableName, String defaultValue) {
         variableDefaults.put(variableName, defaultValue);
     }
-
+    
     @Override
     public void setVariableDefaultValue(String variableName, Boolean defaultValue) {
-       variableDefaults.put(variableName, (defaultValue) ? "true" : "false");
+        variableDefaults.put(variableName, (defaultValue) ? "true" : "false");
     }
-
+    
     @Override
     public void setVariableDefaultValue(String variableName, Integer defaultValue) {
         variableDefaults.put(variableName, defaultValue.toString());
     }
-
+    
     @Override
     public void close() {
         userCache = null;
@@ -717,37 +717,37 @@ public class SimplePermissionManager extends PermissionManager {
             this.name = name;
             this.parent = parent;
         }
-
+        
         @Override
         public String getName() {
             return aliasOf.getName();
         }
-
+        
         @Override
         public String getFullName() {
             return aliasOf.getFullName();
         }
-
+        
         @Override
         public PermissionNode getParentNode() {
             return aliasOf.getParentNode();
         }
-
+        
         @Override
         public Collection<Permission> getEquivalentPermissions() {
             return aliasOf.getEquivalentPermissions();
         }
-
+        
         @Override
         public Permission getAliasOf() {
             return aliasOf;
         }
-
+        
         @Override
         public String getAliasName() {
             return name;
         }
-
+        
         @Override
         public String getAliasFullName() {
             if (parent == null || parent.getName().isEmpty()) {
@@ -756,7 +756,7 @@ public class SimplePermissionManager extends PermissionManager {
                 return parent.getFullName() + "." + name;
             }
         }
-
+        
         @Override
         public PermissionNode getAliasParentNode() {
             return parent;

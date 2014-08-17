@@ -19,7 +19,9 @@ public class PoofCommand extends DualSyntaxCommand {
             return;
         }
         
-        if (!arg.parse(user, args)) return;
+        if (!arg.parse(user, args)) {
+            return;
+        }
         
         if ((arg.isDefined("allow-interact") || arg.isDefined("allow-pickup")) && !user.hasPermission(InvisibilityManager.vanishInteractPermission)) {
             GoldenApple.logPermissionFail(user, commandLabel, args, true);

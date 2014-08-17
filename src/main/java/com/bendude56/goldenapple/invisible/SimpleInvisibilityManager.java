@@ -52,7 +52,7 @@ public class SimpleInvisibilityManager extends InvisibilityManager {
             return false;
         }
     }
-
+    
     @Override
     public void setAllSeeing(User user, boolean allSeeing) {
         if (allSeeing) {
@@ -63,7 +63,7 @@ public class SimpleInvisibilityManager extends InvisibilityManager {
             allSeeingUsers.remove(user);
         }
     }
-
+    
     @Override
     public boolean isAllSeeing(User user) {
         return allSeeingUsers.contains(user);

@@ -9,25 +9,25 @@ import com.bendude56.goldenapple.command.GoldenAppleCommand;
 import com.bendude56.goldenapple.warp.WarpManager;
 
 public class TpHereCommand extends GoldenAppleCommand {
-	@Override
-	public boolean onExecute(GoldenApple instance, User user, String commandLabel, String[] args) {
-		if (args.length == 0) {
-			return false;
-		} else {
-			User user2 = User.findUser(args[0]);
-			if (!(user.getHandle() instanceof Player)) {
-				user.sendLocalizedMessage("shared.consoleNotAllowed");
-			} else if (!user.hasPermission(WarpManager.tpOtherToSelfPermission)) {
-				GoldenApple.logPermissionFail(user, commandLabel, args, true);
-			} else if (user2 == null) {
-				user.sendLocalizedMessage("shared.parser.userNotFound.error", args[0]);
-			} else if (user2.getPlayerHandle().teleport(user.getPlayerHandle(), TeleportCause.COMMAND)) {
-				user2.sendLocalizedMessage("shared.warp.teleportedBy", user.getName());
-			} else {
-				user.sendLocalizedMessage("module.warp.error.pluginCancel");
-			}
-		}
-		
-		return true;
-	}
+    @Override
+    public boolean onExecute(GoldenApple instance, User user, String commandLabel, String[] args) {
+        if (args.length == 0) {
+            return false;
+        } else {
+            User user2 = User.findUser(args[0]);
+            if (!(user.getHandle() instanceof Player)) {
+                user.sendLocalizedMessage("shared.consoleNotAllowed");
+            } else if (!user.hasPermission(WarpManager.tpOtherToSelfPermission)) {
+                GoldenApple.logPermissionFail(user, commandLabel, args, true);
+            } else if (user2 == null) {
+                user.sendLocalizedMessage("shared.parser.userNotFound.error", args[0]);
+            } else if (user2.getPlayerHandle().teleport(user.getPlayerHandle(), TeleportCause.COMMAND)) {
+                user2.sendLocalizedMessage("shared.warp.teleportedBy", user.getName());
+            } else {
+                user.sendLocalizedMessage("module.warp.error.pluginCancel");
+            }
+        }
+        
+        return true;
+    }
 }

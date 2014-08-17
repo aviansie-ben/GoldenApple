@@ -142,8 +142,9 @@ public class SimpleWarpManager extends WarpManager {
         List<PermissibleWarp> available = new ArrayList<PermissibleWarp>();
         
         for (PermissibleWarp w : getAllNamedWarps()) {
-            if (w.canTeleport(u))
+            if (w.canTeleport(u)) {
                 available.add(w);
+            }
         }
         
         return available;
@@ -174,28 +175,32 @@ public class SimpleWarpManager extends WarpManager {
     
     @Override
     public int getTeleportCooldown(IPermissionUser user) {
-        if (teleportCooldown.containsKey(user.getId()))
+        if (teleportCooldown.containsKey(user.getId())) {
             return teleportCooldown.get(user.getId());
-        else
+        } else {
             return 0;
+        }
     }
     
     @Override
     public int getDeathCooldown(IPermissionUser user) {
-        if (deathCooldown.containsKey(user.getId()))
+        if (deathCooldown.containsKey(user.getId())) {
             return deathCooldown.get(user.getId());
-        else
+        } else {
             return 0;
+        }
     }
     
     @Override
     public int startTeleportCooldown(IPermissionUser user) {
         int teleportCooldownTime = user.getVariableInteger("goldenapple.warp.teleportCooldown");
         
-        if (teleportCooldownTime <= 0)
+        if (teleportCooldownTime <= 0) {
             return 0;
-        if (user.hasPermission(WarpManager.overrideCooldownPermission))
+        }
+        if (user.hasPermission(WarpManager.overrideCooldownPermission)) {
             return 0;
+        }
         
         teleportCooldown.put(user.getId(), teleportCooldownTime);
         return teleportCooldownTime;
@@ -205,10 +210,12 @@ public class SimpleWarpManager extends WarpManager {
     public int startDeathCooldown(IPermissionUser user) {
         int deathCooldownTime = user.getVariableInteger("goldenapple.warp.deathCooldown");
         
-        if (deathCooldownTime <= 0)
+        if (deathCooldownTime <= 0) {
             return 0;
-        if (user.hasPermission(WarpManager.overrideCooldownPermission))
+        }
+        if (user.hasPermission(WarpManager.overrideCooldownPermission)) {
             return 0;
+        }
         
         deathCooldown.put(user.getId(), deathCooldownTime);
         return deathCooldownTime;

@@ -10,28 +10,28 @@ import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
 
 public abstract class BaseWarp {
-	protected Location loc;
-	
-	public abstract String getDisplayName();
-	public abstract boolean canTeleport(IPermissionUser u);
-	public abstract boolean canEdit(IPermissionUser u);
-	public abstract void update() throws SQLException;
-	public abstract void insert() throws SQLException;
-	public abstract void delete() throws SQLException;
-	
-	public Location getLocation() {
-		return loc;
-	}
-	
-	public void setLocation(Location loc) {
-		this.loc = loc;
-	}
-	
-	public void teleport(User u) {
-		if (u.getHandle() instanceof Player) {
-			u.getPlayerHandle().teleport(loc, TeleportCause.COMMAND);
-		} else {
-			throw new UnsupportedOperationException();
-		}
-	}
+    protected Location loc;
+    
+    public abstract String getDisplayName();
+    public abstract boolean canTeleport(IPermissionUser u);
+    public abstract boolean canEdit(IPermissionUser u);
+    public abstract void update() throws SQLException;
+    public abstract void insert() throws SQLException;
+    public abstract void delete() throws SQLException;
+    
+    public Location getLocation() {
+        return loc;
+    }
+    
+    public void setLocation(Location loc) {
+        this.loc = loc;
+    }
+    
+    public void teleport(User u) {
+        if (u.getHandle() instanceof Player) {
+            u.getPlayerHandle().teleport(loc, TeleportCause.COMMAND);
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
 }

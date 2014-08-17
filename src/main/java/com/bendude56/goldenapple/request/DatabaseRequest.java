@@ -35,7 +35,9 @@ public class DatabaseRequest implements Request {
         
         sender = r.getLong("Sender");
         assignedReceiver = r.getLong("AssignedReceiver");
-        if (r.wasNull()) assignedReceiver = null;
+        if (r.wasNull()) {
+            assignedReceiver = null;
+        }
         
         message = r.getString("Message");
         
@@ -59,27 +61,27 @@ public class DatabaseRequest implements Request {
         
         this.onHold = false;
     }
-
+    
     @Override
     public long getId() {
         return id;
     }
-
+    
     @Override
     public RequestQueue getQueue() {
         return RequestManager.getInstance().getRequestQueueById(queueId);
     }
-
+    
     @Override
     public IPermissionUser getSender() {
         return PermissionManager.getInstance().getUser(sender);
     }
-
+    
     @Override
     public IPermissionUser getAssignedReceiver() {
         return (assignedReceiver == null) ? null : PermissionManager.getInstance().getUser(assignedReceiver);
     }
-
+    
     @Override
     public void assignTo(IPermissionUser receiver) {
         if (assignedReceiver != null) {
@@ -95,40 +97,43 @@ public class DatabaseRequest implements Request {
         RequestManager.getInstance().notifyAutoAssignRequestEvent(this, AutoAssignRequestEvent.ASSIGN);
         
         try {
-           GoldenApple.getInstanceDatabaseManager().execute("UPDATE Requests SET AssignedReceiver=? WHERE ID=?", (receiver == null) ? null : receiver.getId(), id); 
+            GoldenApple.getInstanceDatabaseManager().execute("UPDATE Requests SET AssignedReceiver=? WHERE ID=?", (receiver == null) ? null : receiver.getId(), id);
         } catch (SQLException e) {
             throw new RuntimeException("Failed to update request database", e);
         }
     }
-
+    
     @Override
     public String getMessage() {
         return message;
     }
-
+    
     @Override
     public RequestStatus getStatus() {
-        if (closedDate != null)
+        if (closedDate != null) {
             return RequestStatus.CLOSED;
-        else if (onHold)
+        } else if (onHold) {
             return RequestStatus.ON_HOLD;
-        else
+        } else {
             return RequestStatus.OPEN;
+        }
     }
-
+    
     @Override
     public Date getCreatedTime() {
         return createdDate;
     }
-
+    
     @Override
     public Date getClosedTime() {
         return closedDate;
     }
-
+    
     @Override
     public void setStatus(RequestStatus status) {
-        if (status == getStatus()) return;
+        if (status == getStatus()) {
+            return;
+        }
         DatabaseRequestQueue queue = (DatabaseRequestQueue) getQueue();
         User receiver = (assignedReceiver == null) ? null : User.getUser(assignedReceiver);
         
@@ -158,7 +163,9 @@ public class DatabaseRequest implements Request {
             queue.addRequestToDeleteQueue(this);
             queue.removeRequestFromRequestQueue(this);
             
-            if (receiver != null) RequestManager.getInstance().notifyAutoAssignUserEvent(receiver, AutoAssignUserEvent.CLOSE);
+            if (receiver != null) {
+                RequestManager.getInstance().notifyAutoAssignUserEvent(receiver, AutoAssignUserEvent.CLOSE);
+            }
             RequestManager.getInstance().notifyAutoAssignRequestEvent(this, AutoAssignRequestEvent.CLOSE);
             
             try {
@@ -169,7 +176,9 @@ public class DatabaseRequest implements Request {
         } else if (status == RequestStatus.ON_HOLD) {
             onHold = true;
             
-            if (receiver != null) RequestManager.getInstance().notifyAutoAssignUserEvent(receiver, AutoAssignUserEvent.HOLD);
+            if (receiver != null) {
+                RequestManager.getInstance().notifyAutoAssignUserEvent(receiver, AutoAssignUserEvent.HOLD);
+            }
             
             try {
                 GoldenApple.getInstanceDatabaseManager().execute("UPDATE Requests SET OnHold=1 WHERE ID=?", id);
@@ -178,7 +187,7 @@ public class DatabaseRequest implements Request {
             }
         }
     }
-
+    
     @Override
     public boolean canView(IPermissionUser user) {
         if (user.getId() == sender) {
@@ -191,10 +200,10 @@ public class DatabaseRequest implements Request {
             return false;
         }
     }
-
+    
     @Override
     public boolean isOnDoNotAssign(IPermissionUser user) {
         return doNotAssign.contains(user.getId());
     }
-
+    
 }

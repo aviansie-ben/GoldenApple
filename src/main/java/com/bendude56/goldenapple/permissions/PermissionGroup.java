@@ -260,7 +260,7 @@ public class PermissionGroup implements IPermissionGroup {
                 GoldenApple.getInstanceDatabaseManager().execute("INSERT INTO GroupUserMembers (GroupID, MemberID) VALUES (?, ?)", id, user.getId());
                 user.reloadFromDatabase();
                 if (user instanceof User) {
-                    ((User)user).registerBukkitPermissions();
+                    ((User) user).registerBukkitPermissions();
                 }
             } catch (SQLException e) {
                 GoldenApple.log(Level.SEVERE, "Failed to add user '" + user.getName() + "' to group '" + name + "':");
@@ -277,7 +277,7 @@ public class PermissionGroup implements IPermissionGroup {
                 GoldenApple.getInstanceDatabaseManager().execute("DELETE FROM GroupUserMembers WHERE GroupID=? AND MemberID=?", id, user.getId());
                 user.reloadFromDatabase();
                 if (user instanceof User) {
-                    ((User)user).registerBukkitPermissions();
+                    ((User) user).registerBukkitPermissions();
                 }
             } catch (SQLException e) {
                 GoldenApple.log(Level.SEVERE, "Failed to remove user '" + user.getName() + "' from group '" + name + "':");
@@ -570,7 +570,7 @@ public class PermissionGroup implements IPermissionGroup {
     public Map<String, String> getDefinedVariables() {
         return Collections.unmodifiableMap(variables);
     }
-
+    
     @Override
     public String getVariableString(String variableName) {
         if (variables.containsKey(variableName)) {
@@ -592,7 +592,7 @@ public class PermissionGroup implements IPermissionGroup {
             return value;
         }
     }
-
+    
     @Override
     public Boolean getVariableBoolean(String variableName) {
         if (variables.containsKey(variableName)) {
@@ -620,7 +620,7 @@ public class PermissionGroup implements IPermissionGroup {
             return value;
         }
     }
-
+    
     @Override
     public Integer getVariableInteger(String variableName) {
         if (variables.containsKey(variableName)) {
@@ -652,12 +652,12 @@ public class PermissionGroup implements IPermissionGroup {
             return value;
         }
     }
-
+    
     @Override
     public String getVariableSpecificString(String variableName) {
         return variables.get(variableName);
     }
-
+    
     @Override
     public Boolean getVariableSpecificBoolean(String variableName) {
         if (variables.containsKey(variableName)) {
@@ -666,7 +666,7 @@ public class PermissionGroup implements IPermissionGroup {
             return null;
         }
     }
-
+    
     @Override
     public Integer getVariableSpecificInteger(String variableName) {
         if (variables.containsKey(variableName)) {
@@ -690,7 +690,7 @@ public class PermissionGroup implements IPermissionGroup {
             throw new RuntimeException(e);
         }
     }
-
+    
     @Override
     public void setVariable(String variableName, String value) {
         if (value != null) {
@@ -706,7 +706,7 @@ public class PermissionGroup implements IPermissionGroup {
             deleteVariable(variableName);
         }
     }
-
+    
     @Override
     public void setVariable(String variableName, Boolean value) {
         if (value != null) {
@@ -715,7 +715,7 @@ public class PermissionGroup implements IPermissionGroup {
             deleteVariable(variableName);
         }
     }
-
+    
     @Override
     public void setVariable(String variableName, Integer value) {
         if (variableName != null) {

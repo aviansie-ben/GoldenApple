@@ -85,11 +85,13 @@ public class AreaCommand extends DualSyntaxCommand {
         // Check for area creation/deletion. If both are defined, only execute
         // creation and ignore deletion.
         if (arg.isDefined("create")) {
-            if (!onExecuteComplexCreate(instance, user, commandLabel, arg, args))
+            if (!onExecuteComplexCreate(instance, user, commandLabel, arg, args)) {
                 return;
+            }
         } else if (arg.isDefined("delete")) {
-            if (!onExecuteComplexDelete(instance, user, commandLabel, arg, args))
+            if (!onExecuteComplexDelete(instance, user, commandLabel, arg, args)) {
                 return;
+            }
         } else {
             
             // Check for area modification. If multiple are defined, execute
@@ -328,8 +330,9 @@ public class AreaCommand extends DualSyntaxCommand {
                     // No special mode
                     try {
                         page = Integer.parseInt(args[1]);
-                        if (page < 1)
+                        if (page < 1) {
                             page = 1;
+                        }
                     } catch (NumberFormatException e) {
                         user.sendLocalizedMessage("shared.parser.unknownOption", args[1]);
                         return false;
@@ -345,8 +348,9 @@ public class AreaCommand extends DualSyntaxCommand {
             if (args.length > (owner ? 3 : 2)) {
                 try {
                     page = Integer.parseInt(args[owner ? 3 : 2]);
-                    if (page < 1)
+                    if (page < 1) {
                         page = 1;
+                    }
                 } catch (NumberFormatException e) {
                     user.sendLocalizedMessage("shared.convertError.number", args[owner ? 3 : 2]);
                     return false;
@@ -500,8 +504,9 @@ public class AreaCommand extends DualSyntaxCommand {
             // See how many groups own this area that the user belongs to
             int count = 0;
             for (IPermissionGroup group : area.getGroups(AreaAccessLevel.OWNER)) {
-                if (group.isMember(user, true))
+                if (group.isMember(user, true)) {
                     count++;
+                }
             }
             
             // If there are no groups, stop the user
@@ -598,8 +603,9 @@ public class AreaCommand extends DualSyntaxCommand {
             // See how many groups own this area that the user belongs to
             int count = 0;
             for (IPermissionGroup group : area.getGroups(AreaAccessLevel.OWNER)) {
-                if (group.isMember(user, true))
+                if (group.isMember(user, true)) {
                     count++;
+                }
             }
             
             // If this is the only group, stop the user
@@ -1005,14 +1011,14 @@ public class AreaCommand extends DualSyntaxCommand {
                         count++;
                     }
                     break;
-                    
+                
                 case "remove":
                 case "r":
                     if (removeAreaOwner(user, (IPermissionUser) entry.getValue(), area)) {
                         count++;
                     }
                     break;
-                    
+                
                 default:
                     user.sendLocalizedMessage("shared.parser.unknownOption", entry.getKey());
             }
@@ -1043,26 +1049,26 @@ public class AreaCommand extends DualSyntaxCommand {
         }
         
         for (Entry<String, Object> entry : arg.getKeyValuePairList("group-owner")) {
-            switch(entry.getKey()) {
+            switch (entry.getKey()) {
                 case "add":
                 case "a":
                     if (addAreaGroupOwner(user, (IPermissionGroup) entry.getValue(), area)) {
                         count++;
                     }
                     break;
-                    
+                
                 case "remove":
                 case "r":
                     if (removeAreaGroupOwner(user, (IPermissionGroup) entry.getValue(), area)) {
                         count++;
                     }
                     break;
-                    
+                
                 default:
                     user.sendLocalizedMessage("shared.parser.unknownOption", entry.getKey());
             }
         }
-
+        
         // Check if no changes were made
         if (count == 0) {
             user.sendLocalizedMessage("module.area.groupOwner.unmodified", area.getAreaId());
@@ -1095,14 +1101,14 @@ public class AreaCommand extends DualSyntaxCommand {
                         count++;
                     }
                     break;
-                    
+                
                 case "none":
                 case "n":
                     if (removeAreaGuest(user, (IPermissionUser) entry.getValue(), area)) {
                         count++;
                     }
                     break;
-                    
+                
                 default:
                     user.sendLocalizedMessage("shared.parser.unknownOption", entry.getKey());
             }
@@ -1140,14 +1146,14 @@ public class AreaCommand extends DualSyntaxCommand {
                         count++;
                     }
                     break;
-                    
+                
                 case "none":
                 case "n":
                     if (removeAreaGroupGuest(user, (IPermissionGroup) entry.getValue(), area)) {
                         count++;
                     }
                     break;
-                    
+                
                 default:
                     user.sendLocalizedMessage("shared.parser.unknownOption", entry.getKey());
             }
@@ -1192,7 +1198,7 @@ public class AreaCommand extends DualSyntaxCommand {
                         user.sendLocalizedMessage("module.area.flag.unknown", (String) entry.getValue());
                     }
                     break;
-                    
+                
                 case "remove":
                 case "reset":
                 case "r":
@@ -1204,14 +1210,14 @@ public class AreaCommand extends DualSyntaxCommand {
                         user.sendLocalizedMessage("module.area.flag.unknown", (String) entry.getValue());
                     }
                     break;
-                    
+                
                 default:
                     user.sendLocalizedMessage("shared.parser.unknownOption", entry.getKey());
             }
         }
         
         if (count == 0) {
-            user.sendLocalizedMessage("module.area.flag.unmodified", area.getAreaId()+"");
+            user.sendLocalizedMessage("module.area.flag.unmodified", area.getAreaId() + "");
         }
         
         return true;
@@ -1294,7 +1300,7 @@ public class AreaCommand extends DualSyntaxCommand {
                     case "":
                         list.add((IPermissionUser) entry.getValue());
                         break;
-                        
+                    
                     default:
                         user.sendLocalizedMessage("shared.parser.unknownOption", entry.getKey());
                 }
@@ -1605,7 +1611,10 @@ public class AreaCommand extends DualSyntaxCommand {
     
     private boolean setAreaLabel(User user, Area area, String label) {
         area.setLabel(label);
-        user.sendLocalizedMessage("module.area.label", area.getAreaId(), (label == null ? "NO LABEL" : label)); // TODO Localize string here
+        user.sendLocalizedMessage("module.area.label", area.getAreaId(), (label == null ? "NO LABEL" : label)); // TODO
+                                                                                                                // Localize
+                                                                                                                // string
+                                                                                                                // here
         return true;
     }
     
@@ -1750,8 +1759,9 @@ public class AreaCommand extends DualSyntaxCommand {
         } else {
             flags = "";
             for (AreaFlag f : flaglist) {
-                if (!flags.isEmpty())
+                if (!flags.isEmpty()) {
                     flags += ", ";
+                }
                 flags += f.toString();
             }
         }
@@ -1763,8 +1773,9 @@ public class AreaCommand extends DualSyntaxCommand {
         } else {
             owners = "";
             for (IPermissionUser u : users) {
-                if (!owners.isEmpty())
+                if (!owners.isEmpty()) {
                     owners += ", ";
+                }
                 owners += u.getName();
             }
         }
@@ -1776,8 +1787,9 @@ public class AreaCommand extends DualSyntaxCommand {
         } else {
             guests = "";
             for (IPermissionUser u : users) {
-                if (!guests.isEmpty())
+                if (!guests.isEmpty()) {
                     guests += ", ";
+                }
                 guests += u.getName();
             }
         }
@@ -1789,8 +1801,9 @@ public class AreaCommand extends DualSyntaxCommand {
         } else {
             gowners = "";
             for (IPermissionGroup g : groups) {
-                if (!gowners.isEmpty())
+                if (!gowners.isEmpty()) {
                     gowners += ", ";
+                }
                 gowners += g.getName();
             }
         }
@@ -1802,8 +1815,9 @@ public class AreaCommand extends DualSyntaxCommand {
         } else {
             gguests = "";
             for (IPermissionGroup g : groups) {
-                if (!gguests.isEmpty())
+                if (!gguests.isEmpty()) {
                     gguests += ", ";
+                }
                 gguests += g.getName();
             }
         }
@@ -1825,34 +1839,34 @@ public class AreaCommand extends DualSyntaxCommand {
     
     private ArgumentInfo[] getArguments() {
         return new ArgumentInfo[] {
-                ArgumentInfo.newString("select", "s", "select", true),
-                ArgumentInfo.newSwitch("help", "?", "help"),
-
-                ArgumentInfo.newKeyValuePair(ArgumentInfo.newSwitch("override", "over", "override")),
-                
-                ArgumentInfo.newSwitch("create", "c", "create"),
-                ArgumentInfo.newSwitch("delete", "d", "delete"),
-                ArgumentInfo.newSwitch("list", "ls", "list"),
-                ArgumentInfo.newSwitch("all", "a", "all"),
-                ArgumentInfo.newSwitch("location", "loc", "location"),
-                ArgumentInfo.newSwitch("mine", "me", "mine"),
-                ArgumentInfo.newInt("page", "pg", "page"),
-                
-                ArgumentInfo.newSwitch("info", "i", "info"),
-                
-                // For new areas/regions
-                ArgumentInfo.newString("label", "l", "label", true),
-                ArgumentInfo.newInt("priority", "p", "priority"),
-                ArgumentInfo.newString("shape", "sh", "shape", false),
-                ArgumentInfo.newSwitch("ignore-y", "y", "ignorey"),
-                
-                // For existing areas
-                ArgumentInfo.newKeyValuePair(ArgumentInfo.newUserList("owner", "o", "owner", false, false)),
-                ArgumentInfo.newKeyValuePair(ArgumentInfo.newGroupList("group-owner", "go", "groupowner", false)),
-                ArgumentInfo.newKeyValuePair(ArgumentInfo.newUserList("invite", "in", "invite", false, false)),
-                ArgumentInfo.newKeyValuePair(ArgumentInfo.newGroupList("group-invite", "gin", "groupinvite", false)),
-                ArgumentInfo.newKeyValuePair(ArgumentInfo.newStringList("flags", "f", "flags", false)),
-                ArgumentInfo.newKeyValuePair(ArgumentInfo.newLong("region", "r", "region")),
+            ArgumentInfo.newString("select", "s", "select", true),
+            ArgumentInfo.newSwitch("help", "?", "help"),
+            
+            ArgumentInfo.newKeyValuePair(ArgumentInfo.newSwitch("override", "over", "override")),
+            
+            ArgumentInfo.newSwitch("create", "c", "create"),
+            ArgumentInfo.newSwitch("delete", "d", "delete"),
+            ArgumentInfo.newSwitch("list", "ls", "list"),
+            ArgumentInfo.newSwitch("all", "a", "all"),
+            ArgumentInfo.newSwitch("location", "loc", "location"),
+            ArgumentInfo.newSwitch("mine", "me", "mine"),
+            ArgumentInfo.newInt("page", "pg", "page"),
+            
+            ArgumentInfo.newSwitch("info", "i", "info"),
+            
+            // For new areas/regions
+            ArgumentInfo.newString("label", "l", "label", true),
+            ArgumentInfo.newInt("priority", "p", "priority"),
+            ArgumentInfo.newString("shape", "sh", "shape", false),
+            ArgumentInfo.newSwitch("ignore-y", "y", "ignorey"),
+            
+            // For existing areas
+            ArgumentInfo.newKeyValuePair(ArgumentInfo.newUserList("owner", "o", "owner", false, false)),
+            ArgumentInfo.newKeyValuePair(ArgumentInfo.newGroupList("group-owner", "go", "groupowner", false)),
+            ArgumentInfo.newKeyValuePair(ArgumentInfo.newUserList("invite", "in", "invite", false, false)),
+            ArgumentInfo.newKeyValuePair(ArgumentInfo.newGroupList("group-invite", "gin", "groupinvite", false)),
+            ArgumentInfo.newKeyValuePair(ArgumentInfo.newStringList("flags", "f", "flags", false)),
+            ArgumentInfo.newKeyValuePair(ArgumentInfo.newLong("region", "r", "region")),
         };
     }
 }

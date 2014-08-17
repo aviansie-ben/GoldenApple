@@ -17,67 +17,67 @@ import org.bukkit.plugin.SimplePluginManager;
 import com.bendude56.goldenapple.command.UnloadedCommand;
 
 public class SimpleCommandManager extends CommandManager {
-    public static final UnloadedCommand         defaultCommand = new UnloadedCommand();
-
-    private HashMap<String, CommandInformation> commands       = new HashMap<String, CommandInformation>();
-
+    public static final UnloadedCommand defaultCommand = new UnloadedCommand();
+    
+    private HashMap<String, CommandInformation> commands = new HashMap<String, CommandInformation>();
+    
     public SimpleCommandManager() {}
-
+    
     @Override
     public void insertCommand(String commandName, String module, CommandExecutor executor) {
         commands.put(commandName, new CommandInformation(Bukkit.getPluginCommand(commandName), module, executor));
     }
-
+    
     @Override
     public ICommandInformation getCommand(String command) {
         return commands.get(command);
     }
-
+    
     @Override
     public CommandExecutor getDefaultCommand() {
         return defaultCommand;
     }
-
+    
     public class CommandInformation implements ICommandInformation {
-        public String                   name;
-        public List<String>             aliases;
-        public String                   module;
-
-        public CommandExecutor          executor;
-        public PluginCommand            command;
-
+        public String name;
+        public List<String> aliases;
+        public String module;
+        
+        public CommandExecutor executor;
+        public PluginCommand command;
+        
         public HashMap<String, Command> oldCommands;
-
+        
         public CommandInformation(PluginCommand command, String module, CommandExecutor executor) {
             this.name = command.getName();
             this.aliases = command.getAliases();
             this.module = module;
-
+            
             this.executor = executor;
             this.command = command;
-
+            
             this.oldCommands = new HashMap<String, Command>();
-
+            
             unregister();
         }
-
+        
         // TODO Fix unloading of modules not properly removing aliases
-
+        
         @Override
         public void register() {
             command.setExecutor(executor);
-
+            
             try {
                 Field f = SimplePluginManager.class.getDeclaredField("commandMap");
                 f.setAccessible(true);
-
-                SimpleCommandMap commandMap = (SimpleCommandMap)f.get(Bukkit.getPluginManager());
-
+                
+                SimpleCommandMap commandMap = (SimpleCommandMap) f.get(Bukkit.getPluginManager());
+                
                 f = SimpleCommandMap.class.getDeclaredField("knownCommands");
                 f.setAccessible(true);
-
-                Map<String, Command> knownCommands = (Map<String, Command>)f.get(commandMap);
-
+                
+                Map<String, Command> knownCommands = (Map<String, Command>) f.get(commandMap);
+                
                 for (String alias : aliases) {
                     knownCommands.put(alias, command);
                 }
@@ -86,52 +86,53 @@ public class SimpleCommandManager extends CommandManager {
                 GoldenApple.log(Level.SEVERE, e);
             }
         }
-
+        
         @Override
         public void unregister() {
             command.setExecutor(getDefaultCommand());
-
+            
             try {
                 Field f = SimplePluginManager.class.getDeclaredField("commandMap");
                 f.setAccessible(true);
-
-                SimpleCommandMap commandMap = (SimpleCommandMap)f.get(Bukkit.getPluginManager());
-
+                
+                SimpleCommandMap commandMap = (SimpleCommandMap) f.get(Bukkit.getPluginManager());
+                
                 f = SimpleCommandMap.class.getDeclaredField("knownCommands");
                 f.setAccessible(true);
-
-                Map<String, Command> knownCommands = (Map<String, Command>)f.get(commandMap);
-
+                
+                Map<String, Command> knownCommands = (Map<String, Command>) f.get(commandMap);
+                
                 for (String alias : command.getAliases()) {
-                    if (knownCommands.get(alias) == command)
+                    if (knownCommands.get(alias) == command) {
                         knownCommands.remove(alias);
+                    }
                 }
             } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
                 GoldenApple.log(Level.SEVERE, "Failed to register command '/" + name + "':");
                 GoldenApple.log(Level.SEVERE, e);
             }
         }
-
+        
         @Override
         public String getName() {
             return name;
         }
-
+        
         @Override
         public List<String> getAliases() {
             return Collections.unmodifiableList(aliases);
         }
-
+        
         @Override
         public String getModule() {
             return module;
         }
-
+        
         @Override
         public CommandExecutor getExecutor() {
             return executor;
         }
-
+        
         @Override
         public PluginCommand getCommand() {
             return command;

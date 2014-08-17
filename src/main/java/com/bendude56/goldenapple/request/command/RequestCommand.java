@@ -15,7 +15,7 @@ import com.bendude56.goldenapple.request.RequestManager.AutoAssignUserEvent;
 import com.bendude56.goldenapple.request.RequestQueue;
 
 public class RequestCommand extends GoldenAppleCommand {
-
+    
     @Override
     public boolean onExecute(GoldenApple instance, User user, String commandLabel, String[] args) {
         if (args.length == 0 || args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("-?")) {
@@ -37,9 +37,15 @@ public class RequestCommand extends GoldenAppleCommand {
                 boolean r = rq.canReceive(user);
                 
                 String message = "module.request.queueList.entry.";
-                if (s) message += "S";
-                if (r) message += "R";
-                if (v) message += "V";
+                if (s) {
+                    message += "S";
+                }
+                if (r) {
+                    message += "R";
+                }
+                if (v) {
+                    message += "V";
+                }
                 
                 if (s || r || v) {
                     user.sendLocalizedMessage(message, rq.getName());
@@ -64,7 +70,7 @@ public class RequestCommand extends GoldenAppleCommand {
                         user.sendLocalizedMessage("module.request.requestList.empty");
                     } else {
                         for (Request r : requests) {
-                            user.sendLocalizedMessage("module.request.requestList.entry", r.getId() , new SimpleDateFormat("yyyy-MM-dd HH:mm").format(r.getCreatedTime()), r.getSender().getName());
+                            user.sendLocalizedMessage("module.request.requestList.entry", r.getId(), new SimpleDateFormat("yyyy-MM-dd HH:mm").format(r.getCreatedTime()), r.getSender().getName());
                         }
                     }
                 }
@@ -77,7 +83,7 @@ public class RequestCommand extends GoldenAppleCommand {
                         user.sendLocalizedMessage("module.request.requestList.empty");
                     } else {
                         for (Request r : requests) {
-                            user.sendLocalizedMessage("module.request.requestList.entry", r.getId() , new SimpleDateFormat("yyyy-MM-dd HH:mm").format(r.getCreatedTime()), r.getSender().getName());
+                            user.sendLocalizedMessage("module.request.requestList.entry", r.getId(), new SimpleDateFormat("yyyy-MM-dd HH:mm").format(r.getCreatedTime()), r.getSender().getName());
                         }
                     }
                 }
@@ -90,7 +96,7 @@ public class RequestCommand extends GoldenAppleCommand {
                         user.sendLocalizedMessage("module.request.requestList.empty");
                     } else {
                         for (Request r : requests) {
-                            user.sendLocalizedMessage("module.request.requestList.entry", r.getId() , new SimpleDateFormat("yyyy-MM-dd HH:mm").format(r.getCreatedTime()), r.getSender().getName());
+                            user.sendLocalizedMessage("module.request.requestList.entry", r.getId(), new SimpleDateFormat("yyyy-MM-dd HH:mm").format(r.getCreatedTime()), r.getSender().getName());
                         }
                     }
                 }
@@ -103,7 +109,7 @@ public class RequestCommand extends GoldenAppleCommand {
                         user.sendLocalizedMessage("module.request.requestList.empty");
                     } else {
                         for (Request r : requests) {
-                            user.sendLocalizedMessage("module.request.requestList.entry", r.getId() , new SimpleDateFormat("yyyy-MM-dd HH:mm").format(r.getCreatedTime()), r.getSender().getName());
+                            user.sendLocalizedMessage("module.request.requestList.entry", r.getId(), new SimpleDateFormat("yyyy-MM-dd HH:mm").format(r.getCreatedTime()), r.getSender().getName());
                         }
                     }
                 }
@@ -115,10 +121,12 @@ public class RequestCommand extends GoldenAppleCommand {
                 } else {
                     if (args.length > 2) {
                         String message = args[2];
-                        for (int i = 3; i < args.length; i++) message += " " + args[i];
+                        for (int i = 3; i < args.length; i++) {
+                            message += " " + args[i];
+                        }
                         
                         Request r = queue.createRequest(user, message);
-                        user.sendLocalizedMessage("module.request.send.success", r.getId() , queue.getName());
+                        user.sendLocalizedMessage("module.request.send.success", r.getId(), queue.getName());
                     } else {
                         sendHelp(user, commandLabel);
                     }
@@ -197,7 +205,7 @@ public class RequestCommand extends GoldenAppleCommand {
                             break;
                     }
                     
-                    user.sendLocalizedMessage("module.request.info.message", r.getId() , r.getSender().getName(), receiver, r.getMessage(), new SimpleDateFormat("yyyy-MM-dd HH:mm").format(r.getCreatedTime()), status);
+                    user.sendLocalizedMessage("module.request.info.message", r.getId(), r.getSender().getName(), receiver, r.getMessage(), new SimpleDateFormat("yyyy-MM-dd HH:mm").format(r.getCreatedTime()), status);
                 } else if (args[2].equalsIgnoreCase("own")) {
                     if (!queue.canReceive(user)) {
                         GoldenApple.logPermissionFail(user, commandLabel, args, true);
@@ -207,7 +215,7 @@ public class RequestCommand extends GoldenAppleCommand {
                         user.sendLocalizedMessage("module.request.assign.maxAssigned.self");
                     } else {
                         r.assignTo(user);
-                        user.sendLocalizedMessage("module.request.assign.success", r.getId() , user.getName());
+                        user.sendLocalizedMessage("module.request.assign.success", r.getId(), user.getName());
                     }
                 } else if (args[2].equalsIgnoreCase("disown")) {
                     if (r.getAssignedReceiver() == null) {
@@ -216,7 +224,7 @@ public class RequestCommand extends GoldenAppleCommand {
                         user.sendLocalizedMessage("module.request.error.notYours");
                     } else {
                         r.assignTo(null);
-                        user.sendLocalizedMessage("module.request.assign.success", r.getId() , user.getLocalizedMessage("module.request.info.nobody"));
+                        user.sendLocalizedMessage("module.request.assign.success", r.getId(), user.getLocalizedMessage("module.request.info.nobody"));
                     }
                 } else if (args[2].equalsIgnoreCase("assign")) {
                     if (args.length != 4) {
@@ -232,7 +240,7 @@ public class RequestCommand extends GoldenAppleCommand {
                             user.sendLocalizedMessage("module.request.assign.maxAssigned.other", assignTo.getName());
                         } else {
                             r.assignTo(assignTo);
-                            user.sendLocalizedMessage("module.request.assign.success", r.getId() , assignTo.getName());
+                            user.sendLocalizedMessage("module.request.assign.success", r.getId(), assignTo.getName());
                         }
                     }
                 } else if (args[2].equalsIgnoreCase("close")) {
@@ -242,7 +250,7 @@ public class RequestCommand extends GoldenAppleCommand {
                         user.sendLocalizedMessage("module.request.error.notYours");
                     } else {
                         r.setStatus(RequestStatus.CLOSED);
-                        user.sendLocalizedMessage("module.request.close.success", r.getId() );
+                        user.sendLocalizedMessage("module.request.close.success", r.getId());
                     }
                 } else if (args[2].equalsIgnoreCase("hold")) {
                     if (r.getStatus() == RequestStatus.ON_HOLD) {
@@ -251,7 +259,7 @@ public class RequestCommand extends GoldenAppleCommand {
                         user.sendLocalizedMessage("module.request.error.notYours");
                     } else {
                         r.setStatus(RequestStatus.ON_HOLD);
-                        user.sendLocalizedMessage("module.request.hold.success", r.getId() );
+                        user.sendLocalizedMessage("module.request.hold.success", r.getId());
                     }
                 } else if (args[2].equalsIgnoreCase("open")) {
                     if (r.getStatus() == RequestStatus.OPEN) {
@@ -262,7 +270,7 @@ public class RequestCommand extends GoldenAppleCommand {
                         user.sendLocalizedMessage("module.request.open.maxAssigned");
                     } else {
                         r.setStatus(RequestStatus.OPEN);
-                        user.sendLocalizedMessage("module.request.open.success", r.getId() );
+                        user.sendLocalizedMessage("module.request.open.success", r.getId());
                     }
                 } else {
                     user.sendLocalizedMessage("shared.parser.unknownOption", args[2]);
@@ -277,5 +285,5 @@ public class RequestCommand extends GoldenAppleCommand {
         user.sendLocalizedMessage("module.request.header");
         user.sendLocalizedMessage("module.request.help", commandLabel);
     }
-
+    
 }

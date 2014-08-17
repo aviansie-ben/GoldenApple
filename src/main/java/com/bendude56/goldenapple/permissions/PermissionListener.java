@@ -52,11 +52,11 @@ public class PermissionListener implements Listener, EventExecutor {
         
         try {
             if (event instanceof PlayerJoinEvent) {
-                playerJoin((PlayerJoinEvent)event);
+                playerJoin((PlayerJoinEvent) event);
             } else if (event instanceof PlayerLoginEvent) {
-                playerLogin((PlayerLoginEvent)event);
+                playerLogin((PlayerLoginEvent) event);
             } else if (event instanceof PlayerQuitEvent) {
-                playerQuit((PlayerQuitEvent)event);
+                playerQuit((PlayerQuitEvent) event);
             } else {
                 GoldenApple.log(Level.WARNING, "Unrecognized event in PermissionListener: " + event.getClass().getName());
             }

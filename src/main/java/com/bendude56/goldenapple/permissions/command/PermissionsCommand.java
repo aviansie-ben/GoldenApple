@@ -469,12 +469,12 @@ public class PermissionsCommand extends DualSyntaxCommand {
         public PermissionAddAction(Permission permission) {
             this.permission = permission;
         }
-
+        
         @Override
         public boolean isActionValid(IPermissionObject target) {
             return !target.hasPermissionSpecific(permission);
         }
-
+        
         @Override
         public boolean isAllowedToPerformAction(User user, IPermissionObject target) {
             if (target instanceof IPermissionUser) {
@@ -485,7 +485,7 @@ public class PermissionsCommand extends DualSyntaxCommand {
                 throw new UnsupportedOperationException();
             }
         }
-
+        
         @Override
         public void performAction(User user, IPermissionObject target) {
             AuditLog.logEvent(new PermissionGrantEvent(user.getName(), target, permission.getFullName()));
@@ -500,12 +500,12 @@ public class PermissionsCommand extends DualSyntaxCommand {
         public PermissionRemoveAction(Permission permission) {
             this.permission = permission;
         }
-
+        
         @Override
         public boolean isActionValid(IPermissionObject target) {
             return target.hasPermissionSpecific(permission);
         }
-
+        
         @Override
         public boolean isAllowedToPerformAction(User user, IPermissionObject target) {
             if (target instanceof IPermissionUser) {
@@ -516,7 +516,7 @@ public class PermissionsCommand extends DualSyntaxCommand {
                 throw new UnsupportedOperationException();
             }
         }
-
+        
         @Override
         public void performAction(User user, IPermissionObject target) {
             AuditLog.logEvent(new PermissionRevokeEvent(user.getName(), target, permission.getFullName()));
@@ -533,12 +533,12 @@ public class PermissionsCommand extends DualSyntaxCommand {
             this.variableName = variableName;
             this.variableValue = (variableValue.equals("<null>")) ? null : variableValue;
         }
-
+        
         @Override
         public boolean isActionValid(IPermissionObject target) {
             return true;
         }
-
+        
         @Override
         public boolean isAllowedToPerformAction(User user, IPermissionObject target) {
             if (target instanceof IPermissionUser) {
@@ -549,7 +549,7 @@ public class PermissionsCommand extends DualSyntaxCommand {
                 throw new UnsupportedOperationException();
             }
         }
-
+        
         @Override
         public void performAction(User user, IPermissionObject target) {
             if (variableValue != null) {
@@ -574,7 +574,7 @@ public class PermissionsCommand extends DualSyntaxCommand {
         public MemberAddAction(IPermissionObject member) {
             this.member = member;
         }
-
+        
         @Override
         public boolean isActionValid(IPermissionObject target) {
             if (member instanceof IPermissionGroup) {
@@ -585,12 +585,12 @@ public class PermissionsCommand extends DualSyntaxCommand {
                 throw new UnsupportedOperationException();
             }
         }
-
+        
         @Override
         public boolean isAllowedToPerformAction(User user, IPermissionObject target) {
             return user.hasPermission(PermissionManager.groupEditPermission) || (member instanceof IPermissionUser && ((IPermissionGroup) target).isOwner(user));
         }
-
+        
         @Override
         public void performAction(User user, IPermissionObject target) {
             AuditLog.logEvent(new GroupAddMemberEvent(user.getName(), member, (IPermissionGroup) target));
@@ -613,7 +613,7 @@ public class PermissionsCommand extends DualSyntaxCommand {
         public MemberRemoveAction(IPermissionObject member) {
             this.member = member;
         }
-
+        
         @Override
         public boolean isActionValid(IPermissionObject target) {
             if (member instanceof IPermissionGroup) {
@@ -624,12 +624,12 @@ public class PermissionsCommand extends DualSyntaxCommand {
                 throw new UnsupportedOperationException();
             }
         }
-
+        
         @Override
         public boolean isAllowedToPerformAction(User user, IPermissionObject target) {
             return user.hasPermission(PermissionManager.groupEditPermission) || (member instanceof IPermissionUser && ((IPermissionGroup) target).isOwner(user));
         }
-
+        
         @Override
         public void performAction(User user, IPermissionObject target) {
             AuditLog.logEvent(new GroupRemoveMemberEvent(user.getName(), member, (IPermissionGroup) target));
@@ -652,22 +652,22 @@ public class PermissionsCommand extends DualSyntaxCommand {
         public OwnerAddAction(IPermissionUser owner) {
             this.owner = owner;
         }
-
+        
         @Override
         public boolean isActionValid(IPermissionObject target) {
             return (target instanceof IPermissionGroup) && !((IPermissionGroup) target).isOwner(owner);
         }
-
+        
         @Override
         public boolean isAllowedToPerformAction(User user, IPermissionObject target) {
             return user.hasPermission(PermissionManager.groupEditPermission);
         }
-
+        
         @Override
         public void performAction(User user, IPermissionObject target) {
             AuditLog.logEvent(new GroupAddOwnerEvent(user.getName(), owner, (IPermissionGroup) target));
             
-            ((IPermissionGroup) target).addOwner((IPermissionUser) owner);
+            ((IPermissionGroup) target).addOwner(owner);
             user.sendLocalizedMessage("module.permissions.permissions.owner.add", getName(owner), getName(target));
         }
     }
@@ -678,22 +678,22 @@ public class PermissionsCommand extends DualSyntaxCommand {
         public OwnerRemoveAction(IPermissionUser owner) {
             this.owner = owner;
         }
-
+        
         @Override
         public boolean isActionValid(IPermissionObject target) {
             return (target instanceof IPermissionGroup) && ((IPermissionGroup) target).isOwner(owner);
         }
-
+        
         @Override
         public boolean isAllowedToPerformAction(User user, IPermissionObject target) {
             return user.hasPermission(PermissionManager.groupEditPermission);
         }
-
+        
         @Override
         public void performAction(User user, IPermissionObject target) {
             AuditLog.logEvent(new GroupRemoveOwnerEvent(user.getName(), owner, (IPermissionGroup) target));
             
-            ((IPermissionGroup) target).removeOwner((IPermissionUser) owner);
+            ((IPermissionGroup) target).removeOwner(owner);
             user.sendLocalizedMessage("module.permissions.permissions.owner.remove", getName(owner), getName(target));
         }
     }
@@ -704,17 +704,17 @@ public class PermissionsCommand extends DualSyntaxCommand {
         public ChatPrefixAction(String prefix) {
             this.prefix = (prefix.equals("<null>")) ? null : prefix;
         }
-
+        
         @Override
         public boolean isActionValid(IPermissionObject target) {
             return target instanceof IPermissionGroup;
         }
-
+        
         @Override
         public boolean isAllowedToPerformAction(User user, IPermissionObject target) {
             return user.hasPermission(PermissionManager.groupEditPermission);
         }
-
+        
         @Override
         public void performAction(User user, IPermissionObject target) {
             ((IPermissionGroup) target).setPrefix(prefix);
@@ -728,17 +728,17 @@ public class PermissionsCommand extends DualSyntaxCommand {
         public ChatColorAction(ChatColor color) {
             this.color = color;
         }
-
+        
         @Override
         public boolean isActionValid(IPermissionObject target) {
             return target instanceof IPermissionGroup;
         }
-
+        
         @Override
         public boolean isAllowedToPerformAction(User user, IPermissionObject target) {
             return user.hasPermission(PermissionManager.groupEditPermission);
         }
-
+        
         @Override
         public void performAction(User user, IPermissionObject target) {
             ((IPermissionGroup) target).setChatColor(color != null, (color == null) ? ChatColor.WHITE : color);
@@ -752,17 +752,17 @@ public class PermissionsCommand extends DualSyntaxCommand {
         public GroupPriorityAction(int priority) {
             this.priority = priority;
         }
-
+        
         @Override
         public boolean isActionValid(IPermissionObject target) {
             return target instanceof IPermissionGroup;
         }
-
+        
         @Override
         public boolean isAllowedToPerformAction(User user, IPermissionObject target) {
             return user.hasPermission(PermissionManager.groupEditPermission);
         }
-
+        
         @Override
         public void performAction(User user, IPermissionObject target) {
             ((IPermissionGroup) target).setPriority(priority);

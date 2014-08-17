@@ -5,8 +5,8 @@ import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.ModuleLoader;
 import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.permissions.command.LangCommand;
-import com.bendude56.goldenapple.permissions.command.PermissionsCommand;
 import com.bendude56.goldenapple.permissions.command.OwnCommand;
+import com.bendude56.goldenapple.permissions.command.PermissionsCommand;
 
 public class PermissionsModuleLoader extends ModuleLoader {
     
@@ -67,8 +67,8 @@ public class PermissionsModuleLoader extends ModuleLoader {
             module.preregisterPermissions();
         }
         
-        ((SimplePermissionManager)PermissionManager.instance).loadGroups();
-        ((SimplePermissionManager)PermissionManager.instance).checkDefaultGroups();
+        ((SimplePermissionManager) PermissionManager.instance).loadGroups();
+        ((SimplePermissionManager) PermissionManager.instance).checkDefaultGroups();
         
         User.clearCache();
     }

@@ -3,6 +3,7 @@ package com.bendude56.goldenapple.mail;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
+
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
 

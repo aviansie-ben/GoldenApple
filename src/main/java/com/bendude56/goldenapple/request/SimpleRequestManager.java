@@ -69,16 +69,16 @@ public class SimpleRequestManager extends RequestManager {
             public void run() {
                 deleteOldRequests();
             }
-        }, 20 * 60, 20 *60);
+        }, 20 * 60, 20 * 60);
         
         assigner = new AutoAssignManager();
     }
-
+    
     @Override
     public RequestQueue getRequestQueueById(long id) {
         return queues.get(id);
     }
-
+    
     @Override
     public RequestQueue getRequestQueueByName(String name) {
         for (RequestQueue queue : queues.values()) {
@@ -89,12 +89,12 @@ public class SimpleRequestManager extends RequestManager {
         
         return null;
     }
-
+    
     @Override
     public List<RequestQueue> getAllRequestQueues() {
         return Collections.unmodifiableList(new ArrayList<RequestQueue>(queues.values()));
     }
-
+    
     @Override
     public int getNumAssignedRequests(IPermissionUser receiver) {
         int count = 0;
@@ -110,18 +110,21 @@ public class SimpleRequestManager extends RequestManager {
     public int getMaxAssignedRequests() {
         return assignLimit;
     }
-
+    
     @Override
     public Request getRequestById(long id) {
-        if (requestQueues.containsKey(id))
+        if (requestQueues.containsKey(id)) {
             return getRequestQueueById(requestQueues.get(id)).getRequest(id);
-        else
+        } else {
             return null;
+        }
     }
-
+    
     @Override
     public void deleteOldRequests() {
-        if (requestDeleteDays == 0) return;
+        if (requestDeleteDays == 0) {
+            return;
+        }
         
         int count = 0;
         
@@ -129,14 +132,16 @@ public class SimpleRequestManager extends RequestManager {
             count += queue.deleteOldRequests(requestDeleteDays);
         }
         
-        if (count > 0)
+        if (count > 0) {
             GoldenApple.log("Deleted " + count + " closed request(s) from database");
+        }
     }
-
+    
     @Override
     public void deleteQueue(long id) {
-        if (!queues.containsKey(id))
+        if (!queues.containsKey(id)) {
             throw new IllegalArgumentException("No queue exists with ID " + id);
+        }
         
         for (Request r : queues.remove(id).getAllRequests(true, true)) {
             requestQueues.remove(r.getId());
@@ -149,11 +154,12 @@ public class SimpleRequestManager extends RequestManager {
             throw new RuntimeException("Failed to delete request queue from database", e);
         }
     }
-
+    
     @Override
     public RequestQueue createQueue(String name) {
-        if (getRequestQueueByName(name) != null)
+        if (getRequestQueueByName(name) != null) {
             throw new IllegalArgumentException("Queue " + name + " already exists");
+        }
         
         long id;
         
@@ -175,20 +181,24 @@ public class SimpleRequestManager extends RequestManager {
         
         return queue;
     }
-
+    
     public void close() {
         deleteOldTask.cancel();
         assigner.notifyShutdown();
     }
-
+    
     @Override
     public void notifyAutoAssignUserEvent(User user, AutoAssignUserEvent event) {
-        if (assigner != null) assigner.notifyUserEvent(user, event);
+        if (assigner != null) {
+            assigner.notifyUserEvent(user, event);
+        }
     }
-
+    
     @Override
     public void notifyAutoAssignRequestEvent(Request request, AutoAssignRequestEvent event) {
-        if (assigner != null) assigner.notifyRequestEvent(request, event);
+        if (assigner != null) {
+            assigner.notifyRequestEvent(request, event);
+        }
     }
-
+    
 }

@@ -26,8 +26,8 @@ import org.bukkit.plugin.EventExecutor;
 import org.bukkit.plugin.RegisteredListener;
 
 import com.bendude56.goldenapple.GoldenApple;
-import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.PerformanceMonitor.PerformanceEvent;
+import com.bendude56.goldenapple.User;
 
 public class InvisibilityListener implements Listener, EventExecutor {
     
@@ -121,7 +121,7 @@ public class InvisibilityListener implements Listener, EventExecutor {
     }
     
     private void playerInteract(PlayerInteractEvent event) {
-        maybeCancel((Cancellable) event, User.getUser(((PlayerInteractEvent) event).getPlayer()), "interact", event.getAction() != Action.PHYSICAL);
+        maybeCancel(event, User.getUser(event.getPlayer()), "interact", event.getAction() != Action.PHYSICAL);
     }
     
     private void entityTarget(EntityTargetEvent event) {

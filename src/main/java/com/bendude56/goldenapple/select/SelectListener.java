@@ -69,11 +69,11 @@ public class SelectListener implements Listener, EventExecutor {
                 User user = User.getUser(event.getPlayer());
                 if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
                     ((SimpleSelectionProvider) SelectManager.getInstance().getSelectionProvider()).setSelection1(user, l);
-                    user.sendLocalizedMessage("module.select.update.set1", l.getBlockX() , l.getBlockY() , l.getBlockZ() );
+                    user.sendLocalizedMessage("module.select.update.set1", l.getBlockX(), l.getBlockY(), l.getBlockZ());
                     event.setCancelled(true);
                 } else if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
                     ((SimpleSelectionProvider) SelectManager.getInstance().getSelectionProvider()).setSelection2(user, event.getClickedBlock().getLocation());
-                    user.sendLocalizedMessage("module.select.update.set2", l.getBlockX() , l.getBlockY() , l.getBlockZ() );
+                    user.sendLocalizedMessage("module.select.update.set2", l.getBlockX(), l.getBlockY(), l.getBlockZ());
                     event.setCancelled(true);
                 }
             }

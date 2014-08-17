@@ -73,17 +73,17 @@ public class SimpleMailMessageLocalized extends BaseMailMessage implements MailM
             throw new RuntimeException(e);
         }
     }
-
+    
     @Override
     public String getContentMessage() {
         return "mail:" + localizedMessage + ".contents";
     }
-
+    
     @Override
     public String getSubjectMessage() {
         return "mail:" + localizedMessage + ".subject";
     }
-
+    
     @Override
     public String[] getArguments() {
         ArrayList<String> args = new ArrayList<String>();

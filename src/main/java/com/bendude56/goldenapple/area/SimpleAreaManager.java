@@ -39,7 +39,7 @@ public class SimpleAreaManager extends AreaManager {
         GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("areagroups");
         GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("areaflags");
         GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("arearegions");
-
+        
         PermissionManager.getInstance().setVariableDefaultValue("goldenapple.area.alwaysOverride", !GoldenApple.getInstanceMainConfig().getBoolean("modules.area.explicitOverrideRequired", true));
     }
     
@@ -676,8 +676,9 @@ public class SimpleAreaManager extends AreaManager {
     
     @Override
     public boolean isOverrideOn(IPermissionUser u) {
-        if (u == null)
+        if (u == null) {
             return false;
+        }
         return (u.getVariableBoolean("goldenapple.area.alwaysOverride") || overrides.contains(u.getId()));
     }
     

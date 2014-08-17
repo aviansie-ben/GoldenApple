@@ -12,7 +12,7 @@ import com.bendude56.goldenapple.request.RequestManager;
 import com.bendude56.goldenapple.request.RequestQueue;
 
 public class RequestQueueCommand extends GoldenAppleCommand {
-
+    
     @Override
     public boolean onExecute(GoldenApple instance, User user, String commandLabel, String[] args) {
         if (!user.hasPermission(RequestManager.editQueuePermission)) {
@@ -57,13 +57,15 @@ public class RequestQueueCommand extends GoldenAppleCommand {
                 String receiveGroup = (queue.getReceivingGroup() == null) ? user.getLocalizedMessage("module.request.info.nobody") : queue.getReceivingGroup().getName();
                 String allowOffline = user.getLocalizedMessage((queue.getAllowNoReceiver()) ? "shared.values.yes" : "shared.values.no");
                 
-                user.sendLocalizedMessage("module.request.editQueue.info", queue.getName(), sendGroup, receiveGroup, allowOffline, queue.getMaxRequestsPerSender() );
+                user.sendLocalizedMessage("module.request.editQueue.info", queue.getName(), sendGroup, receiveGroup, allowOffline, queue.getMaxRequestsPerSender());
             } else if (args[1].equalsIgnoreCase("delete")) {
                 if (args.length == 2 || !args[2].equalsIgnoreCase("-v")) {
                     user.sendLocalizedMessage("module.request.editQueue.warning", queue.getName());
                     
                     String cmd = commandLabel;
-                    for (String a : args) cmd += " " + a;
+                    for (String a : args) {
+                        cmd += " " + a;
+                    }
                     cmd += " -v";
                     VerifyCommand.commands.put(user, cmd);
                 } else {
@@ -112,7 +114,7 @@ public class RequestQueueCommand extends GoldenAppleCommand {
                         int maxRequestsPerSender = Integer.parseInt(args[2]);
                         
                         queue.setMaxRequestsPerSender(maxRequestsPerSender);
-                        user.sendLocalizedMessage("module.request.editQueue.setOption.maxPerSender", queue.getName(), maxRequestsPerSender );
+                        user.sendLocalizedMessage("module.request.editQueue.setOption.maxPerSender", queue.getName(), maxRequestsPerSender);
                     } catch (NumberFormatException e) {
                         user.sendLocalizedMessage("shared.convertError.number", args[2]);
                     }
@@ -129,5 +131,5 @@ public class RequestQueueCommand extends GoldenAppleCommand {
         user.sendLocalizedMessage("module.request.header");
         user.sendLocalizedMessage("module.request.editQueue.help", commandLabel);
     }
-
+    
 }

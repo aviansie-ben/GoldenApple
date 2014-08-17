@@ -5,8 +5,8 @@ import java.sql.SQLException;
 import java.util.Date;
 
 import com.bendude56.goldenapple.GoldenApple;
-import com.bendude56.goldenapple.permissions.PermissionManager;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
+import com.bendude56.goldenapple.permissions.PermissionManager;
 
 public abstract class BaseMailMessage implements MailMessageSent {
     private long id;
@@ -80,7 +80,7 @@ public abstract class BaseMailMessage implements MailMessageSent {
     public IPermissionUser getSender() {
         return (sender == -1) ? null : PermissionManager.getInstance().getUser(sender);
     }
-
+    
     @Override
     public void delete() {
         try {

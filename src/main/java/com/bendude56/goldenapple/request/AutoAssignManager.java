@@ -40,25 +40,27 @@ public class AutoAssignManager {
     }
     
     public void notifyUserEvent(User user, AutoAssignUserEvent event) {
-        if (event == AutoAssignUserEvent.LOGIN && autoAssignOnLogin)
+        if (event == AutoAssignUserEvent.LOGIN && autoAssignOnLogin) {
             notifyUserFree(user);
-        else if (event == AutoAssignUserEvent.CLOSE && autoAssignOnClose)
+        } else if (event == AutoAssignUserEvent.CLOSE && autoAssignOnClose) {
             notifyUserFree(user);
-        else if (event == AutoAssignUserEvent.HOLD && autoAssignOnHold)
+        } else if (event == AutoAssignUserEvent.HOLD && autoAssignOnHold) {
             notifyUserFree(user);
-        else if (event == AutoAssignUserEvent.ENABLE)
+        } else if (event == AutoAssignUserEvent.ENABLE) {
             notifyUserFree(user);
-        else if (event == AutoAssignUserEvent.LOGOUT)
+        } else if (event == AutoAssignUserEvent.LOGOUT) {
             notifyUserLeave(user);
+        }
     }
     
     public void notifyRequestEvent(Request request, AutoAssignRequestEvent event) {
-        if (event == AutoAssignRequestEvent.ASSIGN)
+        if (event == AutoAssignRequestEvent.ASSIGN) {
             notifyRequestTaken(request);
-        else if (event == AutoAssignRequestEvent.CLOSE)
+        } else if (event == AutoAssignRequestEvent.CLOSE) {
             notifyRequestClosed(request);
-        else if (event == AutoAssignRequestEvent.CREATE)
+        } else if (event == AutoAssignRequestEvent.CREATE) {
             notifyRequestOpen(request);
+        }
     }
     
     public void notifyShutdown() {
@@ -68,7 +70,9 @@ public class AutoAssignManager {
     }
     
     private void notifyUserFree(User user) {
-        if (!autoAssignEnabled && canAutoAssign(user)) return;
+        if (!autoAssignEnabled && canAutoAssign(user)) {
+            return;
+        }
         ArrayList<Request> toAssign = new ArrayList<Request>();
         int maxToAssign = autoAssignLimit - RequestManager.getInstance().getNumAssignedRequests(user);
         
@@ -76,7 +80,9 @@ public class AutoAssignManager {
             if (r.getQueue().canReceive(user) && r.getQueue().isAutoAssign(user) && !r.isOnDoNotAssign(user)) {
                 toAssign.add(r);
                 
-                if (toAssign.size() >= maxToAssign) break;
+                if (toAssign.size() >= maxToAssign) {
+                    break;
+                }
             }
         }
         
@@ -89,13 +95,15 @@ public class AutoAssignManager {
                 assigner.findNextReceiver();
             } else {
                 assigned.assignTo(user);
-                user.sendLocalizedMessage("module.request.autoAssign.assigned", assigned.getQueue().getName(), assigned.getId() );
+                user.sendLocalizedMessage("module.request.autoAssign.assigned", assigned.getQueue().getName(), assigned.getId());
             }
         }
     }
     
     private void notifyUserLeave(User user) {
-        if (!autoAssignEnabled) return;
+        if (!autoAssignEnabled) {
+            return;
+        }
         
         ArrayList<Assigner> assigner = new ArrayList<Assigner>();
         
@@ -111,7 +119,9 @@ public class AutoAssignManager {
     }
     
     private void notifyRequestOpen(Request r) {
-        if (!autoAssignEnabled) return;
+        if (!autoAssignEnabled) {
+            return;
+        }
         
         if (autoAssignConfirm) {
             Assigner assigner = new Assigner(r);
@@ -129,7 +139,7 @@ public class AutoAssignManager {
             
             if (assignTo != null) {
                 r.assignTo(assignTo);
-                assignTo.sendLocalizedMessage("module.request.autoAssign.assigned", r.getQueue().getName(), r.getId() );
+                assignTo.sendLocalizedMessage("module.request.autoAssign.assigned", r.getQueue().getName(), r.getId());
             } else {
                 requestBacklog.add(r);
             }
@@ -137,7 +147,9 @@ public class AutoAssignManager {
     }
     
     private void notifyRequestTaken(Request r) {
-        if (!autoAssignEnabled) return;
+        if (!autoAssignEnabled) {
+            return;
+        }
         
         if (r.getAssignedReceiver() == null) {
             notifyRequestOpen(r);
@@ -162,7 +174,9 @@ public class AutoAssignManager {
     }
     
     private void notifyRequestClosed(Request r) {
-        if (!autoAssignEnabled || !autoAssignConfirm) return;
+        if (!autoAssignEnabled || !autoAssignConfirm) {
+            return;
+        }
         Assigner assigner = null;
         
         for (Assigner a : assigners) {
@@ -206,7 +220,7 @@ public class AutoAssignManager {
                 user = users.remove();
                 
                 if (canAutoAssign(user) && !request.isOnDoNotAssign(user)) {
-                    user.sendLocalizedMessage("module.request.autoAssign.request.begin", request.getQueue().getName(), request.getId() );
+                    user.sendLocalizedMessage("module.request.autoAssign.request.begin", request.getQueue().getName(), request.getId());
                     waitTask = Bukkit.getScheduler().runTaskLater(GoldenApple.getInstance(), new Runnable() {
                         @Override
                         public void run() {
@@ -226,7 +240,7 @@ public class AutoAssignManager {
             waitTask.cancel();
             
             if (request.getAssignedReceiver().getId() != user.getId()) {
-                user.sendLocalizedMessage("module.request.autoAssign.request.end", request.getQueue().getName(), request.getId() );
+                user.sendLocalizedMessage("module.request.autoAssign.request.end", request.getQueue().getName(), request.getId());
             } else {
                 request.getQueue().removeFromAutoAssignQueue(user);
                 request.getQueue().addToAutoAssignQueue(user);
@@ -247,7 +261,7 @@ public class AutoAssignManager {
         }
         
         private void notifyTimeout() {
-            user.sendLocalizedMessage("module.request.autoAssign.request.end", request.getQueue().getName(), request.getId() );
+            user.sendLocalizedMessage("module.request.autoAssign.request.end", request.getQueue().getName(), request.getId());
             findNextReceiver();
         }
     }

@@ -47,10 +47,14 @@ public class DatabaseRequestQueue implements RequestQueue {
         name = r.getString("Name");
         
         sendGroup = r.getLong("SendGroup");
-        if (r.wasNull()) sendGroup = null;
+        if (r.wasNull()) {
+            sendGroup = null;
+        }
         
         receiveGroup = r.getLong("ReceiveGroup");
-        if (r.wasNull()) receiveGroup = null;
+        if (r.wasNull()) {
+            receiveGroup = null;
+        }
         
         maxRequestsPerSender = r.getInt("MaxRequestsPerSender");
         allowNoReceiver = r.getBoolean("AllowNoReceiver");
@@ -110,27 +114,27 @@ public class DatabaseRequestQueue implements RequestQueue {
             GoldenApple.getInstanceDatabaseManager().closeResult(r);
         }
     }
-
+    
     @Override
     public long getId() {
         return id;
     }
-
+    
     @Override
     public String getName() {
         return name;
     }
-
+    
     @Override
     public IPermissionGroup getSendingGroup() {
         return (sendGroup == null) ? null : PermissionManager.getInstance().getGroup(sendGroup);
     }
-
+    
     @Override
     public IPermissionGroup getReceivingGroup() {
         return (receiveGroup == null) ? null : PermissionManager.getInstance().getGroup(receiveGroup);
     }
-
+    
     @Override
     public void setSendingGroup(IPermissionGroup group) {
         if (group == null) {
@@ -145,7 +149,7 @@ public class DatabaseRequestQueue implements RequestQueue {
             throw new RuntimeException("Failed to save change to the database", e);
         }
     }
-
+    
     @Override
     public void setReceivingGroup(IPermissionGroup group) {
         if (group == null) {
@@ -175,17 +179,17 @@ public class DatabaseRequestQueue implements RequestQueue {
             throw new RuntimeException("Failed to save change to the database", e);
         }
     }
-
+    
     @Override
     public int getMaxRequestsPerSender() {
         return maxRequestsPerSender;
     }
-
+    
     @Override
     public boolean getAllowNoReceiver() {
         return allowNoReceiver;
     }
-
+    
     @Override
     public void setMaxRequestsPerSender(int maxRequestsPerSender) {
         this.maxRequestsPerSender = maxRequestsPerSender;
@@ -196,7 +200,7 @@ public class DatabaseRequestQueue implements RequestQueue {
             throw new RuntimeException("Failed to save change to the database", e);
         }
     }
-
+    
     @Override
     public void setAllowNoReceiver(boolean allowNoReceiver) {
         this.allowNoReceiver = allowNoReceiver;
@@ -207,42 +211,50 @@ public class DatabaseRequestQueue implements RequestQueue {
             throw new RuntimeException("Failed to save change to the database", e);
         }
     }
-
+    
     @Override
     public List<User> getOnlineReceivers() {
         return onlineReceivers;
     }
-
+    
     @Override
     public Deque<User> getAutoAssignQueue() {
         return autoAssignQueue;
     }
-
+    
     @Override
     public void addToAutoAssignQueue(User receiver) {
-        if (!autoAssignQueue.contains(receiver)) autoAssignQueue.add(receiver);
+        if (!autoAssignQueue.contains(receiver)) {
+            autoAssignQueue.add(receiver);
+        }
     }
-
+    
     @Override
     public void removeFromAutoAssignQueue(User receiver) {
-        if (autoAssignQueue.contains(receiver)) autoAssignQueue.remove(receiver);
+        if (autoAssignQueue.contains(receiver)) {
+            autoAssignQueue.remove(receiver);
+        }
     }
     
     @Override
     public void addToOnlineReceivers(User receiver) {
-        if (!onlineReceivers.contains(receiver)) onlineReceivers.add(receiver);
+        if (!onlineReceivers.contains(receiver)) {
+            onlineReceivers.add(receiver);
+        }
     }
-
+    
     @Override
     public void removeFromOnlineReceivers(User receiver) {
-       if (onlineReceivers.contains(receiver)) onlineReceivers.remove(receiver);
+        if (onlineReceivers.contains(receiver)) {
+            onlineReceivers.remove(receiver);
+        }
     }
-
+    
     @Override
     public Request getRequest(long id) {
         return requests.get(id);
     }
-
+    
     @Override
     public List<Request> getAllRequests(boolean includeClosed, boolean includeOnHold) {
         // TODO Filter out requests that are on hold
@@ -255,7 +267,7 @@ public class DatabaseRequestQueue implements RequestQueue {
             return Collections.unmodifiableList(requestQueue);
         }
     }
-
+    
     @Override
     public List<Request> getRequestsBySender(IPermissionUser sender, boolean includeClosed, boolean includeOnHold) {
         if (includeClosed) {
@@ -281,7 +293,7 @@ public class DatabaseRequestQueue implements RequestQueue {
             return Collections.unmodifiableList(requests);
         }
     }
-
+    
     @Override
     public List<Request> getRequestsByReceiver(IPermissionUser receiver, boolean includeClosed, boolean includeOnHold) {
         if (receiver == null) {
@@ -309,7 +321,7 @@ public class DatabaseRequestQueue implements RequestQueue {
             return Collections.unmodifiableList(requests);
         }
     }
-
+    
     @Override
     public List<Request> getUnassignedRequests(boolean includeClosed, boolean includeOnHold) {
         if (includeClosed) {
@@ -361,19 +373,19 @@ public class DatabaseRequestQueue implements RequestQueue {
             return Collections.unmodifiableList(requests);
         }
     }
-
+    
     @Override
     public boolean canReceive(IPermissionUser user) {
         IPermissionGroup group = getReceivingGroup();
         return group != null && group.isMember(user, false);
     }
-
+    
     @Override
     public boolean canSend(IPermissionUser user) {
         IPermissionGroup group = getSendingGroup();
         return group == null || group.isMember(user, false);
     }
-
+    
     @Override
     public Request createRequest(User sender, String message) {
         SimpleRequestManager manager = (SimpleRequestManager) RequestManager.getInstance();
@@ -393,7 +405,7 @@ public class DatabaseRequestQueue implements RequestQueue {
                 requestQueue.add(request);
                 
                 for (User receiver : onlineReceivers) {
-                    receiver.sendLocalizedMessage("module.request.notify.newRequest", name, requestId );
+                    receiver.sendLocalizedMessage("module.request.notify.newRequest", name, requestId);
                 }
                 
                 RequestManager.getInstance().notifyAutoAssignRequestEvent(request, AutoAssignRequestEvent.CREATE);
@@ -406,7 +418,7 @@ public class DatabaseRequestQueue implements RequestQueue {
             throw new RuntimeException("Failed to create request in database", e);
         }
     }
-
+    
     @Override
     public int deleteOldRequests(int maxClosedDays) {
         int count = 0;
@@ -432,21 +444,23 @@ public class DatabaseRequestQueue implements RequestQueue {
         
         return count;
     }
-
+    
     @Override
     public boolean isAutoAssign(User receiver) {
         return (receiversAutoAssign.containsKey(receiver.getId())) ? receiversAutoAssign.get(receiver.getId()) : true;
     }
-
+    
     @Override
     public boolean isReceiving(User receiver) {
         return (receiversReceiving.containsKey(receiver.getId())) ? receiversReceiving.get(receiver.getId()) : true;
     }
-
+    
     @Override
     public void setAutoAssign(User receiver, boolean autoAssign) {
         receiversAutoAssign.put(receiver.getId(), autoAssign);
-        if (!receiversReceiving.containsKey(receiver.getId())) receiversReceiving.put(receiver.getId(), true);
+        if (!receiversReceiving.containsKey(receiver.getId())) {
+            receiversReceiving.put(receiver.getId(), true);
+        }
         
         try {
             GoldenApple.getInstanceDatabaseManager().execute("DELETE FROM RequestQueueReceivers WHERE QueueID=? AND UserID=?", id, receiver.getId());
@@ -455,11 +469,13 @@ public class DatabaseRequestQueue implements RequestQueue {
             throw new RuntimeException("Failed to save change to the database", e);
         }
     }
-
+    
     @Override
     public void setReceiving(User receiver, boolean receive) {
         receiversReceiving.put(receiver.getId(), receive);
-        if (!receiversAutoAssign.containsKey(receiver.getId())) receiversAutoAssign.put(receiver.getId(), true);
+        if (!receiversAutoAssign.containsKey(receiver.getId())) {
+            receiversAutoAssign.put(receiver.getId(), true);
+        }
         
         try {
             GoldenApple.getInstanceDatabaseManager().execute("DELETE FROM RequestQueueReceivers WHERE QueueID=? AND UserID=?", id, receiver.getId());
@@ -471,7 +487,9 @@ public class DatabaseRequestQueue implements RequestQueue {
     
     protected void addRequestToDeleteQueue(Request r) {
         int i = Collections.binarySearch(requestRemoveOrder, r, new RequestCloseDateComparator());
-        if (i < 0) i = -(i + 1);
+        if (i < 0) {
+            i = -(i + 1);
+        }
         
         requestRemoveOrder.add(i, r);
     }
@@ -482,7 +500,9 @@ public class DatabaseRequestQueue implements RequestQueue {
     
     protected void addRequestToRequestQueue(Request r) {
         int i = Collections.binarySearch(requestQueue, r, new RequestCreateDateComparator());
-        if (i < 0) i = -(i + 1);
+        if (i < 0) {
+            i = -(i + 1);
+        }
         
         requestQueue.add(i, r);
     }
@@ -494,7 +514,9 @@ public class DatabaseRequestQueue implements RequestQueue {
     public static class RequestCloseDateComparator implements Comparator<Request> {
         @Override
         public int compare(Request o1, Request o2) {
-            if (o1.getClosedTime() == null || o2.getClosedTime() == null) throw new UnsupportedOperationException("Cannot sort open request by close date!");
+            if (o1.getClosedTime() == null || o2.getClosedTime() == null) {
+                throw new UnsupportedOperationException("Cannot sort open request by close date!");
+            }
             
             return o1.getClosedTime().compareTo(o2.getClosedTime());
         }
@@ -506,5 +528,5 @@ public class DatabaseRequestQueue implements RequestQueue {
             return o1.getCreatedTime().compareTo(o2.getCreatedTime());
         }
     }
-
+    
 }

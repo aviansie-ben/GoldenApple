@@ -344,7 +344,7 @@ public class PermissionUser implements IPermissionUser {
     public Map<String, String> getDefinedVariables() {
         return Collections.unmodifiableMap(variables);
     }
-
+    
     @Override
     public String getVariableString(String variableName) {
         if (variables.containsKey(variableName)) {
@@ -366,7 +366,7 @@ public class PermissionUser implements IPermissionUser {
             return value;
         }
     }
-
+    
     @Override
     public Boolean getVariableBoolean(String variableName) {
         if (variables.containsKey(variableName)) {
@@ -394,7 +394,7 @@ public class PermissionUser implements IPermissionUser {
             return value;
         }
     }
-
+    
     @Override
     public Integer getVariableInteger(String variableName) {
         if (variables.containsKey(variableName)) {
@@ -426,12 +426,12 @@ public class PermissionUser implements IPermissionUser {
             return value;
         }
     }
-
+    
     @Override
     public String getVariableSpecificString(String variableName) {
         return variables.get(variableName);
     }
-
+    
     @Override
     public Boolean getVariableSpecificBoolean(String variableName) {
         if (variables.containsKey(variableName)) {
@@ -440,7 +440,7 @@ public class PermissionUser implements IPermissionUser {
             return null;
         }
     }
-
+    
     @Override
     public Integer getVariableSpecificInteger(String variableName) {
         if (variables.containsKey(variableName)) {
@@ -464,7 +464,7 @@ public class PermissionUser implements IPermissionUser {
             throw new RuntimeException(e);
         }
     }
-
+    
     @Override
     public void setVariable(String variableName, String value) {
         if (value != null) {
@@ -480,7 +480,7 @@ public class PermissionUser implements IPermissionUser {
             deleteVariable(variableName);
         }
     }
-
+    
     @Override
     public void setVariable(String variableName, Boolean value) {
         if (value != null) {
@@ -489,7 +489,7 @@ public class PermissionUser implements IPermissionUser {
             deleteVariable(variableName);
         }
     }
-
+    
     @Override
     public void setVariable(String variableName, Integer value) {
         if (variableName != null) {
