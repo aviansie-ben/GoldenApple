@@ -37,15 +37,19 @@ public final class SimpleDatabaseManager implements DatabaseManager {
     private HashMap<String, HashMap<Integer, AdvancedTableUpdater>> updaters = new HashMap<String, HashMap<Integer, AdvancedTableUpdater>>();
     
     protected SimpleDatabaseManager() {
-        if (GoldenApple.getInstanceMainConfig().getBoolean("database.useMySQL", false)) {
-            mySql = true;
+        mySql = GoldenApple.getInstanceMainConfig().getBoolean("database.useMySQL", false);
+        connect();
+    }
+    
+    private void connect() {
+        if (mySql) {
             try {
                 // Open a JDBC connection to the database server
                 Class.forName("com.mysql.jdbc.Driver");
                 Connection c = DriverManager.getConnection("jdbc:mysql://" + GoldenApple.getInstanceMainConfig().getString("database.host", "localhost") + "/?allowMultiQueries=true", GoldenApple.getInstanceMainConfig().getString("database.user", ""), GoldenApple.getInstanceMainConfig().getString("database.password", ""));
                 
                 // Ensure that the connection was successful
-                if (!c.isValid(1000)) {
+                if (!c.isValid(3)) {
                     GoldenApple.log(Level.SEVERE, "Failed to connect to MySQL database!");
                     return;
                 }
@@ -65,7 +69,6 @@ public final class SimpleDatabaseManager implements DatabaseManager {
                 return;
             }
         } else {
-            mySql = false;
             try {
                 GoldenApple.log(Level.WARNING, "SQLite support has not yet been fully added. It is recommended that you use MySQL.");
                 Driver d = new JDBC();
@@ -93,6 +96,11 @@ public final class SimpleDatabaseManager implements DatabaseManager {
     
     @Override
     public void execute(String command, Object... parameters) throws SQLException {
+        if (!connection.isValid(3)) {
+            close();
+            connect();
+        }
+        
         PreparedStatement s = connection.prepareStatement(command);
         try {
             for (int i = 0; i < parameters.length; i++) {
@@ -111,6 +119,11 @@ public final class SimpleDatabaseManager implements DatabaseManager {
     
     @Override
     public ResultSet executeQuery(String command, Object... parameters) throws SQLException {
+        if (!connection.isValid(3)) {
+            close();
+            connect();
+        }
+        
         PreparedStatement s = connection.prepareStatement(command);
         try {
             for (int i = 0; i < parameters.length; i++) {
@@ -155,6 +168,11 @@ public final class SimpleDatabaseManager implements DatabaseManager {
     
     @Override
     public ResultSet executeReturnGenKeys(String command, Object... parameters) throws SQLException {
+        if (!connection.isValid(3)) {
+            close();
+            connect();
+        }
+        
         PreparedStatement s = connection.prepareStatement(command, Statement.RETURN_GENERATED_KEYS);
         try {
             for (int i = 0; i < parameters.length; i++) {
@@ -279,7 +297,7 @@ public final class SimpleDatabaseManager implements DatabaseManager {
     @Override
     public boolean isConnected() {
         try {
-            return connection != null && (!mySql || connection.isValid(1000));
+            return connection != null && (!mySql || connection.isValid(3));
         } catch (SQLException e) {
             return false;
         }
