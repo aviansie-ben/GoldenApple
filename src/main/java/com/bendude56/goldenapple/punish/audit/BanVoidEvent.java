@@ -1,6 +1,10 @@
 package com.bendude56.goldenapple.punish.audit;
 
 public class BanVoidEvent extends PunishEvent {
+    public BanVoidEvent() {
+        super(302, AuditEventLevel.WARNING);
+    }
+    
     public BanVoidEvent(String authorizingUser, String target) {
         super(302, AuditEventLevel.WARNING, authorizingUser, target);
     }

@@ -16,6 +16,8 @@ import org.bukkit.plugin.Plugin;
 
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
+import com.bendude56.goldenapple.audit.AuditLog;
+import com.bendude56.goldenapple.lock.audit.LockOverrideEvent;
 import com.bendude56.goldenapple.permissions.IPermissionGroup;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
 import com.bendude56.goldenapple.permissions.PermissionManager;
@@ -425,6 +427,20 @@ public abstract class LockedBlock {
         this.allowExternal = allowExternal;
     }
     
+    private boolean hasAccessLevel(User user, GuestLevel level) {
+        GuestLevel actualLevel = getActualLevel(user);
+        GuestLevel effectiveLevel = getEffectiveLevel(user);
+        
+        if (actualLevel.levelId >= level.levelId) {
+            return true;
+        } else if (effectiveLevel.levelId >= level.levelId) {
+            AuditLog.logEvent(new LockOverrideEvent(user, level, lockId));
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
     /**
      * Checks whether or not the user may use this block. Use in this context is
      * defined as being able to use right-click actions and, if applicable,
@@ -434,7 +450,7 @@ public abstract class LockedBlock {
      * @return True if the user is allowed to use this block, false otherwise.
      */
     public boolean canUse(User user) {
-        return (getEffectiveLevel(user).levelId >= GuestLevel.USE.levelId);
+        return hasAccessLevel(user, GuestLevel.USE);
     }
     
     /**
@@ -445,7 +461,7 @@ public abstract class LockedBlock {
      * @return True if the user is allowed to edit this block, false otherwise.
      */
     public boolean canInvite(User user) {
-        return (getEffectiveLevel(user).levelId >= GuestLevel.ALLOW_INVITE.levelId);
+        return hasAccessLevel(user, GuestLevel.ALLOW_INVITE);
     }
     
     /**
@@ -457,7 +473,7 @@ public abstract class LockedBlock {
      * @return True if the user is allowed to edit this block, false otherwise.
      */
     public boolean canModifyBlock(User user) {
-        return (getEffectiveLevel(user).levelId >= GuestLevel.ALLOW_BLOCK_MODIFY.levelId);
+        return hasAccessLevel(user, GuestLevel.ALLOW_BLOCK_MODIFY);
     }
     
     /**
@@ -468,7 +484,7 @@ public abstract class LockedBlock {
      * @return True if the user is allowed to edit this block, false otherwise.
      */
     public boolean hasFullControl(User user) {
-        return (getEffectiveLevel(user).levelId >= GuestLevel.FULL.levelId);
+        return hasAccessLevel(user, GuestLevel.FULL);
     }
     
     /**

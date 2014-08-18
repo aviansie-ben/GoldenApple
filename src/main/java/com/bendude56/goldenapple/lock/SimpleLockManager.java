@@ -16,8 +16,12 @@ import org.bukkit.Material;
 
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
+import com.bendude56.goldenapple.audit.AuditLog;
+import com.bendude56.goldenapple.lock.LockedBlock.GuestLevel;
 import com.bendude56.goldenapple.lock.LockedBlock.LockLevel;
 import com.bendude56.goldenapple.lock.LockedBlock.RegisteredBlock;
+import com.bendude56.goldenapple.lock.audit.LockOverrideDisableEvent;
+import com.bendude56.goldenapple.lock.audit.LockOverrideEnableEvent;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 
@@ -201,14 +205,44 @@ public class SimpleLockManager extends LockManager {
     
     @Override
     public boolean isOverrideOn(User u) {
-        return u.getVariableBoolean("goldenapple.lock.alwaysOverride") || overriding.contains(u);
+        if (overriding.contains(u)) {
+            if (!canOverride(u)) {
+                setOverrideOn(u, false);
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            if (u.getVariableBoolean("goldenapple.lock.alwaysOverride") && canOverride(u)) {
+                setOverrideOn(u, true);
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+    
+    private GuestLevel getOverrideLevel(User u) {
+        if (u.hasPermission(LockManager.fullPermission)) {
+            return GuestLevel.FULL;
+        } else if (u.hasPermission(LockManager.modifyBlockPermission)) {
+            return GuestLevel.ALLOW_BLOCK_MODIFY;
+        } else if (u.hasPermission(LockManager.invitePermission)) {
+            return GuestLevel.ALLOW_INVITE;
+        } else if (u.hasPermission(LockManager.usePermission)) {
+            return GuestLevel.USE;
+        } else {
+            return GuestLevel.NONE;
+        }
     }
     
     @Override
     public void setOverrideOn(User u, boolean override) {
         if (override && !overriding.contains(u)) {
+            AuditLog.logEvent(new LockOverrideEnableEvent(u, getOverrideLevel(u)));
             overriding.add(u);
         } else if (!override && overriding.contains(u)) {
+            AuditLog.logEvent(new LockOverrideDisableEvent(u));
             overriding.remove(u);
         }
     }

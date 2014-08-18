@@ -7,6 +7,10 @@ import com.bendude56.goldenapple.permissions.IPermissionObject;
 public class PermissionGrantEvent extends PermissionEvent {
     public String permission;
     
+    public PermissionGrantEvent() {
+        super(400, AuditEventLevel.SEVERE);
+    }
+    
     public PermissionGrantEvent(String authorizingUser, IPermissionObject target, String permission) {
         super(400, AuditEventLevel.SEVERE, authorizingUser, target);
         

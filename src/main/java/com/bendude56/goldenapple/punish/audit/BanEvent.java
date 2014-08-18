@@ -6,6 +6,10 @@ public class BanEvent extends PunishEvent {
     public String duration;
     public String reason;
     
+    public BanEvent() {
+        super(300, AuditEventLevel.WARNING);
+    }
+    
     public BanEvent(String authorizingUser, String target, String duration, String reason) {
         super(300, AuditEventLevel.WARNING, authorizingUser, target);
         

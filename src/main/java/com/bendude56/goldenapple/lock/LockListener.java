@@ -18,14 +18,20 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.EventExecutor;
 import org.bukkit.plugin.RegisteredListener;
 
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.PerformanceMonitor.PerformanceEvent;
 import com.bendude56.goldenapple.User;
+import com.bendude56.goldenapple.audit.AuditLog;
 import com.bendude56.goldenapple.lock.LockedBlock.GuestLevel;
 import com.bendude56.goldenapple.lock.LockedBlock.LockLevel;
+import com.bendude56.goldenapple.lock.audit.LockCreateEvent;
+import com.bendude56.goldenapple.lock.audit.LockDeleteEvent;
+import com.bendude56.goldenapple.lock.audit.LockMoveEvent;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 
 public class LockListener implements Listener, EventExecutor {
@@ -45,6 +51,8 @@ public class LockListener implements Listener, EventExecutor {
     }
     
     private void registerEvents() {
+        PlayerJoinEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
+        PlayerQuitEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
         PlayerInteractEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
         BlockExpEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
         BlockPlaceEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.MONITOR, GoldenApple.getInstance(), true));
@@ -54,6 +62,8 @@ public class LockListener implements Listener, EventExecutor {
     }
     
     private void unregisterEvents() {
+        PlayerJoinEvent.getHandlerList().unregister(this);
+        PlayerQuitEvent.getHandlerList().unregister(this);
         PlayerInteractEvent.getHandlerList().unregister(this);
         BlockExpEvent.getHandlerList().unregister(this);
         BlockPlaceEvent.getHandlerList().unregister(this);
@@ -68,7 +78,11 @@ public class LockListener implements Listener, EventExecutor {
         e.start();
         
         try {
-            if (event instanceof PlayerInteractEvent) {
+            if (event instanceof PlayerJoinEvent) {
+                playerJoin((PlayerJoinEvent) event);
+            } else if (event instanceof PlayerQuitEvent) {
+                playerQuit((PlayerQuitEvent) event);
+            } else if (event instanceof PlayerInteractEvent) {
                 playerInteract((PlayerInteractEvent) event);
             } else if (event instanceof BlockBreakEvent) {
                 blockBreak((BlockBreakEvent) event);
@@ -81,12 +95,26 @@ public class LockListener implements Listener, EventExecutor {
                 lockRedstone((BlockRedstoneEvent) event);
             } else if (event instanceof BlockDispenseEvent) {
                 lockDispense((BlockDispenseEvent) event);
-            } else if (event instanceof BlockExpEvent) {} else {
+            } else if (event instanceof BlockExpEvent) {
+                // Do nothing
+            } else {
                 GoldenApple.log(Level.WARNING, "Unrecognized event in LockListener: " + event.getClass().getName());
             }
         } finally {
             e.stop();
         }
+    }
+    
+    private void playerJoin(PlayerJoinEvent event) {
+        User u = User.getUser(event.getPlayer());
+        
+        if (u.getVariableBoolean("goldenapple.lock.alwaysOverride") && LockManager.getInstance().canOverride(u)) {
+            LockManager.getInstance().setOverrideOn(u, true);
+        }
+    }
+    
+    private void playerQuit(PlayerQuitEvent event) {
+        LockManager.getInstance().setOverrideOn(User.getUser(event.getPlayer()), false);
     }
     
     private void playerInteract(PlayerInteractEvent event) {
@@ -129,11 +157,12 @@ public class LockListener implements Listener, EventExecutor {
             event.setCancelled(true);
             return;
         } else {
-            if (event.getBlock().getType() == Material.CHEST && chestDeleteCheck(lock, event.getBlock().getLocation())) {
+            if (event.getBlock().getType() == Material.CHEST && chestDeleteCheck(u, lock, event.getBlock().getLocation())) {
                 return;
             }
             try {
                 LockManager.getInstance().deleteLock(lock.getLockId());
+                AuditLog.logEvent(new LockDeleteEvent(u, lock.getLockId()));
                 u.sendLocalizedMessage("module.lock.delete.success");
             } catch (SQLException e) {
                 event.setCancelled(true);
@@ -142,7 +171,8 @@ public class LockListener implements Listener, EventExecutor {
         }
     }
     
-    private boolean chestDeleteCheck(LockedBlock lock, Location l) {
+    private boolean chestDeleteCheck(User user, LockedBlock lock, Location l) {
+        Location from = l.clone();
         if (!l.equals(lock.getLocation())) {
             return true;
         }
@@ -151,6 +181,7 @@ public class LockListener implements Listener, EventExecutor {
             l.setX(l.getX() - 1);
             if (l.getBlock().getType() == Material.CHEST) {
                 lock.moveLock(l);
+                AuditLog.logEvent(new LockMoveEvent(user, lock.getLockId(), from, l));
                 return true;
             }
             
@@ -158,6 +189,7 @@ public class LockListener implements Listener, EventExecutor {
             l.setZ(l.getZ() - 1);
             if (l.getBlock().getType() == Material.CHEST) {
                 lock.moveLock(l);
+                AuditLog.logEvent(new LockMoveEvent(user, lock.getLockId(), from, l));
                 return true;
             }
             
@@ -168,7 +200,7 @@ public class LockListener implements Listener, EventExecutor {
     }
     
     private void chestMove(BlockPlaceEvent event) {
-        GoldenApple instance = GoldenApple.getInstance();
+        User user = User.getUser(event.getPlayer());
         
         if (event.getBlock().getType() != Material.CHEST) {
             return;
@@ -178,23 +210,25 @@ public class LockListener implements Listener, EventExecutor {
         
         try {
             l.setX(l.getX() - 1);
-            if (adjustChestLock(instance, l)) {
+            if (adjustChestLock(user, l)) {
                 return;
             }
             
             l.setX(l.getX() + 1);
             l.setZ(l.getZ() - 1);
-            if (adjustChestLock(instance, l)) {
+            if (adjustChestLock(user, l)) {
                 return;
             }
         } catch (Exception e) {}
     }
     
-    private boolean adjustChestLock(GoldenApple instance, Location l) throws SQLException {
+    private boolean adjustChestLock(User user, Location l) throws SQLException {
+        Location from = l.clone();
         LockedBlock lock = LockManager.getInstance().getLockSpecific(l);
         
         if (lock != null) {
             LockedBlock.correctLocation(l);
+            AuditLog.logEvent(new LockMoveEvent(user, lock.getLockId(), from, l));
             lock.moveLock(l);
             return true;
         } else {
@@ -209,7 +243,8 @@ public class LockListener implements Listener, EventExecutor {
         // TODO getTypeId() is deprecated. Look at alternatives.
         if (user.getVariableBoolean("goldenapple.lock.autoLock") && user.hasPermission(LockManager.addPermission) && GoldenApple.getInstanceMainConfig().getIntegerList("modules.lock.autoLockBlocks").contains(event.getBlock().getTypeId()) && LockManager.getInstance().getLock(event.getBlock().getLocation()) == null) {
             try {
-                LockManager.getInstance().createLock(event.getBlock().getLocation(), LockLevel.PRIVATE, user);
+                LockedBlock l = LockManager.getInstance().createLock(event.getBlock().getLocation(), LockLevel.PRIVATE, user);
+                AuditLog.logEvent(new LockCreateEvent(user, l.getLockId(), l.getTypeIdentifier(), l.getLocation()));
                 user.sendLocalizedMessage("module.lock.autoLock.locked");
             } catch (Exception e) {}
         }

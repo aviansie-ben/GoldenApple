@@ -8,9 +8,35 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.bendude56.goldenapple.GoldenApple;
+import com.bendude56.goldenapple.lock.audit.LockCreateEvent;
+import com.bendude56.goldenapple.lock.audit.LockDeleteEvent;
+import com.bendude56.goldenapple.lock.audit.LockMoveEvent;
+import com.bendude56.goldenapple.lock.audit.LockOverrideDisableEvent;
+import com.bendude56.goldenapple.lock.audit.LockOverrideEnableEvent;
+import com.bendude56.goldenapple.lock.audit.LockOverrideEvent;
+import com.bendude56.goldenapple.permissions.audit.GroupAddMemberEvent;
+import com.bendude56.goldenapple.permissions.audit.GroupAddOwnerEvent;
+import com.bendude56.goldenapple.permissions.audit.GroupRemoveMemberEvent;
+import com.bendude56.goldenapple.permissions.audit.GroupRemoveOwnerEvent;
+import com.bendude56.goldenapple.permissions.audit.ObjectCreateEvent;
+import com.bendude56.goldenapple.permissions.audit.ObjectDeleteEvent;
+import com.bendude56.goldenapple.permissions.audit.PermissionGrantEvent;
+import com.bendude56.goldenapple.permissions.audit.PermissionRevokeEvent;
+import com.bendude56.goldenapple.punish.audit.BanEvent;
+import com.bendude56.goldenapple.punish.audit.BanVoidEvent;
+import com.bendude56.goldenapple.punish.audit.MuteEvent;
+import com.bendude56.goldenapple.punish.audit.MuteVoidEvent;
 
 public abstract class AuditEvent {
     private static HashMap<Integer, Class<? extends AuditEvent>> registeredEvents = new HashMap<Integer, Class<? extends AuditEvent>>();
+    
+    public static void registerAuditEvent(Class<? extends AuditEvent> auditClass) {
+        try {
+            registerAuditEvent(auditClass.newInstance().eventId, auditClass);
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException("Error in class for audit event " + auditClass.getSimpleName());
+        }
+    }
     
     public static void registerAuditEvent(int eventId, Class<? extends AuditEvent> auditClass) {
         if (registeredEvents.containsKey(eventId)) {
@@ -27,15 +53,36 @@ public abstract class AuditEvent {
             e.load(main, metadata);
             return e;
         } catch (InstantiationException | IllegalAccessException | NullPointerException e) {
-            throw new RuntimeException("Error in class for audit event " + eventId);
+            throw new RuntimeException("Error in class for audit event " + registeredEvents.get(eventId).getSimpleName());
         }
     }
     
     static {
-        registerAuditEvent(100, AuditStartEvent.class);
-        registerAuditEvent(101, AuditStopEvent.class);
-        registerAuditEvent(102, ModuleEnableEvent.class);
-        registerAuditEvent(103, ModuleDisableEvent.class);
+        registerAuditEvent(AuditStartEvent.class);
+        registerAuditEvent(AuditStopEvent.class);
+        registerAuditEvent(ModuleEnableEvent.class);
+        registerAuditEvent(ModuleDisableEvent.class);
+        
+        registerAuditEvent(LockOverrideEnableEvent.class);
+        registerAuditEvent(LockOverrideDisableEvent.class);
+        registerAuditEvent(LockOverrideEvent.class);
+        registerAuditEvent(LockCreateEvent.class);
+        registerAuditEvent(LockDeleteEvent.class);
+        registerAuditEvent(LockMoveEvent.class);
+        
+        registerAuditEvent(BanEvent.class);
+        registerAuditEvent(MuteEvent.class);
+        registerAuditEvent(BanVoidEvent.class);
+        registerAuditEvent(MuteVoidEvent.class);
+        
+        registerAuditEvent(PermissionGrantEvent.class);
+        registerAuditEvent(PermissionRevokeEvent.class);
+        registerAuditEvent(GroupAddMemberEvent.class);
+        registerAuditEvent(GroupRemoveMemberEvent.class);
+        registerAuditEvent(ObjectCreateEvent.class);
+        registerAuditEvent(ObjectDeleteEvent.class);
+        registerAuditEvent(GroupAddOwnerEvent.class);
+        registerAuditEvent(GroupRemoveOwnerEvent.class);
     }
     
     public final int eventId;

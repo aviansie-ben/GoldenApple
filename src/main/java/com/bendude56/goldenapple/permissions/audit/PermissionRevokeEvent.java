@@ -7,6 +7,10 @@ import com.bendude56.goldenapple.permissions.IPermissionObject;
 public class PermissionRevokeEvent extends PermissionEvent {
     public String permission;
     
+    public PermissionRevokeEvent() {
+        super(401, AuditEventLevel.SEVERE);
+    }
+    
     public PermissionRevokeEvent(String authorizingUser, IPermissionObject target, String permission) {
         super(401, AuditEventLevel.SEVERE, authorizingUser, target);
         

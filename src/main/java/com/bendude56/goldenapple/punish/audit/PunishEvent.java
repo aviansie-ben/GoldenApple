@@ -9,8 +9,12 @@ public abstract class PunishEvent extends AuditEvent {
     public String authorizingUser;
     public String target;
     
-    public PunishEvent(int eventId, AuditEventLevel severity, String authorizingUser, String target) {
+    public PunishEvent(int eventId, AuditEventLevel severity) {
         super(eventId, severity, "Punish");
+    }
+    
+    public PunishEvent(int eventId, AuditEventLevel severity, String authorizingUser, String target) {
+        this(eventId, severity);
         
         this.authorizingUser = authorizingUser;
         this.target = target;

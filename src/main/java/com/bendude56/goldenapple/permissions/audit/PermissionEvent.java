@@ -14,8 +14,12 @@ public abstract class PermissionEvent extends AuditEvent {
     public String targetName;
     public long targetId;
     
-    public PermissionEvent(int eventId, AuditEventLevel severity, String authorizingUser, IPermissionObject target) {
+    public PermissionEvent(int eventId, AuditEventLevel severity) {
         super(eventId, severity, "Permissions");
+    }
+    
+    public PermissionEvent(int eventId, AuditEventLevel severity, String authorizingUser, IPermissionObject target) {
+        this(eventId, severity);
         
         this.authorizingUser = authorizingUser;
         

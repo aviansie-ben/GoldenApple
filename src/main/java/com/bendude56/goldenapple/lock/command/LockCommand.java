@@ -12,11 +12,14 @@ import org.bukkit.util.BlockIterator;
 
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
+import com.bendude56.goldenapple.audit.AuditLog;
 import com.bendude56.goldenapple.command.DualSyntaxCommand;
 import com.bendude56.goldenapple.lock.LockManager;
 import com.bendude56.goldenapple.lock.LockedBlock;
 import com.bendude56.goldenapple.lock.LockedBlock.GuestLevel;
 import com.bendude56.goldenapple.lock.LockedBlock.LockLevel;
+import com.bendude56.goldenapple.lock.audit.LockCreateEvent;
+import com.bendude56.goldenapple.lock.audit.LockDeleteEvent;
 import com.bendude56.goldenapple.permissions.IPermissionGroup;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
 import com.bendude56.goldenapple.permissions.PermissionManager;
@@ -408,6 +411,7 @@ public class LockCommand extends DualSyntaxCommand {
         LockedBlock lock;
         try {
             lock = LockManager.getInstance().createLock(loc, access, user);
+            AuditLog.logEvent(new LockCreateEvent(user, lock.getLockId(), lock.getTypeIdentifier(), lock.getLocation()));
             getInfo(instance, user, lock);
             return lock;
         } catch (InvocationTargetException e) {
@@ -426,6 +430,7 @@ public class LockCommand extends DualSyntaxCommand {
     private void deleteLock(GoldenApple instance, User user, long id) {
         try {
             LockManager.getInstance().deleteLock(id);
+            AuditLog.logEvent(new LockDeleteEvent(user, id));
             user.sendLocalizedMessage("module.lock.delete.success");
         } catch (SQLException e) {
             user.sendLocalizedMessage("module.lock.error.sqlError");

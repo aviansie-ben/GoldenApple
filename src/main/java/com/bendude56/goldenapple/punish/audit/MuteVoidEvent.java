@@ -5,6 +5,10 @@ import java.util.HashMap;
 public class MuteVoidEvent extends PunishEvent {
     public String channel;
     
+    public MuteVoidEvent() {
+        super(303, AuditEventLevel.WARNING);
+    }
+    
     public MuteVoidEvent(String authorizingUser, String target, String channel) {
         super(303, AuditEventLevel.WARNING, authorizingUser, target);
         

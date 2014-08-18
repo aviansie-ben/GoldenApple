@@ -9,6 +9,10 @@ public class GroupAddMemberEvent extends PermissionEvent {
     public String groupName;
     public long groupId;
     
+    public GroupAddMemberEvent() {
+        super(402, AuditEventLevel.SEVERE);
+    }
+    
     public GroupAddMemberEvent(String authorizingUser, IPermissionObject target, IPermissionGroup group) {
         super(402, AuditEventLevel.SEVERE, authorizingUser, target);
         

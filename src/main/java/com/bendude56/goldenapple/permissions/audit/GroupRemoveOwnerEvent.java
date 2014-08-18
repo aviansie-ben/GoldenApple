@@ -9,6 +9,10 @@ public class GroupRemoveOwnerEvent extends PermissionEvent {
     public String groupName;
     public long groupId;
     
+    public GroupRemoveOwnerEvent() {
+        super(407, AuditEventLevel.SEVERE);
+    }
+    
     public GroupRemoveOwnerEvent(String authorizingUser, IPermissionUser target, IPermissionGroup group) {
         super(407, AuditEventLevel.SEVERE, authorizingUser, target);
         

@@ -9,6 +9,10 @@ public class GroupAddOwnerEvent extends PermissionEvent {
     public String groupName;
     public long groupId;
     
+    public GroupAddOwnerEvent() {
+        super(406, AuditEventLevel.SEVERE);
+    }
+    
     public GroupAddOwnerEvent(String authorizingUser, IPermissionUser target, IPermissionGroup group) {
         super(406, AuditEventLevel.SEVERE, authorizingUser, target);
         

@@ -7,6 +7,10 @@ public class MuteEvent extends PunishEvent {
     public String reason;
     public String channel;
     
+    public MuteEvent() {
+        super(301, AuditEventLevel.WARNING);
+    }
+    
     public MuteEvent(String authorizingUser, String target, String duration, String reason, String channel) {
         super(301, AuditEventLevel.WARNING, authorizingUser, target);
         
