@@ -116,13 +116,14 @@ public class PunishmentListener implements Listener, EventExecutor {
         final boolean flying = user.getPlayerHandle().isFlying();
         
         if (GoldenApple.getInstanceMainConfig().getBoolean("modules.punish.blockMinechat", true)) {
-            antiMineChat.put(user, user.getPlayerHandle().getLocation());
+            Location l = user.getPlayerHandle().getLocation();
+            antiMineChat.put(user, l);
             
             if (flying) {
                 user.getPlayerHandle().setFlying(false);
             }
             
-            user.getPlayerHandle().teleport(new Location(user.getPlayerHandle().getWorld(), 0, 1000, 0));
+            user.getPlayerHandle().teleport(new Location(user.getPlayerHandle().getWorld(), l.getX(), 1000, l.getZ()));
             WarpListener.backLocation.remove(user);
             
             if (Bukkit.getScheduler().scheduleSyncDelayedTask(GoldenApple.getInstance(), new Runnable() {
