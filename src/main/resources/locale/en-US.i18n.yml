@@ -406,8 +406,8 @@ messages:
             header: "&7-----&6 GoldenApple Chat &7-----"
         invisible:
             poof:
-                disable: "&aYou are now invisible."
-                enable: "&aYou are no longer invisible."
+                disable: "&aYou are no longer invisible."
+                enable: "&aYou are now invisible."
             noInteract: "&4ERROR: You cannot interact with the world while invisible!"
         lock:
             access:
