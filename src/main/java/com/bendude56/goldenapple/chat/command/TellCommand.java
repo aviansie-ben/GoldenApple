@@ -13,6 +13,11 @@ public class TellCommand extends GoldenAppleCommand {
             return false;
         }
         
+        if (!user.hasPermission(ChatManager.tellPermission)) {
+            GoldenApple.logPermissionFail(user, commandLabel, args, true);
+            return true;
+        }
+        
         User receiver = (args[0].equalsIgnoreCase("server")) ? User.getConsoleUser() : User.findUser(args[0]);
         
         if (receiver == null) {

@@ -13,6 +13,11 @@ public class ReplyCommand extends GoldenAppleCommand {
             return false;
         }
         
+        if (!user.hasPermission(ChatManager.tellPermission)) {
+            GoldenApple.logPermissionFail(user, commandLabel, args, true);
+            return true;
+        }
+        
         String message = args[0];
         for (int i = 1; i < args.length; i++) {
             message += " " + args[i];
