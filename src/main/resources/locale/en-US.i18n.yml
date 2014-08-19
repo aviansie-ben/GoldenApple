@@ -145,7 +145,7 @@ messages:
                 addFail: "&4User &f%2 &4not added as guest to area &f%1&4. (Already &f%3&4)"
                 remove: "&aUser &f%2 &aremoved as guest from area &f%1&a."
                 removeFail: "&4User &f%2 &4is not a guest of area &f%1&4."
-                umodified: "&7Guest list unmodified for area &f%1&7."
+                unmodified: "&7Guest list unmodified for area &f%1&7."
             label:
                 updated: "&aLabel for area &f%1 &achanged to &f'%2'&a."
                 none: "[No label]"
