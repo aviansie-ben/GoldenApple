@@ -108,9 +108,6 @@ public class AreaCommand extends DualSyntaxCommand {
             if (arg.isDefined("group-invite")) {
                 onExecuteComplexGroupGuest(instance, user, commandLabel, arg, args);
             }
-            if (arg.isDefined("flags")) {
-                onExecuteComplexFlags(instance, user, commandLabel, arg, args);
-            }
             if (arg.isDefined("priority")) {
                 onExecuteComplexSetPriority(instance, user, commandLabel, arg, args);
             }
@@ -121,7 +118,7 @@ public class AreaCommand extends DualSyntaxCommand {
                 onExecuteComplexInfo(instance, user, commandLabel, arg, args);
             }
             
-            // TODO Finish these (adding/removing regions)
+            // TODO Add commands for adding/removing flags/regions
         }
     }
     
@@ -1734,7 +1731,7 @@ public class AreaCommand extends DualSyntaxCommand {
     
     private void sendAreaList(User user, List<Area> areas) {
         for (Area area : areas) {
-            user.sendLocalizedMessage("module.area.list.item", area.getAreaId(), (area.getLabel() == null || area.getLabel().isEmpty()) ? "[No label]" : area.getLabel(), area.getPriority());
+            user.sendLocalizedMessage("module.area.list.item", area.getAreaId(), (area.getLabel() == null || area.getLabel().isEmpty()) ? user.getLocalizedMessage("module.area.label.none") : area.getLabel(), area.getPriority());
         }
     }
     
@@ -1860,7 +1857,6 @@ public class AreaCommand extends DualSyntaxCommand {
             ArgumentInfo.newKeyValuePair(ArgumentInfo.newGroupList("group-owner", "go", "groupowner", false)),
             ArgumentInfo.newKeyValuePair(ArgumentInfo.newUserList("invite", "in", "invite", false, false)),
             ArgumentInfo.newKeyValuePair(ArgumentInfo.newGroupList("group-invite", "gin", "groupinvite", false)),
-            ArgumentInfo.newKeyValuePair(ArgumentInfo.newStringList("flags", "f", "flags", false)),
             ArgumentInfo.newKeyValuePair(ArgumentInfo.newLong("region", "r", "region")),
         };
     }

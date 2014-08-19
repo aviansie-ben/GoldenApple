@@ -104,7 +104,6 @@ messages:
                     - "Create a new area using &7/%1 -c <options>&f. Options:"
                     - "  Owner: &7-o <owner>&f, Priority: &7-p <number>&f"
                     - "  Label: &7-l <label>&f, IgnoreY: &7-y&f"
-                    - "  Flags: &7-f <pvp|regen|safety>&f (more than one possible)"
                     - "  Shape: &7-s <cuboid|cylindar|sphere>&f"
                     - "Delete an area using &7/%1 -d&f"
                     - "Add/remove owners using &7-o:a <user> &fand &7-o:r <user>&f"
@@ -113,7 +112,6 @@ messages:
                     - " ' ' group guests using &7-gin:f <group> &fand &7-gin:n <group>&f"
                     - "Change area priority with &7/%1 -p <number>&f"
                     - "Change area label with &7/%1 -l <label>&f"
-                    - "Add/remove flags with &7-f:a <flags> &fand &7-f:r <flags>&f"
                 simple:
                     - "Select an area by standing in it or including the ID"
                     - "List areas at current location using &7/%1 list&f"
@@ -124,13 +122,12 @@ messages:
                     - "Uninvite a guest using &7/%1 uninvite <user>&f"
             info:
                 - "  &7Area ID: &f%1  &7Priority: &f%3"
-                - "  Label:   &f%2"
-                - "  Flags:   &f%4"
-                - "  Owners:  &f%5"
-                - "  Guests:  &f%6"
-                - "  Group Owners: &f%7"
-                - "  Group Guests: &f%8"
-                - "  Regions: &f%9  &7World: &f%10"
+                - "  &7Label:   &f%2"
+                - "  &7Owners:  &f%4"
+                - "  &7Guests:  &f%5"
+                - "  &7Group Owners: &f%6"
+                - "  &7Group Guests: &f%7"
+                - "  &7Regions: &f%8  &7World: &f%9"
             groupGuest:
                 add: "&aGroup &f%2 &aadded as guest to area &f%1&a."
                 addFail: "&4Group &f%2 &4not added as guest to area &f%1&4. (Already &f%3&4)"
@@ -151,7 +148,7 @@ messages:
                 umodified: "&7Guest list unmodified for area &f%1&7."
             label:
                 updated: "&aLabel for area &f%1 &achanged to &f'%2'&a."
-                none: "[no label]"
+                none: "[No label]"
             list:
                 header: "&7List of areas on server. Page &f%1&7/&f%2"
                 headerLocation: "&7List of areas at location. Page &f%1&7/&f%2"
@@ -931,7 +928,7 @@ messages:
             specific: "&4ERROR: This command relies on unloaded module '%1'"
         values:
             'no': "&4No"
-            none: "&7None"
+            none: "None"
             'yes': "&aYes"
         consoleNotAllowed: "&4ERROR: You cannot execute this command from the console!"
         permissionFailure: "&4ERROR: You do not have permission to execute this command! This request has been logged."

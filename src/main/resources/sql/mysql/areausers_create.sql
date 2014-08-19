@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS AreaUsers (
 	AreaID BIGINT NOT NULL,
 	UserID BIGINT NOT NULL,
 	AccessLevel INT NOT NULL,
-	PRIMARY KEY (AreaIS, UserIS),
+	PRIMARY KEY (AreaID, UserID),
 	INDEX ind_areausers_areaid (AreaID ASC),
 	INDEX ind_areausers_userid (UserID ASC),
 	CONSTRAINT fk_areausers_areaid
