@@ -96,7 +96,7 @@ public final class SimpleDatabaseManager implements DatabaseManager {
     
     @Override
     public void execute(String command, Object... parameters) throws SQLException {
-        if (!connection.isValid(3)) {
+        if (mySql && !connection.isValid(3)) {
             close();
             connect();
         }
@@ -119,7 +119,7 @@ public final class SimpleDatabaseManager implements DatabaseManager {
     
     @Override
     public ResultSet executeQuery(String command, Object... parameters) throws SQLException {
-        if (!connection.isValid(3)) {
+        if (mySql && !connection.isValid(3)) {
             close();
             connect();
         }
@@ -168,7 +168,7 @@ public final class SimpleDatabaseManager implements DatabaseManager {
     
     @Override
     public ResultSet executeReturnGenKeys(String command, Object... parameters) throws SQLException {
-        if (!connection.isValid(3)) {
+        if (mySql && !connection.isValid(3)) {
             close();
             connect();
         }
