@@ -123,7 +123,7 @@ public class MuteCommand extends DualSyntaxCommand {
         } else if (m.isGlobal()) {
             user.sendLocalizedMessage("module.punish.mute.error.voidGlobal");
         } else {
-            if (m.getAdminId() != user.getId() && c.getAccessLevel(user).isSuperModerator()) {
+            if (m.getAdminId() != user.getId() && !c.getAccessLevel(user).isSuperModerator()) {
                 GoldenApple.logPermissionFail(user, commandLabel, args, true);
                 return;
             } else {
