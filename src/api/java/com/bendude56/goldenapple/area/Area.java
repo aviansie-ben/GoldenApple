@@ -426,7 +426,7 @@ public class Area {
     public boolean canEditBlocks(IPermissionGroup g) {
         AreaAccessLevel level = getEffectiveAccessLevel(g);
         
-        if (level.getId() >= AreaAccessLevel.GUEST.getId()) {
+        if (level.getComparableValue() >= AreaAccessLevel.GUEST.getComparableValue()) {
             return true;
         }
         
