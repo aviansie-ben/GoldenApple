@@ -189,7 +189,7 @@ public class MuteCommand extends DualSyntaxCommand {
                             tUser.sendLocalizedMessage("module.punish.mute.notify.perm", user.getName());
                             tUser.getHandle().sendMessage(reason);
                         } else {
-                            tUser.sendLocalizedMessage("module.punish.mute.notify.temp", user.toString(), t.toString(tUser));
+                            tUser.sendLocalizedMessage("module.punish.mute.notify.temp", user.getName(), t.toString(tUser));
                             tUser.getHandle().sendMessage(reason);
                         }
                     }
