@@ -1,10 +1,8 @@
 CREATE TABLE IF NOT EXISTS AreaUsers (
-	AreaID BIGINT NOT NULL,
-	UserID BIGINT NOT NULL,
-	AccessLevel INT NOT NULL,
-	PRIMARY KEY (AreaIS, UserIS),
-	INDEX ind_areausers_areaid (AreaID ASC),
-	INDEX ind_areausers_userid (UserID ASC),
+	AreaID INTEGER NOT NULL,
+	UserID INTEGER NOT NULL,
+	AccessLevel INTEGER NOT NULL,
+	PRIMARY KEY (AreaID, UserID),
 	CONSTRAINT fk_areausers_areaid
 		FOREIGN KEY (AreaID)
 		REFERENCES Areas(ID)
@@ -13,4 +11,7 @@ CREATE TABLE IF NOT EXISTS AreaUsers (
 		FOREIGN KEY (UserID)
 		REFERENCES Users(ID)
 		ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB
+);
+
+CREATE INDEX ind_areausers_areaid ON AreaUsers (AreaID ASC);
+CREATE INDEX ind_areausers_userid ON AreaUsers (UserID ASC);

@@ -1,0 +1,11 @@
+CREATE TABLE IF NOT EXISTS AreaFlags (
+	AreaID INTEGER NOT NULL,
+	Flag INTEGER NOT NULL,
+	PRIMARY KEY (AreaID, Flag),
+	CONSTRAINT fk_areaflags_areaid
+		FOREIGN KEY (AreaID)
+		REFERENCES Areas(ID)
+		ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE INDEX ind_areaflags_areaid ON AreaFlags (AreaID ASC);

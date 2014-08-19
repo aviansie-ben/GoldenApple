@@ -1,10 +1,8 @@
 CREATE TABLE IF NOT EXISTS AreaGroups (
-	AreaID BIGINT NOT NULL,
-	GroupID BIGINT NOT NULL,
-	AccessLevel INT NOT NULL,
+	AreaID INTEGER NOT NULL,
+	GroupID INTEGER NOT NULL,
+	AccessLevel INTEGER NOT NULL,
 	PRIMARY KEY (AreaID, GroupID),
-	INDEX ind_areagroups_areaid (AreaID ASC),
-	INDEX ind_areagroups_groupid (GroupID ASC),
 	CONSTRAINT fk_areagroups_areaid
 		FOREIGN KEY (AreaID)
 		REFERENCES Areas(ID)
@@ -13,4 +11,7 @@ CREATE TABLE IF NOT EXISTS AreaGroups (
 		FOREIGN KEY (GroupID)
 		REFERENCES Groups(ID)
 		ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB
+);
+
+CREATE INDEX ind_areagroups_areaid ON AreaGroups (AreaID ASC);
+CREATE INDEX ind_areagroups_groupid ON AreaGroups (GroupID ASC);

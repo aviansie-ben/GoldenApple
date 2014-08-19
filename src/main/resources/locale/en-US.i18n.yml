@@ -149,7 +149,9 @@ messages:
                 remove: "&aUser &f%2 &aremoved as guest from area &f%1&a."
                 removeFail: "&4User &f%2 &4is not a guest of area &f%1&4."
                 umodified: "&7Guest list unmodified for area &f%1&7."
-            label: "&aLabel for area &f%1 &achanged to &f'%2'&a."
+            label:
+                updated: "&aLabel for area &f%1 &achanged to &f'%2'&a."
+                none: "[no label]"
             list:
                 header: "&7List of areas on server. Page &f%1&7/&f%2"
                 headerLocation: "&7List of areas at location. Page &f%1&7/&f%2"

@@ -1489,8 +1489,7 @@ public class AreaCommand extends DualSyntaxCommand {
                 user.sendLocalizedMessage("module.area.create.fail");
                 return null;
             }
-            // TODO Localize string here
-            user.sendLocalizedMessage("module.area.create.success", area.getAreaId(), (label == null ? "[No label]" : label), priority, ownerList);
+            user.sendLocalizedMessage("module.area.create.success", area.getAreaId(), (label == null ? user.getLocalizedMessage("module.area.label.none") : label), priority, ownerList);
             return area;
         } catch (Exception e) {
             
@@ -1611,10 +1610,7 @@ public class AreaCommand extends DualSyntaxCommand {
     
     private boolean setAreaLabel(User user, Area area, String label) {
         area.setLabel(label);
-        user.sendLocalizedMessage("module.area.label", area.getAreaId(), (label == null ? "NO LABEL" : label)); // TODO
-                                                                                                                // Localize
-                                                                                                                // string
-                                                                                                                // here
+        user.sendLocalizedMessage("module.area.label.change", area.getAreaId(), (label == null ? user.getLocalizedMessage("module.area.label.none") : label));
         return true;
     }
     
@@ -1828,8 +1824,7 @@ public class AreaCommand extends DualSyntaxCommand {
             world = user.getLocalizedMessage("shared.values.none");
         }
         
-        // TODO Localize string here
-        user.sendLocalizedMessage("module.area.info", area.getAreaId(), (area.getLabel() == null ? "[No label]" : area.getLabel()), area.getPriority(), flags, owners, guests, gowners, gguests, area.getRegionIds().size(), world);
+        user.sendLocalizedMessage("module.area.info", area.getAreaId(), (area.getLabel() == null ? user.getLocalizedMessage("module.area.label.none") : area.getLabel()), area.getPriority(), flags, owners, guests, gowners, gguests, area.getRegionIds().size(), world);
     }
     
     private void sendHelp(User user, String commandLabel, boolean complex) {
