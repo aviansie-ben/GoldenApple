@@ -1821,7 +1821,7 @@ public class AreaCommand extends DualSyntaxCommand {
             world = user.getLocalizedMessage("shared.values.none");
         }
         
-        user.sendLocalizedMessage("module.area.info", area.getAreaId(), (area.getLabel() == null ? user.getLocalizedMessage("module.area.label.none") : area.getLabel()), area.getPriority(), flags, owners, guests, gowners, gguests, area.getRegionIds().size(), world);
+        user.sendLocalizedMessage("module.area.info", area.getAreaId(), (area.getLabel() == null ? user.getLocalizedMessage("module.area.label.none") : area.getLabel()), area.getPriority(), owners, guests, gowners, gguests, area.getRegionIds().size(), world);
     }
     
     private void sendHelp(User user, String commandLabel, boolean complex) {
