@@ -299,12 +299,12 @@ public class SimpleSelectionProvider implements ISelectionProvider {
     }
     
     public enum Direction {
-        NORTH("shared.dir.north", "north"),
-        EAST("shared.dir.east", "east"),
-        SOUTH("shared.dir.south", "south"),
-        WEST("shared.dir.west", "west"),
-        UP("shared.dir.up", "up"),
-        DOWN("shared.dir.down", "down");
+        NORTH("shared.location.north", "north"),
+        EAST("shared.location.east", "east"),
+        SOUTH("shared.location.south", "south"),
+        WEST("shared.location.west", "west"),
+        UP("shared.location.up", "up"),
+        DOWN("shared.location.down", "down");
         
         public final String friendlyName;
         public final String commandName;

@@ -120,6 +120,8 @@ messages:
                     - "Delete an area using &7/%1 delete&f"
                     - "Invite a guest using &7/%1 invite <user>&f"
                     - "Uninvite a guest using &7/%1 uninvite <user>&f"
+                    - "Invite an entire group using &7/%1 invitegroup <group>&f"
+                    - "Uninvite an entire group using &7/%1 uninvitegroup <group>&f"
             info:
                 - "  &7Area ID: &f%1  &7Priority: &f%3"
                 - "  &7Label:   &f%2"
@@ -930,5 +932,12 @@ messages:
             'no': "&4No"
             none: "None"
             'yes': "&aYes"
+        location:
+            north: "north"
+            south: "south"
+            east: "east"
+            west: "west"
+            up: "up"
+            down: "down"
         consoleNotAllowed: "&4ERROR: You cannot execute this command from the console!"
         permissionFailure: "&4ERROR: You do not have permission to execute this command! This request has been logged."

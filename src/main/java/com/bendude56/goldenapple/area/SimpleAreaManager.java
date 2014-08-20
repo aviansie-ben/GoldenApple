@@ -217,8 +217,9 @@ public class SimpleAreaManager extends AreaManager {
         List<Area> areas = new ArrayList<Area>();
         Area a;
         
+        ResultSet r;
         try {
-            ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT * FROM Areas LIMIT ?, ?", (page - 1) * per, per);
+            r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT * FROM Areas LIMIT ?, ?", (page - 1) * per, per);
             try {
                 while (r.next()) {
                     a = checkAreaCache(r.getLong("ID"), false);
@@ -383,7 +384,7 @@ public class SimpleAreaManager extends AreaManager {
         HashMap<Long, Region> regions = checkRegionCache(l);
         
         try {
-            ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT * FROM AreaRegions WHERE MinX<=? AND ?<=MaxX AND MinZ<=? AND ?<=MaxZ AND (IgnoreY=TRUE OR (MinY<=? AND ?<=MaxY)) AND World=?", l.getX(), l.getX(), l.getZ(), l.getZ(), l.getY(), l.getY(), l.getWorld().getName());
+            ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT * FROM AreaRegions WHERE MinX<=? AND ?<=MaxX AND MinZ<=? AND ?<=MaxZ AND (IgnoreY=1 OR (MinY<=? AND ?<=MaxY)) AND World=?", l.getX(), l.getX(), l.getZ(), l.getZ(), l.getY(), l.getY(), l.getWorld().getName());
             try {
                 while (r.next()) {
                     if (!regions.containsKey(r.getLong("ID"))) {
@@ -411,7 +412,7 @@ public class SimpleAreaManager extends AreaManager {
             ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT ID FROM AreaRegions WHERE AreaID=?", areaId);
             try {
                 while (r.next()) {
-                    regions.add(r.getLong(1));
+                    regions.add(r.getLong("ID"));
                 }
             } finally {
                 GoldenApple.getInstanceDatabaseManager().closeResult(r);
@@ -442,7 +443,6 @@ public class SimpleAreaManager extends AreaManager {
         return exists;
     }
     
-    // Create new area
     @Override
     public Area createArea(List<IPermissionUser> owners, String label, int priority, RegionShape shape, Location c1, Location c2, boolean ignoreY) throws SQLException, InvocationTargetException {
         long areaId;
@@ -457,11 +457,13 @@ public class SimpleAreaManager extends AreaManager {
         
         // Insert into database, retrieve id
         try {
-            GoldenApple.getInstanceDatabaseManager().execute("INSERT INTO Areas (Label, Priority) VALUES (?, ?)", label, priority);
-            ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT LAST_INSERT_ID()");
-            r.next();
-            areaId = r.getLong("LAST_INSERT_ID()");
-            r.close();
+            ResultSet r = GoldenApple.getInstanceDatabaseManager().executeReturnGenKeys("INSERT INTO Areas (Label, Priority) VALUES (?, ?)", label, priority);
+            try {
+                r.next();
+                areaId = r.getLong(1);
+            } finally {
+                GoldenApple.getInstanceDatabaseManager().closeResult(r);
+            }
         } catch (SQLException e) {
             GoldenApple.log(Level.SEVERE, "An error occured while inserting new area into the database.");
             GoldenApple.log(Level.SEVERE, e);
@@ -482,11 +484,8 @@ public class SimpleAreaManager extends AreaManager {
         return getArea(areaId);
     }
     
-    // Updating individual area properties in database
     @Override
     protected void updateAreaLabel(long areaId, String label) {
-        
-        // Insert/upate entry in database
         try {
             GoldenApple.getInstanceDatabaseManager().execute("UPDATE Areas SET Label=? WHERE ID=?", label, areaId);
         } catch (SQLException e) {
@@ -517,10 +516,9 @@ public class SimpleAreaManager extends AreaManager {
         
         // Update/remove entry from database
         try {
-            if (level == AreaAccessLevel.NONE) {
-                GoldenApple.getInstanceDatabaseManager().execute("DELETE FROM AreaUsers WHERE AreaID=? AND UserID=?", areaId, userId);
-            } else {
-                GoldenApple.getInstanceDatabaseManager().execute("DELETE FROM AreaUsers WHERE AreaID=? AND UserID=?; INSERT INTO AreaUsers (AreaID, UserID, AccessLevel) VALUES (?, ?, ?)", areaId, userId, areaId, userId, level.getId());
+            GoldenApple.getInstanceDatabaseManager().execute("DELETE FROM AreaUsers WHERE AreaID=? AND UserID=?", areaId, userId);
+            if (level != AreaAccessLevel.NONE) {
+                GoldenApple.getInstanceDatabaseManager().execute("INSERT INTO AreaUsers (AreaID, UserID, AccessLevel) VALUES (?, ?, ?)", areaId, userId, level.getId());
             }
         } catch (SQLException e) {
             GoldenApple.log(Level.SEVERE, "An error occured while changing user " + userId + " access level for area " + areaId + " to " + level.toString());
@@ -538,10 +536,9 @@ public class SimpleAreaManager extends AreaManager {
         
         // Update/remove entry from database
         try {
-            if (level == AreaAccessLevel.NONE) {
-                GoldenApple.getInstanceDatabaseManager().execute("DELETE FROM AreaGroups WHERE AreaID=? AND GroupID=?", areaId, groupId);
-            } else {
-                GoldenApple.getInstanceDatabaseManager().execute("DELETE FROM AreaGroups WHERE AreaID=? AND GroupID=?; INSERT INTO AreaGroups (AreaID, GroupID, AccessLevel) VALUES (?, ?, ?)", areaId, groupId, areaId, groupId, level.getId());
+            GoldenApple.getInstanceDatabaseManager().execute("DELETE FROM AreaGroups WHERE AreaID=? AND GroupID=?", areaId, groupId);
+            if (level != AreaAccessLevel.NONE) {
+                GoldenApple.getInstanceDatabaseManager().execute("INSERT INTO AreaGroups (AreaID, GroupID, AccessLevel) VALUES (?, ?, ?)", areaId, groupId, level.getId());
             }
         } catch (SQLException e) {
             GoldenApple.log(Level.SEVERE, "An error occured while updating group " + groupId + " access level for area " + areaId);
@@ -559,10 +556,9 @@ public class SimpleAreaManager extends AreaManager {
         
         // Insert/remove entry from database
         try {
-            if (!set) {
-                GoldenApple.getInstanceDatabaseManager().execute("DELETE FROM AreaFlags WHERE AreaID=? AND Flag=?", areaId, flag.getId());
-            } else {
-                GoldenApple.getInstanceDatabaseManager().execute("DELETE FROM AreaFlags WHERE AreaID=? AND Flag=?; INSERT INTO AreaFlags (AreaID, Flag) VALUES (?, ?)", areaId, flag.getId(), areaId, flag.getId());
+            GoldenApple.getInstanceDatabaseManager().execute("DELETE FROM AreaFlags WHERE AreaID=? AND Flag=?", areaId, flag.getId());
+            if (set) {
+                GoldenApple.getInstanceDatabaseManager().execute("INSERT INTO AreaFlags (AreaID, Flag) VALUES (?, ?)", areaId, flag.getId());
             }
         } catch (SQLException e) {
             GoldenApple.log(Level.SEVERE, "An error occured while updating flag " + flag.toString() + " on area " + areaId);
@@ -570,7 +566,6 @@ public class SimpleAreaManager extends AreaManager {
         }
     }
     
-    // Deleting an area
     @Override
     public boolean deleteArea(long areaId) {
         
@@ -603,7 +598,6 @@ public class SimpleAreaManager extends AreaManager {
         return true;
     }
     
-    // Creating a region
     @Override
     protected Region createRegion(long areaId, RegionShape shape, Location c1, Location c2, boolean ignoreY) throws SQLException, InvocationTargetException {
         
@@ -617,14 +611,14 @@ public class SimpleAreaManager extends AreaManager {
         
         // Insert into database
         try {
-            GoldenApple.getInstanceDatabaseManager().execute("INSERT INTO AreaRegions (AreaID, World, MinX, MinY, MinZ, MaxX, MaxY, MaxZ, IgnoreY, Shape) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", areaId, c1.getWorld().getName(), Math.min(c1.getX(), c2.getX()), Math.min(c1.getY(), c2.getY()), Math.min(c1.getZ(), c2.getZ()), Math.max(c1.getX(), c2.getX()), Math.max(c1.getY(), c2.getY()), Math.max(c1.getZ(), c2.getZ()), ignoreY, shape.getId());
-            
-            // Fetch from database, load into cache, return result
-            ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT LAST_INSERT_ID()");
-            r.next();
-            Region region = getRegion(r.getLong("LAST_INSERT_ID()"));
-            r.close();
-            return region;
+            ResultSet r = GoldenApple.getInstanceDatabaseManager().executeReturnGenKeys("INSERT INTO AreaRegions (AreaID, World, MinX, MinY, MinZ, MaxX, MaxY, MaxZ, IgnoreY, Shape) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", areaId, c1.getWorld().getName(), Math.min(c1.getX(), c2.getX()), Math.min(c1.getY(), c2.getY()), Math.min(c1.getZ(), c2.getZ()), Math.max(c1.getX(), c2.getX()), Math.max(c1.getY(), c2.getY()), Math.max(c1.getZ(), c2.getZ()), ignoreY, shape.getId());
+            try {
+                r.next();
+                Region region = getRegion(r.getLong(1));
+                return region;
+            } finally {
+                GoldenApple.getInstanceDatabaseManager().closeResult(r);
+            }
         } catch (SQLException e) {
             GoldenApple.log(Level.SEVERE, "An error occured while inserting new region into the database.");
             GoldenApple.log(Level.SEVERE, e);
@@ -632,7 +626,6 @@ public class SimpleAreaManager extends AreaManager {
         }
     }
     
-    // Saving region properties to database
     @Override
     protected void saveRegion(long regionId) {
         Region region = checkRegionCache(regionId, false);
@@ -650,7 +643,6 @@ public class SimpleAreaManager extends AreaManager {
         }
     }
     
-    // Deleting regions
     @Override
     protected boolean deleteRegion(long regionId) {
         
