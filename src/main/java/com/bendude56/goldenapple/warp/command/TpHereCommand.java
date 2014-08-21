@@ -22,7 +22,7 @@ public class TpHereCommand extends GoldenAppleCommand {
             } else if (user2 == null) {
                 user.sendLocalizedMessage("shared.parser.userNotFound.error", args[0]);
             } else if (user2.getPlayerHandle().teleport(user.getPlayerHandle(), TeleportCause.COMMAND)) {
-                user2.sendLocalizedMessage("shared.warp.teleportedBy", user.getName());
+                user2.sendLocalizedMessage("module.warp.teleportedBy", user.getName());
             } else {
                 user.sendLocalizedMessage("module.warp.error.pluginCancel");
             }
