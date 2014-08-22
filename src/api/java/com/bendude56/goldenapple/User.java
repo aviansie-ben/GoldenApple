@@ -131,7 +131,7 @@ public class User implements IPermissionUser {
         User found = null;
         
         for (Entry<Long, User> cached : activeUsers.entrySet()) {
-            if (cached.getValue().getName().startsWith(name)) {
+            if (cached.getValue().getName().toLowerCase().startsWith(name.toLowerCase())) {
                 if (found != null) {
                     return null;
                 }
