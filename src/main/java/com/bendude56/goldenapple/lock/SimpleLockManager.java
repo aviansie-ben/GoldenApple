@@ -20,8 +20,8 @@ import com.bendude56.goldenapple.audit.AuditLog;
 import com.bendude56.goldenapple.lock.LockedBlock.GuestLevel;
 import com.bendude56.goldenapple.lock.LockedBlock.LockLevel;
 import com.bendude56.goldenapple.lock.LockedBlock.RegisteredBlock;
-import com.bendude56.goldenapple.lock.audit.LockOverrideDisableEvent;
-import com.bendude56.goldenapple.lock.audit.LockOverrideEnableEvent;
+import com.bendude56.goldenapple.lock.audit.LockOverrideDisableEntry;
+import com.bendude56.goldenapple.lock.audit.LockOverrideEnableEntry;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 
@@ -239,10 +239,10 @@ public class SimpleLockManager extends LockManager {
     @Override
     public void setOverrideOn(User u, boolean override) {
         if (override && !overriding.contains(u)) {
-            AuditLog.logEvent(new LockOverrideEnableEvent(u, getOverrideLevel(u)));
+            AuditLog.logEntry(new LockOverrideEnableEntry(u, getOverrideLevel(u)));
             overriding.add(u);
         } else if (!override && overriding.contains(u)) {
-            AuditLog.logEvent(new LockOverrideDisableEvent(u));
+            AuditLog.logEntry(new LockOverrideDisableEntry(u));
             overriding.remove(u);
         }
     }

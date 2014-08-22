@@ -19,8 +19,8 @@ import com.bendude56.goldenapple.permissions.PermissionManager;
 import com.bendude56.goldenapple.punish.Punishment.RemainingTime;
 import com.bendude56.goldenapple.punish.PunishmentManager;
 import com.bendude56.goldenapple.punish.PunishmentMute;
-import com.bendude56.goldenapple.punish.audit.MuteEvent;
-import com.bendude56.goldenapple.punish.audit.MuteVoidEvent;
+import com.bendude56.goldenapple.punish.audit.MuteEntry;
+import com.bendude56.goldenapple.punish.audit.MuteVoidEntry;
 import com.bendude56.goldenapple.util.ComplexArgumentParser;
 import com.bendude56.goldenapple.util.ComplexArgumentParser.ArgumentInfo;
 
@@ -130,7 +130,7 @@ public class MuteCommand extends DualSyntaxCommand {
                 m.voidPunishment();
                 m.update();
                 
-                AuditLog.logEvent(new MuteVoidEvent(user.getName(), target.getName(), c.getName()));
+                AuditLog.logEntry(new MuteVoidEntry(user.getName(), target.getName(), c.getName()));
                 
                 if (MailManager.getInstance() != null) {
                     MailManager.getInstance().sendSystemMessage(target, "punish.mute.void", user.getName(), c.getName());
@@ -168,7 +168,7 @@ public class MuteCommand extends DualSyntaxCommand {
                     }
                     
                     PunishmentManager.getInstance().addMute(target, user, reason, t, c.getName());
-                    AuditLog.logEvent(new MuteEvent(user.getName(), target.getName(), (t == null) ? "PERMANENT" : t.toStringDefault(), reason, c.getName()));
+                    AuditLog.logEntry(new MuteEntry(user.getName(), target.getName(), (t == null) ? "PERMANENT" : t.toStringDefault(), reason, c.getName()));
                     
                     if (MailManager.getInstance() != null) {
                         if (t == null) {

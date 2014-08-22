@@ -1,20 +1,20 @@
 package com.bendude56.goldenapple.permissions.audit;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import com.bendude56.goldenapple.permissions.IPermissionGroup;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
 
-public class GroupRemoveOwnerEvent extends PermissionEvent {
+public class GroupRemoveOwnerEntry extends PermissionEntry {
     public String groupName;
     public long groupId;
     
-    public GroupRemoveOwnerEvent() {
-        super(407, AuditEventLevel.SEVERE);
+    public GroupRemoveOwnerEntry() {
+        super(407, AuditEntryLevel.SEVERE);
     }
     
-    public GroupRemoveOwnerEvent(String authorizingUser, IPermissionUser target, IPermissionGroup group) {
-        super(407, AuditEventLevel.SEVERE, authorizingUser, target);
+    public GroupRemoveOwnerEntry(String authorizingUser, IPermissionUser target, IPermissionGroup group) {
+        super(407, AuditEntryLevel.SEVERE, authorizingUser, target);
         
         this.groupName = group.getName();
         this.groupId = group.getId();
@@ -26,7 +26,7 @@ public class GroupRemoveOwnerEvent extends PermissionEvent {
     }
     
     @Override
-    protected void loadMetadata(HashMap<String, AuditMetadata> metadata) {
+    protected void loadMetadata(Map<String, AuditMetadata> metadata) {
         super.loadMetadata(metadata);
         
         groupName = metadata.get("groupName").valueString;
@@ -34,11 +34,11 @@ public class GroupRemoveOwnerEvent extends PermissionEvent {
     }
     
     @Override
-    protected HashMap<String, AuditMetadata> saveMetadata() {
-        HashMap<String, AuditMetadata> metadata = super.saveMetadata();
+    protected Map<String, AuditMetadata> saveMetadata() {
+        Map<String, AuditMetadata> metadata = super.saveMetadata();
         
-        metadata.put("groupName", createMetadata("groupName", groupName));
-        metadata.put("groupId", createMetadata("groupId", groupId));
+        appendMetadata(metadata, "groupName", groupName);
+        appendMetadata(metadata, "groupId", groupId);
         
         return metadata;
     }

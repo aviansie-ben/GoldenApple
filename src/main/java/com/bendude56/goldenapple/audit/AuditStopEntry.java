@@ -1,18 +1,19 @@
 package com.bendude56.goldenapple.audit;
 
 import java.util.HashMap;
+import java.util.Map;
 
-public class AuditStopEvent extends AuditEvent {
+public class AuditStopEntry extends AuditEntry {
     
-    public AuditStopEvent() {
-        super(101, AuditEventLevel.INFO, "Base");
+    public AuditStopEntry() {
+        super(101, AuditEntryLevel.INFO, "Base");
     }
     
     @Override
-    protected void loadMetadata(HashMap<String, AuditMetadata> metadata) {}
+    protected void loadMetadata(Map<String, AuditMetadata> metadata) {}
     
     @Override
-    protected HashMap<String, AuditMetadata> saveMetadata() {
+    protected Map<String, AuditMetadata> saveMetadata() {
         return new HashMap<String, AuditMetadata>();
     }
     

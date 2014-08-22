@@ -19,12 +19,12 @@ import com.bendude56.goldenapple.permissions.IPermissionUser;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
 import com.bendude56.goldenapple.permissions.UuidLookupException;
-import com.bendude56.goldenapple.permissions.audit.GroupAddMemberEvent;
-import com.bendude56.goldenapple.permissions.audit.GroupAddOwnerEvent;
-import com.bendude56.goldenapple.permissions.audit.GroupRemoveMemberEvent;
-import com.bendude56.goldenapple.permissions.audit.GroupRemoveOwnerEvent;
-import com.bendude56.goldenapple.permissions.audit.PermissionGrantEvent;
-import com.bendude56.goldenapple.permissions.audit.PermissionRevokeEvent;
+import com.bendude56.goldenapple.permissions.audit.GroupAddMemberEntry;
+import com.bendude56.goldenapple.permissions.audit.GroupAddOwnerEntry;
+import com.bendude56.goldenapple.permissions.audit.GroupRemoveMemberEntry;
+import com.bendude56.goldenapple.permissions.audit.GroupRemoveOwnerEntry;
+import com.bendude56.goldenapple.permissions.audit.PermissionGrantEntry;
+import com.bendude56.goldenapple.permissions.audit.PermissionRevokeEntry;
 import com.bendude56.goldenapple.util.ComplexArgumentParser;
 import com.bendude56.goldenapple.util.ComplexArgumentParser.ArgumentInfo;
 
@@ -488,7 +488,7 @@ public class PermissionsCommand extends DualSyntaxCommand {
         
         @Override
         public void performAction(User user, IPermissionObject target) {
-            AuditLog.logEvent(new PermissionGrantEvent(user.getName(), target, permission.getFullName()));
+            AuditLog.logEntry(new PermissionGrantEntry(user.getName(), target, permission.getFullName()));
             target.addPermission(permission);
             user.sendLocalizedMessage("module.permissions.permissions.permission.add", permission.getFullName(), getName(target));
         }
@@ -519,7 +519,7 @@ public class PermissionsCommand extends DualSyntaxCommand {
         
         @Override
         public void performAction(User user, IPermissionObject target) {
-            AuditLog.logEvent(new PermissionRevokeEvent(user.getName(), target, permission.getFullName()));
+            AuditLog.logEntry(new PermissionRevokeEntry(user.getName(), target, permission.getFullName()));
             target.removePermission(permission);
             user.sendLocalizedMessage("module.permissions.permissions.permission.remove", permission.getFullName(), getName(target));
         }
@@ -593,7 +593,7 @@ public class PermissionsCommand extends DualSyntaxCommand {
         
         @Override
         public void performAction(User user, IPermissionObject target) {
-            AuditLog.logEvent(new GroupAddMemberEvent(user.getName(), member, (IPermissionGroup) target));
+            AuditLog.logEntry(new GroupAddMemberEntry(user.getName(), member, (IPermissionGroup) target));
             
             if (member instanceof IPermissionGroup) {
                 ((IPermissionGroup) target).addGroup((IPermissionGroup) member);
@@ -632,7 +632,7 @@ public class PermissionsCommand extends DualSyntaxCommand {
         
         @Override
         public void performAction(User user, IPermissionObject target) {
-            AuditLog.logEvent(new GroupRemoveMemberEvent(user.getName(), member, (IPermissionGroup) target));
+            AuditLog.logEntry(new GroupRemoveMemberEntry(user.getName(), member, (IPermissionGroup) target));
             
             if (member instanceof IPermissionGroup) {
                 ((IPermissionGroup) target).removeGroup((IPermissionGroup) member);
@@ -665,7 +665,7 @@ public class PermissionsCommand extends DualSyntaxCommand {
         
         @Override
         public void performAction(User user, IPermissionObject target) {
-            AuditLog.logEvent(new GroupAddOwnerEvent(user.getName(), owner, (IPermissionGroup) target));
+            AuditLog.logEntry(new GroupAddOwnerEntry(user.getName(), owner, (IPermissionGroup) target));
             
             ((IPermissionGroup) target).addOwner(owner);
             user.sendLocalizedMessage("module.permissions.permissions.owner.add", getName(owner), getName(target));
@@ -691,7 +691,7 @@ public class PermissionsCommand extends DualSyntaxCommand {
         
         @Override
         public void performAction(User user, IPermissionObject target) {
-            AuditLog.logEvent(new GroupRemoveOwnerEvent(user.getName(), owner, (IPermissionGroup) target));
+            AuditLog.logEntry(new GroupRemoveOwnerEntry(user.getName(), owner, (IPermissionGroup) target));
             
             ((IPermissionGroup) target).removeOwner(owner);
             user.sendLocalizedMessage("module.permissions.permissions.owner.remove", getName(owner), getName(target));

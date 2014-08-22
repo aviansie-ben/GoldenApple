@@ -1,41 +1,44 @@
 package com.bendude56.goldenapple.audit;
 
 import java.util.HashMap;
+import java.util.Map;
 
-public class ModuleEnableEvent extends AuditEvent {
+public class ModuleEnableEntry extends AuditEntry {
     
     public String module;
     public String authorizingUser;
     
-    public ModuleEnableEvent() {
-        super(102, AuditEventLevel.INFO, "Base");
+    public ModuleEnableEntry() {
+        super(102, AuditEntryLevel.INFO, "Base");
     }
     
     /**
      * @deprecated An authorizing user should be specified
      */
     @Deprecated
-    public ModuleEnableEvent(String module) {
+    public ModuleEnableEntry(String module) {
         this(module, "Unknown");
     }
     
-    public ModuleEnableEvent(String module, String authorizingUser) {
+    public ModuleEnableEntry(String module, String authorizingUser) {
         this();
         this.module = module;
         this.authorizingUser = authorizingUser;
     }
     
     @Override
-    protected void loadMetadata(HashMap<String, AuditMetadata> metadata) {
+    protected void loadMetadata(Map<String, AuditMetadata> metadata) {
         this.module = metadata.get("module").valueString;
         this.authorizingUser = (metadata.containsKey("authorizingUser")) ? metadata.get(authorizingUser).valueString : "Unknown";
     }
     
     @Override
-    protected HashMap<String, AuditMetadata> saveMetadata() {
-        HashMap<String, AuditMetadata> metadata = new HashMap<String, AuditMetadata>();
-        metadata.put("module", createMetadata("module", module));
-        metadata.put("authorizingUser", createMetadata("authorizingUser", authorizingUser));
+    protected Map<String, AuditMetadata> saveMetadata() {
+        Map<String, AuditMetadata> metadata = new HashMap<String, AuditMetadata>();
+        
+        appendMetadata(metadata, "module", module);
+        appendMetadata(metadata, "authorizingUser", authorizingUser);
+        
         return metadata;
     }
     

@@ -1,18 +1,18 @@
 package com.bendude56.goldenapple.punish.audit;
 
-import java.util.HashMap;
+import java.util.Map;
 
-public class MuteEvent extends PunishEvent {
+public class MuteEntry extends PunishEntry {
     public String duration;
     public String reason;
     public String channel;
     
-    public MuteEvent() {
-        super(301, AuditEventLevel.WARNING);
+    public MuteEntry() {
+        super(301, AuditEntryLevel.WARNING);
     }
     
-    public MuteEvent(String authorizingUser, String target, String duration, String reason, String channel) {
-        super(301, AuditEventLevel.WARNING, authorizingUser, target);
+    public MuteEntry(String authorizingUser, String target, String duration, String reason, String channel) {
+        super(301, AuditEntryLevel.WARNING, authorizingUser, target);
         
         this.duration = duration;
         this.reason = reason;
@@ -20,7 +20,7 @@ public class MuteEvent extends PunishEvent {
     }
     
     @Override
-    protected void loadMetadata(HashMap<String, AuditMetadata> metadata) {
+    protected void loadMetadata(Map<String, AuditMetadata> metadata) {
         super.loadMetadata(metadata);
         
         this.duration = metadata.get("duration").valueString;
@@ -29,12 +29,13 @@ public class MuteEvent extends PunishEvent {
     }
     
     @Override
-    protected HashMap<String, AuditMetadata> saveMetadata() {
-        HashMap<String, AuditMetadata> metadata = super.saveMetadata();
+    protected Map<String, AuditMetadata> saveMetadata() {
+        Map<String, AuditMetadata> metadata = super.saveMetadata();
         
-        metadata.put("duration", createMetadata("duration", duration));
-        metadata.put("reason", createMetadata("reason", reason));
-        metadata.put("channel", createMetadata("channel", channel));
+        appendMetadata(metadata, "duration", duration);
+        appendMetadata(metadata, "reason", reason);
+        
+        appendMetadata(metadata, "channel", channel);
         
         return metadata;
     }

@@ -12,7 +12,7 @@ public class AuditLog {
     
     public static void initAuditLog() {
         try {
-            Class.forName("com.bendude56.goldenapple.audit.AuditEvent");
+            Class.forName("com.bendude56.goldenapple.audit.AuditEntry");
             
             GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("auditlog");
             GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("auditlogparams");
@@ -23,7 +23,7 @@ public class AuditLog {
             }
             
             auditStarted = true;
-            logEvent(new AuditStartEvent());
+            logEntry(new AuditStartEntry());
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
@@ -31,7 +31,7 @@ public class AuditLog {
     
     public static void deinitAuditLog() {
         try {
-            logEvent(new AuditStopEvent());
+            logEntry(new AuditStopEntry());
             
             auditStarted = false;
             log.close();
@@ -41,7 +41,7 @@ public class AuditLog {
         }
     }
     
-    public static void logEvent(AuditEvent e) {
+    public static void logEntry(AuditEntry e) {
         if (!auditStarted) {
             return;
         }
@@ -52,7 +52,7 @@ public class AuditLog {
                 log.flush();
             }
         } catch (Throwable ex) {
-            GoldenApple.log("Failed to log an audit event (" + e.eventId + "):");
+            GoldenApple.log("Failed to log an audit event (" + e.entryId + "):");
             GoldenApple.log(ex);
         }
     }

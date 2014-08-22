@@ -29,9 +29,9 @@ import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.audit.AuditLog;
 import com.bendude56.goldenapple.lock.LockedBlock.GuestLevel;
 import com.bendude56.goldenapple.lock.LockedBlock.LockLevel;
-import com.bendude56.goldenapple.lock.audit.LockCreateEvent;
-import com.bendude56.goldenapple.lock.audit.LockDeleteEvent;
-import com.bendude56.goldenapple.lock.audit.LockMoveEvent;
+import com.bendude56.goldenapple.lock.audit.LockCreateEntry;
+import com.bendude56.goldenapple.lock.audit.LockDeleteEntry;
+import com.bendude56.goldenapple.lock.audit.LockMoveEntry;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 
 public class LockListener implements Listener, EventExecutor {
@@ -162,7 +162,7 @@ public class LockListener implements Listener, EventExecutor {
             }
             try {
                 LockManager.getInstance().deleteLock(lock.getLockId());
-                AuditLog.logEvent(new LockDeleteEvent(u, lock.getLockId()));
+                AuditLog.logEntry(new LockDeleteEntry(u, lock.getLockId()));
                 u.sendLocalizedMessage("module.lock.delete.success");
             } catch (SQLException e) {
                 event.setCancelled(true);
@@ -181,7 +181,7 @@ public class LockListener implements Listener, EventExecutor {
             l.setX(l.getX() - 1);
             if (l.getBlock().getType() == Material.CHEST) {
                 lock.moveLock(l);
-                AuditLog.logEvent(new LockMoveEvent(user, lock.getLockId(), from, l));
+                AuditLog.logEntry(new LockMoveEntry(user, lock.getLockId(), from, l));
                 return true;
             }
             
@@ -189,7 +189,7 @@ public class LockListener implements Listener, EventExecutor {
             l.setZ(l.getZ() - 1);
             if (l.getBlock().getType() == Material.CHEST) {
                 lock.moveLock(l);
-                AuditLog.logEvent(new LockMoveEvent(user, lock.getLockId(), from, l));
+                AuditLog.logEntry(new LockMoveEntry(user, lock.getLockId(), from, l));
                 return true;
             }
             
@@ -228,7 +228,7 @@ public class LockListener implements Listener, EventExecutor {
         
         if (lock != null) {
             LockedBlock.correctLocation(l);
-            AuditLog.logEvent(new LockMoveEvent(user, lock.getLockId(), from, l));
+            AuditLog.logEntry(new LockMoveEntry(user, lock.getLockId(), from, l));
             lock.moveLock(l);
             return true;
         } else {
@@ -244,7 +244,7 @@ public class LockListener implements Listener, EventExecutor {
         if (user.getVariableBoolean("goldenapple.lock.autoLock") && user.hasPermission(LockManager.addPermission) && GoldenApple.getInstanceMainConfig().getIntegerList("modules.lock.autoLockBlocks").contains(event.getBlock().getTypeId()) && LockManager.getInstance().getLock(event.getBlock().getLocation()) == null) {
             try {
                 LockedBlock l = LockManager.getInstance().createLock(event.getBlock().getLocation(), LockLevel.PRIVATE, user);
-                AuditLog.logEvent(new LockCreateEvent(user, l.getLockId(), l.getTypeIdentifier(), l.getLocation()));
+                AuditLog.logEntry(new LockCreateEntry(user, l.getLockId(), l.getTypeIdentifier(), l.getLocation()));
                 user.sendLocalizedMessage("module.lock.autoLock.locked");
             } catch (Exception e) {}
         }

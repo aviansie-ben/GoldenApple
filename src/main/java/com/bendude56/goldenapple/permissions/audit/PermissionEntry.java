@@ -1,25 +1,26 @@
 package com.bendude56.goldenapple.permissions.audit;
 
 import java.util.HashMap;
+import java.util.Map;
 
-import com.bendude56.goldenapple.audit.AuditEvent;
+import com.bendude56.goldenapple.audit.AuditEntry;
 import com.bendude56.goldenapple.permissions.IPermissionGroup;
 import com.bendude56.goldenapple.permissions.IPermissionObject;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
 
-public abstract class PermissionEvent extends AuditEvent {
+public abstract class PermissionEntry extends AuditEntry {
     
     public String authorizingUser;
     public TargetType targetType;
     public String targetName;
     public long targetId;
     
-    public PermissionEvent(int eventId, AuditEventLevel severity) {
-        super(eventId, severity, "Permissions");
+    public PermissionEntry(int entryId, AuditEntryLevel severity) {
+        super(entryId, severity, "Permissions");
     }
     
-    public PermissionEvent(int eventId, AuditEventLevel severity, String authorizingUser, IPermissionObject target) {
-        this(eventId, severity);
+    public PermissionEntry(int entryId, AuditEntryLevel severity, String authorizingUser, IPermissionObject target) {
+        this(entryId, severity);
         
         this.authorizingUser = authorizingUser;
         
@@ -37,7 +38,7 @@ public abstract class PermissionEvent extends AuditEvent {
     }
     
     @Override
-    protected void loadMetadata(HashMap<String, AuditMetadata> metadata) {
+    protected void loadMetadata(Map<String, AuditMetadata> metadata) {
         authorizingUser = metadata.get("authorizingUser").valueString;
         targetType = TargetType.fromId(metadata.get("targetType").valueInt);
         targetName = metadata.get("targetName").valueString;
@@ -45,13 +46,13 @@ public abstract class PermissionEvent extends AuditEvent {
     }
     
     @Override
-    protected HashMap<String, AuditMetadata> saveMetadata() {
-        HashMap<String, AuditMetadata> metadata = new HashMap<String, AuditMetadata>();
+    protected Map<String, AuditMetadata> saveMetadata() {
+        Map<String, AuditMetadata> metadata = new HashMap<String, AuditMetadata>();
         
-        metadata.put("authorizingUser", createMetadata("authorizingUser", authorizingUser));
-        metadata.put("targetType", createMetadata("targetType", targetType.getId()));
-        metadata.put("targetName", createMetadata("targetName", targetName));
-        metadata.put("targetId", createMetadata("targetId", targetId));
+        appendMetadata(metadata, "authorizingUser", authorizingUser);
+        appendMetadata(metadata, "targetType", targetType.getId());
+        appendMetadata(metadata, "targetName", targetName);
+        appendMetadata(metadata, "targetId", targetId);
         
         return metadata;
     }

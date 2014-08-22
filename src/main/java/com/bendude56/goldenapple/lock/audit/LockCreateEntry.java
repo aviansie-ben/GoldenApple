@@ -1,24 +1,24 @@
 package com.bendude56.goldenapple.lock.audit;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import org.bukkit.Location;
 
 import com.bendude56.goldenapple.permissions.IPermissionUser;
 
-public class LockCreateEvent extends LockEvent {
+public class LockCreateEntry extends LockEntry {
     public long lock;
     public String type;
     
     public long x, y, z;
     public String world;
     
-    public LockCreateEvent() {
-        super(203, AuditEventLevel.INFO);
+    public LockCreateEntry() {
+        super(203, AuditEntryLevel.INFO);
     }
     
-    public LockCreateEvent(IPermissionUser user, long lock, String type, Location location) {
-        super(203, AuditEventLevel.INFO, user);
+    public LockCreateEntry(IPermissionUser user, long lock, String type, Location location) {
+        super(203, AuditEntryLevel.INFO, user);
         
         this.lock = lock;
         this.type = type;
@@ -30,7 +30,7 @@ public class LockCreateEvent extends LockEvent {
     }
     
     @Override
-    protected void loadMetadata(HashMap<String, AuditMetadata> metadata) {
+    protected void loadMetadata(Map<String, AuditMetadata> metadata) {
         super.loadMetadata(metadata);
         
         lock = metadata.get("lock").valueInt;
@@ -43,16 +43,16 @@ public class LockCreateEvent extends LockEvent {
     }
     
     @Override
-    protected HashMap<String, AuditMetadata> saveMetadata() {
-        HashMap<String, AuditMetadata> metadata = super.saveMetadata();
+    protected Map<String, AuditMetadata> saveMetadata() {
+        Map<String, AuditMetadata> metadata = super.saveMetadata();
         
-        metadata.put("lock", createMetadata("lock", lock));
-        metadata.put("type", createMetadata("type", type));
+        appendMetadata(metadata, "lock", lock);
+        appendMetadata(metadata, "type", type);
         
-        metadata.put("x", createMetadata("x", x));
-        metadata.put("y", createMetadata("y", y));
-        metadata.put("z", createMetadata("z", z));
-        metadata.put("world", createMetadata("world", world));
+        appendMetadata(metadata, "x", x);
+        appendMetadata(metadata, "y", y);
+        appendMetadata(metadata, "z", z);
+        appendMetadata(metadata, "world", world);
         
         return metadata;
     }

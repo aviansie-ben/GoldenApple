@@ -1,24 +1,24 @@
 package com.bendude56.goldenapple.punish.audit;
 
-import java.util.HashMap;
+import java.util.Map;
 
-public class BanEvent extends PunishEvent {
+public class BanEntry extends PunishEntry {
     public String duration;
     public String reason;
     
-    public BanEvent() {
-        super(300, AuditEventLevel.WARNING);
+    public BanEntry() {
+        super(300, AuditEntryLevel.WARNING);
     }
     
-    public BanEvent(String authorizingUser, String target, String duration, String reason) {
-        super(300, AuditEventLevel.WARNING, authorizingUser, target);
+    public BanEntry(String authorizingUser, String target, String duration, String reason) {
+        super(300, AuditEntryLevel.WARNING, authorizingUser, target);
         
         this.duration = duration;
         this.reason = reason;
     }
     
     @Override
-    protected void loadMetadata(HashMap<String, AuditMetadata> metadata) {
+    protected void loadMetadata(Map<String, AuditMetadata> metadata) {
         super.loadMetadata(metadata);
         
         this.duration = metadata.get("duration").valueString;
@@ -26,11 +26,11 @@ public class BanEvent extends PunishEvent {
     }
     
     @Override
-    protected HashMap<String, AuditMetadata> saveMetadata() {
-        HashMap<String, AuditMetadata> metadata = super.saveMetadata();
+    protected Map<String, AuditMetadata> saveMetadata() {
+        Map<String, AuditMetadata> metadata = super.saveMetadata();
         
-        metadata.put("duration", createMetadata("duration", duration));
-        metadata.put("reason", createMetadata("reason", reason));
+        appendMetadata(metadata, "duration", duration);
+        appendMetadata(metadata, "reason", reason);
         
         return metadata;
     }

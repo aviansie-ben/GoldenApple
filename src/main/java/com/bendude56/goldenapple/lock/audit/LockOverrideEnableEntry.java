@@ -1,35 +1,35 @@
 package com.bendude56.goldenapple.lock.audit;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import com.bendude56.goldenapple.lock.LockedBlock.GuestLevel;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
 
-public class LockOverrideEnableEvent extends LockEvent {
+public class LockOverrideEnableEntry extends LockEntry {
     public String level;
     
-    public LockOverrideEnableEvent() {
-        super(200, AuditEventLevel.INFO);
+    public LockOverrideEnableEntry() {
+        super(200, AuditEntryLevel.INFO);
     }
     
-    public LockOverrideEnableEvent(IPermissionUser user, GuestLevel level) {
-        super(200, AuditEventLevel.INFO, user);
+    public LockOverrideEnableEntry(IPermissionUser user, GuestLevel level) {
+        super(200, AuditEntryLevel.INFO, user);
         
         this.level = level.toString();
     }
     
     @Override
-    protected void loadMetadata(HashMap<String, AuditMetadata> metadata) {
+    protected void loadMetadata(Map<String, AuditMetadata> metadata) {
         super.loadMetadata(metadata);
         
         level = metadata.get("level").valueString;
     }
     
     @Override
-    protected HashMap<String, AuditMetadata> saveMetadata() {
-        HashMap<String, AuditMetadata> metadata = super.saveMetadata();
+    protected Map<String, AuditMetadata> saveMetadata() {
+        Map<String, AuditMetadata> metadata = super.saveMetadata();
         
-        metadata.put("level", createMetadata("level", level));
+        appendMetadata(metadata, "level", level);
         
         return metadata;
     }

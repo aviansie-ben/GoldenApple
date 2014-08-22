@@ -1,24 +1,24 @@
 package com.bendude56.goldenapple.lock.audit;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import org.bukkit.Location;
 
 import com.bendude56.goldenapple.permissions.IPermissionUser;
 
-public class LockMoveEvent extends LockEvent {
+public class LockMoveEntry extends LockEntry {
     public long lock;
     
     public long fromX, fromY, fromZ;
     public long toX, toY, toZ;
     public String fromWorld, toWorld;
     
-    public LockMoveEvent() {
-        super(205, AuditEventLevel.INFO);
+    public LockMoveEntry() {
+        super(205, AuditEntryLevel.INFO);
     }
     
-    public LockMoveEvent(IPermissionUser user, long lock, Location from, Location to) {
-        super(205, AuditEventLevel.INFO, user);
+    public LockMoveEntry(IPermissionUser user, long lock, Location from, Location to) {
+        super(205, AuditEntryLevel.INFO, user);
         
         this.lock = lock;
         
@@ -34,7 +34,7 @@ public class LockMoveEvent extends LockEvent {
     }
     
     @Override
-    protected void loadMetadata(HashMap<String, AuditMetadata> metadata) {
+    protected void loadMetadata(Map<String, AuditMetadata> metadata) {
         super.loadMetadata(metadata);
         
         lock = metadata.get("lock").valueInt;
@@ -51,20 +51,20 @@ public class LockMoveEvent extends LockEvent {
     }
     
     @Override
-    protected HashMap<String, AuditMetadata> saveMetadata() {
-        HashMap<String, AuditMetadata> metadata = super.saveMetadata();
+    protected Map<String, AuditMetadata> saveMetadata() {
+        Map<String, AuditMetadata> metadata = super.saveMetadata();
         
-        metadata.put("lock", createMetadata("lock", lock));
+        appendMetadata(metadata, "lock", lock);
         
-        metadata.put("fromX", createMetadata("fromX", fromX));
-        metadata.put("fromY", createMetadata("fromY", fromY));
-        metadata.put("fromZ", createMetadata("fromZ", fromZ));
-        metadata.put("fromWorld", createMetadata("fromWorld", fromWorld));
+        appendMetadata(metadata, "fromX", fromX);
+        appendMetadata(metadata, "fromY", fromY);
+        appendMetadata(metadata, "fromZ", fromZ);
+        appendMetadata(metadata, "fromWorld", fromWorld);
         
-        metadata.put("toX", createMetadata("toX", toX));
-        metadata.put("toY", createMetadata("toY", toY));
-        metadata.put("toZ", createMetadata("toZ", toZ));
-        metadata.put("toWorld", createMetadata("toWorld", toWorld));
+        appendMetadata(metadata, "toX", toX);
+        appendMetadata(metadata, "toY", toY);
+        appendMetadata(metadata, "toZ", toZ);
+        appendMetadata(metadata, "toWorld", toWorld);
         
         return metadata;
     }

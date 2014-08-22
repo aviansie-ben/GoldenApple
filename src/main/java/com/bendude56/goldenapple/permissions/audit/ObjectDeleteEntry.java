@@ -2,13 +2,13 @@ package com.bendude56.goldenapple.permissions.audit;
 
 import com.bendude56.goldenapple.permissions.IPermissionObject;
 
-public class ObjectDeleteEvent extends PermissionEvent {
-    public ObjectDeleteEvent() {
-        super(405, AuditEventLevel.SEVERE);
+public class ObjectDeleteEntry extends PermissionEntry {
+    public ObjectDeleteEntry() {
+        super(405, AuditEntryLevel.SEVERE);
     }
     
-    public ObjectDeleteEvent(String authorizingUser, IPermissionObject target) {
-        super(405, AuditEventLevel.SEVERE, authorizingUser, target);
+    public ObjectDeleteEntry(String authorizingUser, IPermissionObject target) {
+        super(405, AuditEntryLevel.SEVERE, authorizingUser, target);
     }
     
     @Override

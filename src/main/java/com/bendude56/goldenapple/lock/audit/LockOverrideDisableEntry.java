@@ -2,13 +2,13 @@ package com.bendude56.goldenapple.lock.audit;
 
 import com.bendude56.goldenapple.permissions.IPermissionUser;
 
-public class LockOverrideDisableEvent extends LockEvent {
-    public LockOverrideDisableEvent() {
-        super(201, AuditEventLevel.INFO);
+public class LockOverrideDisableEntry extends LockEntry {
+    public LockOverrideDisableEntry() {
+        super(201, AuditEntryLevel.INFO);
     }
     
-    public LockOverrideDisableEvent(IPermissionUser user) {
-        super(201, AuditEventLevel.INFO, user);
+    public LockOverrideDisableEntry(IPermissionUser user) {
+        super(201, AuditEntryLevel.INFO, user);
     }
     
     @Override

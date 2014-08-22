@@ -17,7 +17,7 @@ import org.bukkit.plugin.Plugin;
 import com.bendude56.goldenapple.GoldenApple;
 import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.audit.AuditLog;
-import com.bendude56.goldenapple.lock.audit.LockOverrideEvent;
+import com.bendude56.goldenapple.lock.audit.LockOverrideEntry;
 import com.bendude56.goldenapple.permissions.IPermissionGroup;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
 import com.bendude56.goldenapple.permissions.PermissionManager;
@@ -434,7 +434,7 @@ public abstract class LockedBlock {
         if (actualLevel.levelId >= level.levelId) {
             return true;
         } else if (effectiveLevel.levelId >= level.levelId) {
-            AuditLog.logEvent(new LockOverrideEvent(user, level, lockId));
+            AuditLog.logEntry(new LockOverrideEntry(user, level, lockId));
             return true;
         } else {
             return false;

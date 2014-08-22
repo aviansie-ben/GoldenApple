@@ -15,8 +15,8 @@ import com.bendude56.goldenapple.ModuleLoader.ModuleState;
 import com.bendude56.goldenapple.antigrief.AntigriefModuleLoader;
 import com.bendude56.goldenapple.area.AreaModuleLoader;
 import com.bendude56.goldenapple.audit.AuditLog;
-import com.bendude56.goldenapple.audit.ModuleDisableEvent;
-import com.bendude56.goldenapple.audit.ModuleEnableEvent;
+import com.bendude56.goldenapple.audit.ModuleDisableEntry;
+import com.bendude56.goldenapple.audit.ModuleEnableEntry;
 import com.bendude56.goldenapple.chat.ChatModuleLoader;
 import com.bendude56.goldenapple.invisible.InvisibleModuleLoader;
 import com.bendude56.goldenapple.lock.LockModuleLoader;
@@ -221,7 +221,7 @@ public class SimpleModuleManager implements ModuleManager {
         try {
             // Load the module and initialize the audit log
             module.loadModule(GoldenApple.getInstance());
-            AuditLog.logEvent(new ModuleEnableEvent(module.getModuleName(), authorizingUser));
+            AuditLog.logEntry(new ModuleEnableEntry(module.getModuleName(), authorizingUser));
             return true;
         } catch (Throwable e) {
             // Handle any exceptions
@@ -310,7 +310,7 @@ public class SimpleModuleManager implements ModuleManager {
             }
         }
         // Log the event
-        AuditLog.logEvent(new ModuleDisableEvent(module.getModuleName(), authorizingUser));
+        AuditLog.logEntry(new ModuleDisableEntry(module.getModuleName(), authorizingUser));
         return true;
     }
     

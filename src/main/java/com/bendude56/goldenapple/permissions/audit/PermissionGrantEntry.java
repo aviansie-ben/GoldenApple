@@ -1,18 +1,18 @@
 package com.bendude56.goldenapple.permissions.audit;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import com.bendude56.goldenapple.permissions.IPermissionObject;
 
-public class PermissionGrantEvent extends PermissionEvent {
+public class PermissionGrantEntry extends PermissionEntry {
     public String permission;
     
-    public PermissionGrantEvent() {
-        super(400, AuditEventLevel.SEVERE);
+    public PermissionGrantEntry() {
+        super(400, AuditEntryLevel.SEVERE);
     }
     
-    public PermissionGrantEvent(String authorizingUser, IPermissionObject target, String permission) {
-        super(400, AuditEventLevel.SEVERE, authorizingUser, target);
+    public PermissionGrantEntry(String authorizingUser, IPermissionObject target, String permission) {
+        super(400, AuditEntryLevel.SEVERE, authorizingUser, target);
         
         this.permission = permission;
     }
@@ -23,17 +23,17 @@ public class PermissionGrantEvent extends PermissionEvent {
     }
     
     @Override
-    protected void loadMetadata(HashMap<String, AuditMetadata> metadata) {
+    protected void loadMetadata(Map<String, AuditMetadata> metadata) {
         super.loadMetadata(metadata);
         
         permission = metadata.get("permission").valueString;
     }
     
     @Override
-    protected HashMap<String, AuditMetadata> saveMetadata() {
-        HashMap<String, AuditMetadata> metadata = super.saveMetadata();
+    protected Map<String, AuditMetadata> saveMetadata() {
+        Map<String, AuditMetadata> metadata = super.saveMetadata();
         
-        metadata.put("permission", createMetadata("permission", permission));
+        appendMetadata(metadata, "permission", permission);
         
         return metadata;
     }
