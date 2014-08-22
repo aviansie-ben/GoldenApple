@@ -19,7 +19,6 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
-import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.EventExecutor;
 import org.bukkit.plugin.RegisteredListener;
@@ -45,14 +44,7 @@ public class AntigriefListener implements Listener, EventExecutor {
         }
     }
     
-    public static boolean isTntLoaded() {
-        return !listener.errorLoadingTntBlock;
-    }
-    
-    private boolean errorLoadingTntBlock = false;
-    
     private void registerEvents() {
-        errorLoadingTntBlock = false;
         PlayerInteractEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
         BlockIgniteEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
         BlockBurnEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
@@ -60,9 +52,6 @@ public class AntigriefListener implements Listener, EventExecutor {
         EntityExplodeEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
         EntityTargetEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
         EntityChangeBlockEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, GoldenApple.getInstance(), true));
-        
-        // TODO Re-add the advanced antigrief functions
-        errorLoadingTntBlock = true;
     }
     
     private void unregisterEvents() {
@@ -95,8 +84,6 @@ public class AntigriefListener implements Listener, EventExecutor {
                 entityTarget((EntityTargetEvent) event);
             } else if (event instanceof EntityChangeBlockEvent) {
                 entityChangeBlock((EntityChangeBlockEvent) event);
-            } else if (event instanceof PotionSplashEvent) {
-                potionSplash((PotionSplashEvent) event);
             } else {
                 GoldenApple.log(Level.WARNING, "Unrecognized event in AntigriefListener: " + event.getClass().getName());
             }
@@ -172,8 +159,11 @@ public class AntigriefListener implements Listener, EventExecutor {
     }
     
     private void entityExplode(EntityExplodeEvent event) {
-        if (event.getEntityType() == EntityType.PRIMED_TNT && errorLoadingTntBlock && GoldenApple.getInstanceMainConfig().getBoolean("modules.antigrief.blockTntOnLoadFail", true)) {
-            event.setCancelled(true);
+        if (event.getEntityType() == EntityType.PRIMED_TNT && GoldenApple.getInstanceMainConfig().getBoolean("modules.antigrief.noTntBlockDamage", true)) {
+            List<Block> blockList = event.blockList();
+            while (blockList.size() > 0) {
+                blockList.remove(0);
+            }
         } else if (event.getEntityType() == EntityType.CREEPER && GoldenApple.getInstanceMainConfig().getBoolean("modules.antigrief.noCreeperBlockDamage", true)) {
             List<Block> blockList = event.blockList();
             while (blockList.size() > 0) {
@@ -202,9 +192,5 @@ public class AntigriefListener implements Listener, EventExecutor {
         if (event.getEntityType() == EntityType.ENDERMAN && GoldenApple.getInstanceMainConfig().getBoolean("modules.antigrief.noEndermanMoveBlock", true)) {
             event.setCancelled(true);
         }
-    }
-    
-    private void potionSplash(PotionSplashEvent event) {
-        // TODO Implement this later
     }
 }

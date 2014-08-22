@@ -14,7 +14,6 @@ import com.bendude56.goldenapple.LocalizationManager.Locale;
 import com.bendude56.goldenapple.ModuleLoader;
 import com.bendude56.goldenapple.ModuleLoader.ModuleState;
 import com.bendude56.goldenapple.User;
-import com.bendude56.goldenapple.antigrief.AntigriefListener;
 import com.bendude56.goldenapple.lock.LockManager;
 import com.bendude56.goldenapple.lock.SimpleLockManager;
 import com.bendude56.goldenapple.mail.MailManager;
@@ -102,14 +101,6 @@ public class DebugCommand extends GoldenAppleCommand {
                 }
             } else {
                 user.sendMessage("Missing permission");
-            }
-        } else if (args[0].equalsIgnoreCase("agtnt")) {
-            if (instance.getModuleManager().getModule("Antigrief").getCurrentState() != ModuleState.LOADED) {
-                user.sendMessage("Antigrief not loaded");
-            } else if (AntigriefListener.isTntLoaded()) {
-                user.sendMessage("Antigrief loaded and TNT replaced");
-            } else {
-                user.sendMessage("Antigrief loaded, but TNT not replaced");
             }
         } else if (args[0].equalsIgnoreCase("cachesize")) {
             if (instance.getModuleManager().getModule("Permissions").getCurrentState() == ModuleState.LOADED) {
