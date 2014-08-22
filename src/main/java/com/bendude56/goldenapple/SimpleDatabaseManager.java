@@ -16,6 +16,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.logging.Level;
 
@@ -34,6 +35,7 @@ public final class SimpleDatabaseManager implements DatabaseManager {
     private boolean mySql;
     
     private HashMap<ResultSet, PreparedStatement> toClose = new HashMap<ResultSet, PreparedStatement>();
+    private HashMap<PreparedStatement, StackTraceElement> queryStackTraces = new HashMap<PreparedStatement, StackTraceElement>();
     private HashMap<String, HashMap<Integer, AdvancedTableUpdater>> updaters = new HashMap<String, HashMap<Integer, AdvancedTableUpdater>>();
     
     protected SimpleDatabaseManager() {
@@ -133,6 +135,7 @@ public final class SimpleDatabaseManager implements DatabaseManager {
             ResultSet r = s.executeQuery();
             
             toClose.put(r, s);
+            queryStackTraces.put(s, new Exception().getStackTrace()[1]);
             
             return r;
         } finally {
@@ -183,6 +186,7 @@ public final class SimpleDatabaseManager implements DatabaseManager {
             ResultSet r = s.getGeneratedKeys();
             
             toClose.put(r, s);
+            queryStackTraces.put(s, new Exception().getStackTrace()[1]);
             
             return r;
         } finally {
@@ -219,8 +223,8 @@ public final class SimpleDatabaseManager implements DatabaseManager {
     
     @Override
     public void closeResult(ResultSet r) throws SQLException {
-        toClose.get(r).close();
-        toClose.remove(r);
+        queryStackTraces.remove(toClose.get(r));
+        toClose.remove(r).close();
     }
     
     @Override
@@ -305,6 +309,26 @@ public final class SimpleDatabaseManager implements DatabaseManager {
     
     @Override
     public void close() {
+        if (toClose.size() > 0) {
+            HashMap<String, Integer> leakyQueries = new HashMap<String, Integer>();
+            
+            for (PreparedStatement s : toClose.values()) {
+                String leakPoint = queryStackTraces.get(s).toString();
+                
+                if (leakyQueries.containsKey(leakPoint)) {
+                    leakyQueries.put(leakPoint, leakyQueries.get(leakPoint) + 1);
+                } else {
+                    leakyQueries.put(leakPoint, 1);
+                }
+            }
+            
+            GoldenApple.log(Level.WARNING, "ResultSet leakage has been detected! " + toClose.size() + " ResultSets have leaked! Please report the following leaks:");
+            
+            for (Entry<String, Integer> leak : leakyQueries.entrySet()) {
+                GoldenApple.log(Level.WARNING, "  " + leak.getKey() + " has leaked " + leak.getValue() + " ResultSets!");
+            }
+        }
+        
         try {
             if (connection == null || connection.isClosed()) {
                 return;

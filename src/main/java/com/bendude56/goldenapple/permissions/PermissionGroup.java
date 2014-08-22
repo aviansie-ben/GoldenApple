@@ -75,7 +75,7 @@ public class PermissionGroup implements IPermissionGroup {
                     users.add(r.getLong("MemberID"));
                 }
             } finally {
-                r.close();
+                GoldenApple.getInstanceDatabaseManager().closeResult(r);
             }
         } catch (SQLException e) {
             GoldenApple.log(Level.SEVERE, "Failed to retrieve users for group '" + name + "':");
@@ -105,7 +105,7 @@ public class PermissionGroup implements IPermissionGroup {
                     owners.add(r.getLong("OwnerID"));
                 }
             } finally {
-                r.close();
+                GoldenApple.getInstanceDatabaseManager().closeResult(r);
             }
         } catch (SQLException e) {
             GoldenApple.log(Level.SEVERE, "Failed to retrieve owners for group '" + name + "':");
