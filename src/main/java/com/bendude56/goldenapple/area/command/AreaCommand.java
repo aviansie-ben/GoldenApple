@@ -175,9 +175,13 @@ public class AreaCommand extends DualSyntaxCommand {
             case "uninvitegroup":
                 onExecuteSimpleRemoveGroupGuest(instance, user, commandLabel, args);
                 break;
+            case "priority":
+                onExecuteSimpleSetPriority(instance, user, commandLabel, args);
+                break;
+            case "label":
+                onExecuteSimpleSetLabel(instance, user, commandLabel, args);
+                break;
             
-            // TODO case "setpriority":
-            // TODO case "setlabel":
             // TODO Create more cases for each action
             
             default:
@@ -234,6 +238,22 @@ public class AreaCommand extends DualSyntaxCommand {
             GoldenApple.logPermissionFail(user, commandLabel, args, true);
             return false;
         }
+        
+        // Verify number of arguments
+        if (args.length < 2) {
+            user.sendLocalizedMessage("shared.parser.parameterMissing", args[0]);
+            return false;
+        }
+        
+        // Generate Query
+        String query = null;
+        if (args.length > 1) {
+            query = "";
+            for (int i = 2; i < args.length; i++) {
+                query += " " + args[i];
+            }
+        }
+        query = query.trim();
         
         // Get the selected area
         Area area = findArea(user, args[1]);
@@ -390,7 +410,7 @@ public class AreaCommand extends DualSyntaxCommand {
             return false;
         }
         
-        // Verify argument length
+        // Verify number of arguments
         if (args.length < 2) {
             user.sendLocalizedMessage("shared.parser.parameterMissing", args[0]);
             return false;
@@ -440,6 +460,7 @@ public class AreaCommand extends DualSyntaxCommand {
                 query += " " + args[i];
             }
         }
+        query = query.trim();
         
         // Get the selected area
         Area area = findAreaWithPermissionSimple(user, commandLabel, args, query, AreaManager.editAllOwnersPermission, AreaManager.editOwnOwnersPermission);
@@ -480,6 +501,7 @@ public class AreaCommand extends DualSyntaxCommand {
                 query += " " + args[i];
             }
         }
+        query = query.trim();
         
         // Get the selected area
         Area area = findAreaWithPermissionSimple(user, commandLabel, args, query, AreaManager.editAllOwnersPermission, AreaManager.editOwnOwnersPermission);
@@ -539,6 +561,7 @@ public class AreaCommand extends DualSyntaxCommand {
                 query += " " + args[i];
             }
         }
+        query = query.trim();
         
         // Get the selected area
         Area area = findAreaWithPermissionSimple(user, commandLabel, args, query, AreaManager.editAllOwnersPermission, AreaManager.editOwnOwnersPermission);
@@ -579,6 +602,7 @@ public class AreaCommand extends DualSyntaxCommand {
                 query += " " + args[i];
             }
         }
+        query = query.trim();
         
         // Get the selected area
         Area area = findAreaWithPermissionSimple(user, commandLabel, args, query, AreaManager.editAllOwnersPermission, AreaManager.editOwnOwnersPermission);
@@ -638,6 +662,7 @@ public class AreaCommand extends DualSyntaxCommand {
                 query += " " + args[i];
             }
         }
+        query = query.trim();
         
         // Get the selected area
         Area area = findAreaWithPermissionSimple(user, commandLabel, args, query, AreaManager.editAllGuestsPermission, AreaManager.editOwnGuestsPermission);
@@ -678,6 +703,7 @@ public class AreaCommand extends DualSyntaxCommand {
                 query += " " + args[i];
             }
         }
+        query = query.trim();
         
         // Get the selected area
         Area area = findAreaWithPermissionSimple(user, commandLabel, args, query, AreaManager.editAllGuestsPermission, AreaManager.editOwnGuestsPermission);
@@ -718,6 +744,7 @@ public class AreaCommand extends DualSyntaxCommand {
                 query += " " + args[i];
             }
         }
+        query = query.trim();
         
         // Get the selected area
         Area area = findAreaWithPermissionSimple(user, commandLabel, args, query, AreaManager.editAllGuestsPermission, AreaManager.editOwnGuestsPermission);
@@ -758,6 +785,7 @@ public class AreaCommand extends DualSyntaxCommand {
                 query += " " + args[i];
             }
         }
+        query = query.trim();
         
         // Get the selected area
         Area area = findAreaWithPermissionSimple(user, commandLabel, args, query, AreaManager.editAllGuestsPermission, AreaManager.editOwnGuestsPermission);
@@ -784,44 +812,107 @@ public class AreaCommand extends DualSyntaxCommand {
             return false;
         }
         
-        String query;
-        Area area;
-        
         // Check if they're selecting a specific area
+        String query;
         if (args.length > 1) {
             query = "";
             for (int i = 1; i < args.length; i++) {
                 query += " " + args[i];
             }
-            query.trim();
+            query = query.trim();
         } else {
             query = null;
         }
         
         // Get the selected area
-        if (query == null) {
-            
-            // Make sure user isn't a console
-            if (!(user.getHandle() instanceof Player)) {
-                user.sendLocalizedMessage("shared.consoleNotAllowed");
-                return false;
-            }
-            
-            // Get area at user's current location
-            area = this.findArea(user, !user.hasPermission(AreaManager.infoAllPermission));
-        } else {
-            
-            // Search for area based on query
-            area = this.findArea(user, query);
-        }
-        
-        // Make sure area was actually found
+        Area area = findAreaWithPermissionSimple(user, commandLabel, args, query, AreaManager.infoAllPermission, AreaManager.infoOwnPermission);
         if (area == null) {
             return false;
         }
         
         sendAreaInfo(user, area);
         return true;
+    }
+
+    private boolean onExecuteSimpleSetPriority(GoldenApple instance, User user, String commandLabel, String[] args) {
+        
+        // Make sure user has adequate permission
+        if (!user.hasPermission(AreaManager.editAllPriorityPermission) && !user.hasPermission(AreaManager.editOwnPriorityPermission)) {
+            GoldenApple.logPermissionFail(user, commandLabel, args, true);
+        }
+        
+        // Generate Query
+        String query = null;
+        if (args.length > 2) {
+            query = "";
+            for (int i = 2; i < args.length; i++) {
+                query += " " + args[i];
+            }
+        }
+        query = query.trim();
+        
+        // Get the selected area
+        Area area = findAreaWithPermissionSimple(user, commandLabel, args, query, AreaManager.editAllGuestsPermission, AreaManager.editOwnGuestsPermission);
+        if (area == null) {
+            return false;
+        }
+        
+        int priority;
+        try {
+            priority = Integer.parseInt(args[1]);
+        } catch (NumberFormatException e) {
+            user.sendLocalizedMessage("shared.convertError.number", args[1]);
+            return false;
+        }
+        
+        return setAreaPriority(user, area, priority);
+    }
+    
+    private boolean onExecuteSimpleSetLabel(GoldenApple instance, User user, String commandLabel, String[] args) {
+        
+        // Make sure user has adequate permission
+        if (!user.hasPermission(AreaManager.editAllLabelPermission) && !user.hasPermission(AreaManager.editOwnLabelPermission)) {
+            GoldenApple.logPermissionFail(user, commandLabel, args, true);
+            return false;
+        }
+        
+        // Verify number of arguments
+        if (args.length == 1) {
+            user.sendLocalizedMessage("shared.parser.parameterMissing", args[0]);
+            return false;
+        }
+        
+        // Generate query. For this command, query can ONLY BE an AREA ID. Otherwise, ignore.
+        String query;
+        if (args.length > 2) {
+            query = args[args.length-1];
+            try {
+                Integer.parseInt(args[args.length-1]);
+                query = args[args.length-1];
+            } catch (NumberFormatException e) {
+                query = null;
+            }
+        } else {
+            query = null;
+        }
+        
+        // Get the selected area
+        Area area = findAreaWithPermissionSimple(user, commandLabel, args, query, AreaManager.editAllLabelPermission, AreaManager.editOwnLabelPermission);
+        if (area == null) {
+            return false;
+        }
+        
+        // Build label
+        String label = "";
+        for (int i = 1; i < (query == null ? args.length : args.length-1); i++) {
+            label += " " + args[i];
+        }
+        label = label.trim();
+        if (label.equalsIgnoreCase("remove") || label.equalsIgnoreCase("none") || label.equalsIgnoreCase("delete") || label.equalsIgnoreCase(user.getLocalizedMessage("module.area.label.none"))) {
+            label = null;
+        }
+        
+        return setAreaLabel(user, area, label);
     }
     
     private boolean onExecuteComplexCreate(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg, String[] args) {
@@ -1249,6 +1340,9 @@ public class AreaCommand extends DualSyntaxCommand {
         
         // Extract label from arguments
         label = extractLabel(arg);
+        if (label.equalsIgnoreCase("remove") || label.equalsIgnoreCase("none") || label.equalsIgnoreCase("delete") || label.equalsIgnoreCase(user.getLocalizedMessage("module.area.label.none"))) {
+            label = null;
+        }
         
         return setAreaLabel(user, area, label);
     }
@@ -1607,13 +1701,17 @@ public class AreaCommand extends DualSyntaxCommand {
     
     private boolean setAreaLabel(User user, Area area, String label) {
         area.setLabel(label);
-        user.sendLocalizedMessage("module.area.label.change", area.getAreaId(), (label == null ? user.getLocalizedMessage("module.area.label.none") : label));
+        if (label == null) {
+            user.sendLocalizedMessage("module.area.label.remove", area.getAreaId());
+        } else {
+            user.sendLocalizedMessage("module.area.label.change", area.getAreaId(), user.getLocalizedMessage("module.area.label.wrapper", label));
+        }
         return true;
     }
     
     private boolean setAreaPriority(User user, Area area, int priority) {
         area.setPriority(priority);
-        user.sendLocalizedMessage("module.area.priority", area.getAreaId(), priority);
+        user.sendLocalizedMessage("module.area.priority.change", area.getAreaId(), priority);
         return true;
     }
     
@@ -1731,7 +1829,7 @@ public class AreaCommand extends DualSyntaxCommand {
     
     private void sendAreaList(User user, List<Area> areas) {
         for (Area area : areas) {
-            user.sendLocalizedMessage("module.area.list.item", area.getAreaId(), (area.getLabel() == null || area.getLabel().isEmpty()) ? user.getLocalizedMessage("module.area.label.none") : area.getLabel(), area.getPriority());
+            user.sendLocalizedMessage("module.area.list.item", area.getAreaId(), area.getLabel() == null ? user.getLocalizedMessage("module.area.label.none") : user.getLocalizedMessage("module.area.label.wrapper", area.getLabel()), area.getPriority());
         }
     }
     
@@ -1821,7 +1919,7 @@ public class AreaCommand extends DualSyntaxCommand {
             world = user.getLocalizedMessage("shared.values.none");
         }
         
-        user.sendLocalizedMessage("module.area.info", area.getAreaId(), (area.getLabel() == null ? user.getLocalizedMessage("module.area.label.none") : area.getLabel()), area.getPriority(), owners, guests, gowners, gguests, area.getRegionIds().size(), world);
+        user.sendLocalizedMessage("module.area.info", area.getAreaId(), (area.getLabel() == null ? user.getLocalizedMessage("module.area.label.none") : user.getLocalizedMessage("module.area.label.wrapper", area.getLabel())), area.getPriority(), owners, guests, gowners, gguests, area.getRegionIds().size(), world);
     }
     
     private void sendHelp(User user, String commandLabel, boolean complex) {

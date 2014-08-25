@@ -60,9 +60,9 @@ public class Area {
      */
     public void setLabel(String label) {
         if (label != null) {
-            if (label.length() > 128) {
+            /*if (label.length() > 128) {
                 label = label.substring(0, 128);
-            }
+            }*/
             this.label = label.trim();
         } else {
             this.label = label;

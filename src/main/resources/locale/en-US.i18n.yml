@@ -110,8 +110,8 @@ messages:
                     - " ' ' group owners using &7-go:a <group> &fand &7-go:r <group>&f"
                     - "Add/remove guests using &7-in:f <user> &fand &7-in:n <user>&f"
                     - " ' ' group guests using &7-gin:f <group> &fand &7-gin:n <group>&f"
-                    - "Change area priority with &7/%1 -p <number>&f"
-                    - "Change area label with &7/%1 -l <label>&f"
+                    - "Change area priority with &7/%1 -p <number|remove>&f"
+                    - "Change area label with &7/%1 -l <label|remove>&f"
                 simple:
                     - "Select an area by standing in it or including the ID"
                     - "List areas at current location using &7/%1 list&f"
@@ -122,11 +122,13 @@ messages:
                     - "Uninvite a guest using &7/%1 uninvite <user>&f"
                     - "Invite an entire group using &7/%1 invitegroup <group>&f"
                     - "Uninvite an entire group using &7/%1 uninvitegroup <group>&f"
+                    - "Change area priority with &7/%1 priority <number|remove>&f"
+                    - "Change area label with &7/%1 label <label|remove>&f"
             info:
                 - "  &7Area ID: &f%1  &7Priority: &f%3"
-                - "  &7Label:   &f%2"
-                - "  &7Owners:  &f%4"
-                - "  &7Guests:  &f%5"
+                - "  &7Label: &f%2"
+                - "  &7Owners: &f%4"
+                - "  &7Guests: &f%5"
                 - "  &7Group Owners: &f%6"
                 - "  &7Group Guests: &f%7"
                 - "  &7Regions: &f%8  &7World: &f%9"
@@ -149,8 +151,10 @@ messages:
                 removeFail: "&4User &f%2 &4is not a guest of area &f%1&4."
                 unmodified: "&7Guest list unmodified for area &f%1&7."
             label:
-                updated: "&aLabel for area &f%1 &achanged to &f'%2'&a."
+                change: "&aLabel for area &f%1 &aset to &f%2&a."
                 none: "[No label]"
+                remove: "&aLabel for area &f%1 &ahas been &fremoved&a."
+                wrapper: "'%1'"
             list:
                 header: "&7List of areas on server. Page &f%1&7/&f%2"
                 headerLocation: "&7List of areas at location. Page &f%1&7/&f%2"
@@ -175,7 +179,8 @@ messages:
                 removeFail: "&4User &f%2 &4does not own area &f%1&4."
                 removeSelfFail: "&4You cannot remove yourself as an owner from your area!"
                 unmodified: "&7Owners list unmodified for area &f%1&7."
-            priority: "&aPriority for area &f%1 &aset to &f%2&a."
+            priority:
+                change: "&aPriority for area &f%1 &aset to &f%2&a."
             header: "&7-----&6 GoldenApple Areas &7-----"
         base:
             complex:

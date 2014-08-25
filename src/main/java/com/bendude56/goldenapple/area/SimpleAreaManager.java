@@ -247,7 +247,7 @@ public class SimpleAreaManager extends AreaManager {
         List<Area> areas = new ArrayList<Area>();
         Area a;
         
-        String query = "(SELECT Areas.* FROM Areas, AreaUsers WHERE AreaUsers.UserID=? AND AreaUsers.AreaID=Areas.ID AND AreaUsers.AccessLevel=?) UNION DISTINCT (SELECT Areas.* FROM Areas, AreaGroups, GroupUserMembers WHERE GroupUserMembers.MemberID=? AND GroupUserMembers.GroupID=AreaGroups.GroupID AND AreaGroups.AreaID=Areas.ID AND AreaGroups.AccessLevel=?) ORDER BY ID";
+        String query = "SELECT Areas.* FROM Areas, AreaUsers WHERE AreaUsers.UserID=? AND AreaUsers.AreaID=Areas.ID AND AreaUsers.AccessLevel=? UNION SELECT Areas.* FROM Areas, AreaGroups, GroupUserMembers WHERE GroupUserMembers.MemberID=? AND GroupUserMembers.GroupID=AreaGroups.GroupID AND AreaGroups.AreaID=Areas.ID AND AreaGroups.AccessLevel=? ORDER BY ID";
         
         try {
             ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery(query, userId, AreaAccessLevel.OWNER.getId(), userId, AreaAccessLevel.OWNER.getId());
