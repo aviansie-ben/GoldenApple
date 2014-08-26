@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -16,7 +17,7 @@ import com.bendude56.goldenapple.permissions.IPermissionGroup;
 import com.bendude56.goldenapple.permissions.IPermissionUser;
 import com.bendude56.goldenapple.permissions.PermissionManager;
 
-public class Area {
+public class Area implements Comparable<Area> {
     private final long areaId;
     private String label = null;
     private int priority = 0;
@@ -285,6 +286,7 @@ public class Area {
     public List<Long> getRegionIds() {
         if (regions == null) {
             regions = SimpleAreaManager.getInstance().retrieveAreaRegionIds(areaId);
+            Collections.sort(regions);
         }
         return regions;
     }
@@ -321,6 +323,7 @@ public class Area {
             r = AreaManager.getInstance().createRegion(areaId, shape, c1, c2, ignoreY);
             if (regions != null) {
                 regions.add(r.getId());
+                Collections.sort(regions);
             }
             return r;
         } catch (SQLException e) {
@@ -340,11 +343,11 @@ public class Area {
      * 
      * @param regionId The ID of the region to be deleted from the area.
      */
-    public void deleteRegion(long regionId) {
+    public boolean deleteRegion(long regionId) {
         if (regions != null && regions.contains(regionId)) {
             regions.remove(regionId);
         }
-        AreaManager.getInstance().deleteRegion(regionId);
+        return AreaManager.getInstance().deleteRegion(regionId);
     }
     
     /**
@@ -481,5 +484,9 @@ public class Area {
         }
         
         return level;
+    }
+    
+    public int compareTo(Area other) {
+        return (int) (this.getAreaId() - other.getAreaId());
     }
 }

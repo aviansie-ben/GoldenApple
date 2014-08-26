@@ -7,7 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 
-public abstract class Region {
+public abstract class Region implements Comparable<Region> {
     private final long regionId;
     private final long areaId;
     private Location min;
@@ -166,6 +166,12 @@ public abstract class Region {
     }
     
     /**
+     * Gets the volume of the region in blocks.
+     * @return The volume of the region in blocks.
+     */
+    public abstract double getVolume();
+    
+    /**
      * Checks if the region expands to the top and bottom of the world.
      * 
      * @return True if the region expands to Y
@@ -232,6 +238,10 @@ public abstract class Region {
      */
     public void save() {
         AreaManager.getInstance().saveRegion(regionId);
+    }
+    
+    public int compareTo(Region other) {
+        return (int) (this.getId() - other.getId());
     }
     
 }

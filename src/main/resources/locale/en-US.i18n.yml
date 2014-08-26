@@ -112,9 +112,11 @@ messages:
                     - " ' ' group guests using &7-gin:f <group> &fand &7-gin:n <group>&f"
                     - "Change area priority with &7/%1 -p <number|remove>&f"
                     - "Change area label with &7/%1 -l <label|remove>&f"
+                    - "Add regions using &7-ra &fand remove them using &7-rr <region>&f"
+                    - "List area regions using &7-lsr&f"
                 simple:
-                    - "Select an area by standing in it or including the ID"
-                    - "List areas at current location using &7/%1 list&f"
+                    - "Select an area by standing in it or including the ID at the end of most commands."
+                    - "List areas using &7/%1 list [all|here|mine] [page]&f"
                     - "Get area info by using &7/%1 info&f"
                     - "Create a new area using &7/%1 create <owner>&f"
                     - "Delete an area using &7/%1 delete&f"
@@ -124,6 +126,9 @@ messages:
                     - "Uninvite an entire group using &7/%1 uninvitegroup <group>&f"
                     - "Change area priority with &7/%1 priority <number|remove>&f"
                     - "Change area label with &7/%1 label <label|remove>&f"
+                    - "Add regions with &7/%1 addregion&f"
+                    - "Remove regions with &7/%1 removeregion&f"
+                    - "List regions with &7/%1 listregions [page]&f"
             info:
                 - "  &7Area ID: &f%1  &7Priority: &f%3"
                 - "  &7Label: &f%2"
@@ -181,6 +186,28 @@ messages:
                 unmodified: "&7Owners list unmodified for area &f%1&7."
             priority:
                 change: "&aPriority for area &f%1 &aset to &f%2&a."
+            region:
+                create:
+                    fail: "&4ERROR: A fatal error occurred while creating a new region! The error has been logged."
+                    success:
+                        - "&aRegion successfully created."
+                        - "&7  Region ID: &f%1  &7Area ID: &f%2"
+                        - "&7  World: &f%3  &7Shape: &f%4  &7Size: &f%11&7"
+                        - "&7  Coordinates:  [&f%5&7, &f%6&7, &f%7&7], [&f%8&7, &f%9&7, &f%10&7]"
+                error:
+                    selectId: "&4ERROR: No region found with ID &f%1&4 in area &f%2&4."
+                remove:
+                    fail: "&4ERROR: A fatal error occurred while deleting the region! The error has been logged."
+                    success: "&aRegion &f%1 &aremoved from area &f%2 &asuccessfully!"
+                list:
+                    header: "&7List of regions for area &f%1&7. Page &f%2&7/&f%3"
+                    item: "  &7#%1. %2  [%3, %4, %5] [%6, %7, %8] (Size: %9)"
+                    invalidPage: "&4ERROR: Invalid page number."
+                    none: "&7No regions exist for this area."
+            shape:
+                cuboid: "cuboid"
+                ellipsoid: "ellipsoid"
+                cylinder: "cylinder"
             header: "&7-----&6 GoldenApple Areas &7-----"
         base:
             complex:

@@ -1,5 +1,7 @@
 package com.bendude56.goldenapple.area;
 
+import com.bendude56.goldenapple.User;
+
 public enum RegionShape {
     CUBOID(0), ELLIPSOID(1), CYLINDER(2);
     
@@ -20,5 +22,18 @@ public enum RegionShape {
             }
         }
         return null;
+    }
+    
+    public String getLocalizedName(User user) {
+        switch (this) {
+            case CUBOID:
+                return user.getLocalizedMessage("module.area.shape.cuboid");
+            case ELLIPSOID:
+                return user.getLocalizedMessage("module.area.shape.ellipsoid");
+            case CYLINDER:
+                return user.getLocalizedMessage("module.area.shape.cylinder");
+            default:
+                return "";
+        }
     }
 }

@@ -18,6 +18,7 @@ import com.bendude56.goldenapple.area.Area;
 import com.bendude56.goldenapple.area.AreaAccessLevel;
 import com.bendude56.goldenapple.area.AreaFlag;
 import com.bendude56.goldenapple.area.AreaManager;
+import com.bendude56.goldenapple.area.Region;
 import com.bendude56.goldenapple.area.RegionShape;
 import com.bendude56.goldenapple.command.DualSyntaxCommand;
 import com.bendude56.goldenapple.permissions.IPermissionGroup;
@@ -117,8 +118,17 @@ public class AreaCommand extends DualSyntaxCommand {
             if (arg.isDefined("info")) {
                 onExecuteComplexInfo(instance, user, commandLabel, arg, args);
             }
+            if (arg.isDefined("addregion")) {
+                onExecuteComplexRegionAdd(instance, user, commandLabel, arg, args);
+            }
+            if (arg.isDefined("removeregion")) {
+                onExecuteComplexRegionRemove(instance, user, commandLabel, arg, args);
+            }
+            if (arg.isDefined("listregions")) {
+                onExecuteComplexRegionList(instance, user, commandLabel, arg, args);
+            }
             
-            // TODO Add commands for adding/removing flags/regions
+            // TODO Add commands for adding/removing flags
         }
     }
     
@@ -181,8 +191,20 @@ public class AreaCommand extends DualSyntaxCommand {
             case "label":
                 onExecuteSimpleSetLabel(instance, user, commandLabel, args);
                 break;
+            case "addregion":
+            case "ra":
+                onExecuteSimpleRegionAdd(instance, user, commandLabel, args);
+                break;
+            case "removeregion":
+            case "rr":
+                onExecuteSimpleRegionRemove(instance, user, commandLabel, args);
+                break;
+            case "listregions":
+            case "lsr":
+                onExecuteSimpleRegionList(instance, user, commandLabel, args);
+                break;
             
-            // TODO Create more cases for each action
+            // TODO Add cases for adding/removing flags
             
             default:
                 user.sendLocalizedMessage("shared.parser.unknownOption", args[0]);
@@ -915,6 +937,134 @@ public class AreaCommand extends DualSyntaxCommand {
         return setAreaLabel(user, area, label);
     }
     
+    private boolean onExecuteSimpleRegionAdd(GoldenApple instance, User user, String commandLabel, String[] args) {
+        
+        // Make sure user has adequate permissions
+        if (!user.hasPermission(AreaManager.editAllRegionsPermission) && !user.hasPermission(AreaManager.editOwnRegionsPermission)) {
+            GoldenApple.logPermissionFail(user, commandLabel, args, true);
+            return false;
+        }
+        
+        // Make sure the user is a player. Required for technical reasons. (i.e.
+        // console can't select a region in the world.)
+        if (!(user.getHandle() instanceof Player)) {
+            user.sendLocalizedMessage("shared.consoleNotAllowed");
+            return false;
+        }
+        
+        // Verify number of arguments
+        if (args.length < 1) {
+            user.sendLocalizedMessage("shared.parser.parameterMissing", args[0]);
+            return false;
+        }
+        
+        // Generate Query
+        String query = null;
+        if (args.length > 1) {
+            query = "";
+            for (int i = 1; i < args.length; i++) {
+                query += " " + args[i];
+            }
+        }
+        query = query.trim();
+        
+        // Get selected area
+        Location c1, c2;
+        if (SelectManager.getInstance().isSelectionMade(user) && SelectManager.getInstance().getSelectionWorld(user) == user.getPlayerHandle().getWorld()) {
+            c1 = SelectManager.getInstance().getSelectionMinimum(user);
+            c2 = SelectManager.getInstance().getSelectionMaximum(user);
+        } else {
+            user.sendLocalizedMessage("module.area.error.noSelection");
+            return false;
+        }
+        
+        // Get the selected area
+        Area area = findAreaWithPermissionSimple(user, commandLabel, args, query, AreaManager.editAllRegionsPermission, AreaManager.editOwnRegionsPermission);
+        if (area == null) {
+            return false;
+        }
+        
+        return addAreaRegion(user, area, RegionShape.CUBOID, c1, c2, false) != null;
+    }
+    
+    private boolean onExecuteSimpleRegionRemove(GoldenApple instance, User user, String commandLabel, String[] args) {
+        
+        // Make sure user has adequate permissions
+        if (!user.hasPermission(AreaManager.editAllRegionsPermission) && !user.hasPermission(AreaManager.editOwnRegionsPermission)) {
+            GoldenApple.logPermissionFail(user, commandLabel, args, true);
+            return false;
+        }
+        
+        // Verify number of arguments
+        if (args.length < 2) {
+            user.sendLocalizedMessage("shared.parser.parameterMissing", args[0]);
+            return false;
+        }
+        
+        int regionId;
+        try {
+            regionId = Integer.parseInt(args[1]);
+        } catch (NumberFormatException e) {
+            user.sendLocalizedMessage("shared.convertError.number", args[1]);
+            return false;
+        }
+        
+        // Generate Query
+        String query = null;
+        if (args.length > 2) {
+            query = "";
+            for (int i = 2; i < args.length; i++) {
+                query += " " + args[i];
+            }
+        }
+        query = query.trim();
+        
+        // Get the selected area
+        Area area = findAreaWithPermissionSimple(user, commandLabel, args, query, AreaManager.editAllRegionsPermission, AreaManager.editOwnRegionsPermission);
+        if (area == null) {
+            return false;
+        }
+        
+        return removeAreaRegion(user, area, regionId);
+    }
+    
+    private boolean onExecuteSimpleRegionList(GoldenApple instance, User user, String commandLabel, String[] args) {
+        
+        // Make sure user has adequate permissions
+        if (!user.hasPermission(AreaManager.infoAllPermission) && !user.hasPermission(AreaManager.infoOwnPermission)) {
+            GoldenApple.logPermissionFail(user, commandLabel, args, true);
+            return false;
+        }
+        
+        Integer page = null;
+        if (args.length > 1) {
+            try {
+                page = Integer.parseInt(args[1]);
+            } catch (NumberFormatException e) {
+                page = null;
+            }
+        }
+        
+        // Generate Query
+        String query = null;
+        if (args.length > (page == null ? 1 : 2)) {
+            query = "";
+            for (int i = (page == null ? 1 : 2); i < args.length; i++) {
+                query += " " + args[i];
+            }
+            query = query.trim();
+        }
+        
+        // Get the selected area
+        Area area = findAreaWithPermissionSimple(user, commandLabel, args, query, AreaManager.infoAllPermission, AreaManager.infoOwnPermission);
+        if (area == null) {
+            return false;
+        }
+        
+        sendRegionList(user, area, page);
+        return true;
+    }
+    
     private boolean onExecuteComplexCreate(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg, String[] args) {
         
         // Make sure the user is a player. Required for technical reasons. (i.e.
@@ -1366,6 +1516,92 @@ public class AreaCommand extends DualSyntaxCommand {
         
     }
     
+    private boolean onExecuteComplexRegionAdd(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg, String[] args) {
+        
+        // Make sure user has adequate permissions
+        if (!user.hasPermission(AreaManager.editAllRegionsPermission) && !user.hasPermission(AreaManager.editOwnRegionsPermission)) {
+            GoldenApple.logPermissionFail(user, commandLabel, args, true);
+            return false;
+        }
+        
+        // Find selected area while taking given permissions into account
+        Area area = findAreaWithPermissionComplex(user, commandLabel, args, arg, AreaManager.editAllRegionsPermission, AreaManager.editOwnRegionsPermission);
+        if (area == null) {
+            return false;
+        }
+        
+        if (!(user.getHandle() instanceof Player)) {
+            user.sendLocalizedMessage("shared.consoleNotAllowed");
+            return false;
+        }
+        
+        RegionShape shape = extractShape(arg);
+        Boolean ignoreY = extractIgnoreY(arg);
+        Location c1, c2;
+        
+        // Get the user's selection
+        if (SelectManager.getInstance().isSelectionMade(user) && SelectManager.getInstance().getSelectionWorld(user) == user.getPlayerHandle().getWorld()) {
+            c1 = SelectManager.getInstance().getSelectionMinimum(user);
+            c2 = SelectManager.getInstance().getSelectionMaximum(user);
+        } else {
+            user.sendLocalizedMessage("module.area.error.noSelection");
+            return false;
+        }
+        
+        // Validate shape type or set to default value
+        if (shape == null) {
+            if (arg.isDefined("shape")) {
+                user.sendLocalizedMessage("module.area.error.invalidShape", arg.getString("shape"));
+                return false;
+            } else {
+                shape = RegionShape.CUBOID; // Default value
+            }
+        }
+        return addAreaRegion(user, area, shape, c1, c2, ignoreY) != null;
+    }
+    
+    private boolean onExecuteComplexRegionRemove(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg, String[] args) {
+        
+        // Make sure user has adequate permissions
+        if (!user.hasPermission(AreaManager.editAllRegionsPermission) && !user.hasPermission(AreaManager.editOwnRegionsPermission)) {
+            GoldenApple.logPermissionFail(user, commandLabel, args, true);
+            return false;
+        }
+        
+        // Find selected area while taking given permissions into account
+        Area area = findAreaWithPermissionComplex(user, commandLabel, args, arg, AreaManager.editAllRegionsPermission, AreaManager.editOwnRegionsPermission);
+        if (area == null) {
+            return false;
+        }
+        
+        long regionId = arg.getLong("removeregion");
+        
+        return removeAreaRegion(user, area, regionId);
+    }
+    
+    private boolean onExecuteComplexRegionList(GoldenApple instance, User user, String commandLabel, ComplexArgumentParser arg, String[] args) {
+        
+        // Make sure user has adequate permissions
+        if (!user.hasPermission(AreaManager.infoAllPermission) && !user.hasPermission(AreaManager.infoOwnPermission)) {
+            GoldenApple.logPermissionFail(user, commandLabel, args, true);
+            return false;
+        }
+        
+        Area area = findAreaWithPermissionComplex(user, commandLabel, args, arg, AreaManager.infoAllPermission, AreaManager.infoOwnPermission);
+        if (area == null) {
+            return false;
+        }
+        
+        // Figure out the page
+        int page = (arg.isDefined("page") ? arg.getInt("page") : 1);
+        if (page < 1) {
+            page = 1;
+        }
+        
+        sendRegionList(user, area, page);
+        return true;
+    }
+    
     private Area extractSelectedArea(ComplexArgumentParser arg, User user, boolean useLocation, boolean own) {
         if (arg.isDefined("select")) {
             return findArea(user, arg.getString("select"));
@@ -1715,6 +1951,52 @@ public class AreaCommand extends DualSyntaxCommand {
         return true;
     }
     
+    private Region addAreaRegion(User user, Area area, RegionShape shape, Location c1, Location c2, boolean ignoreY) {
+        Region region;
+        try {
+            region = area.addRegion(shape, c1, c2, ignoreY);
+            if (region == null) {
+                user.sendLocalizedMessage("module.area.region.create.fail");
+                return null;
+            }
+            user.sendLocalizedMessage("module.area.region.create.success", area.getRegionIds().size(), area.getAreaId(), region.getWorld().getName(), shape.getLocalizedName(user), region.getMinX(), region.getMinY(), region.getMinZ(), region.getMaxX(), region.getMaxY(), region.getMaxZ(), region.getVolume());
+        } catch (Exception e) {
+            
+            // An error has occurred. Notify the user and log the error.
+            user.sendLocalizedMessage("module.area.region.create.fail");
+            GoldenApple.log(Level.SEVERE, "An error occured while attempting to create a new region.");
+            GoldenApple.log(Level.SEVERE, "Please send the following information to the GoldenApple developers:");
+            GoldenApple.log(Level.SEVERE, "User:" + user.getName() + " ID:" + user.getId() + ")");
+            GoldenApple.log(Level.SEVERE, e);
+            return null;
+        }
+        return region;
+    }
+    
+    private boolean removeAreaRegion(User user, Area area, long regionId) {
+        if (regionId < 1 || regionId > area.getRegionIds().size()) {
+            user.sendLocalizedMessage("module.area.region.error.selectId", regionId, area.getAreaId());
+            return false;
+        }
+        try {
+            if (!area.deleteRegion(area.getRegionIds().get((int) regionId))) {
+                user.sendLocalizedMessage("module.area.region.remove.fail");
+                return false;
+            }
+            user.sendLocalizedMessage("module.area.region.remove.success", regionId, area.getAreaId());
+        } catch (Exception e) {
+            
+            // An error has occurred. Notify the user and log the error.
+            user.sendLocalizedMessage("module.area.region.remove.fail");
+            GoldenApple.log(Level.SEVERE, "An error occured while attempting to remove a region.");
+            GoldenApple.log(Level.SEVERE, "Please send the following information to the GoldenApple developers:");
+            GoldenApple.log(Level.SEVERE, "User:" + user.getName() + " ID:" + user.getId() + ")");
+            GoldenApple.log(Level.SEVERE, e);
+            return false;
+        }
+        return true;
+    }
+    
     private boolean addAreaFlag(User user, Area area, AreaFlag flag) {
         area.setFlag(flag, true);
         user.sendLocalizedMessage("module.area.flag.add", area.getAreaId(), flag.toString());
@@ -1752,7 +2034,7 @@ public class AreaCommand extends DualSyntaxCommand {
         }
         
         // Print listing header
-        user.sendLocalizedMessage("module.area.list.header", page, (total + per - 1) / 6);
+        user.sendLocalizedMessage("module.area.list.header", page, (total + per - 1) / per);
         
         sendAreaList(user, areas);
     }
@@ -1922,6 +2204,36 @@ public class AreaCommand extends DualSyntaxCommand {
         user.sendLocalizedMessage("module.area.info", area.getAreaId(), (area.getLabel() == null ? user.getLocalizedMessage("module.area.label.none") : user.getLocalizedMessage("module.area.label.wrapper", area.getLabel())), area.getPriority(), owners, guests, gowners, gguests, area.getRegionIds().size(), world);
     }
     
+    private void sendRegionList(User user, Area area, int page) {
+        int per = (user.getHandle() instanceof ConsoleCommandSender ? 10 : 6);
+        int total;
+        
+        // Retrieve list of areas
+        List<Region> regions = area.getRegions();
+        total = regions.size();
+        
+        // Adjust for pagination
+        if (page > (total + per - 1) / per) {
+            page = (total + per - 1) / per;
+        }
+        if (page < 1) {
+            page = 1;
+        }
+        
+        // Check if no areas are there
+        if (regions.isEmpty()) {
+            user.sendLocalizedMessage("module.area.region.list.none");
+            return;
+        }
+        
+        // Print listing header
+        user.sendLocalizedMessage("module.area.region.list.header", area.getAreaId(), page, (total + per - 1) / per);
+        for (int i = (page-1)*per; i < page*per && i < regions.size(); i++) {
+            Region region = regions.get(i);
+            user.sendLocalizedMessage("module.area.region.list.item", i+1, region.getAreaShape().getLocalizedName(user), region.getMinX(), region.getMinY(), region.getMinZ(), region.getMaxX(), region.getMaxY(), region.getMaxZ(), region.getVolume());
+        }
+    }
+    
     private void sendHelp(User user, String commandLabel, boolean complex) {
         user.sendLocalizedMessage("module.area.header");
         user.sendLocalizedMessage((complex) ? "module.area.help.complex" : "module.area.help.simple", commandLabel);
@@ -1955,7 +2267,10 @@ public class AreaCommand extends DualSyntaxCommand {
             ArgumentInfo.newKeyValuePair(ArgumentInfo.newGroupList("group-owner", "go", "groupowner", false)),
             ArgumentInfo.newKeyValuePair(ArgumentInfo.newUserList("invite", "in", "invite", false, false)),
             ArgumentInfo.newKeyValuePair(ArgumentInfo.newGroupList("group-invite", "gin", "groupinvite", false)),
-            ArgumentInfo.newKeyValuePair(ArgumentInfo.newLong("region", "r", "region")),
+            
+            ArgumentInfo.newSwitch("addregion", "ra", "addregion"),
+            ArgumentInfo.newLong("removeregion", "rr", "removeregion"),
+            ArgumentInfo.newSwitch("listregions", "lsr", "listregions"),
         };
     }
 }

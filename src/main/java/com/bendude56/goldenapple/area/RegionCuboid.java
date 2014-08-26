@@ -21,6 +21,11 @@ public class RegionCuboid extends Region {
     }
     
     @Override
+    public double getVolume() {
+        return Math.abs((getMaxX() - getMinX()) * (getMaxY() - getMinY()) * (getMaxZ() - getMinZ()));
+    }
+    
+    @Override
     public boolean containsLocation(Location loc) {
         return (loc.getWorld() == getWorld() && loc.getX() >= getMinX() && loc.getY() >= getMinY() && loc.getZ() >= getMinZ() && loc.getX() <= getMaxX() && loc.getY() <= getMaxY() && loc.getZ() <= getMaxZ());
     }
