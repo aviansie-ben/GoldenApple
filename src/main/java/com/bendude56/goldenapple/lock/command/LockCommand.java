@@ -512,6 +512,8 @@ public class LockCommand extends DualSyntaxCommand {
             case PRIVATE:
                 user.sendLocalizedMessage("module.lock.info.access.private");
                 break;
+            default:
+            	break;
         }
         
         if (b.isRedstoneAccessApplicable() && b.isHopperAccessApplicable()) {

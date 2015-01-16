@@ -28,7 +28,7 @@ public class ModuleLoadException extends RuntimeException {
         super("Error loading module '" + module + "': " + ((cause == null) ? "Unknown exception" : cause.getMessage()), cause);
         
         this.module = module;
-        this.dumpInfo = (HashMap<String, Serializable>) dumpInfo.clone();
+        this.dumpInfo = new HashMap<String, Serializable>(dumpInfo);
         
         populateDefaultDumpInfo();
     }
@@ -49,7 +49,7 @@ public class ModuleLoadException extends RuntimeException {
         super("Error loading module '" + module + "': " + message, cause);
         
         this.module = module;
-        this.dumpInfo = (HashMap<String, Serializable>) dumpInfo.clone();
+        this.dumpInfo = new HashMap<String, Serializable>(dumpInfo);
         
         populateDefaultDumpInfo();
     }

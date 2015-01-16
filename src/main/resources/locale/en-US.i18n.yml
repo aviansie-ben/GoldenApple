@@ -227,6 +227,7 @@ messages:
                         loading: " -&e%1"
                         unloadedError: " -&4%1"
                         unloadedUser: " -&7%1"
+                        unloading: "-&e%1"
                     header: "&7The following modules can be queried:"
                     lockedSuffix: " &8[Locked]"
                 query:
@@ -239,6 +240,7 @@ messages:
                         unloadedError: "&4Stopped (Dependency Error)"
                         unloadedUser: "&7Stopped"
                         unloadedUserLocked: "&8Policy Disabled"
+                        unloading: "&eUnloading"
                     message:
                         - "&7Module name: &f%1"
                         - "&7Status: %2"

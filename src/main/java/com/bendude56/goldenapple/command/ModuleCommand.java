@@ -38,6 +38,9 @@ public class ModuleCommand extends GoldenAppleCommand {
                         case UNLOADED_MISSING_DEPENDENCY:
                             user.sendLocalizedMessage("module.base.module.list.entry.unloadedError", module.getModuleName() + suffix);
                             break;
+                        case UNLOADING:
+                        	user.sendLocalizedMessage("module.base.module.list.entry.unloading", module.getModuleName() + suffix);
+                        	break;
                     }
                 }
             } else if (args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("-?")) {
@@ -75,6 +78,9 @@ public class ModuleCommand extends GoldenAppleCommand {
                         case UNLOADED_MISSING_DEPENDENCY:
                             status = user.getLocalizedMessage("module.base.module.query.state.unloadedDepend");
                             break;
+                        case UNLOADING:
+                        	status = user.getLocalizedMessage("module.base.module.query.state.unloading");
+                        	break;
                     }
                     user.sendLocalizedMessage("module.base.module.query.message", module.getModuleName(), status);
                 } else if (args[1].equalsIgnoreCase("-e") || args[1].equalsIgnoreCase("--enable")) {

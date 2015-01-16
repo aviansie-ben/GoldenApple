@@ -274,6 +274,8 @@ public class ChannelCommand extends DualSyntaxCommand {
                 case GRAYED_OUT:
                     user.sendLocalizedMessage("module.chat.channelList.entry.grayedOut", c.getListedName());
                     break;
+                case HIDDEN:
+                	break;
             }
         }
         

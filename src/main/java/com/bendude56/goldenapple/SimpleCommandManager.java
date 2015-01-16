@@ -76,7 +76,8 @@ public class SimpleCommandManager extends CommandManager {
                 f = SimpleCommandMap.class.getDeclaredField("knownCommands");
                 f.setAccessible(true);
                 
-                Map<String, Command> knownCommands = (Map<String, Command>) f.get(commandMap);
+                @SuppressWarnings("unchecked")
+				Map<String, Command> knownCommands = (Map<String, Command>) f.get(commandMap);
                 
                 for (String alias : aliases) {
                     knownCommands.put(alias, command);
@@ -100,7 +101,8 @@ public class SimpleCommandManager extends CommandManager {
                 f = SimpleCommandMap.class.getDeclaredField("knownCommands");
                 f.setAccessible(true);
                 
-                Map<String, Command> knownCommands = (Map<String, Command>) f.get(commandMap);
+                @SuppressWarnings("unchecked")
+				Map<String, Command> knownCommands = (Map<String, Command>) f.get(commandMap);
                 
                 for (String alias : command.getAliases()) {
                     if (knownCommands.get(alias) == command) {

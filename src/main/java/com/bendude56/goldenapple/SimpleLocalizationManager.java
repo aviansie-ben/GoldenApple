@@ -259,9 +259,9 @@ public class SimpleLocalizationManager implements LocalizationManager {
         
         private List<String> getStringListValue(String name) {
             if (customDefinition != null && customDefinition.isList(name)) {
-                return (List<String>) customDefinition.getList(name);
+                return customDefinition.getStringList(name);
             } else if (jarDefinition != null && jarDefinition.isList(name)) {
-                return (List<String>) jarDefinition.getList(name);
+                return jarDefinition.getStringList(name);
             } else {
                 return null;
             }
