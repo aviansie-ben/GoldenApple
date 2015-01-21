@@ -12,6 +12,8 @@ public abstract class PunishmentManager {
     // goldenapple.punish
     public static PermissionNode punishNode;
     public static Permission whoisPermission;
+    public static Permission historyPermission;
+    public static Permission purgePermission;
     
     // goldenapple.punish.globalmute
     public static PermissionNode globalMuteNode;

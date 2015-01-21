@@ -121,6 +121,10 @@ commands:
         usage: /<command> <Player>
         description: Gets ban/mute information about a player
         aliases: [whois]
+    gapunishhistory:
+        usage: Use /<command> -? for help
+        description: Gets punishment history for a player
+        aliases: [punishhistory]
     gawarp:
         usage: /<command> <Warp> [Player] or /<command> list
         description: Warps you or another player to a named warp

@@ -6,6 +6,7 @@ import com.bendude56.goldenapple.permissions.PermissionManager;
 import com.bendude56.goldenapple.punish.command.BanCommand;
 import com.bendude56.goldenapple.punish.command.GlobalMuteCommand;
 import com.bendude56.goldenapple.punish.command.MuteCommand;
+import com.bendude56.goldenapple.punish.command.PunishHistoryCommand;
 import com.bendude56.goldenapple.punish.command.UnBanCommand;
 import com.bendude56.goldenapple.punish.command.UnGlobalMuteCommand;
 import com.bendude56.goldenapple.punish.command.UnMuteCommand;
@@ -26,12 +27,15 @@ public class PunishModuleLoader extends ModuleLoader {
         commands.insertCommand("gaglobalmute", "Punish", new GlobalMuteCommand());
         commands.insertCommand("gaunglobalmute", "Punish", new UnGlobalMuteCommand());
         commands.insertCommand("gawhois", "Punish", new WhoisCommand());
+        commands.insertCommand("gapunishhistory", "Punish", new PunishHistoryCommand());
     }
     
     @Override
     public void preregisterPermissions() {
         PunishmentManager.punishNode = PermissionManager.goldenAppleNode.createNode("punish");
         PunishmentManager.whoisPermission = PunishmentManager.punishNode.createPermission("whois");
+        PunishmentManager.historyPermission = PunishmentManager.punishNode.createPermission("history");
+        PunishmentManager.purgePermission = PunishmentManager.punishNode.createPermission("purge");
         
         PunishmentManager.globalMuteNode = PunishmentManager.punishNode.createNode("globalmute");
         PunishmentManager.globalMuteInfoPermission = PunishmentManager.globalMuteNode.createPermission("info");
@@ -64,6 +68,7 @@ public class PunishModuleLoader extends ModuleLoader {
         commands.getCommand("gaglobalmute").register();
         commands.getCommand("gaunglobalmute").register();
         commands.getCommand("gawhois").register();
+        commands.getCommand("gapunishhistory").register();
     }
     
     @Override
@@ -85,6 +90,7 @@ public class PunishModuleLoader extends ModuleLoader {
         commands.getCommand("gaglobalmute").unregister();
         commands.getCommand("gaunglobalmute").unregister();
         commands.getCommand("gawhois").unregister();
+        commands.getCommand("gapunishhistory").unregister();
     }
     
     @Override

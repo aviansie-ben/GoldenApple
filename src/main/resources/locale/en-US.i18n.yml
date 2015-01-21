@@ -700,6 +700,43 @@ messages:
                     perm: "&a%1 has been permanently globally muted."
                     temp: "&a%1 has been globally muted for %2."
                     void: "&aThe global mute on %1 has been voided."
+            history:
+                error:
+                    invalidEntry: "&4ERROR: User has only %1 punishment history entries!"
+                    invalidPage: "&4ERROR: Cannot display page %1. User has only %2 pages of history."
+                info:
+                    type:
+                        ban: "&7Punishment Type: Ban"
+                        globalMute: "&7Punishment Type: Global Mute"
+                        mute: "&7Punishment Type: Mute (&f%1&7)"
+                        unknown: "&7Punishment Type: %1"
+                    target: "&7Target: %1"
+                    admin: "&7Administrator: %1"
+                    time: "&7Time: %1"
+                    duration:
+                        permanent: "&7Duration: Permanent"
+                        temporary: "&7Duration: %1"
+                    voided:
+                        'yes': "&7Voided: Yes"
+                        'no': "&7Voided: No"
+                    reason: "&7Reason: %1"
+                list:
+                    entry:
+                        ban:
+                            permanent: "&7  [%1] %2: Permanent Ban: %3"
+                            temporary: "&7  [%1] %2: Temporary Ban: %3"
+                        globalMute:
+                            permanent: "&7  [%1] %2: Permanent Global Mute: %3"
+                            temporary: "&7  [%1] %2: Temporary Global Mute: %3"
+                        mute:
+                            permanent: "&7  [%1] %2: Permanent Mute (&f%3&7): %4"
+                            temporary: "&7  [%1] %2: Temporary Mute (&f%3&7): %4"
+                        unknown:
+                            permanent: "&7  [%1] %2: Permanent %3: %4"
+                            temporary: "&7  [%1] %2: Temporary %3: %4"
+                    empty: "&7%1 has no punishment history!"
+                    header: "&7Punishment history for %1: (Page %2/%3)"
+                    voided: "&7    (This punishment was voided)"
             mute:
                 error:
                     alreadyMuted: "&4ERROR: That user is already muted!"
@@ -907,6 +944,10 @@ messages:
             set: "&aWarp '%1' has been set here."
             teleportedBy: "&aYou have been teleported by %1&a."
     shared:
+        format:
+            date: "yyyy-MM-dd"
+            dateTime: "yyyy-MM-dd HH:mm z"
+            time: "HH:mm z"
         parser:
             groupNotFound:
                 error: "&4ERROR: Failed to find group '%1'"

@@ -3,7 +3,9 @@ package com.bendude56.goldenapple.punish;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -56,8 +58,11 @@ public class SimplePunishmentManager extends PunishmentManager {
                 GoldenApple.getInstanceDatabaseManager().closeResult(r);
             }
         } catch (SQLException e) {
-            
+            GoldenApple.log(Level.SEVERE, "Error encountered while loading punishments for " + u.getName() + ":");
+            GoldenApple.log(Level.SEVERE, e);
         }
+        
+        cache.get(u.getId()).sort(Collections.reverseOrder(new PunishmentTimeComparator()));
     }
     
     @Override
@@ -68,7 +73,12 @@ public class SimplePunishmentManager extends PunishmentManager {
     @Override
     public void addPunishment(Punishment p, IPermissionUser u) {
         if (cache.containsKey(u.getId())) {
-            cache.get(u.getId()).add(p);
+            int i = Collections.binarySearch(cache.get(u.getId()), p, Collections.reverseOrder(new PunishmentTimeComparator()));
+            
+            if (i < 0)
+                i = -i - 1;
+            
+            cache.get(u.getId()).add(i, p);
         }
         
         p.insert();
