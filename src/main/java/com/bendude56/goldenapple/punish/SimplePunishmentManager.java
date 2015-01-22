@@ -62,7 +62,7 @@ public class SimplePunishmentManager extends PunishmentManager {
             GoldenApple.log(Level.SEVERE, e);
         }
         
-        Collections.sort(cache.get(u.getId()), new PunishmentTimeComparator());
+        Collections.sort(cache.get(u.getId()), Collections.reverseOrder(new PunishmentTimeComparator()));
     }
     
     @Override
