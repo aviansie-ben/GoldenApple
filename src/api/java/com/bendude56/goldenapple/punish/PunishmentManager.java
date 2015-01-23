@@ -14,6 +14,7 @@ public abstract class PunishmentManager {
     public static Permission whoisPermission;
     public static Permission historyPermission;
     public static Permission purgePermission;
+    public static Permission warnPermission;
     
     // goldenapple.punish.globalmute
     public static PermissionNode globalMuteNode;
@@ -45,6 +46,7 @@ public abstract class PunishmentManager {
     public abstract void addPunishment(Punishment p, IPermissionUser u);
     public abstract void addMute(IPermissionUser target, IPermissionUser admin, String reason, RemainingTime duration, String channel);
     public abstract void addBan(IPermissionUser target, IPermissionUser admin, String reason, RemainingTime duration);
+    public abstract void addWarning(IPermissionUser target, IPermissionUser admin, String reason);
     
     public abstract boolean isMuted(IPermissionUser u, IChatChannel channel);
     public abstract PunishmentMute getActiveMute(IPermissionUser u, IChatChannel channel);

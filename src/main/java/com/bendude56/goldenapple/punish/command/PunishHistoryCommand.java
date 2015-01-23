@@ -12,6 +12,7 @@ import com.bendude56.goldenapple.punish.Punishment;
 import com.bendude56.goldenapple.punish.PunishmentBan;
 import com.bendude56.goldenapple.punish.PunishmentManager;
 import com.bendude56.goldenapple.punish.PunishmentMute;
+import com.bendude56.goldenapple.punish.PunishmentWarning;
 
 public class PunishHistoryCommand extends GoldenAppleCommand {
     public static final int PUNISHMENTS_PER_PAGE = 10;
@@ -78,6 +79,8 @@ public class PunishHistoryCommand extends GoldenAppleCommand {
                                     user.sendLocalizedMessage("module.punish.history.list.entry.mute.temporary", punishments.size() - i, time, m.getChannelIdentifier(), p.getReason(), p.getDuration().toString(user));
                                 }
                             }
+                        } else if (p instanceof PunishmentWarning) {
+                            user.sendLocalizedMessage("module.punish.history.list.entry.warn", punishments.size() - i, time, p.getReason());
                         } else {
                             if (p.isPermanent()) {
                                 user.sendLocalizedMessage("module.punish.history.list.entry.unknown.permanent", punishments.size() - i, time, p.getClass().getName(), p.getReason());
@@ -130,21 +133,27 @@ public class PunishHistoryCommand extends GoldenAppleCommand {
                 } else {
                     user.sendLocalizedMessage("module.punish.history.info.type.mute", m.getChannelIdentifier());
                 }
+            } else if (p instanceof PunishmentWarning) {
+                user.sendLocalizedMessage("module.punish.history.info.type.warning");
             } else {
                 user.sendLocalizedMessage("module.punish.history.info.type.unknown", p.getClass().getName());
             }
             
             user.sendLocalizedMessage("module.punish.history.info.target", p.getTarget().getName());
             user.sendLocalizedMessage("module.punish.history.info.admin", p.getAdmin().getName());
-            user.sendLocalizedMessage("module.punish.history.info.time", new SimpleDateFormat(GoldenApple.getInstance().getLocalizationManager().getLocale(user).getRawMessage("shared.format.dateTime")).format(p.getStartTime()));
             
-            if (p.isPermanent()) {
-                user.sendLocalizedMessage("module.punish.history.info.duration.permanent");
-            } else {
-                user.sendLocalizedMessage("module.punish.history.info.duration.temporary", p.getDuration().toString(user));
+            if (!(p instanceof PunishmentWarning)) {
+                user.sendLocalizedMessage("module.punish.history.info.time", new SimpleDateFormat(GoldenApple.getInstance().getLocalizationManager().getLocale(user).getRawMessage("shared.format.dateTime")).format(p.getStartTime()));
+                
+                if (p.isPermanent()) {
+                    user.sendLocalizedMessage("module.punish.history.info.duration.permanent");
+                } else {
+                    user.sendLocalizedMessage("module.punish.history.info.duration.temporary", p.getDuration().toString(user));
+                }
+                
+                user.sendLocalizedMessage((p.isVoided()) ? "module.punish.history.info.voided.yes" : "module.punish.history.info.voided.no");
             }
             
-            user.sendLocalizedMessage((p.isVoided()) ? "module.punish.history.info.voided.yes" : "module.punish.history.info.voided.no");
             user.sendLocalizedMessage("module.punish.history.info.reason", p.getReason());
         } else if (args[1].equalsIgnoreCase("purge")) {
             // TODO Implement this

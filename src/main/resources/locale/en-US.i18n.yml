@@ -62,6 +62,12 @@ mail:
             void:
                 subject: "Mute Voided - '%2'"
                 contents: "Your recent mute from channel '%2' was voided by %1. If you require more information or further assistance, please speak to them."
+        warn:
+            subject: "Warning Issued"
+            contents:
+                - "You have been issued a warning by %1. Continued rule breaking may result in disciplinary action. The reason for your warning was:"
+                - ""
+                - "%2"
 messages:
     module:
         antigrief:
@@ -710,6 +716,7 @@ messages:
                         globalMute: "&7Punishment Type: Global Mute"
                         mute: "&7Punishment Type: Mute (&f%1&7)"
                         unknown: "&7Punishment Type: %1"
+                        warning: "&7Punishment Type: Warning"
                     target: "&7Target: %1"
                     admin: "&7Administrator: %1"
                     time: "&7Time: %1"
@@ -734,6 +741,7 @@ messages:
                         unknown:
                             permanent: "&7  [%1] %2: Permanent %3: %4"
                             temporary: "&7  [%1] %2: Temporary %3: %4"
+                        warn: "&7  [%1] %2: Warning Issued: %3"
                     empty: "&7%1 has no punishment history!"
                     header: "&7Punishment history for %1: (Page %2/%3)"
                     voided: "&7    (This punishment was voided)"
@@ -771,6 +779,8 @@ messages:
                     perm: "&a%1 has been permanently muted."
                     temp: "&a%1 has been muted for %2."
                     void: "&aThe mute on %1 has been voided."
+            warn:
+                success: "&a%1 has been issued a warning."
             whois:
                 ban:
                     perm: "&7%1 is banned permanently"

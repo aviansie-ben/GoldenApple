@@ -22,6 +22,7 @@ public class SimplePunishmentManager extends PunishmentManager {
     public SimplePunishmentManager() {
         GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("bans");
         GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("mutes");
+        GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("warnings");
         
         cache = new HashMap<Long, ArrayList<Punishment>>();
         for (Player p : Bukkit.getOnlinePlayers()) {
@@ -53,6 +54,14 @@ public class SimplePunishmentManager extends PunishmentManager {
             try {
                 while (r.next()) {
                     cache.get(u.getId()).add(new SimplePunishmentMute(r));
+                }
+            } finally {
+                GoldenApple.getInstanceDatabaseManager().closeResult(r);
+            }
+            r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT * FROM Warnings WHERE Target=?", u.getId());
+            try {
+                while (r.next()) {
+                    cache.get(u.getId()).add(new SimplePunishmentWarning(r));
                 }
             } finally {
                 GoldenApple.getInstanceDatabaseManager().closeResult(r);
@@ -92,6 +101,11 @@ public class SimplePunishmentManager extends PunishmentManager {
     @Override
     public void addBan(IPermissionUser target, IPermissionUser admin, String reason, RemainingTime duration) {
         addPunishment(new SimplePunishmentBan(target, admin, reason, duration), target);
+    }
+    
+    @Override
+    public void addWarning(IPermissionUser target, IPermissionUser admin, String reason) {
+        addPunishment(new SimplePunishmentWarning(target, admin, reason), target);
     }
     
     @Override
