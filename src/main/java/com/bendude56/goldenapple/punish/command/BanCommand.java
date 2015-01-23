@@ -1,11 +1,8 @@
 package com.bendude56.goldenapple.punish.command;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
 import com.bendude56.goldenapple.GoldenApple;
-import com.bendude56.goldenapple.ModuleLoader.ModuleState;
-import com.bendude56.goldenapple.SimpleCommandManager;
 import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.audit.AuditLog;
 import com.bendude56.goldenapple.command.DualSyntaxCommand;
@@ -25,9 +22,7 @@ public class BanCommand extends DualSyntaxCommand {
     
     @Override
     public void onExecuteComplex(GoldenApple instance, User user, String commandLabel, String[] args) {
-        if (GoldenApple.getInstance().getModuleManager().getModule("Chat").getCurrentState() != ModuleState.LOADED) {
-            SimpleCommandManager.defaultCommand.onCommand(user.getHandle(), Bukkit.getPluginCommand("gamute"), commandLabel, args);
-        } else if (args.length == 0 || args[0].equalsIgnoreCase("-?") || args[0].equalsIgnoreCase("help")) {
+        if (args.length == 0 || args[0].equalsIgnoreCase("-?") || args[0].equalsIgnoreCase("help")) {
             sendHelp(user, commandLabel, true);
         } else {
             ComplexArgumentParser arg = new ComplexArgumentParser(new ArgumentInfo[] {
