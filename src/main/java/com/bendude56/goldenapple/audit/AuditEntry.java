@@ -26,6 +26,7 @@ import com.bendude56.goldenapple.punish.audit.BanEntry;
 import com.bendude56.goldenapple.punish.audit.BanVoidEntry;
 import com.bendude56.goldenapple.punish.audit.MuteEntry;
 import com.bendude56.goldenapple.punish.audit.MuteVoidEntry;
+import com.bendude56.goldenapple.punish.audit.WarnEntry;
 
 public abstract class AuditEntry {
     private static HashMap<Integer, Class<? extends AuditEntry>> registeredEntries = new HashMap<Integer, Class<? extends AuditEntry>>();
@@ -74,6 +75,7 @@ public abstract class AuditEntry {
         registerAuditEntry(MuteEntry.class);
         registerAuditEntry(BanVoidEntry.class);
         registerAuditEntry(MuteVoidEntry.class);
+        registerAuditEntry(WarnEntry.class);
         
         registerAuditEntry(PermissionGrantEntry.class);
         registerAuditEntry(PermissionRevokeEntry.class);

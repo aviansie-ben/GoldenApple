@@ -3,7 +3,9 @@ package com.bendude56.goldenapple.punish;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -20,6 +22,7 @@ public class SimplePunishmentManager extends PunishmentManager {
     public SimplePunishmentManager() {
         GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("bans");
         GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("mutes");
+        GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("warnings");
         
         cache = new HashMap<Long, ArrayList<Punishment>>();
         for (Player p : Bukkit.getOnlinePlayers()) {
@@ -55,9 +58,20 @@ public class SimplePunishmentManager extends PunishmentManager {
             } finally {
                 GoldenApple.getInstanceDatabaseManager().closeResult(r);
             }
+            r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT * FROM Warnings WHERE Target=?", u.getId());
+            try {
+                while (r.next()) {
+                    cache.get(u.getId()).add(new SimplePunishmentWarning(r));
+                }
+            } finally {
+                GoldenApple.getInstanceDatabaseManager().closeResult(r);
+            }
         } catch (SQLException e) {
-            
+            GoldenApple.log(Level.SEVERE, "Error encountered while loading punishments for " + u.getName() + ":");
+            GoldenApple.log(Level.SEVERE, e);
         }
+        
+        Collections.sort(cache.get(u.getId()), Collections.reverseOrder(new PunishmentTimeComparator()));
     }
     
     @Override
@@ -68,7 +82,12 @@ public class SimplePunishmentManager extends PunishmentManager {
     @Override
     public void addPunishment(Punishment p, IPermissionUser u) {
         if (cache.containsKey(u.getId())) {
-            cache.get(u.getId()).add(p);
+            int i = Collections.binarySearch(cache.get(u.getId()), p, Collections.reverseOrder(new PunishmentTimeComparator()));
+            
+            if (i < 0)
+                i = -i - 1;
+            
+            cache.get(u.getId()).add(i, p);
         }
         
         p.insert();
@@ -82,6 +101,20 @@ public class SimplePunishmentManager extends PunishmentManager {
     @Override
     public void addBan(IPermissionUser target, IPermissionUser admin, String reason, RemainingTime duration) {
         addPunishment(new SimplePunishmentBan(target, admin, reason, duration), target);
+    }
+    
+    @Override
+    public void addWarning(IPermissionUser target, IPermissionUser admin, String reason) {
+        addPunishment(new SimplePunishmentWarning(target, admin, reason), target);
+    }
+    
+    @Override
+    public void purgePunishment(Punishment p) {
+        p.delete();
+        
+        if (cache.containsKey(p.getTargetId())) {
+            cache.get(p.getTargetId()).remove(p);
+        }
     }
     
     @Override

@@ -18,6 +18,7 @@ public abstract class Punishment {
     
     public abstract boolean update();
     public abstract boolean insert();
+    public abstract boolean delete();
     
     public long getId() {
         return id;

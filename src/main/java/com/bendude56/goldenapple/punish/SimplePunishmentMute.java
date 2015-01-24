@@ -78,4 +78,16 @@ public class SimplePunishmentMute extends PunishmentMute {
         }
     }
     
+    @Override
+    public boolean delete() {
+        try {
+            GoldenApple.getInstanceDatabaseManager().execute("DELETE FROM Mutes WHERE ID=?", id);
+            return true;
+        } catch (SQLException e) {
+            GoldenApple.log(Level.SEVERE, "Failed to delete mute " + id + ":");
+            GoldenApple.log(Level.SEVERE, e);
+            return false;
+        }
+    }
+    
 }

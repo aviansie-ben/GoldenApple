@@ -62,6 +62,12 @@ mail:
             void:
                 subject: "Mute Voided - '%2'"
                 contents: "Your recent mute from channel '%2' was voided by %1. If you require more information or further assistance, please speak to them."
+        warn:
+            subject: "Warning Issued"
+            contents:
+                - "You have been issued a warning by %1. Continued rule breaking may result in disciplinary action. The reason for your warning was:"
+                - ""
+                - "%2"
 messages:
     module:
         antigrief:
@@ -700,6 +706,54 @@ messages:
                     perm: "&a%1 has been permanently globally muted."
                     temp: "&a%1 has been globally muted for %2."
                     void: "&aThe global mute on %1 has been voided."
+            history:
+                error:
+                    invalidEntry: "&4ERROR: User has only %1 punishment history entries!"
+                    invalidPage: "&4ERROR: Cannot display page %1. User has only %2 pages of history."
+                    mustVoidBeforePurge: "&4ERROR: Cannot purge an active punishment. Void it first!"
+                help:
+                    - "See a list of punishment records for a user using &7/%1 <user> [list <page>]"
+                    - "See details about a punishment record using &7/%1 <user> info <id>"
+                    - "Purge a punishment from a user's history using &7/%1 <user> purge <id>"
+                    - "Purge all punishments from a user's history using &7/%1 <user> purgeall"
+                info:
+                    type:
+                        ban: "&7Punishment Type: Ban"
+                        globalMute: "&7Punishment Type: Global Mute"
+                        mute: "&7Punishment Type: Mute (&f%1&7)"
+                        unknown: "&7Punishment Type: %1"
+                        warning: "&7Punishment Type: Warning"
+                    target: "&7Target: %1"
+                    admin: "&7Administrator: %1"
+                    time: "&7Time: %1"
+                    duration:
+                        permanent: "&7Duration: Permanent"
+                        temporary: "&7Duration: %1"
+                    voided:
+                        'yes': "&7Voided: Yes"
+                        'no': "&7Voided: No"
+                    reason: "&7Reason: %1"
+                list:
+                    entry:
+                        ban:
+                            permanent: "&7  [%1] %2: Permanent Ban: %3"
+                            temporary: "&7  [%1] %2: Temporary Ban: %3"
+                        globalMute:
+                            permanent: "&7  [%1] %2: Permanent Global Mute: %3"
+                            temporary: "&7  [%1] %2: Temporary Global Mute: %3"
+                        mute:
+                            permanent: "&7  [%1] %2: Permanent Mute (&f%3&7): %4"
+                            temporary: "&7  [%1] %2: Temporary Mute (&f%3&7): %4"
+                        unknown:
+                            permanent: "&7  [%1] %2: Permanent %3: %4"
+                            temporary: "&7  [%1] %2: Temporary %3: %4"
+                        warn: "&7  [%1] %2: Warning Issued: %3"
+                    empty: "&7%1 has no punishment history!"
+                    header: "&7Punishment history for %1: (Page %2/%3)"
+                    voided: "&7    (This punishment was voided)"
+                purge:
+                    success: "&aThat punishment has been purged from %1's punishment history!"
+                    successAll: "&aAll non-active punishments have been purged from %1's punishment history!"
             mute:
                 error:
                     alreadyMuted: "&4ERROR: That user is already muted!"
@@ -734,6 +788,8 @@ messages:
                     perm: "&a%1 has been permanently muted."
                     temp: "&a%1 has been muted for %2."
                     void: "&aThe mute on %1 has been voided."
+            warn:
+                success: "&a%1 has been issued a warning."
             whois:
                 ban:
                     perm: "&7%1 is banned permanently"
@@ -907,6 +963,10 @@ messages:
             set: "&aWarp '%1' has been set here."
             teleportedBy: "&aYou have been teleported by %1&a."
     shared:
+        format:
+            date: "yyyy-MM-dd"
+            dateTime: "yyyy-MM-dd HH:mm z"
+            time: "HH:mm z"
         parser:
             groupNotFound:
                 error: "&4ERROR: Failed to find group '%1'"
