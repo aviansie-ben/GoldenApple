@@ -19,16 +19,17 @@ public class PunishHistoryCommand extends GoldenAppleCommand {
     
     @Override
     public boolean onExecute(GoldenApple instance, User user, String commandLabel, String[] args) {
-        if (args.length < 1) {
-            return false;
+        user.sendLocalizedMessage("module.punish.header");
+        
+        if (args.length < 1 || args[0].equalsIgnoreCase("-?") || args[0].equalsIgnoreCase("help")) {
+            user.sendLocalizedMessage("module.punish.history.help", commandLabel);
+            return true;
         }
         
         if (!user.hasPermission(PunishmentManager.historyPermission)) {
             GoldenApple.logPermissionFail(user, commandLabel, args, true);
             return true;
         }
-        
-        user.sendLocalizedMessage("module.punish.header");
         
         IPermissionUser target = PermissionManager.getInstance().findUser(args[0], true);
         

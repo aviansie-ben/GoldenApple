@@ -711,6 +711,11 @@ messages:
                     invalidEntry: "&4ERROR: User has only %1 punishment history entries!"
                     invalidPage: "&4ERROR: Cannot display page %1. User has only %2 pages of history."
                     mustVoidBeforePurge: "&4ERROR: Cannot purge an active punishment. Void it first!"
+                help:
+                    - "See a list of punishment records for a user using &7/%1 <user> [list <page>]"
+                    - "See details about a punishment record using &7/%1 <user> info <id>"
+                    - "Purge a punishment from a user's history using &7/%1 <user> purge <id>"
+                    - "Purge all punishments from a user's history using &7/%1 <user> purgeall"
                 info:
                     type:
                         ban: "&7Punishment Type: Ban"
