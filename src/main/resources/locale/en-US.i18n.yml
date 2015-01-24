@@ -710,6 +710,7 @@ messages:
                 error:
                     invalidEntry: "&4ERROR: User has only %1 punishment history entries!"
                     invalidPage: "&4ERROR: Cannot display page %1. User has only %2 pages of history."
+                    mustVoidBeforePurge: "&4ERROR: Cannot purge an active punishment. Void it first!"
                 info:
                     type:
                         ban: "&7Punishment Type: Ban"
@@ -745,6 +746,9 @@ messages:
                     empty: "&7%1 has no punishment history!"
                     header: "&7Punishment history for %1: (Page %2/%3)"
                     voided: "&7    (This punishment was voided)"
+                purge:
+                    success: "&aThat punishment has been purged from %1's punishment history!"
+                    successAll: "&aAll non-active punishments have been purged from %1's punishment history!"
             mute:
                 error:
                     alreadyMuted: "&4ERROR: That user is already muted!"

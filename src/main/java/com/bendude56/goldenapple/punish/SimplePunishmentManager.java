@@ -109,6 +109,15 @@ public class SimplePunishmentManager extends PunishmentManager {
     }
     
     @Override
+    public void purgePunishment(Punishment p) {
+        p.delete();
+        
+        if (cache.containsKey(p.getTargetId())) {
+            cache.get(p.getTargetId()).remove(p);
+        }
+    }
+    
+    @Override
     public boolean isMuted(IPermissionUser u, IChatChannel channel) {
         return (getActiveMute(u, null) != null) || (getActiveMute(u, channel) != null);
     }

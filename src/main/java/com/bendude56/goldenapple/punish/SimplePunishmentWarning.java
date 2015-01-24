@@ -63,10 +63,27 @@ public class SimplePunishmentWarning extends PunishmentWarning {
             return false;
         }
     }
+    
+    @Override
+    public boolean delete() {
+        try {
+            GoldenApple.getInstanceDatabaseManager().execute("DELETE FROM Warnings WHERE ID=?", id);
+            return true;
+        } catch (SQLException e) {
+            GoldenApple.log(Level.SEVERE, "Failed to delete warning " + id + ":");
+            GoldenApple.log(Level.SEVERE, e);
+            return false;
+        }
+    }
 
     @Override
     public void voidPunishment() {
         throw new UnsupportedOperationException("Cannot void a warning!");
+    }
+    
+    @Override
+    public boolean isExpired() {
+        return true;
     }
     
 }

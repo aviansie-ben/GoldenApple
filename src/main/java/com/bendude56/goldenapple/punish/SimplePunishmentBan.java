@@ -64,4 +64,16 @@ public class SimplePunishmentBan extends PunishmentBan {
         }
     }
     
+    @Override
+    public boolean delete() {
+        try {
+            GoldenApple.getInstanceDatabaseManager().execute("DELETE FROM Bans WHERE ID=?", id);
+            return true;
+        } catch (SQLException e) {
+            GoldenApple.log(Level.SEVERE, "Failed to delete ban " + id + ":");
+            GoldenApple.log(Level.SEVERE, e);
+            return false;
+        }
+    }
+    
 }

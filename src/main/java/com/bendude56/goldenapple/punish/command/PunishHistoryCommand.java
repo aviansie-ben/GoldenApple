@@ -156,7 +156,57 @@ public class PunishHistoryCommand extends GoldenAppleCommand {
             
             user.sendLocalizedMessage("module.punish.history.info.reason", p.getReason());
         } else if (args[1].equalsIgnoreCase("purge")) {
-            // TODO Implement this
+            int i;
+            
+            if (!user.hasPermission(PunishmentManager.purgePermission)) {
+                GoldenApple.logPermissionFail(user, commandLabel, args, true);
+                return true;
+            }
+            
+            List<Punishment> punishments = PunishmentManager.getInstance().getPunishments(target, Punishment.class);
+            
+            if (args.length < 3) {
+                user.sendLocalizedMessage("shared.paraser.parameterMissing", "purge");
+                return true;
+            } else {
+                try {
+                    i = Integer.parseInt(args[2]);
+                } catch (NumberFormatException e) {
+                    user.sendLocalizedMessage("shared.convertError.number", args[2]);
+                    return true;
+                }
+            }
+            
+            if (i > punishments.size() || i <= 0) {
+                user.sendLocalizedMessage("module.punish.history.error.invalidEntry", punishments.size());
+                return true;
+            }
+            
+            Punishment p = punishments.get(punishments.size() - i);
+            
+            if (!p.isExpired()) {
+                user.sendLocalizedMessage("module.punish.history.error.mustVoidBeforePurge");
+                return true;
+            }
+            
+            PunishmentManager.getInstance().purgePunishment(p);
+            
+            user.sendLocalizedMessage("module.punish.history.purge.success", target.getName());
+        } else if (args[1].equalsIgnoreCase("purgeall")) {
+            if (!user.hasPermission(PunishmentManager.purgePermission)) {
+                GoldenApple.logPermissionFail(user, commandLabel, args, true);
+                return true;
+            }
+            
+            List<Punishment> punishments = PunishmentManager.getInstance().getPunishments(target, Punishment.class);
+            
+            for (Punishment p : punishments) {
+                if (p.isExpired()) {
+                    PunishmentManager.getInstance().purgePunishment(p);
+                }
+            }
+            
+            user.sendLocalizedMessage("module.punish.history.purge.successAll", target.getName());
         } else {
             user.sendLocalizedMessage("shared.parser.unknownOption", args[0]);
         }
