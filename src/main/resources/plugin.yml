@@ -124,7 +124,7 @@ commands:
     gapunishhistory:
         usage: Use /<command> -? for help
         description: Gets punishment history for a player
-        aliases: [punishhistory]
+        aliases: [punishhistory, ph]
     gawarn:
         usage: /<command> <Player> <Reason>
         description: Issues a warning
