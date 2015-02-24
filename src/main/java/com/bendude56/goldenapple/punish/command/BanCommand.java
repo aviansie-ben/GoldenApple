@@ -99,7 +99,7 @@ public class BanCommand extends DualSyntaxCommand {
                 b.voidPunishment();
                 b.update();
                 
-                AuditLog.logEntry(new BanVoidEntry(user.getName(), target.getName()));
+                AuditLog.logEntry(new BanVoidEntry(user.getLogName(), target.getLogName()));
                 
                 if (MailManager.getInstance() != null) {
                     MailManager.getInstance().sendSystemMessage(target, "punish.ban.void", user.getName());
@@ -136,7 +136,7 @@ public class BanCommand extends DualSyntaxCommand {
                     }
                     
                     PunishmentManager.getInstance().addBan(target, user, reason, t);
-                    AuditLog.logEntry(new BanEntry(user.getName(), target.getName(), (t == null) ? "PERMANENT" : t.toStringDefault(), reason));
+                    AuditLog.logEntry(new BanEntry(user.getLogName(), target.getLogName(), (t == null) ? "PERMANENT" : t.toStringDefault(), reason));
                     
                     if (MailManager.getInstance() != null) {
                         if (t == null) {

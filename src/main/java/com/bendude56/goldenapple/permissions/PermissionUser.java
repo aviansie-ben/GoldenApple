@@ -122,6 +122,11 @@ public class PermissionUser implements IPermissionUser {
     }
     
     @Override
+    public String getLogName() {
+        return name + " (" + id + ")";
+    }
+    
+    @Override
     public UUID getUuid() {
         return uuid;
     }

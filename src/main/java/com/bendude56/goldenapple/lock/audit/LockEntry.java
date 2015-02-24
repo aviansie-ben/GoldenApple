@@ -16,7 +16,7 @@ public abstract class LockEntry extends AuditEntry {
     public LockEntry(int entryId, AuditEntryLevel severity, IPermissionUser user) {
         this(entryId, severity);
         
-        this.user = user.getName();
+        this.user = user.getLogName();
     }
     
     @Override

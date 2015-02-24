@@ -37,7 +37,7 @@ public class WarnCommand extends GoldenAppleCommand {
             }
             
             PunishmentManager.getInstance().addWarning(target, user, reason);
-            AuditLog.logEntry(new WarnEntry(user.getName(), target.getName(), reason));
+            AuditLog.logEntry(new WarnEntry(user.getLogName(), target.getName(), reason));
             
             if (MailManager.getInstance() != null) {
                 MailManager.getInstance().sendSystemMessage(target, "punish.warn", user.getName(), reason);

@@ -100,9 +100,9 @@ public class AntigriefListener implements Listener, EventExecutor {
             if (GoldenApple.getInstanceMainConfig().getBoolean("modules.antigrief.noLightTnt", true) && (PermissionManager.getInstance() == null || !u.hasPermission(AntigriefModuleLoader.tntPermission))) {
                 event.setCancelled(true);
                 u.sendLocalizedMessage("module.antigrief.tnt.blocked");
-                GoldenApple.log(Level.WARNING, u.getName() + " attempted to ignite TNT at (" + l.getBlockX() + ", " + l.getBlockY() + ", " + l.getBlockZ() + ", " + l.getWorld().getName() + ")");
+                GoldenApple.log(Level.WARNING, u.getLogName() + " attempted to ignite TNT at (" + l.getBlockX() + ", " + l.getBlockY() + ", " + l.getBlockZ() + ", " + l.getWorld().getName() + ")");
             } else {
-                GoldenApple.log(Level.WARNING, u.getName() + " has ignited TNT at (" + l.getBlockX() + ", " + l.getBlockY() + ", " + l.getBlockZ() + ", " + l.getWorld().getName() + ")");
+                GoldenApple.log(Level.WARNING, u.getLogName() + " has ignited TNT at (" + l.getBlockX() + ", " + l.getBlockY() + ", " + l.getBlockZ() + ", " + l.getWorld().getName() + ")");
             }
         }
     }
@@ -129,9 +129,9 @@ public class AntigriefListener implements Listener, EventExecutor {
             Location l = event.getBlock().getLocation();
             if (GoldenApple.getInstanceMainConfig().getBoolean("modules.antigrief.noFireLight", true)) {
                 if (u.hasPermission(AntigriefModuleLoader.lighterPermission)) {
-                    GoldenApple.log(Level.WARNING, u.getName() + " has lit a fire at (" + l.getBlockX() + ", " + l.getBlockY() + ", " + l.getBlockZ() + ", " + l.getWorld().getName() + ")");
+                    GoldenApple.log(Level.WARNING, u.getLogName() + " has lit a fire at (" + l.getBlockX() + ", " + l.getBlockY() + ", " + l.getBlockZ() + ", " + l.getWorld().getName() + ")");
                 } else {
-                    GoldenApple.log(Level.WARNING, u.getName() + " attempted to light fire at (" + l.getBlockX() + ", " + l.getBlockY() + ", " + l.getBlockZ() + ", " + l.getWorld().getName() + ")");
+                    GoldenApple.log(Level.WARNING, u.getLogName() + " attempted to light fire at (" + l.getBlockX() + ", " + l.getBlockY() + ", " + l.getBlockZ() + ", " + l.getWorld().getName() + ")");
                     event.setCancelled(true);
                 }
             }

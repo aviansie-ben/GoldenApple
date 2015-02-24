@@ -26,7 +26,7 @@ public abstract class PermissionEntry extends AuditEntry {
         
         if (target instanceof IPermissionUser) {
             this.targetType = TargetType.USER;
-            this.targetName = ((IPermissionUser) target).getName();
+            this.targetName = ((IPermissionUser) target).getLogName();
             this.targetId = target.getId();
         } else if (target instanceof IPermissionGroup) {
             this.targetType = TargetType.GROUP;

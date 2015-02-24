@@ -33,6 +33,14 @@ public interface IPermissionUser extends IPermissionObject {
     public String getName();
     
     /**
+     * Gets the name by which this player should be referred to in log files.
+     * This includes the user's ID for searching purposes.
+     * 
+     * @return The name which should be shown for this user in the log files.
+     */
+    public String getLogName();
+    
+    /**
      * Gets the UUID associated with this user as set by Mojang's servers. While
      * it is acceptable to store references to a user internally using this, it
      * is discouraged; instead, the internal ID number of this user retrieved
@@ -56,7 +64,7 @@ public interface IPermissionUser extends IPermissionObject {
      * speak in chat.
      * 
      * @return The prefix to display alongside the user's name when they talk,
-     * or {@code null} if no prefix should be displayed.
+     *         or {@code null} if no prefix should be displayed.
      */
     public String getPrefix();
     
@@ -69,48 +77,51 @@ public interface IPermissionUser extends IPermissionObject {
     
     /**
      * @deprecated Replaced by the new user variable system. Use
-     * {@link IPermissionObject#getVariableString(String)} with the
-     * "goldenapple.locale" variable.
+     *             {@link IPermissionObject#getVariableString(String)} with the
+     *             "goldenapple.locale" variable.
      */
     @Deprecated
     public String getPreferredLocale();
     
     /**
      * @deprecated Replaced by the new user variable system. Use
-     * {@link IPermissionObject#setVariable(String, String)} with the
-     * "goldenapple.locale" variable.
+     *             {@link IPermissionObject#setVariable(String, String)} with
+     *             the
+     *             "goldenapple.locale" variable.
      */
     @Deprecated
     public void setPreferredLocale(String locale);
     
     /**
      * @deprecated Replaced by the new user variable system. Use
-     * {@link IPermissionObject#getVariableBoolean(String)} with the
-     * "goldenapple.complexSyntax" variable.
+     *             {@link IPermissionObject#getVariableBoolean(String)} with the
+     *             "goldenapple.complexSyntax" variable.
      */
     @Deprecated
     public boolean isUsingComplexCommands();
     
     /**
      * @deprecated Replaced by the new user variable system. Use
-     * {@link IPermissionObject#setVariable(String, Boolean)} with the
-     * "goldenapple.complexSyntax" variable.
+     *             {@link IPermissionObject#setVariable(String, Boolean)} with
+     *             the
+     *             "goldenapple.complexSyntax" variable.
      */
     @Deprecated
     public void setUsingComplexCommands(boolean useComplex);
     
     /**
      * @deprecated Replaced by the new user variable system. Use
-     * {@link IPermissionObject#getVariableBoolean(String)} with the
-     * "goldenapple.lock.autoLock" variable.
+     *             {@link IPermissionObject#getVariableBoolean(String)} with the
+     *             "goldenapple.lock.autoLock" variable.
      */
     @Deprecated
     public boolean isAutoLockEnabled();
     
     /**
      * @deprecated Replaced by the new user variable system. Use
-     * {@link IPermissionObject#setVariable(String, Boolean)} with the
-     * "goldenapple.lock.autoLock" variable.
+     *             {@link IPermissionObject#setVariable(String, Boolean)} with
+     *             the
+     *             "goldenapple.lock.autoLock" variable.
      */
     @Deprecated
     public void setAutoLockEnabled(boolean autoLock);

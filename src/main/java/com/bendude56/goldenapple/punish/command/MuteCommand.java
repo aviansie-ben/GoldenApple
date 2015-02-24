@@ -130,7 +130,7 @@ public class MuteCommand extends DualSyntaxCommand {
                 m.voidPunishment();
                 m.update();
                 
-                AuditLog.logEntry(new MuteVoidEntry(user.getName(), target.getName(), c.getName()));
+                AuditLog.logEntry(new MuteVoidEntry(user.getLogName(), target.getLogName(), c.getName()));
                 
                 if (MailManager.getInstance() != null) {
                     MailManager.getInstance().sendSystemMessage(target, "punish.mute.void", user.getName(), c.getName());
@@ -168,7 +168,7 @@ public class MuteCommand extends DualSyntaxCommand {
                     }
                     
                     PunishmentManager.getInstance().addMute(target, user, reason, t, c.getName());
-                    AuditLog.logEntry(new MuteEntry(user.getName(), target.getName(), (t == null) ? "PERMANENT" : t.toStringDefault(), reason, c.getName()));
+                    AuditLog.logEntry(new MuteEntry(user.getLogName(), target.getLogName(), (t == null) ? "PERMANENT" : t.toStringDefault(), reason, c.getName()));
                     
                     if (MailManager.getInstance() != null) {
                         if (t == null) {

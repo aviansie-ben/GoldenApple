@@ -25,7 +25,7 @@ public abstract class GoldenApple extends JavaPlugin {
         for (String arg : args) {
             command += " " + arg;
         }
-        log(Level.WARNING, u.getName() + " attempted to perform a command (/" + command + ") but doesn't have permission!");
+        log(Level.WARNING, u.getLogName() + " attempted to perform a command (/" + command + ") but doesn't have permission!");
         if (u.getHandle() instanceof Player) {
             Location l = u.getPlayerHandle().getLocation();
             log(Level.WARNING, "Command performed at: (" + l.getX() + ", " + l.getY() + ", " + l.getZ() + ", " + l.getWorld().getName() + ")");

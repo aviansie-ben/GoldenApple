@@ -238,6 +238,15 @@ public class User implements IPermissionUser {
     }
     
     @Override
+    public String getLogName() {
+        if (handle instanceof ConsoleCommandSender) {
+            return "Server";
+        } else {
+            return permissions.getLogName();
+        }
+    }
+    
+    @Override
     public UUID getUuid() {
         if (handle instanceof ConsoleCommandSender) {
             throw new UnsupportedOperationException();

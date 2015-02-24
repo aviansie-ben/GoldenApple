@@ -117,7 +117,7 @@ public class ModuleCommand extends GoldenAppleCommand {
                             if (args.length != 2 && args[2].equalsIgnoreCase("-v")) {
                                 for (ModuleLoader mLoad = depend.pollLast(); mLoad != null; mLoad = depend.pollLast()) {
                                     try {
-                                        if (!GoldenApple.getInstance().getModuleManager().enableModule(mLoad.getModuleName(), false, user.getName())) {
+                                        if (!GoldenApple.getInstance().getModuleManager().enableModule(mLoad.getModuleName(), false, user.getLogName())) {
                                             user.sendLocalizedMessage("module.base.module.enable.loadError.dependency", module.getModuleName(), mLoad.getModuleName());
                                             return true;
                                         } else {
@@ -144,7 +144,7 @@ public class ModuleCommand extends GoldenAppleCommand {
                             }
                         }
                         try {
-                            if (!GoldenApple.getInstance().getModuleManager().enableModule(module.getModuleName(), false, user.getName())) {
+                            if (!GoldenApple.getInstance().getModuleManager().enableModule(module.getModuleName(), false, user.getLogName())) {
                                 user.sendLocalizedMessage("module.base.module.enable.loadError.self", module.getModuleName());
                                 return true;
                             } else {
@@ -194,7 +194,7 @@ public class ModuleCommand extends GoldenAppleCommand {
                             if (args.length != 2 && args[2].equalsIgnoreCase("-v")) {
                                 for (ModuleLoader mUnload = depend.pollLast(); mUnload != null; mUnload = depend.pollLast()) {
                                     try {
-                                        if (!GoldenApple.getInstance().getModuleManager().disableModule(mUnload.getModuleName(), false, user.getName())) {
+                                        if (!GoldenApple.getInstance().getModuleManager().disableModule(mUnload.getModuleName(), false, user.getLogName())) {
                                             user.sendLocalizedMessage("module.base.module.disable.unloadError.dependency", module.getModuleName(), mUnload.getModuleName());
                                             return true;
                                         } else {
@@ -221,7 +221,7 @@ public class ModuleCommand extends GoldenAppleCommand {
                             }
                         }
                         try {
-                            if (!GoldenApple.getInstance().getModuleManager().disableModule(module.getModuleName(), false, user.getName())) {
+                            if (!GoldenApple.getInstance().getModuleManager().disableModule(module.getModuleName(), false, user.getLogName())) {
                                 user.sendLocalizedMessage("module.base.module.disable.unloadError.self", module.getModuleName());
                                 return true;
                             } else {

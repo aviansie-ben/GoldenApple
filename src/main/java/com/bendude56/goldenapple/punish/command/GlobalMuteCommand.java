@@ -97,7 +97,7 @@ public class GlobalMuteCommand extends DualSyntaxCommand {
                 m.voidPunishment();
                 m.update();
                 
-                AuditLog.logEntry(new MuteVoidEntry(user.getName(), target.getName(), "GLOBAL"));
+                AuditLog.logEntry(new MuteVoidEntry(user.getLogName(), target.getLogName(), "GLOBAL"));
                 
                 if (MailManager.getInstance() != null) {
                     MailManager.getInstance().sendSystemMessage(target, "punish.globalMute.void", user.getName());
@@ -132,7 +132,7 @@ public class GlobalMuteCommand extends DualSyntaxCommand {
                     }
                     
                     PunishmentManager.getInstance().addMute(target, user, reason, t, null);
-                    AuditLog.logEntry(new MuteEntry(user.getName(), target.getName(), (t == null) ? "PERMANENT" : t.toStringDefault(), reason, "GLOBAL"));
+                    AuditLog.logEntry(new MuteEntry(user.getLogName(), target.getLogName(), (t == null) ? "PERMANENT" : t.toStringDefault(), reason, "GLOBAL"));
                     
                     if (MailManager.getInstance() != null) {
                         if (t == null) {
