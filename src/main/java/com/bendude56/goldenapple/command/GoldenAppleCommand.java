@@ -12,6 +12,15 @@ public abstract class GoldenAppleCommand implements CommandExecutor {
     
     @Override
     public final boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
+        if (this.isThreadable() && GoldenApple.getInstance().getCommandManager().isWorkerRunning()) {
+            GoldenApple.getInstance().getCommandManager().queueWorkerCommand(this, sender, command, commandLabel, args);
+            return true;
+        } else {
+            return execute(sender, command, commandLabel, args);
+        }
+    }
+    
+    public final boolean execute(CommandSender sender, Command command, String commandLabel, String[] args) {
         PerformanceEvent e = GoldenApple.getInstancePerformanceMonitor().createForCommand(GoldenApple.getInstance().getCommandManager().getCommand(command.getName()).getModule(), commandLabel, args);
         e.start();
         
@@ -24,4 +33,7 @@ public abstract class GoldenAppleCommand implements CommandExecutor {
     
     public abstract boolean onExecute(GoldenApple instance, User user, String commandLabel, String[] args);
     
+    public boolean isThreadable() {
+        return false;
+    }
 }

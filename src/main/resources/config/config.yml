@@ -59,6 +59,11 @@ global:
     # this command is useful for discovering plugin issues, it should
     # generally be kept off for security reasons.
     debugCommand: false
+    
+    # The number of worker threads that the command manager should
+    # use to process commands that can be run in the background. Set
+    # this to 0 or below to disable background command processing.
+    numCommandWorkers: 3
 
 # Policy settings for ensuring that security is not breached
 securityPolicy:

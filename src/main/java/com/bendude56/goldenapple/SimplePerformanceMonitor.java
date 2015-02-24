@@ -46,7 +46,7 @@ public class SimplePerformanceMonitor implements PerformanceMonitor {
         }
     }
     
-    private void logEvent(PerformanceEvent e) {
+    private synchronized void logEvent(PerformanceEvent e) {
         if (!active) {
             throw new UnsupportedOperationException();
         }

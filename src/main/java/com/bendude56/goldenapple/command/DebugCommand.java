@@ -13,6 +13,7 @@ import com.bendude56.goldenapple.GoldenApplePlugin;
 import com.bendude56.goldenapple.LocalizationManager.Locale;
 import com.bendude56.goldenapple.ModuleLoader;
 import com.bendude56.goldenapple.ModuleLoader.ModuleState;
+import com.bendude56.goldenapple.SimpleCommandManager;
 import com.bendude56.goldenapple.User;
 import com.bendude56.goldenapple.lock.LockManager;
 import com.bendude56.goldenapple.lock.SimpleLockManager;
@@ -200,6 +201,8 @@ public class DebugCommand extends GoldenAppleCommand {
             } else {
                 MailManager.getInstance().sendSystemMessage(user, "base.debug", user.getName(), "THIS IS AN ARGUMENT");
             }
+        } else if (args[0].equalsIgnoreCase("cmdworkers")) {
+            ((SimpleCommandManager) GoldenApple.getInstance().getCommandManager()).sendWorkerDebugInformation(user);
         } else {
             user.sendMessage("Bad command: " + args[0]);
         }

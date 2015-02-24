@@ -133,6 +133,9 @@ public class GoldenApplePlugin extends GoldenApple {
             return;
         }
         
+        // Start the command manager's command workers
+        commands.startWorkers(mainConfig.getInt("global.numCommandWorkers", 3));
+        
         // Tell the module loader to load all default modules
         if (!modules.loadDefaults()) {
             // If a module load failed in a fatal manner, stop the server
@@ -144,6 +147,9 @@ public class GoldenApplePlugin extends GoldenApple {
     
     @Override
     public void onDisable() {
+        // Wait for any background commands to finish executing
+        commands.stopWorkers();
+        
         // Unload all modules
         if (modules != null) {
             modules.unloadAll();
