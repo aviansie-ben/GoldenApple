@@ -21,6 +21,14 @@ public class SimplePermissionManager extends PermissionManager {
     private HashMap<Long, PermissionUser> userCache = new HashMap<Long, PermissionUser>();
     private Deque<Long> userCacheOut = new ArrayDeque<Long>();
     
+    private int playerGroupCacheSize;
+    private HashMap<Long, PlayerGroup> playerGroupCache = new HashMap<Long, PlayerGroup>();
+    private Deque<Long> playerGroupCacheOut = new ArrayDeque<Long>();
+    
+    private int playerGroupLookupCacheSize;
+    private HashMap<Long, HashMap<String, Long>> playerGroupLookupCache = new HashMap<Long, HashMap<String, Long>>();
+    private Deque<Long> playerGroupLookupCacheOut = new ArrayDeque<Long>();
+    
     private HashMap<Long, PermissionGroup> groups = new HashMap<Long, PermissionGroup>();
     
     private PermissionNode rootNode;
@@ -35,17 +43,25 @@ public class SimplePermissionManager extends PermissionManager {
         rootNode = new SimplePermissionNode("", null);
         
         userCacheSize = Math.max(GoldenApple.getInstanceMainConfig().getInt("modules.permissions.userCacheSize", 20), 5);
+        playerGroupCacheSize = Math.max(GoldenApple.getInstanceMainConfig().getInt("modules.permissions.playerGroupCacheSize", 20), 5);
+        playerGroupLookupCacheSize = Math.max(GoldenApple.getInstanceMainConfig().getInt("modules.permissions.playerGroupCacheSize", 20), 5);
         
         GoldenApple.getInstanceDatabaseManager().registerTableUpdater("Users", 4, new UserUuidTableUpdater());
         GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("Users");
         GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("UserPermissions");
         GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("UserVariables");
+        
         GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("Groups");
         GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("GroupPermissions");
         GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("GroupGroupMembers");
         GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("GroupUserMembers");
         GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("GroupUserOwners");
         GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("GroupVariables");
+        
+        GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("PlayerGroups");
+        GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("PlayerGroupGroupMembers");
+        GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("PlayerGroupUserMembers");
+        GoldenApple.getInstanceDatabaseManager().createOrUpdateTable("PlayerGroupUserOwners");
         
         setVariableDefaultValue("goldenapple.complexSyntax", GoldenApple.getInstanceMainConfig().getBoolean("modules.permissions.defaultComplexCommands", true));
         setVariableDefaultValue("goldenapple.locale", ((SimpleLocalizationManager) GoldenApple.getInstance().getLocalizationManager()).getDefaultLocale().getShortName());
@@ -332,6 +348,148 @@ public class SimplePermissionManager extends PermissionManager {
     @Override
     public boolean isUserSticky(long id) {
         return userCache.containsKey(id) && !userCacheOut.contains(id);
+    }
+    
+    @Override
+    public IGroup getNamespacedGroup(String defaultNamespace, String name) {
+        String namespace = defaultNamespace;
+        boolean explicitNamespace = name.contains(":");
+        
+        IGroup group = null;
+        
+        if (explicitNamespace) {
+            int sep = name.indexOf(":");
+            
+            namespace = name.substring(0, sep);
+            name = name.substring(sep + 1);
+        }
+        
+        if (!namespace.equals("")) {
+            IPermissionUser creator = this.findUser(namespace, false);
+            
+            if (creator != null) {
+                group = getPlayerGroup(creator, name);
+            }
+        }
+        
+        if (group == null && (!explicitNamespace || namespace.equals(""))) {
+            group = getGroup(name);
+        }
+        
+        return group;
+    }
+    
+    private HashMap<String, Long> getPlayerGroupLookupTable(IPermissionUser creator) {
+        if (playerGroupLookupCache.containsKey(creator.getId())) {
+            playerGroupLookupCacheOut.remove(creator.getId());
+            playerGroupLookupCacheOut.addLast(creator.getId());
+            
+            return playerGroupLookupCache.get(creator.getId());
+        } else {
+            while (playerGroupLookupCache.size() >= playerGroupLookupCacheSize) {
+                playerGroupLookupCache.remove(playerGroupLookupCacheOut.pop());
+            }
+            
+            HashMap<String, Long> lookup = new HashMap<String, Long>();
+            
+            try {
+                ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT ID, Name FROM PlayerGroups WHERE Creator=?", creator.getId());
+                
+                try {
+                    while (r.next()) {
+                        lookup.put(r.getString("Name"), r.getLong("ID"));
+                    }
+                } finally {
+                    GoldenApple.getInstanceDatabaseManager().closeResult(r);
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+            
+            playerGroupLookupCache.put(creator.getId(), lookup);
+            playerGroupLookupCacheOut.addLast(creator.getId());
+            
+            return lookup;
+        }
+    }
+
+    @Override
+    public PlayerGroup getPlayerGroup(IPermissionUser creator, String name) {
+        return getPlayerGroup(getPlayerGroupLookupTable(creator).get(name));
+    }
+    
+    private void addToPlayerGroupCache(PlayerGroup g) {
+        while (playerGroupCache.size() >= playerGroupCacheSize) {
+            playerGroupCache.remove(playerGroupCacheOut.pop());
+        }
+        
+        playerGroupCache.put(g.getId(), g);
+        playerGroupCacheOut.addLast(g.getId());
+    }
+    
+    @Override
+    public PlayerGroup getPlayerGroup(long id) {
+        if (playerGroupCache.containsKey(id)) {
+            playerGroupCacheOut.remove(id);
+            playerGroupCacheOut.addLast(id);
+            
+            return playerGroupCache.get(id);
+        } else {
+            try {
+                ResultSet r = GoldenApple.getInstanceDatabaseManager().executeQuery("SELECT * FROM PlayerGroups WHERE ID=?", id);
+                
+                try {
+                    if (r.next()) {
+                        PlayerGroup group = new PlayerGroup(r);
+                        addToPlayerGroupCache(group);
+                        
+                        return group;
+                    } else {
+                        return null;
+                    }
+                } finally {
+                    GoldenApple.getInstanceDatabaseManager().closeResult(r);
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    @Override
+    public IPlayerGroup createPlayerGroup(IPermissionUser creator, String name) {
+        PlayerGroup group = getPlayerGroup(creator, name);
+        
+        if (group != null) {
+            return group;
+        }
+        
+        try {
+            ResultSet r = GoldenApple.getInstanceDatabaseManager().executeReturnGenKeys("INSERT INTO PlayerGroups (Creator, Name) VALUES (?, ?)", creator.getId(), name);
+            
+            try {
+                r.next();
+                group = new PlayerGroup(r.getLong(1), creator, name);
+                addToPlayerGroupCache(group);
+                
+                return group;
+            } finally {
+                GoldenApple.getInstanceDatabaseManager().closeResult(r);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    @Override
+    public void deletePlayerGroup(long id) {
+        if (playerGroupCache.containsKey(id)) {
+            PlayerGroup g = playerGroupCache.get(id);
+            
+            if (playerGroupLookupCache.containsKey(g.getCreatorId())) {
+                playerGroupLookupCache.get(g.getCreatorId()).remove(g.getPartialName());
+            }
+        }
     }
     
     @Override

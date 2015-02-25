@@ -1,0 +1,10 @@
+CREATE TABLE IF NOT EXISTS PlayerGroups (
+	ID BIGINT PRIMARY KEY AUTO_INCREMENT,
+	Name VARCHAR(128) NOT NULL,
+	Creator BIGINT NOT NULL,
+	UNIQUE KEY ind_playergroups_name (Creator ASC, Name ASC),
+	CONSTRAINT fk_playergroups_creator
+	   FOREIGN KEY (Creator)
+	   REFERENCES User(ID)
+	   ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB

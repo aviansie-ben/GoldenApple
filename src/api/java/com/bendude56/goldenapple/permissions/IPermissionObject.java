@@ -12,17 +12,7 @@ import com.bendude56.goldenapple.permissions.PermissionManager.Permission;
  * 
  * @author ben_dude56
  */
-public interface IPermissionObject {
-    
-    /**
-     * Gets an ID number representing this permission object. This ID number is
-     * guaranteed to be unique among objects <strong>of the same type</strong>.
-     * It is possible for two objects of different types (e.g. a group and a
-     * user) to have the same ID.
-     * 
-     * @return An ID number uniquely representing this permission object.
-     */
-    public long getId();
+public interface IPermissionObject extends IPermissionStored {
     
     /**
      * Returns a list of permissions that have been granted to this object. This

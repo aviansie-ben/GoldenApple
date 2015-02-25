@@ -305,6 +305,13 @@ public abstract class PermissionManager {
      */
     public abstract boolean isUserSticky(long id);
     
+    public abstract IGroup getNamespacedGroup(String defaultNamespace, String name);
+    
+    public abstract IPlayerGroup getPlayerGroup(IPermissionUser creator, String name);
+    public abstract IPlayerGroup getPlayerGroup(long id);
+    public abstract IPlayerGroup createPlayerGroup(IPermissionUser creator, String name);
+    public abstract void deletePlayerGroup(long id);
+    
     /**
      * Gets an {@link IPermissionGroup} representing the group with the
      * specified name. Group lookups by name should only be done when
